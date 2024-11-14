@@ -5,5 +5,12 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "main": "base.json",
+  "files": [
+    "base.json",
+    "nest.json",
+    "next.json",
+    "express.json"
+  ]
 }

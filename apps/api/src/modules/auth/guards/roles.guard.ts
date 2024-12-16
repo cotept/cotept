@@ -1,7 +1,8 @@
 import { AuthErrorMessage } from "@/common/constants/error.constants"
-import { UserRole } from "@/modules/users/enums/user-role.enum"
+
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
+import { UserRole } from "@repo/shared/src/users/base"
 import { AuthException } from "../exceptions/auth.exception"
 
 @Injectable()

@@ -3,7 +3,7 @@ import {
   ValidationRules,
 } from "@/common/constants/validation.constants"
 import { IsPassword } from "@/common/decorators/validation.decorators"
-import { IsEmail, IsOptional, IsString, MaxLength } from "class-validator"
+import { IsEmail, MaxLength } from "class-validator"
 
 export class LoginDto {
   @IsEmail({}, { message: ValidationPatterns.EMAIL.MESSAGE })
@@ -12,8 +12,4 @@ export class LoginDto {
 
   @IsPassword()
   password: string
-
-  @IsString()
-  @IsOptional()
-  deviceId?: string
 }

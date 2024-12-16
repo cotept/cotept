@@ -1,4 +1,5 @@
-import { IMenteeSocialAccount, SocialProvider } from "@repo/shared"
+import { SocialProvider } from "@repo/shared/src/auth"
+import { IMenteeSocialAccount } from "@repo/shared/src/users"
 import {
   Column,
   CreateDateColumn,

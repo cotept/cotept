@@ -1,5 +1,5 @@
 import { BaseUser } from "@/modules/users/entities/base-user.entity"
-import { IMentee } from "@repo/shared"
+import { IMentee } from "@repo/shared/src/users"
 import { Column, Entity, OneToMany } from "typeorm"
 import { MenteeSocialAccount } from "./mentee-social-account.entity"
 

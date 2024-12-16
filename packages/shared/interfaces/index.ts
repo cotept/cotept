@@ -1,6 +1,0 @@
-export * from "./base-user.interface"
-export * from "./mentee.interface"
-export * from "./mentor-profile.interface"
-export * from "./mentor-schedule.interface"
-export * from "./mentor.interface"
-export * from "./social-account.interface"

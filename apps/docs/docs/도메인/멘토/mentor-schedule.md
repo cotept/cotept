@@ -88,7 +88,7 @@ preferredSessionLength: number[];
 // 예약 제약사항
 bookingConstraints: {
   minNoticeHours: number;    // 최소 예약 가능 시간
-  maxFutureMonths: number;   // 최대 예약 가능 기간
+  maxScheduledMonths: number;   // 최대 예약 가능 기간
 };
 
 // 기본 타임존
@@ -187,7 +187,7 @@ const mentorSchedule: IMentorSchedule = {
   preferredSessionLength: [30, 60],
   bookingConstraints: {
     minNoticeHours: 24,
-    maxFutureMonths: 2,
+    maxScheduledMonths: 2,
   },
   timezone: "Asia/Seoul",
 }

@@ -1,4 +1,4 @@
-import { UserRole } from "@/modules/users/enums/user-role.enum"
+import { UserRole } from "@repo/shared/src/users/base"
 
 export class AuthResponseDto {
   user: {

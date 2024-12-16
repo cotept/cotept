@@ -74,7 +74,7 @@ interface IMentorSchedule {
   preferredSessionLength: number[]
   bookingConstraints: {
     minNoticeHours: number
-    maxFutureMonths: number
+    maxScheduledMonths: number
   }
   timezone: string
 }

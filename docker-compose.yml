@@ -1,0 +1,76 @@
+name: cotept-local
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cotept-local-postgres
+    env_file:
+      - ./apps/api/.env
+      - ./apps/api/.env.local
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      # 공통 환경변수 사용
+      TZ: ${TZ}
+      PGTZ: ${TZ}
+      SSL_MODE: ${DB_SSL}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_local_data:/var/lib/postgresql/data
+      - ./docker/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cotept-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    labels:
+      - "com.cotept.description=Local PostgreSQL for CotePT API"
+      - "com.cotept.version=${API_VERSION}"
+
+  redis:
+    image: redis:7-alpine
+    container_name: cotept-local-redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    env_file:
+      - ./apps/api/.env
+      - ./apps/api/.env.local
+    environment:
+      # 공통 환경변수 사용
+      TZ: ${TZ}
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_local_data:/data
+      - ./docker/redis/local.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - cotept-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    labels:
+      - "com.cotept.description=Local Redis for CotePT API"
+      - "com.cotept.version=${API_VERSION}"
+
+networks:
+  cotept-local:
+    name: cotept-local
+    driver: bridge
+    labels:
+      - "com.cotept.environment=local"
+      - "com.cotept.version=${API_VERSION}"
+
+volumes:
+  postgres_local_data:
+    name: cotept-local-postgres
+  redis_local_data:
+    name: cotept-local-redis

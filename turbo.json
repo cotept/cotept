@@ -1,18 +1,49 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": ["NODE_ENV"],
+  "globalDependencies": ["**/.env.*local"],
+  "globalPassThroughEnv": ["DB_*", "API_*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "inputs": [
+        ".env*",
+        "{project}/apps/**/$TURBO_DEFAULT$",
+        "{project}/packages/eslint-config/*.js",
+        "{project}/packages/typescript-config/*.json",
+        "{project}/packages/shared/**/*.{ts,tsx,json,d.ts}"
+      ],
+      "outputs": [
+        "apps/api/dist/**",
+        "apps/rambda/dist/**",
+        "apps/web/.next/**",
+        "apps/admin/.next/**",
+        "apps/docs/.next/**",
+        "!apps/*/.next/cache/**"
+      ],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "NEST_PUBLIC_*", "PORT", "BUILD_VERSION"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["test/**/*.{js,ts}", "**/*.test.{js,ts}", "**/*.spec.{js,ts}", "jest.config.js"],
+      "outputs": ["coverage/**", "!.coverage/ignored/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "inputs": ["**/*.{js,jsx,ts,tsx,json,yml,yaml}", ".eslintrc.*", ".prettierrc.*"],
+      "outputs": [".eslintcache", "lint-results.json"]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["NODE_ENV"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.local", ".env"]
+    },
+    "clean": {
+      "cache": false,
+      "outputs": ["dist/**", ".next/**", "coverage/**", "node_modules/.cache/**", ".turbo/**"]
     }
   }
 }

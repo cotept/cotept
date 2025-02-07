@@ -2,18 +2,38 @@
   "name": "cotept",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "dev": "turbo run dev",
+    "dev:front": "turbo run dev --filter=front",
+    "dev:api": "turbo run dev --filter=api",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:rambda": "turbo run dev --filter=rambda",
+    "dev:docs": "turbo run dev --filter=docs",
+    "build": "turbo run build",
+    "build:api": "turbo run build --filter=api",
+    "build:web": "turbo run build --filter=web",
+    "build:rambda": "turbo run build --filter=rambda",
+    "build:docs": "turbo run build --filter=docs",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rimraf node_modules && pnpm store prune",
+    "infra:up": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local up -d",
+    "infra:down": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local down -v",
+    "infra:logs": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local logs -f"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
     "turbo": "^2.2.3",
     "typescript": "5.5.4"
   },
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "dotenv": "^16.3.1",
+    "uuid": "^11.0.5"
   }
 }

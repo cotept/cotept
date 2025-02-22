@@ -39,3 +39,10 @@ yarn-error.log*
 
 #pnpm store
 .pnpm-store
+
+# .gitignore
+*.tfvars
+!*.tfvars.example
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup

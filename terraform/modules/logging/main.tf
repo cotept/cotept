@@ -14,8 +14,7 @@ resource "oci_logging_log_group" "unified" {
   })
 }
 
-# 각 서비스와 로그 카테고리(stdout/stderr)에 대한 로그 스트림을 생성합니다.
-# 이 로그 스트림은 특정 서비스의 로그를 수집하고 관리합니다.
+# 각 서비스의 로그 스트림을 생성합니다.
 resource "oci_logging_log" "service_logs" {
   display_name = "${var.project_name}-${var.environment}-${var.service_name}-${var.log_category}"
   log_group_id = oci_logging_log_group.unified.id
@@ -28,28 +27,11 @@ resource "oci_logging_log" "service_logs" {
       service     = "container_instances"
       source_type = "OCISERVICE"
     }
-
-    # 환경에 따른 로그 레벨을 설정합니다.
-    # 운영 환경에서는 중요 로그만, 개발 환경에서는 상세 로그를 수집합니다.
-    parameters {
-      name  = "minimumLevel"
-      value = var.environment == "prod" ? "INFO" : "DEBUG"
-    }
-
-    # JSON 형식의 로그를 파싱하기 위한 설정입니다.
-    parser {
-      parser_type    = "JSON"
-      field_time_key = "timestamp"
-      types {
-        service = "string"
-        level   = "string"
-        environment = "string"
-      }
-    }
+    compartment_id = var.compartment_id
   }
 
   # 환경에 따른 로그 보존 기간을 설정합니다.
-  retention_duration = var.environment == "prod" ? "90" : "30"
+  retention_duration = var.environment == "prod" ? "45" : "30"
 
   freeform_tags = merge(var.tags, {
     "Service"     = var.service_name

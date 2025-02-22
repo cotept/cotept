@@ -18,7 +18,7 @@ output "connection_info" {
     host = oci_container_instances_container_instance.redis.vnics[0].private_ip
     port = var.redis_port
   }
-  sensitive = false  # 호스트와 포트는 민감 정보가 아님
+  sensitive = false # 호스트와 포트는 민감 정보가 아님
 }
 
 # 로깅 관련 정보를 출력합니다.

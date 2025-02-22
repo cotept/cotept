@@ -79,8 +79,13 @@ output "vcn_domain_name" {
 output "subnet_cidr_blocks" {
   description = "각 서브넷의 CIDR 블록 정보"
   value = {
-    public     = var.public_subnet_cidr
+    public      = var.public_subnet_cidr
     private_app = var.private_app_subnet_cidr
     private_db  = var.private_database_subnet_cidr
   }
+}
+
+output "coturn_security_group_id" {
+  description = "Coturn 서버의 보안 그룹 OCID입니다"
+  value       = oci_core_network_security_group.coturn.id
 }

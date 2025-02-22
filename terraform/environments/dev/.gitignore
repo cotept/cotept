@@ -1,0 +1,20 @@
+# 테라폼 파일
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# 시크릿 파일
+*.tfvars
+!example.tfvars
+
+# SSL 인증서
+*.pem
+*.key
+*.crt
+
+# 환경 변수 파일
+.env.*
+
+# 테라폼 실행 가이드
+run.md

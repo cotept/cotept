@@ -13,14 +13,14 @@ output "public_ip" {
 output "turn_config" {
   description = "WebRTC 연결에 필요한 TURN 설정 정보입니다"
   value = {
-    urls           = [
+    urls = [
       "turn:${oci_container_instances_container_instance.coturn.vnics[0].public_ip}:3478",
       "turns:${oci_container_instances_container_instance.coturn.vnics[0].public_ip}:5349"
     ]
-    username       = var.turn_user
-    credential     = var.turn_password
+    username   = var.turn_user
+    credential = var.turn_password
   }
-  sensitive = false  # 클라이언트에서 사용해야 하므로 민감 정보로 표시하지 않습니다
+  sensitive = false # 클라이언트에서 사용해야 하므로 민감 정보로 표시하지 않습니다
 }
 
 output "ports" {

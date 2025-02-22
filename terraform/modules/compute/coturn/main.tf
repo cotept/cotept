@@ -2,7 +2,7 @@
 
 locals {
   container_image = "coturn/coturn:4.6.2-alpine"
-  
+
   common_tags = merge(
     {
       "Environment" = var.environment
@@ -52,11 +52,11 @@ module "coturn_stdout_logs" {
 
   compartment_id        = var.compartment_id
   project_name          = var.project_name
-  environment          = var.environment
-  service_name         = "coturn"
+  environment           = var.environment
+  service_name          = "coturn"
   container_instance_id = oci_container_instances_container_instance.coturn.id
-  log_category         = "stdout"
-  tags                 = local.common_tags
+  log_category          = "stdout"
+  tags                  = local.common_tags
 }
 
 module "coturn_stderr_logs" {
@@ -64,17 +64,20 @@ module "coturn_stderr_logs" {
 
   compartment_id        = var.compartment_id
   project_name          = var.project_name
-  environment          = var.environment
-  service_name         = "coturn"
+  environment           = var.environment
+  service_name          = "coturn"
   container_instance_id = oci_container_instances_container_instance.coturn.id
-  log_category         = "stderr"
-  tags                 = local.common_tags
+  log_category          = "stderr"
+  tags                  = local.common_tags
 }
 
 # Coturn 서버 Container Instance 생성
 resource "oci_container_instances_container_instance" "coturn" {
   compartment_id = var.compartment_id
   display_name   = "${var.project_name}-${var.environment}-coturn"
+
+  # 가용성 영역 설정 추가
+  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
 
   shape = "CI.Standard.A1.Flex"
   shape_config {
@@ -86,46 +89,20 @@ resource "oci_container_instances_container_instance" "coturn" {
     display_name = "coturn"
     image_url    = local.container_image
 
-    # Coturn 설정 파일을 환경 변수로 전달
+    # Vault에서 가져온 환경 변수로 Coturn 설정
     environment_variables = {
-      "TURN_CONFIG" = local.coturn_config
+      "TURN_CONFIG" = replace(local.coturn_config,
+        var.turn_password,
+        data.oci_vault_secret_version.turn_password_current.content
+      )
     }
 
     # 상태 체크 설정
     health_checks {
-      health_check_type = "TCP"
-      port              = 3478  # STUN/TURN 기본 포트
-      protocol          = "TCP"
+      health_check_type   = "TCP"
+      port                = 3478
       interval_in_seconds = 30
       timeout_in_seconds  = 3
-      retries            = 3
-    }
-
-    # Coturn이 사용할 포트 노출
-    ports {
-      protocol = "TCP"
-      port     = 3478  # STUN/TURN
-    }
-    ports {
-      protocol = "UDP"
-      port     = 3478
-    }
-    ports {
-      protocol = "TCP"
-      port     = 5349  # TLS
-    }
-    ports {
-      protocol = "UDP"
-      port     = 5349
-    }
-
-    # 미디어 트래픽을 위한 포트 범위 노출
-    ports {
-      protocol    = "UDP"
-      port_range {
-        min = var.turn_port_min
-        max = var.turn_port_max
-      }
     }
 
     # 컨테이너 리소스 제한 설정
@@ -135,16 +112,23 @@ resource "oci_container_instances_container_instance" "coturn" {
     }
   }
 
-  # 네트워크 설정 - 퍼블릭 서브넷에 배치
+  # 네트워크 설정
   vnics {
-    subnet_id  = var.subnet_id
-    is_public_ip_assigned = true  # WebRTC를 위해 공개 IP 필요
-  }
-
-  # 가용성 설정
-  availability_config {
-    recovery_action = "RESTORE_INSTANCE"
+    subnet_id             = var.subnet_id
+    is_public_ip_assigned = true
+    nsg_ids               = [var.security_group_id] # 보안 그룹 적용
   }
 
   freeform_tags = local.common_tags
+}
+
+# 가용성 영역 데이터 소스
+data "oci_identity_availability_domains" "ads" {
+  compartment_id = var.compartment_id
+}
+
+# Vault 시크릿 데이터 소스
+data "oci_vault_secret_version" "turn_password_current" {
+  secret_id             = var.vault_secrets.turn.id
+  secret_version_number = var.vault_secrets.turn.version
 }

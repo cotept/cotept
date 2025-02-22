@@ -7,11 +7,11 @@ locals {
   # PostgreSQL 15 버전의 Alpine 기반 이미지를 사용합니다.
   # Alpine 이미지는 용량이 작고 보안적으로 강화되어 있습니다.
   container_image = "postgres:15-alpine"
-  
+
   # PostgreSQL의 데이터 디렉토리를 설정합니다.
   # 이 경로에 Block Volume이 마운트됩니다.
-  mount_path     = "/var/lib/postgresql/data"
-  
+  mount_path = "/var/lib/postgresql/data"
+
   # 모든 리소스에 적용될 공통 태그를 정의합니다.
   common_tags = merge(
     {
@@ -26,7 +26,7 @@ locals {
 
   # 데이터베이스 초기화 스크립트 설정
   init_sql_template = file("${path.module}/scripts/init.sql")
-  
+
   # SQL 스크립트의 변수들을 실제 값으로 대체합니다.
   init_sql = replace(
     replace(
@@ -60,10 +60,7 @@ resource "oci_core_volume" "postgresql_data" {
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   display_name        = "${var.project_name}-${var.environment}-postgresql-data"
-  size_in_gbs        = var.data_volume_size_in_gbs
-
-  # 백업이 활성화된 경우 GOLD 정책을 적용합니다.
-  backup_policy_id    = var.backup_enabled ? data.oci_core_volume_backup_policies.gold_policy.policies[0].id : null
+  size_in_gbs         = var.data_volume_size_in_gbs
 
   freeform_tags = local.common_tags
 }
@@ -74,11 +71,11 @@ module "postgresql_stdout_logs" {
 
   compartment_id        = var.compartment_id
   project_name          = var.project_name
-  environment          = var.environment
-  service_name         = "postgresql"
+  environment           = var.environment
+  service_name          = "postgresql"
   container_instance_id = oci_container_instances_container_instance.postgresql.id
-  log_category         = "stdout"
-  tags                 = local.common_tags
+  log_category          = "stdout"
+  tags                  = local.common_tags
 }
 
 module "postgresql_stderr_logs" {
@@ -86,18 +83,19 @@ module "postgresql_stderr_logs" {
 
   compartment_id        = var.compartment_id
   project_name          = var.project_name
-  environment          = var.environment
-  service_name         = "postgresql"
+  environment           = var.environment
+  service_name          = "postgresql"
   container_instance_id = oci_container_instances_container_instance.postgresql.id
-  log_category         = "stderr"
-  tags                 = local.common_tags
+  log_category          = "stderr"
+  tags                  = local.common_tags
 }
 
 # PostgreSQL Container Instance를 생성합니다.
 resource "oci_container_instances_container_instance" "postgresql" {
-  compartment_id = var.compartment_id
-  display_name   = "${var.project_name}-${var.environment}-postgresql"
-  
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-${var.environment}-postgresql"
+  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
+
   # 1코어, 6GB 메모리로 설정합니다.
   shape = "CI.Standard.A1.Flex"
   shape_config {
@@ -107,10 +105,8 @@ resource "oci_container_instances_container_instance" "postgresql" {
 
   # Block Volume을 컨테이너에 연결합니다.
   volumes {
-    name                 = "postgresql-data"
-    volume_type         = "EMULATED"
-    backing_type        = "BLOCK"
-    block_volume_id     = oci_core_volume.postgresql_data.id
+    name        = "postgresql-data"
+    volume_type = "BLOCK_VOLUME"
   }
 
   containers {
@@ -120,28 +116,28 @@ resource "oci_container_instances_container_instance" "postgresql" {
     # PostgreSQL의 주요 설정을 환경 변수로 전달합니다.
     environment_variables = {
       # 기본 인증 설정
-      "POSTGRES_PASSWORD"      = var.postgres_password
-      "POSTGRES_DB"           = var.db_name
-      "POSTGRES_INITDB_ARGS"  = "--encoding=UTF-8 --locale=C"
+      "POSTGRES_PASSWORD"    = var.postgres_password # vault 모듈에서 전달받은 값
+      "POSTGRES_DB"          = var.db_name
+      "POSTGRES_INITDB_ARGS" = "--encoding=UTF-8 --locale=C"
       "PGDATA"               = "${local.mount_path}/pgdata"
-      
+
       # 연결 및 리소스 설정
-      "POSTGRES_MAX_CONNECTIONS"    = tostring(var.max_connections)  # 총 50개 연결
-      "POSTGRES_SUPERUSER_RESERVED_CONNECTIONS" = "3"  # 관리자용 연결 예약
-      
+      "POSTGRES_MAX_CONNECTIONS"                = tostring(var.max_connections) # 총 50개 연결
+      "POSTGRES_SUPERUSER_RESERVED_CONNECTIONS" = "3"                           # 관리자용 연결 예약
+
       # 메모리 설정
-      "POSTGRES_SHARED_BUFFERS"     = "${var.shared_buffers_mb}MB"  # 1.5GB
-      "POSTGRES_WORK_MEM"          = "32MB"         # 개별 쿼리 작업공간
-      "POSTGRES_MAINTENANCE_WORK_MEM" = "128MB"      # 유지보수 작업용
-      "POSTGRES_EFFECTIVE_CACHE_SIZE" = "4GB"        # OS 캐시 포함 예상 크기
-      
+      "POSTGRES_SHARED_BUFFERS"       = "${var.shared_buffers_mb}MB" # 1.5GB
+      "POSTGRES_WORK_MEM"             = "32MB"                       # 개별 쿼리 작업공간
+      "POSTGRES_MAINTENANCE_WORK_MEM" = "128MB"                      # 유지보수 작업용
+      "POSTGRES_EFFECTIVE_CACHE_SIZE" = "4GB"                        # OS 캐시 포함 예상 크기
+
       # 백그라운드 작업자 설정
-      "POSTGRES_MAX_WORKER_PROCESSES" = "4"          # 총 작업자 프로세스 수
-      "POSTGRES_MAX_PARALLEL_WORKERS" = "1"          # 병렬 처리 제한
-      
+      "POSTGRES_MAX_WORKER_PROCESSES" = "4" # 총 작업자 프로세스 수
+      "POSTGRES_MAX_PARALLEL_WORKERS" = "1" # 병렬 처리 제한
+
       # 타임아웃 설정
-      "POSTGRES_IDLE_IN_TRANSACTION_SESSION_TIMEOUT" = "300000"  # 5분
-      "POSTGRES_STATEMENT_TIMEOUT" = "30000"         # 30초
+      "POSTGRES_IDLE_IN_TRANSACTION_SESSION_TIMEOUT" = "300000" # 5분
+      "POSTGRES_STATEMENT_TIMEOUT"                   = "30000"  # 30초
 
       # 초기화 스크립트 설정
       "POSTGRES_INITDB_WALDIR" = "${local.mount_path}/pg_wal"
@@ -150,17 +146,16 @@ resource "oci_container_instances_container_instance" "postgresql" {
 
     # Block Volume을 마운트합니다.
     volume_mounts {
-      mount_path = local.mount_path
+      mount_path  = local.mount_path
       volume_name = "postgresql-data"
     }
 
     # 데이터베이스 상태를 주기적으로 체크합니다.
     health_checks {
-      health_check_type = "TCP"
-      port              = 5432
+      health_check_type   = "TCP"
+      port                = 5432
       interval_in_seconds = 30
       timeout_in_seconds  = 3
-      retries            = 3
     }
 
     # 컨테이너 리소스 제한을 설정합니다.
@@ -172,13 +167,8 @@ resource "oci_container_instances_container_instance" "postgresql" {
 
   # 프라이빗 서브넷에 배치합니다.
   vnics {
-    subnet_id  = var.subnet_id
+    subnet_id             = var.subnet_id
     is_public_ip_assigned = false
-  }
-
-  # 장애 발생 시 자동으로 복구합니다.
-  availability_config {
-    recovery_action = "RESTORE_INSTANCE"
   }
 
   freeform_tags = local.common_tags

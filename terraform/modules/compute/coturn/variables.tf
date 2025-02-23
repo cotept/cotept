@@ -36,8 +36,8 @@ variable "environment" {
   type        = string
 
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment는 'dev', 'staging', 'prod' 중 하나여야 합니다."
+    condition     = contains(["dev", "prod"], var.environment)
+    error_message = "Environment는 'dev',  'prod' 중 하나여야 합니다."
   }
 }
 
@@ -62,6 +62,11 @@ variable "turn_port_max" {
     condition     = var.turn_port_max > 49152 && var.turn_port_max <= 65535
     error_message = "최대 포트는 49152에서 65535 사이여야 합니다."
   }
+}
+
+variable "turn_realm" {
+  description = "TURN 서버 realm (보통 도메인 이름)"
+  type        = string
 }
 
 variable "turn_user" {
@@ -159,5 +164,33 @@ variable "vault_secrets" {
 
 variable "security_group_id" {
   description = "Coturn 서버에 적용할 보안 그룹의 OCID입니다"
+  type        = string
+}
+
+variable "turn_max_bps" {
+  description = "클라이언트당 최대 대역폭 (bps)"
+  type        = number
+  default     = 3145728 # 3Mbps
+}
+
+variable "turn_total_quota" {
+  description = "동시 세션 수 제한"
+  type        = number
+  default     = 100
+}
+
+variable "turn_user_quota" {
+  description = "사용자당 세션 수 제한"
+  type        = number
+  default     = 10
+}
+
+variable "turn_tls_certificate_path" {
+  description = "TLS 인증서 경로"
+  type        = string
+}
+
+variable "turn_tls_private_key_path" {
+  description = "TLS 개인키 경로"
   type        = string
 }

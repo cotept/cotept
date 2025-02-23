@@ -1,5 +1,38 @@
 # environments/dev/main.tf
 
+# 1. IAM 모듈 (권한 관리)
+module "iam" {
+  source = "../../modules/security/iam"
+
+  compartment_id = var.compartment_id
+  tenancy_ocid   = var.tenancy_ocid
+  environment    = var.environment
+  project_name   = var.project_name
+}
+
+# 2. Vault 모듈 (시크릿 관리)
+module "vault" {
+  source = "../../modules/security/vault"
+
+  compartment_id = var.compartment_id
+  project_name   = var.project_name
+  environment    = var.environment
+
+  # 시크릿 값 설정
+  db_root_password = var.db_root_password # 변수명 수정
+  db_app_password  = var.db_app_password  # 변수명 수정
+  redis_password   = var.redis_password
+  jwt_secret       = var.jwt_secret
+  turn_user        = var.turn_user
+  turn_password    = var.turn_password
+  turn_realm       = var.turn_realm
+  # ssl_private_key    = file(var.ssl_private_key_path)
+  # ssl_certificate    = file(var.ssl_public_cert_path)
+  # ssl_ca_certificate = file(var.ssl_ca_cert_path)
+
+  depends_on = [module.iam]
+}
+
 # # 3. Network 모듈 (네트워크 인프라)
 module "network" {
   source = "../../modules/network"
@@ -23,3 +56,4 @@ module "network" {
 
   additional_tags = var.additional_tags
 }
+

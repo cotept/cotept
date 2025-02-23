@@ -26,15 +26,9 @@ variable "environment" {
   type        = string
 
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment는 'dev', 'staging', 'prod' 중 하나여야 합니다."
+    condition     = contains(["dev", "prod"], var.environment)
+    error_message = "Environment는 'dev',  'prod' 중 하나여야 합니다."
   }
-}
-
-variable "secret_version" {
-  description = "시크릿 버전 번호"
-  type        = number
-  default     = 1
 }
 
 # 데이터베이스 관련 시크릿
@@ -85,6 +79,11 @@ variable "jwt_secret" {
 }
 
 # Coturn 관련 시크릿
+variable "turn_user" {
+  description = "Coturn 인증에 사용되는 사용자ID 입니다"
+  type        = string
+  sensitive   = true
+}
 variable "turn_password" {
   description = "Coturn 인증에 사용되는 비밀번호입니다"
   type        = string
@@ -95,22 +94,27 @@ variable "turn_password" {
     error_message = "Coturn 비밀번호는 최소 8자 이상이어야 합니다."
   }
 }
+variable "turn_realm" {
+  description = "Coturn 인증에 사용되는 도메인입니다"
+  type        = string
+  sensitive   = true
+}
 
 # SSL 인증서 관련 시크릿
-variable "ssl_private_key" {
-  description = "SSL 인증서 개인키"
-  type        = string
-  sensitive   = true
-}
+# variable "ssl_private_key" {
+#   description = "SSL 인증서 개인키"
+#   type        = string
+#   sensitive   = true
+# }
 
-variable "ssl_certificate" {
-  description = "SSL 공개 인증서"
-  type        = string
-  sensitive   = true
-}
+# variable "ssl_certificate" {
+#   description = "SSL 공개 인증서"
+#   type        = string
+#   sensitive   = true
+# }
 
-variable "ssl_ca_certificate" {
-  description = "SSL CA 인증서"
-  type        = string
-  sensitive   = true
-}
+# variable "ssl_ca_certificate" {
+#   description = "SSL CA 인증서"
+#   type        = string
+#   sensitive   = true
+# }

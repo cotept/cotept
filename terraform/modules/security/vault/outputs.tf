@@ -19,56 +19,60 @@ output "secrets" {
       root_password = {
         id          = oci_vault_secret.db_root_password.id
         secret_name = oci_vault_secret.db_root_password.secret_name
-        content     = data.oci_vault_secret_version.db_root_password_current.content
-        version     = data.oci_vault_secret_version.db_root_password_current.version_number
+        content     = base64decode(data.oci_secrets_secretbundle.db_root_password.secret_bundle_content[0].content)
       }
       app_password = {
         id          = oci_vault_secret.db_app_password.id
         secret_name = oci_vault_secret.db_app_password.secret_name
-        content     = data.oci_vault_secret_version.db_app_password_current.content
-        version     = data.oci_vault_secret_version.db_app_password_current.version_number
+        content     = base64decode(data.oci_secrets_secretbundle.db_app_password.secret_bundle_content[0].content)
       }
     }
     application = {
       redis = {
         id          = oci_vault_secret.redis_password.id
         secret_name = oci_vault_secret.redis_password.secret_name
-        content     = data.oci_vault_secret_version.redis_password_current.content
-        version     = data.oci_vault_secret_version.redis_password_current.version_number
+        content     = base64decode(data.oci_secrets_secretbundle.redis_password.secret_bundle_content[0].content)
       }
       jwt = {
         id          = oci_vault_secret.jwt_secret.id
         secret_name = oci_vault_secret.jwt_secret.secret_name
-        content     = data.oci_vault_secret_version.jwt_secret_current.content
-        version     = data.oci_vault_secret_version.jwt_secret_current.version_number
+        content     = base64decode(data.oci_secrets_secretbundle.jwt_secret.secret_bundle_content[0].content)
       }
       turn = {
-        id          = oci_vault_secret.turn_password.id
-        secret_name = oci_vault_secret.turn_password.secret_name
-        content     = data.oci_vault_secret_version.turn_password_current.content
-        version     = data.oci_vault_secret_version.turn_password_current.version_number
+        user = {
+          id          = oci_vault_secret.turn_user.id
+          secret_name = oci_vault_secret.turn_user.secret_name
+          content     = base64decode(data.oci_secrets_secretbundle.turn_user.secret_bundle_content[0].content)
+        }
+        password = {
+          id          = oci_vault_secret.turn_password.id
+          secret_name = oci_vault_secret.turn_password.secret_name
+          content     = base64decode(data.oci_secrets_secretbundle.turn_password.secret_bundle_content[0].content)
+        }
+        realm = {
+          id          = oci_vault_secret.turn_realm.id
+          secret_name = oci_vault_secret.turn_realm.secret_name
+          content     = base64decode(data.oci_secrets_secretbundle.turn_realm.secret_bundle_content[0].content)
+        }
       }
     }
-    ssl = {
-      private_key = {
-        id          = oci_vault_secret.ssl_private_key.id
-        secret_name = oci_vault_secret.ssl_private_key.secret_name
-        content     = data.oci_vault_secret_version.ssl_private_key_current.content
-        version     = data.oci_vault_secret_version.ssl_private_key_current.version_number
-      }
-      certificate = {
-        id          = oci_vault_secret.ssl_certificate.id
-        secret_name = oci_vault_secret.ssl_certificate.secret_name
-        content     = data.oci_vault_secret_version.ssl_certificate_current.content
-        version     = data.oci_vault_secret_version.ssl_certificate_current.version_number
-      }
-      ca_certificate = {
-        id          = oci_vault_secret.ssl_ca_certificate.id
-        secret_name = oci_vault_secret.ssl_ca_certificate.secret_name
-        content     = data.oci_vault_secret_version.ssl_ca_certificate_current.content
-        version     = data.oci_vault_secret_version.ssl_ca_certificate_current.version_number
-      }
-    }
+    # ssl = {
+    #   private_key = {
+    #     id          = oci_vault_secret.ssl_private_key.id
+    #     secret_name = oci_vault_secret.ssl_private_key.secret_name
+    #     content     = data.oci_vault_secret_version.ssl_private_key_current.content
+    #   }
+    #   certificate = {
+    #     id          = oci_vault_secret.ssl_certificate.id
+    #     secret_name = oci_vault_secret.ssl_certificate.secret_name
+    #     content     = data.oci_vault_secret_version.ssl_certificate_current.content
+    #   }
+    #   ca_certificate = {
+    #     id          = oci_vault_secret.ssl_ca_certificate.id
+    #     secret_name = oci_vault_secret.ssl_ca_certificate.secret_name
+    #     content     = data.oci_vault_secret_version.ssl_ca_certificate_current.content
+    #   }
+    # }
   }
   sensitive = true
 }

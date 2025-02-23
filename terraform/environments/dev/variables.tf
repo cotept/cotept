@@ -42,36 +42,50 @@ variable "domain_name" {
 }
 
 # # 데이터베이스 관련 변수
-# variable "db_root_password" {
-#   description = "PostgreSQL root 사용자의 비밀번호"
-#   type        = string
-#   sensitive   = true
-# }
+variable "db_root_password" {
+  description = "PostgreSQL root 사용자의 비밀번호"
+  type        = string
+  sensitive   = true
+}
 
-# variable "db_app_password" {
-#   description = "PostgreSQL 애플리케이션 사용자의 비밀번호"
-#   type        = string
-#   sensitive   = true
-# }
+variable "db_app_password" {
+  description = "PostgreSQL 애플리케이션 사용자의 비밀번호"
+  type        = string
+  sensitive   = true
+}
 
-# # Redis 관련 변수
-# variable "redis_password" {
-#   description = "Redis 서버 비밀번호"
-#   type        = string
-#   sensitive   = true
-# }
+# Redis 관련 변수
+variable "redis_password" {
+  description = "Redis 서버 비밀번호"
+  type        = string
+  sensitive   = true
+}
 
-# # TURN 서버 관련 변수
-# variable "turn_user" {
-#   description = "TURN 서버 사용자 이름"
-#   type        = string
-# }
+# TURN 서버 관련 변수
+variable "turn_user" {
+  description = "TURN 서버 사용자 이름"
+  type        = string
+  sensitive   = true
+}
 
-# variable "turn_password" {
-#   description = "TURN 서버 비밀번호"
-#   type        = string
-#   sensitive   = true
-# }
+variable "turn_password" {
+  description = "TURN 서버 비밀번호"
+  type        = string
+  sensitive   = true
+}
+
+variable "turn_realm" {
+  description = "TURN 서버 비밀번호"
+  type        = string
+  sensitive   = true
+}
+
+# jwt 관련 변수
+variable "jwt_secret" {
+  description = "JWT 토큰 서명에 사용될 비밀키"
+  type        = string
+  sensitive   = true
+}
 
 # # SSL 인증서 관련 변수
 # variable "ssl_private_key_path" {
@@ -89,11 +103,6 @@ variable "domain_name" {
 #   type        = string
 # }
 
-# variable "jwt_secret" {
-#   description = "JWT 토큰 서명에 사용될 비밀키"
-#   type        = string
-#   sensitive   = true
-# }
 
 # 추가 태그
 variable "additional_tags" {

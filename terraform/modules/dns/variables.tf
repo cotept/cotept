@@ -64,7 +64,7 @@ variable "environment" {
   description = "환경 구분자 (dev, staging, prod)"
 
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
+    condition     = contains(["dev", "prod"], var.environment)
     error_message = "환경은 dev, staging, prod 중 하나여야 합니다."
   }
 }

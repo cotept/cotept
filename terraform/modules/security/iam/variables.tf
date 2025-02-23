@@ -33,7 +33,6 @@ variable "environment" {
 variable "project_name" {
   description = "The name of the project"
   type        = string
-  default     = "cotept"
 
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.project_name))

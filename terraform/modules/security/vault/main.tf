@@ -10,7 +10,6 @@ resource "oci_kms_vault" "app_vault" {
     "Environment" = var.environment
     "Project"     = var.project_name
     "ManagedBy"   = "terraform"
-    "Service"     = "vault"
   }
 }
 
@@ -28,11 +27,11 @@ resource "oci_kms_key" "app_key" {
 
 # DB 관련 시크릿
 resource "oci_vault_secret" "db_root_password" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-db-root-password"
-  current_version_number = var.secret_version
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-db-root-password"
+
 
   secret_content {
     content_type = "BASE64"
@@ -48,16 +47,15 @@ resource "oci_vault_secret" "db_root_password" {
     "ManagedBy"   = "terraform"
     "Service"     = "postgresql"
     "Type"        = "database"
-    "Version"     = var.secret_version
   }
 }
 
 resource "oci_vault_secret" "db_app_password" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-db-app-password"
-  current_version_number = var.secret_version
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-db-app-password"
+
 
   secret_content {
     content_type = "BASE64"
@@ -73,17 +71,16 @@ resource "oci_vault_secret" "db_app_password" {
     "ManagedBy"   = "terraform"
     "Service"     = "postgresql"
     "Type"        = "database"
-    "Version"     = var.secret_version
   }
 }
 
 # Redis 관련 시크릿
 resource "oci_vault_secret" "redis_password" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-redis-password"
-  current_version_number = var.secret_version
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-redis-password"
+
 
   secret_content {
     content_type = "BASE64"
@@ -99,17 +96,16 @@ resource "oci_vault_secret" "redis_password" {
     "ManagedBy"   = "terraform"
     "Service"     = "redis"
     "Type"        = "cache"
-    "Version"     = var.secret_version
   }
 }
 
 # API 서버 관련 시크릿
 resource "oci_vault_secret" "jwt_secret" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-jwt-secret"
-  current_version_number = var.secret_version
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-jwt-secret"
+
 
   secret_content {
     content_type = "BASE64"
@@ -125,17 +121,39 @@ resource "oci_vault_secret" "jwt_secret" {
     "ManagedBy"   = "terraform"
     "Service"     = "api"
     "Type"        = "authentication"
-    "Version"     = var.secret_version
   }
 }
 
 # Coturn 관련 시크릿
+resource "oci_vault_secret" "turn_user" {
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-turn-user"
+
+
+  secret_content {
+    content_type = "BASE64"
+    content      = base64encode(var.turn_user)
+    stage        = "CURRENT"
+  }
+
+  description = "Coturn authentication password for ${var.environment} environment"
+
+  freeform_tags = {
+    "Environment" = var.environment
+    "Project"     = var.project_name
+    "ManagedBy"   = "terraform"
+    "Service"     = "coturn"
+    "Type"        = "webrtc"
+  }
+}
 resource "oci_vault_secret" "turn_password" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-turn-password"
-  current_version_number = var.secret_version
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-turn-password"
+
 
   secret_content {
     content_type = "BASE64"
@@ -151,159 +169,165 @@ resource "oci_vault_secret" "turn_password" {
     "ManagedBy"   = "terraform"
     "Service"     = "coturn"
     "Type"        = "webrtc"
-    "Version"     = var.secret_version
+  }
+}
+resource "oci_vault_secret" "turn_realm" {
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.app_vault.id
+  key_id         = oci_kms_key.app_key.id
+  secret_name    = "${var.project_name}-${var.environment}-turn-realm"
+
+
+  secret_content {
+    content_type = "BASE64"
+    content      = base64encode(var.turn_realm)
+    stage        = "CURRENT"
+  }
+
+  description = "Coturn authentication password for ${var.environment} environment"
+
+  freeform_tags = {
+    "Environment" = var.environment
+    "Project"     = var.project_name
+    "ManagedBy"   = "terraform"
+    "Service"     = "coturn"
+    "Type"        = "webrtc"
   }
 }
 
 # SSL 인증서 관련 시크릿
-resource "oci_vault_secret" "ssl_private_key" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-ssl-private-key"
-  current_version_number = var.secret_version
+# resource "oci_vault_secret" "ssl_private_key" {
+#   compartment_id         = var.compartment_id
+#   vault_id               = oci_kms_vault.app_vault.id
+#   key_id                 = oci_kms_key.app_key.id
+#   secret_name            = "${var.project_name}-${var.environment}-ssl-private-key"
 
-  secret_content {
-    content_type = "BASE64"
-    content      = base64encode(var.ssl_private_key)
-    stage        = "CURRENT"
-  }
 
-  description = "SSL private key for ${var.environment} environment"
+#   secret_content {
+#     content_type = "BASE64"
+#     content      = base64encode(var.ssl_private_key)
+#     stage        = "CURRENT"
+#   }
 
-  freeform_tags = {
-    "Environment" = var.environment
-    "Project"     = var.project_name
-    "ManagedBy"   = "terraform"
-    "Service"     = "ssl"
-    "Type"        = "certificate"
-    "Version"     = var.secret_version
-  }
-}
+#   description = "SSL private key for ${var.environment} environment"
 
-resource "oci_vault_secret" "ssl_certificate" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-ssl-certificate"
-  current_version_number = var.secret_version
+#   freeform_tags = {
+#     "Environment" = var.environment
+#     "Project"     = var.project_name
+#     "ManagedBy"   = "terraform"
+#     "Service"     = "ssl"
+#     "Type"        = "certificate"
+#  
+#   }
+# }
 
-  secret_content {
-    content_type = "BASE64"
-    content      = base64encode(var.ssl_certificate)
-    stage        = "CURRENT"
-  }
+# resource "oci_vault_secret" "ssl_certificate" {
+#   compartment_id         = var.compartment_id
+#   vault_id               = oci_kms_vault.app_vault.id
+#   key_id                 = oci_kms_key.app_key.id
+#   secret_name            = "${var.project_name}-${var.environment}-ssl-certificate"
 
-  description = "SSL certificate for ${var.environment} environment"
 
-  freeform_tags = {
-    "Environment" = var.environment
-    "Project"     = var.project_name
-    "ManagedBy"   = "terraform"
-    "Service"     = "ssl"
-    "Type"        = "certificate"
-    "Version"     = var.secret_version
-  }
-}
+#   secret_content {
+#     content_type = "BASE64"
+#     content      = base64encode(var.ssl_certificate)
+#     stage        = "CURRENT"
+#   }
 
-resource "oci_vault_secret" "ssl_ca_certificate" {
-  compartment_id         = var.compartment_id
-  vault_id               = oci_kms_vault.app_vault.id
-  key_id                 = oci_kms_key.app_key.id
-  secret_name            = "${var.project_name}-${var.environment}-ssl-ca-certificate"
-  current_version_number = var.secret_version
+#   description = "SSL certificate for ${var.environment} environment"
 
-  secret_content {
-    content_type = "BASE64"
-    content      = base64encode(var.ssl_ca_certificate)
-    stage        = "CURRENT"
-  }
+#   freeform_tags = {
+#     "Environment" = var.environment
+#     "Project"     = var.project_name
+#     "ManagedBy"   = "terraform"
+#     "Service"     = "ssl"
+#     "Type"        = "certificate"
+#  
+#   }
+# }
 
-  description = "SSL CA certificate for ${var.environment} environment"
+# resource "oci_vault_secret" "ssl_ca_certificate" {
+#   compartment_id         = var.compartment_id
+#   vault_id               = oci_kms_vault.app_vault.id
+#   key_id                 = oci_kms_key.app_key.id
+#   secret_name            = "${var.project_name}-${var.environment}-ssl-ca-certificate"
 
-  freeform_tags = {
-    "Environment" = var.environment
-    "Project"     = var.project_name
-    "ManagedBy"   = "terraform"
-    "Service"     = "ssl"
-    "Type"        = "certificate"
-    "Version"     = var.secret_version
-  }
-}
+
+#   secret_content {
+#     content_type = "BASE64"
+#     content      = base64encode(var.ssl_ca_certificate)
+#     stage        = "CURRENT"
+#   }
+
+#   description = "SSL CA certificate for ${var.environment} environment"
+
+#   freeform_tags = {
+#     "Environment" = var.environment
+#     "Project"     = var.project_name
+#     "ManagedBy"   = "terraform"
+#     "Service"     = "ssl"
+#     "Type"        = "certificate"
+#  
+#   }
+# }
 
 # 시크릿 데이터 소스
-data "oci_vault_secret" "db_root_password" {
+data "oci_secrets_secretbundle" "db_root_password" {
   secret_id = oci_vault_secret.db_root_password.id
 }
 
-data "oci_vault_secret" "db_app_password" {
+data "oci_secrets_secretbundle" "db_app_password" {
   secret_id = oci_vault_secret.db_app_password.id
 }
 
-data "oci_vault_secret" "redis_password" {
+data "oci_secrets_secretbundle" "redis_password" {
   secret_id = oci_vault_secret.redis_password.id
 }
 
-data "oci_vault_secret" "jwt_secret" {
+data "oci_secrets_secretbundle" "jwt_secret" {
   secret_id = oci_vault_secret.jwt_secret.id
 }
 
-data "oci_vault_secret" "turn_password" {
+data "oci_secrets_secretbundle" "turn_user" {
+  secret_id = oci_vault_secret.turn_user.id
+}
+
+data "oci_secrets_secretbundle" "turn_password" {
   secret_id = oci_vault_secret.turn_password.id
 }
 
-data "oci_vault_secret" "ssl_private_key" {
-  secret_id = oci_vault_secret.ssl_private_key.id
+data "oci_secrets_secretbundle" "turn_realm" {
+  secret_id = oci_vault_secret.turn_realm.id
 }
 
-data "oci_vault_secret" "ssl_certificate" {
-  secret_id = oci_vault_secret.ssl_certificate.id
-}
+# data "oci_secrets_secretbundle" "ssl_private_key" {
+#   secret_id = oci_vault_secret.ssl_private_key.id
+# }
 
-data "oci_vault_secret" "ssl_ca_certificate" {
-  secret_id = oci_vault_secret.ssl_ca_certificate.id
-}
+# data "oci_secrets_secretbundle" "ssl_certificate" {
+#   secret_id = oci_vault_secret.ssl_certificate.id
+# }
 
-# 현재 버전 데이터 소스
-data "oci_vault_secret_version" "db_root_password_current" {
-  secret_id             = oci_vault_secret.db_root_password.id
-  secret_version_number = oci_vault_secret.db_root_password.current_version_number
-}
+# data "oci_secrets_secretbundle" "ssl_ca_certificate" {
+#   secret_id = oci_vault_secret.ssl_ca_certificate.id
+# }
 
-data "oci_vault_secret_version" "db_app_password_current" {
-  secret_id             = oci_vault_secret.db_app_password.id
-  secret_version_number = oci_vault_secret.db_app_password.current_version_number
-}
+# 현재 버전 데이터 소s
 
-data "oci_vault_secret_version" "redis_password_current" {
-  secret_id             = oci_vault_secret.redis_password.id
-  secret_version_number = oci_vault_secret.redis_password.current_version_number
-}
+# data "oci_vault_secret_version" "ssl_private_key_current" {
+#   secret_id             = oci_vault_secret.ssl_private_key.id
 
-data "oci_vault_secret_version" "jwt_secret_current" {
-  secret_id             = oci_vault_secret.jwt_secret.id
-  secret_version_number = oci_vault_secret.jwt_secret.current_version_number
-}
+# }
 
-data "oci_vault_secret_version" "turn_password_current" {
-  secret_id             = oci_vault_secret.turn_password.id
-  secret_version_number = oci_vault_secret.turn_password.current_version_number
-}
+# data "oci_vault_secret_version" "ssl_certificate_current" {
+#   secret_id             = oci_vault_secret.ssl_certificate.id
 
-data "oci_vault_secret_version" "ssl_private_key_current" {
-  secret_id             = oci_vault_secret.ssl_private_key.id
-  secret_version_number = oci_vault_secret.ssl_private_key.current_version_number
-}
+# }
 
-data "oci_vault_secret_version" "ssl_certificate_current" {
-  secret_id             = oci_vault_secret.ssl_certificate.id
-  secret_version_number = oci_vault_secret.ssl_certificate.current_version_number
-}
+# data "oci_vault_secret_version" "ssl_ca_certificate_current" {
+#   secret_id             = oci_vault_secret.ssl_ca_certificate.id
 
-data "oci_vault_secret_version" "ssl_ca_certificate_current" {
-  secret_id             = oci_vault_secret.ssl_ca_certificate.id
-  secret_version_number = oci_vault_secret.ssl_ca_certificate.current_version_number
-}
+# }
 
 # 프로젝트 시크릿 목록
 data "oci_vault_secrets" "project_secrets" {

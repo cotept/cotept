@@ -39,3 +39,14 @@ variable "project_name" {
     error_message = "Project name must contain only lowercase letters, numbers, and hyphens."
   }
 }
+
+variable "admin_users" {
+  description = "List of OCIDs of users to add to the administrators group"
+  type        = list(string)
+  default     = []
+}
+
+variable "region" {
+  description = "The region where resources will be created"
+  type        = string
+}

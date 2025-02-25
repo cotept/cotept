@@ -41,7 +41,14 @@ variable "domain_name" {
   }
 }
 
-# # 데이터베이스 관련 변수
+# IAM 관련 변수
+variable "admin_users" {
+  description = "관리자 그룹에 추가할 사용자 OCID 목록"
+  type        = list(string)
+  default     = []
+}
+
+# 데이터베이스 관련 변수
 variable "db_root_password" {
   description = "PostgreSQL root 사용자의 비밀번호"
   type        = string
@@ -86,23 +93,6 @@ variable "jwt_secret" {
   type        = string
   sensitive   = true
 }
-
-# # SSL 인증서 관련 변수
-# variable "ssl_private_key_path" {
-#   description = "SSL 개인키 파일 경로"
-#   type        = string
-# }
-
-# variable "ssl_public_cert_path" {
-#   description = "SSL 공개 인증서 파일 경로"
-#   type        = string
-# }
-
-# variable "ssl_ca_cert_path" {
-#   description = "SSL CA 인증서 파일 경로"
-#   type        = string
-# }
-
 
 # 추가 태그
 variable "additional_tags" {

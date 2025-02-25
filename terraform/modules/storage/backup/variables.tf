@@ -2,80 +2,42 @@
 variable "compartment_id" {
   description = "The OCID of the compartment where the bucket will be created"
   type        = string
-
-  validation {
-    condition     = can(regex("^ocid1\\.(compartment|tenancy)\\.", var.compartment_id))
-    error_message = "Compartment ID must be a valid OCID starting with 'ocid1.compartment.' or 'ocid1.tenancy.'."
-  }
 }
 
 variable "bucket_name" {
   description = "The name of the bucket"
   type        = string
-
-  # OCI 버킷 이름 규칙을 따르는지 검증
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9-_]{1,63}$", var.bucket_name))
-    error_message = "Bucket name must be 1-63 characters, containing only letters, numbers, hyphens and underscores."
-  }
 }
-
 variable "domain_name" {
   description = "The name of the domain"
   type        = string
 }
-
 variable "region" {
   description = "The region where resources will be created"
   type        = string
-
-  validation {
-    condition     = can(regex("^[a-z]+-[a-z]+-[0-9]+$", var.region))
-    error_message = "Region must be in format: region-location-number (e.g., ap-chuncheon-1)."
-  }
 }
 
 variable "bucket_access_type" {
   description = "The access type for the bucket. Valid values: NoPublicAccess, ObjectRead, ObjectReadWithoutList"
   type        = string
   default     = "NoPublicAccess"
-
-  validation {
-    condition     = contains(["NoPublicAccess", "ObjectRead", "ObjectReadWithoutList"], var.bucket_access_type)
-    error_message = "The bucket_access_type must be one of: NoPublicAccess, ObjectRead, ObjectReadWithoutList."
-  }
 }
 
 variable "versioning" {
   description = "The versioning status on the bucket. Valid values: Enabled, Suspended, Disabled"
   type        = string
   default     = "Enabled"
-
-  validation {
-    condition     = contains(["Enabled", "Suspended", "Disabled"], var.versioning)
-    error_message = "The versioning must be one of: Enabled, Suspended, Disabled."
-  }
 }
 
 variable "storage_tier" {
   description = "The storage tier for the bucket. Valid values: Standard, Archive"
   type        = string
   default     = "Standard"
-
-  validation {
-    condition     = contains(["Standard", "Archive"], var.storage_tier)
-    error_message = "The storage_tier must be one of: Standard, Archive."
-  }
 }
 
 variable "environment" {
   description = "The environment (dev, staging, prod)"
   type        = string
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "The environment must be one of: dev, staging, prod."
-  }
 }
 
 variable "project_name" {
@@ -124,31 +86,6 @@ variable "lifecycle_rules" {
     prefix      = string # Objects with this prefix will be affected by this rule
   }))
   default = []
-
-  validation {
-    condition = alltrue([
-      for rule in var.lifecycle_rules :
-      contains(["objects", "multipart-uploads"], rule.target) &&
-      contains(["DELETE", "ARCHIVE"], rule.action) &&
-      contains(["DAYS"], rule.time_unit)
-    ])
-    error_message = "Lifecycle rules must have valid target (objects, multipart-uploads), action (DELETE, ARCHIVE), and time_unit (DAYS)."
-  }
-}
-
-# VOD 파일을 위한 특화된 라이프사이클 정책
-variable "vod_lifecycle_rules" {
-  description = "VOD 파일에 대한 특화된 라이프사이클 관리 규칙"
-  type = object({
-    recent_vod_retention_days  = number # 최근 VOD 저장 기간
-    archive_vod_retention_days = number # 아카이브로 이동 후 저장 기간
-    incomplete_upload_days     = number # 미완료 멀티파트 업로드 정리 기간
-  })
-  default = {
-    recent_vod_retention_days  = 30
-    archive_vod_retention_days = 90
-    incomplete_upload_days     = 1
-  }
 }
 
 variable "create_folder_structure" {
@@ -160,17 +97,7 @@ variable "create_folder_structure" {
 variable "initial_folders" {
   description = "List of initial folders to create"
   type        = list(string)
-  default     = [
-    "vod/free",
-    "vod/standard",
-    "vod/premium",
-    "vod/temp",
-    "frontend/static/js",
-    "frontend/static/css",
-    "frontend/static/images",
-    "assets/common",
-    "downloads/temp"
-  ]
+  default     = ["vod", "frontend/static", "assets/common"]
 }
 
 variable "create_upload_par" {
@@ -189,13 +116,6 @@ variable "par_expiry_time" {
   description = "The number of hours until the pre-authenticated request expires"
   type        = number
   default     = 168 # 7 days
-}
-
-# 절대 시간 형식의 PAR 만료 시간 - RFC3339 형식
-variable "par_expiry_date" {
-  description = "The absolute date when the PAR expires, in RFC3339 format (e.g., 2023-12-31T23:59:59Z)"
-  type        = string
-  default     = null # null이면 상대적 시간(par_expiry_time) 사용
 }
 
 variable "retention_rules" {
@@ -231,22 +151,12 @@ variable "replication_deletion_behavior" {
   description = "Determines if delete operations are replicated to the destination. Valid values: ALLOW_DELETE, RETAIN_DELETE"
   type        = string
   default     = "RETAIN_DELETE"
-
-  validation {
-    condition     = contains(["ALLOW_DELETE", "RETAIN_DELETE"], var.replication_deletion_behavior)
-    error_message = "The replication_deletion_behavior must be one of: ALLOW_DELETE, RETAIN_DELETE."
-  }
 }
 
 variable "auto_tiering" {
   description = "The auto tiering status on the bucket. Valid values: Enabled, Disabled"
   type        = string
   default     = "Disabled"
-
-  validation {
-    condition     = contains(["Enabled", "Disabled"], var.auto_tiering)
-    error_message = "The auto_tiering must be one of: Enabled, Disabled."
-  }
 }
 
 variable "define_tags" {
@@ -292,11 +202,4 @@ variable "notification_events" {
   description = "List of events to trigger notifications"
   type        = list(string)
   default     = ["com.oraclecloud.objectstorage.createobject", "com.oraclecloud.objectstorage.deleteobject"]
-}
-
-# 로그 디렉토리 경로
-variable "log_directory" {
-  description = "Directory path for storing local execution logs"
-  type        = string
-  default     = "/tmp/terraform_logs"
 }

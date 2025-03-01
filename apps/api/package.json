@@ -40,6 +40,7 @@
     "date-fns": "^4.1.0",
     "joi": "^17.13.3",
     "nest-winston": "^1.9.7",
+    "oracle-nosqldb": "^5.5.2",
     "passport-jwt": "^4.0.1",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.1.14",

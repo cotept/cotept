@@ -78,6 +78,9 @@ importers:
       nest-winston:
         specifier: ^1.9.7
         version: 1.9.7(@nestjs/common@10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(winston@3.17.0)
+      oracle-nosqldb:
+        specifier: ^5.5.2
+        version: 5.5.2
       passport-jwt:
         specifier: ^4.0.1
         version: 4.0.1
@@ -6103,6 +6106,10 @@ packages:
   ora@5.4.1:
     resolution: {integrity: sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ==}
     engines: {node: '>=10'}
+
+  oracle-nosqldb@5.5.2:
+    resolution: {integrity: sha512-0asYiLwgmBlYie9I4xW9v3/6XtbIJwaaYLr4t3CTlfsOMjYLtcAF5mZXjM51AuQkvHG1HkXXW30cOY4rmFO6bQ==}
+    engines: {node: '>=12.0.0'}
 
   os-tmpdir@1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
@@ -16884,6 +16891,8 @@ snapshots:
       log-symbols: 4.1.0
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
+
+  oracle-nosqldb@5.5.2: {}
 
   os-tmpdir@1.0.2: {}
 

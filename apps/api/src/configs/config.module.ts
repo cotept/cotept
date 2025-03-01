@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common"
 import { ConfigService, ConfigModule as NestConfigModule } from "@nestjs/config"
 import { configuration } from "./configuration"
+import { nosqlConfig } from "./nosql/nosql.config"
 import { validationSchema } from "./validation.schema"
 
 @Module({
@@ -8,7 +9,7 @@ import { validationSchema } from "./validation.schema"
     NestConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || "local"}`,
-      load: [configuration],
+      load: [configuration, nosqlConfig],
       validationSchema,
       validationOptions: {
         allowUnknown: true, // 알 수 없는 환경 변수 허용

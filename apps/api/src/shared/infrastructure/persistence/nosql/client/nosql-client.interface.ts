@@ -1,46 +1,46 @@
+import { Region } from "oracle-nosqldb"
+
 /**
- * OCI NoSQL 클라이언트 옵션 인터페이스
+ * Oracle NoSQL Database 클라이언트 설정 옵션
+ *
+ * Oracle NoSQL Database SDK의 공식 설정을 기반으로 합니다.
+ * @see https://oracle.github.io/nosql-node-sdk/classes/NoSQLClient.html
  */
 export interface NoSQLClientOptions {
   // OCI NoSQL 연결 엔드포인트
-  endpoint: string;
-  
-  // OCI 컴파트먼트 ID
-  compartment: string;
-  
+  endpoint?: string
+
+  // OCI 리전
+  region?: string | Region
+
+  // 컴파트먼트 ID
+  compartment?: string
+
   // 인증 설정
   auth: {
     iam: {
       // IAM 인증 제공자 설정
-      configProvider: any;
+      configProvider: any
       // 선택적 프로필 이름
-      profileName?: string;
-    };
-  };
-  
-  // 기타 옵션
-  timeout?: number;
-  poolMin?: number;
-  poolMax?: number;
-  
+      profileName?: string
+    }
+  }
+
+  // 타임아웃 설정 (밀리초)
+  timeout?: number
+  ddlTimeout?: number
+  tablePollTimeout?: number
+
+  // 연결 풀 설정
+  poolMin?: number
+  poolMax?: number
+
   // 테이블 생성시 사용할 기본 값
   defaults?: {
     tableLimits?: {
-      readUnits: number;
-      writeUnits: number;
-      storageGB: number;
-    };
-  };
-}
-
-/**
- * NoSQL 클라이언트 인터페이스
- * 나중에 테스트를 위한 모킹을 쉽게 하기 위해 정의
- */
-export interface INoSQLClient {
-  get(tableName: string, key: Record<string, any>): Promise<any>;
-  put(tableName: string, row: Record<string, any>, options?: any): Promise<any>;
-  delete(tableName: string, key: Record<string, any>, options?: any): Promise<any>;
-  query(statement: string, options?: any): Promise<any>;
-  // 필요한 다른 메서드들 추가
+      readUnits: number
+      writeUnits: number
+      storageGB: number
+    }
+  }
 }

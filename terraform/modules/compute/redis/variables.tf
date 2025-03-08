@@ -120,8 +120,9 @@ variable "vault_secrets" {
   description = "Vault에서 관리되는 시크릿 정보입니다"
   type = object({
     redis = object({
-      id      = string
-      version = number
+      id          = string
+      secret_name = string
+      content     = string
     })
   })
   sensitive = true

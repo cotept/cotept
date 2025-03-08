@@ -1,5 +1,18 @@
 # modules/compute/api/variables.tf
 
+# 볼륨 마운트 설정
+variable "wallet_secret_id" {
+  description = "OCI Vault에 저장된 ATP wallet 시크릿의 OCID"
+  type        = string
+  default     = null
+}
+
+variable "wallet_password_secret_id" {
+  description = "OCI Vault에 저장된 ATP wallet 비밀번호 시크릿의 OCID"
+  type        = string
+  default     = null
+}
+
 variable "compartment_id" {
   description = "리소스를 생성할 OCI Compartment의 OCID입니다."
   type        = string
@@ -73,18 +86,21 @@ variable "vault_secrets" {
   type = object({
     database = object({
       app_password = object({
-        id      = string
-        version = number
+        id          = string
+        secret_name = string
+        content     = string
       })
     })
     application = object({
       redis = object({
-        id      = string
-        version = number
+        id          = string
+        secret_name = string
+        content     = string
       })
       jwt = object({
-        id      = string
-        version = number
+        id          = string
+        secret_name = string
+        content     = string
       })
     })
   })

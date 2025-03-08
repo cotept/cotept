@@ -68,7 +68,7 @@ resource "oci_container_instances_container_instance" "redis" {
 
     # Redis 서버 설정을 환경 변수로 전달합니다.
     environment_variables = {
-      "REDIS_PASSWORD"         = data.oci_vault_secret_version.redis_password_current.content
+      "REDIS_PASSWORD"         = var.vault_secrets.redis.content
       "REDIS_PORT"             = tostring(var.redis_port)
       "REDIS_MAXMEMORY"        = "${var.maxmemory_mb}mb"
       "REDIS_MAXMEMORY_POLICY" = "volatile-lru"
@@ -95,7 +95,7 @@ resource "oci_container_instances_container_instance" "redis" {
     # Redis 설정을 위한 커맨드 오버라이드
     command = [
       "redis-server",
-      "--requirepass", data.oci_vault_secret_version.redis_password_current.content,
+      "--requirepass", var.vault_secrets.redis.content,
       "--port", "${var.redis_port}",
       "--maxmemory", "${var.maxmemory_mb}mb",
       "--maxmemory-policy", "volatile-lru",
@@ -115,10 +115,4 @@ resource "oci_container_instances_container_instance" "redis" {
 # 가용성 영역 데이터 소스
 data "oci_identity_availability_domains" "ads" {
   compartment_id = var.compartment_id
-}
-
-# Vault 시크릿 데이터 소스
-data "oci_vault_secret_version" "redis_password_current" {
-  secret_id             = var.vault_secrets.redis.id
-  secret_version_number = var.vault_secrets.redis.version
 }

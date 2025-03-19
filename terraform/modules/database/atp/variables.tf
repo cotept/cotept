@@ -14,11 +14,13 @@ variable "compartment_id" {
 variable "project_name" {
   description = "프로젝트 이름"
   type        = string
+  default     = "cotept"
 }
 
 variable "environment" {
   description = "환경 구분자 (dev, prod)"
   type        = string
+  default     = "dev"
 }
 
 variable "admin_password" {
@@ -71,7 +73,7 @@ variable "preferred_connection_service" {
     condition     = contains(["high", "medium", "low", "dedicated"], var.preferred_connection_service)
     error_message = "허용되는 연결 서비스 유형: high, medium, low, dedicated."
   }
-  
+
   # 연결 서비스 유형 설명:
   # - high: 각 SQL 문에 가장 많은 리소스를 제공하여 최고의 성능을 보장하지만, 동시에 실행할 수 있는 SQL 문의 수는 가장 적습니다.
   # - medium: 각 SQL 문에 중간 수준의 리소스를 제공하여 적절한 성능과 동시성의 균형을 제공합니다.

@@ -12,7 +12,7 @@ dotenv.config({ path: envFile })
 const config = databaseConfig()
 
 export default new DataSource({
-  type: "postgres",
+  type: "oracle",
   ...config,
   entities: [isProd ? "dist/**/*.entity{.ts,.js}" : "src/**/*.entity{.ts,.js}"],
   migrations: [

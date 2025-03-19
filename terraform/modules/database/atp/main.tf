@@ -1,7 +1,11 @@
 # modules/database/atp/main.tf
 
 locals {
-  db_name = "${var.project_name}-${var.environment}-db"
+  # 하이픈이나 언더스코어 없이 알파벳과 숫자만 사용
+  db_name = replace(lower("${var.project_name}${var.environment}db"), "-", "")
+
+  # 화면 표시용 이름은 더 읽기 쉽게 유지
+  display_name = "${var.project_name}-${var.environment}-db"
 
   common_tags = merge(
     {
@@ -17,8 +21,8 @@ locals {
 # Autonomous Database 인스턴스 생성
 resource "oci_database_autonomous_database" "atp" {
   compartment_id = var.compartment_id
-  db_name        = replace(local.db_name, "-", "_") # 언더스코어만 허용
-  display_name   = local.db_name
+  db_name        = local.db_name # 언더스코어만 허용
+  display_name   = local.display_name
   db_workload    = "OLTP"
   is_free_tier   = true
   cpu_core_count = 1
@@ -41,6 +45,8 @@ resource "oci_database_autonomous_database" "atp" {
 }
 
 # 데이터베이스 지갑 다운로드 (연결 정보)
+# 이 리소스는 수동으로 Wallet을 다운로드할 수 있도록 유지합니다.
+# OCI 콘솔에서 직접 다운로드 후 ~/oracle-wallet 등의 위치에 보관하세요.
 resource "oci_database_autonomous_database_wallet" "atp_wallet" {
   autonomous_database_id = oci_database_autonomous_database.atp.id
   password               = var.wallet_password
@@ -48,28 +54,29 @@ resource "oci_database_autonomous_database_wallet" "atp_wallet" {
   generate_type          = "SINGLE"
 }
 
-# 월렛 파일을 OCI Vault에 시크릿으로 저장 (서비스 접근용)
-resource "oci_vault_secret" "atp_wallet" {
-  count          = var.create_vault_secrets && var.vault_id != null && var.vault_key_id != null ? 1 : 0
-  compartment_id = var.compartment_id
-  vault_id       = var.vault_id
-  key_id         = var.vault_key_id
-  secret_name    = "${var.project_name}-${var.environment}-atp-wallet"
-  description    = "ATP Wallet for ${var.project_name} ${var.environment} environment"
-
-  secret_content {
-    content_type = "BASE64"
-    content      = oci_database_autonomous_database_wallet.atp_wallet.content
-  }
-
-  # 버전 관리용 태그
-  metadata = {
-    "terraform_managed" = "true"
-    "project"           = var.project_name
-    "environment"       = var.environment
-    "created_at"        = timestamp()
-  }
-}
+# OCI Vault에 wallet 저장은 크기 제한으로 주석 처리함
+# 필요시 Object Storage를 사용하는 것을 고려해볼 수 있음
+# resource "oci_vault_secret" "atp_wallet" {
+#   count          = var.create_vault_secrets && var.vault_id != null && var.vault_key_id != null ? 1 : 0
+#   compartment_id = var.compartment_id
+#   vault_id       = var.vault_id
+#   key_id         = var.vault_key_id
+#   secret_name    = "${var.project_name}-${var.environment}-atp-wallet"
+#   description    = "ATP Wallet for ${var.project_name} ${var.environment} environment"
+#
+#   secret_content {
+#     content_type = "BASE64"
+#     content      = oci_database_autonomous_database_wallet.atp_wallet.content
+#   }
+#
+#   # 버전 관리용 태그
+#   metadata = {
+#     "terraform_managed" = "true"
+#     "project"           = var.project_name
+#     "environment"       = var.environment
+#     "created_at"        = timestamp()
+#   }
+# }
 
 # 월렛 비밀번호도 Vault에 저장
 resource "oci_vault_secret" "atp_wallet_password" {

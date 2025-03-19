@@ -1,7 +1,7 @@
 // apps/api/src/modules/user/infrastructure/persistence/entities/user.entity.ts
+import { UserRole, UserStatus } from "@/modules/user/domain/user"
 import { BaseEntity } from "@/shared/infrastructure/entities/base.entity"
 import { Column, DeleteDateColumn, Entity } from "typeorm"
-import { UserRole, UserStatus } from "../../../domain/user"
 
 @Entity({ schema: "auth", name: "users" })
 export class UserEntity extends BaseEntity<UserEntity> {
@@ -15,15 +15,25 @@ export class UserEntity extends BaseEntity<UserEntity> {
   passwordHash: string
 
   @Column({
-    type: "enum",
-    enum: UserRole,
+    type: "varchar2",
+    length: 10,
+    name: "role",
+    transformer: {
+      to: (value: UserRole) => value,
+      from: (value: string) => value as UserRole,
+    },
     default: UserRole.MENTEE,
   })
   role: UserRole
 
   @Column({
-    type: "enum",
-    enum: UserStatus,
+    type: "varchar2",
+    length: 10,
+    name: "status",
+    transformer: {
+      to: (value: UserStatus) => value,
+      from: (value: string) => value as UserStatus,
+    },
     default: UserStatus.ACTIVE,
   })
   status: UserStatus

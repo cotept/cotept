@@ -18,7 +18,10 @@
     "clean": "turbo run clean && rimraf node_modules && pnpm store prune",
     "infra:up": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local up -d",
     "infra:down": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local down -v",
-    "infra:logs": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local logs -f"
+    "infra:logs": "docker-compose --env-file ./apps/api/.env --env-file ./apps/api/.env.local logs -f",
+    "openapi:export": "cd apps/api && cross-env NODE_ENV=local EXPORT_OPENAPI=true nest start",
+    "openapi:generate": "cd packages/api-client && pnpm generate",
+    "gen:api": "pnpm openapi:export && pnpm openapi:generate"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
@@ -33,6 +36,7 @@
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
+    "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "uuid": "^11.0.5"
   }

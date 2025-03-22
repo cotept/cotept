@@ -49,7 +49,7 @@ variable "bucket_access_type" {
 variable "versioning" {
   description = "The versioning status on the bucket. Valid values: Enabled, Suspended, Disabled"
   type        = string
-  default     = "Enabled"
+  default     = "Disabled"
 
   validation {
     condition     = contains(["Enabled", "Suspended", "Disabled"], var.versioning)
@@ -160,7 +160,7 @@ variable "create_folder_structure" {
 variable "initial_folders" {
   description = "List of initial folders to create"
   type        = list(string)
-  default     = [
+  default = [
     "vod/free",
     "vod/standard",
     "vod/premium",

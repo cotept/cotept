@@ -1,39 +1,36 @@
 name: cotept-local
 
 services:
-  # postgres:
-  #   image: postgres:15-alpine
-  #   container_name: cotept-local-postgres
-  #   env_file:
-  #     - ./apps/api/.env
-  #     - ./apps/api/.env.local
-  #   environment:
-  #     POSTGRES_USER: ${DB_USER}
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #     POSTGRES_DB: ${DB_DATABASE}
-  #     POSTGRES_HOST_AUTH_METHOD: trust
-  #     POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
-  #     # 공통 환경변수 사용
-  #     TZ: ${TZ}
-  #     PGTZ: ${TZ}
-  #     SSL_MODE: ${DB_SSL}
-  #   ports:
-  #     - "${DB_PORT}:5432"
-  #   volumes:
-  #     - postgres_local_data:/var/lib/postgresql/data
-  #     - ./docker/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  #   networks:
-  #     - cotept-local
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
-  #   restart: unless-stopped
-  #   labels:
-  #     - "com.cotept.description=Local PostgreSQL for CotePT API"
-  #     - "com.cotept.version=${API_VERSION}"
-
+  oracle:
+    image: gvenzl/oracle-xe:18-slim
+    container_name: cotept-local-oracle
+    env_file:
+      - ./apps/api/.env
+      - ./apps/api/.env.local
+    environment:
+      ORACLE_PASSWORD: ${DB_PASSWORD}
+      APP_USER: ${DB_USER} # ADMIN 사용자 생성
+      APP_USER_PASSWORD: ${DB_PASSWORD} # ADMIN 사용자의 비밀번호
+      # 공통 환경변수 사용
+      TZ: ${TZ}
+    ports:
+      - "${DB_PORT}:1521"
+    volumes:
+      - oracle_local_data:/opt/oracle/oradata
+      - ./docker/oracle/init.sql:/container-entrypoint-initdb.d/init.sql
+    networks:
+      - cotept-local
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 240s
+    restart: unless-stopped
+    shm_size: 2g
+    labels:
+      - "com.cotept.description=Local Oracle 18c for CotePT API"
+      - "com.cotept.version=${API_VERSION}"
   redis:
     image: redis:7-alpine
     container_name: cotept-local-redis
@@ -70,7 +67,7 @@ networks:
       - "com.cotept.version=${API_VERSION}"
 
 volumes:
-  postgres_local_data:
-    name: cotept-local-postgres
+  oracle_local_data:
+    name: cotept-local-oracle
   redis_local_data:
     name: cotept-local-redis

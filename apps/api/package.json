@@ -10,7 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "dev": "cross-env NODE_ENV=local nest start --watch",
     "predev": "pnpm migration:run",
-    "start:dev": "cross-env NODE_ENV=development node dist/apps/api/main",
+    "start:dev": "cross-env NODE_ENV=local node dist/apps/api/main",
     "start:prod": "cross-env NODE_ENV=production node dist/apps/api/main",
     "typeorm": "typeorm-ts-node-commonjs -d src/configs/typeorm/typeorm.cli.config.ts",
     "migration:create": "cross-env NODE_ENV=local typeorm-ts-node-commonjs migration:create ./src/shared/infrastructure/persistence/migrations/$npm_config_name -t $(node -e \"const d = new Date(Date.now() + 9*60*60*1000); console.log(d.toISOString().replace(/[^0-9]/g, '').slice(0, 14))\")",

@@ -37,6 +37,9 @@ export class AppService implements OnModuleInit {
         const cachedValue = await this.cacheService.get(key)
         console.log(`Retrieved cache value for key "${key}":`, cachedValue)
 
+        const deletedCachedValue = await this.cacheService.delete(key)
+        console.log(`deleted cache value for key "${key}":`, deletedCachedValue)
+
         if (cachedValue === value) {
           console.log("✅ Redis cache is working correctly!")
         } else {

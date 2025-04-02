@@ -145,6 +145,9 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(winston@3.17.0)
     devDependencies:
+      '@jest/types':
+        specifier: ^29.6.3
+        version: 29.6.3
       '@nestjs/cli':
         specifier: ^11.0.5
         version: 11.0.5(@types/node@20.16.5)
@@ -170,10 +173,10 @@ importers:
         specifier: ^4.0.9
         version: 4.0.9
       '@types/node':
-        specifier: ^20.3.1
+        specifier: ^20.16.5
         version: 20.16.5
       '@types/supertest':
-        specifier: ^2.0.12
+        specifier: ^2.0.16
         version: 2.0.16
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.0.0
@@ -200,7 +203,7 @@ importers:
         specifier: ^0.5.21
         version: 0.5.21
       supertest:
-        specifier: ^6.3.3
+        specifier: ^6.3.4
         version: 6.3.4
       ts-jest:
         specifier: ^29.1.0

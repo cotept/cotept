@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { EntityManager, Repository } from "typeorm"
 
-import { UserEntity } from "@/modules/user/infrastructure/persistence/entities/user.entity"
+import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseRepository } from "./base/base.repository"
 
 @Injectable()

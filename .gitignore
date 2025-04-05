@@ -19,14 +19,7 @@ coverage
 .turbo
 
 # Vercel
-.vercel
-
-# Build Outputs
-.next/
-out/
-build
-dist
-
+.vercels
 
 # Debug
 npm-debug.log*
@@ -46,3 +39,6 @@ yarn-error.log*
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
+
+docker/oracle/local_data/
+docker/redis/local_data/

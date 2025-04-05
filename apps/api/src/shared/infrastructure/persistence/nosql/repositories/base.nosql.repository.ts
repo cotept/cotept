@@ -1,7 +1,16 @@
-import { Inject, Logger, NotFoundException, BadRequestException, ConflictException, InternalServerErrorException } from "@nestjs/common"
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common"
 import {
   AnyRow,
   DeleteOpResult,
+  ErrorCode,
+  FieldValue,
   NoSQLArgumentError,
   NoSQLAuthorizationError,
   NoSQLClient,
@@ -9,8 +18,6 @@ import {
   NoSQLServiceError,
   NoSQLTimeoutError,
   PutOpResult,
-  ErrorCode,
-  FieldValue
 } from "oracle-nosqldb"
 import { AbstractNoSQLRepository } from "../../base/abstract.nosql.repository"
 import { OCI_NOSQL_CLIENT } from "../client/nosql-client.provider"
@@ -38,11 +45,11 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
     return this.executeOperation(async () => {
       const key = this.getKeyObject(id)
       const result = await this.client.get(this.tableName, key)
-      
+
       if (!result.row) {
         throw new NotFoundException(`Entity with id ${id} not found`)
       }
-      
+
       return result.row as T
     })
   }
@@ -102,14 +109,14 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
       // 먼저 기존 엔티티를 가져옵니다
       const key = this.getKeyObject(id)
       const result = await this.client.get(this.tableName, key)
-      
+
       if (!result.row) {
         throw new NotFoundException(`Entity with id ${id} not found`)
       }
-      
+
       // 부분 업데이트를 위해 기존 엔티티와 새 필드를 병합합니다
       const updatedEntity = { ...result.row, ...partialEntity } as T
-      
+
       // 업데이트된 엔티티를 저장합니다
       await this.client.put(this.tableName, updatedEntity)
       return updatedEntity
@@ -123,11 +130,11 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
     return this.executeOperation(async () => {
       const key = this.getKeyObject(id)
       const result = await this.client.delete(this.tableName, key)
-      
+
       if (!result.success) {
         throw new NotFoundException(`Entity with id ${id} not found`)
       }
-      
+
       return result.success
     })
   }
@@ -191,45 +198,45 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
    */
   protected handleDBError(error: unknown): never {
     if (error instanceof NoSQLArgumentError) {
-      this.logger.error(`Invalid argument: ${error.message}`, error.stack)
+      this.logger.error(`Invalid argument: error.message`)
       throw new BadRequestException(error.message)
     } else if (error instanceof NoSQLTimeoutError) {
-      this.logger.error(`Timeout: ${error.message}`, error.stack)
+      this.logger.error(`Timeout: error.message`)
       throw new InternalServerErrorException("Database operation timed out")
     } else if (error instanceof NoSQLServiceError) {
-      this.logger.error(`Service error: ${error.message}`, error.stack)
+      this.logger.error(`Service error: error.message`)
       throw new InternalServerErrorException("NoSQL service error")
     } else if (error instanceof NoSQLAuthorizationError) {
-      this.logger.error(`Authorization error: ${error.message}`, error.stack)
+      this.logger.error(`Authorization error: error.message`)
       throw new InternalServerErrorException("Authorization error")
     } else if (error instanceof NoSQLError) {
-      this.logger.error(`NoSQL error: ${error.message}`, error.stack)
-      
+      this.logger.error(`NoSQL error: error.message`)
+
       // NoSQL 에러 코드 처리
       if (error.errorCode) {
         switch (error.errorCode) {
           case ErrorCode.ILLEGAL_ARGUMENT:
             throw new BadRequestException(error.message)
           case ErrorCode.TABLE_NOT_FOUND:
-            throw new NotFoundException('Table not found')
+            throw new NotFoundException("Table not found")
           case ErrorCode.INDEX_NOT_FOUND:
-            throw new NotFoundException('Index not found')
+            throw new NotFoundException("Index not found")
           case ErrorCode.RESOURCE_EXISTS:
-            throw new ConflictException('Entity already exists')
+            throw new ConflictException("Entity already exists")
           case ErrorCode.ROW_SIZE_LIMIT_EXCEEDED:
-            throw new BadRequestException('Row size limit exceeded')
+            throw new BadRequestException("Row size limit exceeded")
         }
       }
-      
+
       throw new InternalServerErrorException("NoSQL operation failed")
     } else if (error instanceof Error) {
-      this.logger.error(`Unknown error: ${error.message}`, error.stack)
-      
+      this.logger.error(`Unknown error: error.message`)
+
       // 이미 NestJS HttpException인 경우 그대로 전달
-      if ('status' in error && 'message' in error) {
+      if ("status" in error && "message" in error) {
         throw error
       }
-      
+
       throw new InternalServerErrorException(error.message)
     } else {
       this.logger.error(`Unknown error`, error)

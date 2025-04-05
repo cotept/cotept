@@ -3,7 +3,7 @@ import { PaginatedResult, PaginationOptions } from "@repo/shared/src/pagination"
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
-import { BaseEntity } from "../../entities/base.entity"
+import { BaseEntity } from "./base.entity"
 
 /**
  * 저장소(Repository) 추상 클래스

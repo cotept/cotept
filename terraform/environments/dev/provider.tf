@@ -1,5 +1,7 @@
 # provider.tf
 provider "aws" {
+  # This AWS provider is configured only for OCI Object Storage S3 compatibility
+  # and is not used for actual AWS resources
   region                      = "ap-chuncheon-1"
   skip_credentials_validation = true
   skip_requesting_account_id  = true

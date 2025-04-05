@@ -27,6 +27,17 @@ resource "oci_identity_user_group_membership" "admin_user" {
   user_id  = var.admin_users[count.index]
 }
 
+# 컨테이너 인스턴스용 동적 그룹
+resource "oci_identity_dynamic_group" "api_instances" {
+  compartment_id = var.tenancy_ocid  # 동적 그룹은 테넌시 레벨에서 생성
+  name           = "${var.project_name}-${var.environment}-api-instances"
+  description    = "Dynamic group for API container instances"
+  
+  matching_rule  = "All {instance.compartment.id = '${var.compartment_id}', tag.Project.value = '${var.project_name}', tag.Component.value = 'api'}"
+  
+  freeform_tags = local.common_tags
+}
+
 # 멘토링 서비스 컴포넌트들을 위한 동적 그룹을 생성합니다.
 # 이 그룹은 특정 태그나 속성을 가진 리소스들을 자동으로 포함합니다.
 resource "oci_identity_dynamic_group" "mentoring_service" {
@@ -65,6 +76,19 @@ resource "oci_identity_policy" "admin_policy" {
   
   # 그룹이 생성된 후에 정책을 생성하도록 의존성 추가
   depends_on = [oci_identity_group.administrators]
+}
+
+# Vault 시크릿 접근 정책
+resource "oci_identity_policy" "api_secrets_policy" {
+  name              = "${var.project_name}-${var.environment}-api-secrets-policy"
+  description       = "Policy to allow API container instances to read secrets"
+  compartment_id    = var.compartment_id
+  
+  statements = [
+    "allow dynamic-group ${oci_identity_dynamic_group.api_instances.name} to read secret-bundles in compartment id ${var.compartment_id}"
+  ]
+  
+  freeform_tags = local.common_tags
 }
 
 # Object Storage 서비스 주체에 대한 정책

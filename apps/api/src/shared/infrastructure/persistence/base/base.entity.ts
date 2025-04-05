@@ -2,7 +2,7 @@ import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "type
 
 export abstract class BaseEntity<T> {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: string
 
   @CreateDateColumn({
     type: "timestamp with time zone",

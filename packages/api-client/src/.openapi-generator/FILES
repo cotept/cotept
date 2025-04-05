@@ -1,0 +1,13 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+api/auth-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/index.ts
+models/login-dto.ts
+models/login-response-dto.ts

@@ -30,5 +30,5 @@ output "log_group_id" {
 # 상태 정보를 출력합니다.
 output "container_health_status" {
   description = "Redis 컨테이너의 현재 상태입니다."
-  value       = oci_container_instances_container_instance.redis.containers[0].health_status
+  value       = oci_container_instances_container_instance.redis.containers[0].health_checks
 }

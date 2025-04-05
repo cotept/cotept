@@ -6,7 +6,7 @@ export const databaseSchema = {
   DB_USER: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
   DB_DATABASE: Joi.string().required(),
+  DB_CONNECTION_STRING: Joi.string().required(),
   DB_SYNCHRONIZE: Joi.string().valid("true", "false").required(),
-  // DB_SYNCHRONIZE: Joi.boolean().required(),
   DB_SSL: Joi.boolean().default(false),
 }

@@ -12,15 +12,19 @@ dotenv.config({ path: envFile })
 const config = databaseConfig()
 
 export default new DataSource({
-  type: "postgres",
+  type: "oracle",
   ...config,
-  entities: [isProd ? "dist/**/*.entity{.ts,.js}" : "src/**/*.entity{.ts,.js}"],
+  entities: [
+    isProd
+      ? "dist/**/infrastructure/adapter/out/persistence/entities/*.entity{.ts,.js}"
+      : "src/**/infrastructure/adapter/out/persistence/entities/*.entity{.ts,.js}",
+  ],
   migrations: [
     isProd
       ? "dist/shared/infrastructure/persistence/migrations/*{.ts,.js}"
       : "src/shared/infrastructure/persistence/migrations/*.ts",
   ],
-  synchronize: false,
+  // synchronize: process.env.NODE_ENV === "local",
   logging: process.env.NODE_ENV === "local", // 개발 환경에서만 로깅
   logger: "advanced-console", // 더 자세한 로깅 정보
   migrationsTableName: "migrations",

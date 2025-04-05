@@ -1,17 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common"
-import {
-  ErrorLoggerMiddleware,
-  PerformanceLoggerMiddleware,
-  RequestLoggerMiddleware,
-  SecurityLoggerMiddleware,
-} from "./logger"
+import { ErrorLoggerMiddleware, PerformanceLoggerMiddleware, RequestLoggerMiddleware } from "./logger"
 
 export const MIDDLEWARE_CONFIG = {
   globalMiddlewares: [RequestLoggerMiddleware, ErrorLoggerMiddleware],
   routeSpecific: {
-    "/api/*": [PerformanceLoggerMiddleware],
-    "/auth/*": [SecurityLoggerMiddleware],
-    "/admin/*": [SecurityLoggerMiddleware],
+    "/api/*path": [PerformanceLoggerMiddleware],
+    // "/auth/*": [SecurityLoggerMiddleware],
+    // "/admin/*": [SecurityLoggerMiddleware],
   },
   excludes: [{ path: "/health", method: RequestMethod.GET }],
 }

@@ -63,7 +63,7 @@ module "storage" {
   compartment_id     = var.compartment_id
   bucket_name        = "${var.project_name}-${var.environment}"
   bucket_access_type = "NoPublicAccess"
-  versioning         = "Enabled"
+  versioning         = "Disabled"
   storage_tier       = "Standard"
   environment        = var.environment
   project_name       = var.project_name
@@ -141,3 +141,86 @@ module "storage" {
   # IAM 모듈에 의존성 추가 - 관리자 그룹 생성 후 스토리지 정책 적용하기 위함
   depends_on = [module.iam]
 }
+
+# 5. ATP 데이터베이스 모듈
+module "atp" {
+  source = "../../modules/database/atp"
+
+  compartment_id = var.compartment_id
+  project_name   = var.project_name
+  environment    = var.environment
+
+  # 데이터베이스 관리자 및 지갑 비밀번호
+  admin_password  = var.atp_admin_password
+  wallet_password = var.atp_wallet_password
+
+  # Vault 관련 설정
+  create_vault_secrets = true
+  vault_id             = module.vault.vault_id
+  vault_key_id         = module.vault.key_id
+
+  additional_tags = var.additional_tags
+
+  # 의존성 추가
+  depends_on = [module.vault]
+}
+
+# # 6. Redis 서버 모듈
+# module "redis" {
+#   source = "../../modules/compute/redis"
+
+#   # 기본 설정
+#   compartment_id = var.compartment_id
+#   project_name   = var.project_name
+#   environment    = var.environment
+#   subnet_id      = module.network.private_database_subnet_id
+
+#   # Redis 설정
+#   redis_port       = 6379
+#   redis_password   = var.redis_password
+#   maxmemory_mb     = 4096 # 4GB
+#   maxmemory_policy = "allkeys-lru"
+
+#   # 리소스 설정
+#   cpu_count     = 1
+#   memory_in_gbs = 6
+
+#   # Vault 관련 정보 전달
+#   vault_secrets = {
+#     redis = module.vault.secrets.application.redis
+#   }
+
+#   # 추가 설정
+#   additional_tags = var.additional_tags
+
+#   depends_on = [module.network, module.vault]
+# }
+
+
+# # 7. API 서버 모듈
+# module "api" {
+#   source = "../../modules/compute/api"
+
+#   # 기본 설정
+#   compartment_id = var.compartment_id
+#   project_name   = var.project_name
+#   environment    = var.environment
+#   subnet_id      = module.network.private_app_subnet_id
+
+#   # 리소스 설정
+#   cpu_count     = 1
+#   memory_in_gbs = 6
+
+#   # Vault 관련 정보 전달
+#   vault_secrets = module.vault.secrets
+
+#   # API 모듈에 ATP 속성을 전달할 때는 삼항 연산자로 안전하게 처리
+#   wallet_secret_id          = module.atp.wallet_secret_id != null ? module.atp.wallet_secret_id : null
+#   wallet_password_secret_id = module.atp.wallet_password_secret_id != null ? module.atp.wallet_password_secret_id : null
+
+#   # 추가 설정
+#   additional_tags = var.additional_tags
+
+#   depends_on = [module.atp, module.network, module.iam]
+# }
+

@@ -100,3 +100,16 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
+
+# ATP 데이터베이스 관련 변수
+variable "atp_admin_password" {
+  description = "ATP 데이터베이스 관리자 비밀번호"
+  type        = string
+  sensitive   = true
+}
+
+variable "atp_wallet_password" {
+  description = "ATP 지갑 암호화용 비밀번호"
+  type        = string
+  sensitive   = true
+}

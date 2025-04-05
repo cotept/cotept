@@ -1,164 +1,87 @@
-import {
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from "@nestjs/common"
+import { Logger } from "@nestjs/common"
 import { PaginatedResult, PaginationOptions } from "@repo/shared/src/pagination"
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
-import { BaseEntity } from "../../entities/base.entity"
+import { BaseEntity } from "./base.entity"
 
+/**
+ * 저장소(Repository) 추상 클래스
+ * 모든 저장소 구현체는 이 인터페이스를 구현해야 함
+ */
 export abstract class AbstractRepository<T extends BaseEntity<T>> {
   protected abstract readonly logger: Logger
 
   constructor(
-    private readonly entityRepository: Repository<T>,
-    private readonly entityManager: EntityManager,
+    protected readonly entityRepository: Repository<T>,
+    protected readonly entityManager: EntityManager,
   ) {}
 
-  // error wrapper
-  protected async executeOperation<R>(operation: () => Promise<R>): Promise<R> {
-    try {
-      return await operation()
-    } catch (error) {
-      this.handleDBError(error)
-    }
-  }
-  // DB error handler
-  protected handleDBError(error: any): never {
-    this.logger.error("Database operation failed", error)
+  /**
+   * 엔티티 생성
+   */
+  abstract create(entity: T): Promise<T>
 
-    switch (error.code) {
-      case "23505": // PostgreSQL unique violation
-        throw new ConflictException("Entity already exists")
-      case "23503": // PostgreSQL foreign key violation
-        throw new BadRequestException("Related entity not found")
-    }
+  /**
+   * 조건에 맞는 단일 엔티티 조회
+   */
+  abstract findOne(where: FindOptionsWhere<T>, options?: { relations?: string[] }): Promise<T>
 
-    throw new InternalServerErrorException("Database operation failed")
-  }
+  /**
+   * 조건에 맞는 단일 엔티티 조회 및 업데이트
+   */
+  abstract findOneAndUpdate(where: FindOptionsWhere<T>, partialEntity: QueryDeepPartialEntity<T>): Promise<T>
 
-  async create(entity: T): Promise<T> {
-    return this.executeOperation(() => this.entityManager.save(entity))
-  }
+  /**
+   * 조건에 맞는 모든 엔티티 조회
+   */
+  abstract findAll(where: FindOptionsWhere<T>): Promise<T[]>
 
-  async findOne(where: FindOptionsWhere<T>, options?: { relations?: string[] }): Promise<T> {
-    return this.executeOperation(async () => {
-      const entity = await this.entityRepository.findOne({ where, relations: options?.relations })
+  /**
+   * 조건에 맞는 단일 엔티티 조회 및 삭제
+   */
+  abstract findOneAndDelete(where: FindOptionsWhere<T>): Promise<any>
 
-      if (!entity) {
-        this.logger.warn("Entity not found with where", where)
-        throw new NotFoundException("Entity not found.")
-      }
+  /**
+   * 조건에 맞는 엔티티 소프트 삭제
+   */
+  abstract softDelete(where: FindOptionsWhere<T>): Promise<any>
 
-      return entity
-    })
-  }
+  /**
+   * 조건에 맞는 소프트 삭제된 엔티티 복구
+   */
+  abstract restore(where: FindOptionsWhere<T>): Promise<any>
 
-  async findOneAndUpdate(where: FindOptionsWhere<T>, partialEntity: QueryDeepPartialEntity<T>): Promise<T> {
-    return this.executeOperation(async () => {
-      const updateResult = await this.entityRepository.update(where, partialEntity)
-
-      if (!updateResult.affected) {
-        this.logger.warn("Entity not found with where", where)
-        throw new NotFoundException("Entity not found.")
-      }
-
-      return this.findOne(where)
-    })
-  }
-
-  async findAll(where: FindOptionsWhere<T>): Promise<T[]> {
-    return this.executeOperation(() => this.entityRepository.findBy(where))
-  }
-
-  async findOneAndDelete(where: FindOptionsWhere<T>) {
-    return this.executeOperation(async () => {
-      const result = await this.entityRepository.delete(where)
-
-      if (result.affected === 0) {
-        throw new NotFoundException(`Entity not found`)
-      }
-
-      return result
-    })
-  }
-
-  async softDelete(where: FindOptionsWhere<T>) {
-    return this.executeOperation(async () => {
-      const result = await this.entityRepository.softDelete(where)
-
-      if (result.affected === 0) {
-        throw new NotFoundException(`Entity not found`)
-      }
-
-      return result
-    })
-  }
-
-  async restore(where: FindOptionsWhere<T>) {
-    return this.executeOperation(async () => {
-      const result = await this.entityRepository.restore(where)
-
-      if (result.affected === 0) {
-        throw new NotFoundException(`Entity not found or already restored`)
-      }
-
-      return result
-    })
-  }
-
-  async executeTransaction<R>(
-    isolationLevel: IsolationLevel = "SERIALIZABLE",
+  /**
+   * 트랜잭션 실행
+   */
+  abstract executeTransaction<R>(
+    isolationLevel: IsolationLevel,
     operation: (entityManager: EntityManager) => Promise<R>,
-  ): Promise<R> {
-    return this.executeOperation(() =>
-      this.entityManager.transaction<R>(isolationLevel, async (transactionalEntityManager) => {
-        return operation(transactionalEntityManager)
-      }),
-    )
-  }
+  ): Promise<R>
 
-  async count(where: FindOptionsWhere<T>): Promise<number> {
-    return this.executeOperation(() => this.entityRepository.count({ where }))
-  }
+  /**
+   * 조건에 맞는 엔티티 개수 조회
+   */
+  abstract count(where: FindOptionsWhere<T>): Promise<number>
 
-  async bulkCreate(entities: T[]): Promise<T[]> {
-    return this.executeOperation(() => this.entityManager.save(entities))
-  }
+  /**
+   * 여러 엔티티 일괄 생성
+   */
+  abstract bulkCreate(entities: T[]): Promise<T[]>
 
-  async bulkUpdate(where: FindOptionsWhere<T>, partialEntity: QueryDeepPartialEntity<T>): Promise<number> {
-    return this.executeOperation(async () => {
-      const result = await this.entityRepository.update(where, partialEntity)
-      return result.affected || 0
-    })
-  }
+  /**
+   * 조건에 맞는 엔티티 일괄 업데이트
+   */
+  abstract bulkUpdate(where: FindOptionsWhere<T>, partialEntity: QueryDeepPartialEntity<T>): Promise<number>
 
-  async bulkDelete(where: FindOptionsWhere<T>): Promise<number> {
-    return this.executeOperation(async () => {
-      const result = await this.entityRepository.delete(where)
-      return result.affected || 0
-    })
-  }
+  /**
+   * 조건에 맞는 엔티티 일괄 삭제
+   */
+  abstract bulkDelete(where: FindOptionsWhere<T>): Promise<number>
 
-  async paginate(where: FindOptionsWhere<T>, options: PaginationOptions): Promise<PaginatedResult<T>> {
-    return this.executeOperation(async () => {
-      const [items, totalItemCount] = await this.entityRepository.findAndCount({
-        where,
-        skip: (options.currentPage - 1) * options.limit,
-        take: options.limit,
-      })
-
-      return {
-        items,
-        totalItemCount,
-        currentPage: options.currentPage,
-        limit: options.limit,
-        totalPageCount: Math.ceil(totalItemCount / options.limit),
-      }
-    })
-  }
+  /**
+   * 페이지네이션 조회
+   */
+  abstract paginate(where: FindOptionsWhere<T>, options: PaginationOptions): Promise<PaginatedResult<T>>
 }

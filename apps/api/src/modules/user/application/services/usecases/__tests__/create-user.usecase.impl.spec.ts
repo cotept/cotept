@@ -4,7 +4,7 @@ import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { PasswordServicePort } from "@/modules/user/application/ports/out/password-service.port"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { CreateUserUseCaseImpl } from "@/modules/user/application/services/usecases/create-user.usecase.impl"
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { ConflictException } from "@nestjs/common"
 

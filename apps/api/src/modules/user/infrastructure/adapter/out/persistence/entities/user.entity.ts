@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm"
 
 /**

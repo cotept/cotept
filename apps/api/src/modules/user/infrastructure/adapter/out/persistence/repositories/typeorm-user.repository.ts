@@ -1,5 +1,5 @@
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { UserPersistenceMapper } from "@/modules/user/infrastructure/adapter/out/persistence/mappers/user-persistence.mapper"
 import { Injectable } from "@nestjs/common"
@@ -14,7 +14,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private readonly userMapper: UserPersistenceMapper
+    private readonly userMapper: UserPersistenceMapper,
   ) {}
 
   /**
@@ -25,7 +25,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
   async findById(id: string): Promise<User | null> {
     const userEntity = await this.userRepository.findOne({ where: { id } })
     if (!userEntity) return null
-    
+
     return this.userMapper.toDomain(userEntity)
   }
 
@@ -37,7 +37,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
   async findByEmail(email: string): Promise<User | null> {
     const userEntity = await this.userRepository.findOne({ where: { email } })
     if (!userEntity) return null
-    
+
     return this.userMapper.toDomain(userEntity)
   }
 
@@ -55,18 +55,18 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
     const page = options?.page || 1
     const limit = options?.limit || 10
     const skip = (page - 1) * limit
-    
+
     const whereConditions: any = {}
     if (options?.role) whereConditions.role = options.role
     if (options?.status) whereConditions.status = options.status
-    
+
     const [userEntities, total] = await this.userRepository.findAndCount({
       where: whereConditions,
       skip,
       take: limit,
-      order: { createdAt: "DESC" }
+      order: { createdAt: "DESC" },
     })
-    
+
     const users = this.userMapper.toDomainList(userEntities)
     return { users, total }
   }

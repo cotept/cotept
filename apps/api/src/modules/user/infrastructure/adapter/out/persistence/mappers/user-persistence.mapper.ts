@@ -1,4 +1,4 @@
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { Name } from "@/modules/user/domain/vo/name.vo"
 import { PhoneNumber } from "@/modules/user/domain/vo/phone-number.vo"

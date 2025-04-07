@@ -2,7 +2,7 @@ import { ChangePasswordDto } from "@/modules/user/application/dtos/change-passwo
 import { PasswordServicePort } from "@/modules/user/application/ports/out/password-service.port"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { ChangePasswordUseCaseImpl } from "@/modules/user/application/services/usecases/change-password.usecase.impl"
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common"
 
@@ -82,8 +82,8 @@ describe("비밀번호 변경 유스케이스", () => {
       expect(mockUserRepository.findById).toHaveBeenCalledWith(userId)
       expect(mockPasswordService.verifyPassword).toHaveBeenCalledWith(
         changePasswordDto.currentPassword,
-        "old-hashed-password",  // 현재 비밀번호 검증 시 기존 해시 사용
-        "old-salt-value"        // 현재 비밀번호 검증 시 기존 솔트 사용
+        "old-hashed-password", // 현재 비밀번호 검증 시 기존 해시 사용
+        "old-salt-value", // 현재 비밀번호 검증 시 기존 솔트 사용
       )
       expect(mockPasswordService.hashPassword).toHaveBeenCalledWith(changePasswordDto.newPassword)
 
@@ -152,7 +152,7 @@ describe("비밀번호 변경 유스케이스", () => {
       expect(mockPasswordService.verifyPassword).toHaveBeenCalledWith(
         changePasswordDto.currentPassword,
         "old-hashed-password",
-        "old-salt-value"
+        "old-salt-value",
       )
       expect(mockPasswordService.hashPassword).not.toHaveBeenCalled()
       expect(mockUserRepository.save).not.toHaveBeenCalled()
@@ -192,7 +192,7 @@ describe("비밀번호 변경 유스케이스", () => {
       expect(mockPasswordService.verifyPassword).toHaveBeenCalledWith(
         changePasswordDto.currentPassword,
         "old-hashed-password",
-        "old-salt-value"
+        "old-salt-value",
       )
       expect(mockPasswordService.hashPassword).not.toHaveBeenCalled()
       expect(mockUserRepository.save).not.toHaveBeenCalled()
@@ -232,7 +232,7 @@ describe("비밀번호 변경 유스케이스", () => {
       expect(mockPasswordService.verifyPassword).toHaveBeenCalledWith(
         changePasswordDto.currentPassword,
         "old-hashed-password",
-        "old-salt-value"
+        "old-salt-value",
       )
       expect(mockPasswordService.hashPassword).not.toHaveBeenCalled()
       expect(mockUserRepository.save).not.toHaveBeenCalled()

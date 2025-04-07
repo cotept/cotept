@@ -1,15 +1,15 @@
-import { GetUserUseCase } from "@/modules/user/application/ports/in/get-user.usecase"
-import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
+import { GetUserUseCase } from "@/modules/user/application/ports/in/get-user.usecase"
+import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
+import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
 
 @Injectable()
 export class GetUserUseCaseImpl implements GetUserUseCase {
   constructor(
     private readonly userRepository: UserRepositoryPort,
-    private readonly userMapper: UserMapper
+    private readonly userMapper: UserMapper,
   ) {}
 
   /**
@@ -23,7 +23,7 @@ export class GetUserUseCaseImpl implements GetUserUseCase {
     if (!user) {
       throw new NotFoundException(`ID ${id}에 해당하는 사용자를 찾을 수 없습니다.`)
     }
-    
+
     return this.userMapper.toDto(user)
   }
 
@@ -38,7 +38,7 @@ export class GetUserUseCaseImpl implements GetUserUseCase {
     if (!user) {
       throw new NotFoundException(`이메일 ${email}에 해당하는 사용자를 찾을 수 없습니다.`)
     }
-    
+
     return this.userMapper.toDto(user)
   }
 
@@ -54,22 +54,22 @@ export class GetUserUseCaseImpl implements GetUserUseCase {
     status?: string
   }): Promise<{ users: UserDto[]; total: number; page: number; limit: number }> {
     const { page = 1, limit = 10 } = options || {}
-    
-    const userRole = options?.role ? options.role as UserRole : undefined
-    const userStatus = options?.status ? options.status as UserStatus : undefined
-    
+
+    const userRole = options?.role ? (options.role as UserRole) : undefined
+    const userStatus = options?.status ? (options.status as UserStatus) : undefined
+
     const { users, total } = await this.userRepository.findAll({
       page,
       limit,
       role: userRole,
-      status: userStatus
+      status: userStatus,
     })
-    
+
     return {
       users: this.userMapper.toDtoList(users),
       total,
       page,
-      limit
+      limit,
     }
   }
 }

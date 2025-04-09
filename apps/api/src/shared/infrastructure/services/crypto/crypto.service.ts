@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
-import * as crypto from "crypto"
 import * as bcrypt from "bcrypt"
+import * as crypto from "crypto"
 
 /**
  * 암호화 관련 유틸리티 서비스
@@ -31,8 +31,7 @@ export class CryptoService {
    */
   async verifyPassword(plainPassword: string, hashedPassword: string, salt: string): Promise<boolean> {
     // 동일한 솔트로 해싱하여 비교
-    const hash = await bcrypt.hash(plainPassword, salt)
-    return hash === hashedPassword
+    return await bcrypt.compare(plainPassword, hashedPassword)
   }
 
   /**
@@ -41,7 +40,8 @@ export class CryptoService {
    * @returns 랜덤 문자열
    */
   generateRandomString(length: number): string {
-    return crypto.randomBytes(Math.ceil(length / 2))
+    return crypto
+      .randomBytes(Math.ceil(length / 2))
       .toString("hex")
       .slice(0, length)
   }
@@ -88,10 +88,10 @@ export class CryptoService {
     const iv = crypto.randomBytes(16)
     const key = crypto.scryptSync(encryptionKey, "salt", 32)
     const cipher = crypto.createCipheriv("aes-256-cbc", key, iv)
-    
+
     let encrypted = cipher.update(text, "utf8", "base64")
     encrypted += cipher.final("base64")
-    
+
     // IV를 암호문과 함께 저장 (복호화에 필요)
     return iv.toString("hex") + ":" + encrypted
   }
@@ -108,10 +108,10 @@ export class CryptoService {
     const encryptedData = textParts.join(":")
     const key = crypto.scryptSync(encryptionKey, "salt", 32)
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv)
-    
+
     let decrypted = decipher.update(encryptedData, "base64", "utf8")
     decrypted += decipher.final("utf8")
-    
+
     return decrypted
   }
 

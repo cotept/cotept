@@ -29,7 +29,7 @@ export class CryptoService {
    * @param salt 솔트
    * @returns 비밀번호 일치 여부
    */
-  async verifyPassword(plainPassword: string, hashedPassword: string, salt: string): Promise<boolean> {
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
     // 동일한 솔트로 해싱하여 비교
     return await bcrypt.compare(plainPassword, hashedPassword)
   }

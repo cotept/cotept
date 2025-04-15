@@ -1,153 +1,168 @@
 /**
- * JWT 토큰의 페이로드를 나타내는 값 객체
- * 인증에 필요한 사용자 정보와 토큰 메타데이터를 캡슐화합니다.
- *
- * 참고: 이 클래스는 현재 기본 인증(Authentication) 기능에 중점을 두고 있으며,
- * 향후 인가(Authorization) 시스템과의 통합을 위해 확장될 수 있습니다.
- * RBAC+ABAC 인가 시스템이 구현될 때 역할(role)은 역할 배열로 확장되고,
- * 권한(permissions)과 속성(attributes) 정보가 추가될 수 있습니다.
+ * 토큰 페이로드 값 객체
+ * JWT 토큰에 포함되는 페이로드 정보를 표현하는 불변 객체입니다.
  */
 export class TokenPayload {
-  private constructor(
-    readonly userId: string,
-    readonly email: string,
-    // 참고: 향후 RBAC 시스템 구현시 단일 role은 roles 배열로 확장될 수 있음
-    readonly role: string,
-    readonly tokenType: "ACCESS" | "REFRESH",
-    readonly familyId?: string,
-    readonly issuedAt?: Date,
-    readonly expiresAt?: Date,
-  ) {}
+  private readonly _sub: string;
+  private readonly _iat: number;
+  private readonly _exp: number;
+  private readonly _jti: string;
+  private readonly _role?: string;
+  private readonly _email?: string;
+  private readonly _metadata?: Record<string, any>;
 
   /**
-   * 페이로드 객체를 생성합니다.
+   * @param sub 사용자 ID (subject)
+   * @param iat 발급 시간 (issued at)
+   * @param exp 만료 시간 (expiration time)
+   * @param jti 토큰 고유 ID (JWT ID)
+   * @param role 사용자 역할 (선택)
+   * @param email 사용자 이메일 (선택)
+   * @param metadata 추가 메타데이터 (선택)
    */
-  static create(params: {
-    userId: string
-    email: string
-    role: string
-    tokenType: "ACCESS" | "REFRESH"
-    familyId?: string
-    issuedAt?: Date
-    expiresAt?: Date
-  }): TokenPayload {
-    if (!params.userId) {
-      throw new Error("사용자 ID는 필수입니다.")
+  constructor(
+    sub: string,
+    iat: number,
+    exp: number,
+    jti: string,
+    role?: string,
+    email?: string,
+    metadata?: Record<string, any>
+  ) {
+    if (!sub || sub.trim().length === 0) {
+      throw new Error('사용자 ID는 필수입니다.');
     }
 
-    if (!params.email) {
-      throw new Error("이메일은 필수입니다.")
+    if (!jti || jti.trim().length === 0) {
+      throw new Error('토큰 고유 ID는 필수입니다.');
     }
 
-    if (!params.role) {
-      throw new Error("역할은 필수입니다.")
+    if (exp <= iat) {
+      throw new Error('토큰 만료 시간은 발급 시간보다 이후여야 합니다.');
     }
 
-    if (!params.tokenType) {
-      throw new Error("토큰 타입은 필수입니다.")
+    this._sub = sub;
+    this._iat = iat;
+    this._exp = exp;
+    this._jti = jti;
+    this._role = role;
+    this._email = email;
+    this._metadata = metadata ? { ...metadata } : undefined;
+  }
+
+  /**
+   * 사용자 ID 조회
+   */
+  get sub(): string {
+    return this._sub;
+  }
+
+  /**
+   * 토큰 발급 시간 조회 (Unix timestamp)
+   */
+  get iat(): number {
+    return this._iat;
+  }
+
+  /**
+   * 토큰 만료 시간 조회 (Unix timestamp)
+   */
+  get exp(): number {
+    return this._exp;
+  }
+
+  /**
+   * 토큰 고유 ID 조회
+   */
+  get jti(): string {
+    return this._jti;
+  }
+
+  /**
+   * 사용자 역할 조회
+   */
+  get role(): string | undefined {
+    return this._role;
+  }
+
+  /**
+   * 사용자 이메일 조회
+   */
+  get email(): string | undefined {
+    return this._email;
+  }
+
+  /**
+   * 추가 메타데이터 조회
+   */
+  get metadata(): Record<string, any> | undefined {
+    return this._metadata ? { ...this._metadata } : undefined;
+  }
+
+  /**
+   * 토큰 만료 여부 확인
+   */
+  isExpired(now: Date = new Date()): boolean {
+    const currentTimestamp = Math.floor(now.getTime() / 1000);
+    return this._exp < currentTimestamp;
+  }
+
+  /**
+   * JWT 토큰에 사용할 페이로드 객체로 변환
+   */
+  toJwtPayload(): Record<string, any> {
+    const payload: Record<string, any> = {
+      sub: this._sub,
+      iat: this._iat,
+      exp: this._exp,
+      jti: this._jti,
+    };
+
+    if (this._role) {
+      payload.role = this._role;
     }
+
+    if (this._email) {
+      payload.email = this._email;
+    }
+
+    if (this._metadata) {
+      // 메타데이터를 평탄화하여 페이로드에 포함
+      Object.entries(this._metadata).forEach(([key, value]) => {
+        payload[key] = value;
+      });
+    }
+
+    return payload;
+  }
+
+  /**
+   * JWT 페이로드로부터 TokenPayload 객체 생성
+   */
+  static fromJwtPayload(payload: Record<string, any>): TokenPayload {
+    const { sub, iat, exp, jti, role, email, ...metadata } = payload;
+
+    // 필수 필드 검증
+    if (!sub || !iat || !exp || !jti) {
+      throw new Error('유효하지 않은 토큰 페이로드입니다.');
+    }
+
+    // 메타데이터에 포함되지 않아야 할 표준 JWT 클레임 제거
+    const stdClaims = ['nbf', 'aud', 'iss'];
+    stdClaims.forEach(claim => {
+      if (metadata[claim] !== undefined) {
+        delete metadata[claim];
+      }
+    });
 
     return new TokenPayload(
-      params.userId,
-      params.email,
-      params.role,
-      params.tokenType,
-      params.familyId,
-      params.issuedAt || new Date(),
-      params.expiresAt,
-    )
+      sub,
+      iat,
+      exp,
+      jti,
+      role,
+      email,
+      Object.keys(metadata).length > 0 ? metadata : undefined,
+    );
   }
-
-  /**
-   * JWT 표준 클레임으로 변환합니다.
-   *
-   * 참고: 인가 시스템 구현 시 이 메서드는 권한 및 속성 정보를
-   * 포함하도록 확장될 수 있습니다. 단, JWT 크기 제한을 고려해야 합니다.
-   */
-  toJwtClaims(): Record<string, any> {
-    const now = Math.floor(Date.now() / 1000)
-    const claims: Record<string, any> = {
-      sub: this.userId,
-      email: this.email,
-      role: this.role, // 향후 RBAC 시스템에서는 'roles' 배열로 변경될 수 있음
-      type: this.tokenType,
-      iat: this.issuedAt ? Math.floor(this.issuedAt.getTime() / 1000) : now,
-    }
-
-    if (this.expiresAt) {
-      claims.exp = Math.floor(this.expiresAt.getTime() / 1000)
-    }
-
-    if (this.familyId) {
-      claims.fid = this.familyId
-    }
-
-    return claims
-  }
-
-  /**
-   * JWT 클레임에서 객체를 생성합니다.
-   *
-   * 참고: 인가 시스템 구현 시 추가 클레임을 파싱하도록 확장될 수 있습니다.
-   */
-  static fromJwtClaims(claims: Record<string, any>): TokenPayload {
-    if (!claims.sub || !claims.email || !claims.role || !claims.type) {
-      throw new Error("유효하지 않은 토큰 클레임입니다.")
-    }
-
-    return this.create({
-      userId: claims.sub,
-      email: claims.email,
-      role: claims.role,
-      tokenType: claims.type as "ACCESS" | "REFRESH",
-      familyId: claims.fid,
-      issuedAt: claims.iat ? new Date(claims.iat * 1000) : undefined,
-      expiresAt: claims.exp ? new Date(claims.exp * 1000) : undefined,
-    })
-  }
-
-  /**
-   * 페이로드가 만료되었는지 확인합니다.
-   */
-  isExpired(): boolean {
-    if (!this.expiresAt) {
-      return false // 만료 시간이 설정되지 않은 경우 만료되지 않음으로 간주
-    }
-
-    return this.expiresAt.getTime() < Date.now()
-  }
-
-  /**
-   * 새로운 만료 시간으로 페이로드를 복제합니다.
-   */
-  withExpiresAt(expiresAt: Date): TokenPayload {
-    return TokenPayload.create({
-      userId: this.userId,
-      email: this.email,
-      role: this.role,
-      tokenType: this.tokenType,
-      familyId: this.familyId,
-      issuedAt: this.issuedAt,
-      expiresAt,
-    })
-  }
-
-  /**
-   * 새로운 토큰 패밀리 ID로 페이로드를 복제합니다.
-   * 리프레시 토큰 로테이션에 사용됩니다.
-   */
-  withNewFamilyId(familyId: string): TokenPayload {
-    return TokenPayload.create({
-      userId: this.userId,
-      email: this.email,
-      role: this.role,
-      tokenType: this.tokenType,
-      familyId,
-      issuedAt: new Date(), // 새 토큰은 현재 시간에 발급됨
-      expiresAt: this.expiresAt,
-    })
-  }
-
-  // TODO: 인가 시스템 구현 시 getAuthorizationContext() 메서드 추가 고려
-  // 이 메서드는 인가 결정에 필요한 사용자 역할, 권한 및 속성 정보를 제공할 수 있음
 }

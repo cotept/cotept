@@ -17,5 +17,5 @@ export abstract class PasswordServicePort {
    * @param salt 솔트
    * @returns 비밀번호 일치 여부
    */
-  abstract verifyPassword(plainPassword: string, hashedPassword: string, salt: string): Promise<boolean>
+  abstract verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>
 }

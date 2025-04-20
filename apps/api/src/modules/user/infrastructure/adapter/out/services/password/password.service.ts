@@ -1,6 +1,6 @@
 import { PasswordServicePort } from "@/modules/user/application/ports/out/password-service.port"
 import { CryptoService } from "@/shared/infrastructure/services/crypto/crypto.service"
-import { Inject, Injectable } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
 /**
@@ -11,7 +11,7 @@ import { ConfigService } from "@nestjs/config"
 export class PasswordService implements PasswordServicePort {
   constructor(
     private readonly cryptoService: CryptoService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -30,8 +30,8 @@ export class PasswordService implements PasswordServicePort {
    * @param salt 솔트
    * @returns 비밀번호 일치 여부
    */
-  async verifyPassword(plainPassword: string, hashedPassword: string, salt: string): Promise<boolean> {
-    return this.cryptoService.verifyPassword(plainPassword, hashedPassword, salt)
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return this.cryptoService.verifyPassword(plainPassword, hashedPassword)
   }
 
   /**
@@ -77,28 +77,31 @@ export class PasswordService implements PasswordServicePort {
   generateTemporaryPassword(): string {
     // 특수문자 목록
     const specialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?"
-    
+
     // 임시 비밀번호 구성 요소
-    const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"  // I,O 제외 (헷갈림 방지)
-    const lowerCaseChars = "abcdefghijkmnpqrstuvwxyz"  // l,o 제외 (헷갈림 방지)
-    const numberChars = "23456789"  // 0,1 제외 (헷갈림 방지)
-    
+    const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ" // I,O 제외 (헷갈림 방지)
+    const lowerCaseChars = "abcdefghijkmnpqrstuvwxyz" // l,o 제외 (헷갈림 방지)
+    const numberChars = "23456789" // 0,1 제외 (헷갈림 방지)
+
     // 각 종류별로 최소 1개 이상 포함
     let password = ""
     password += upperCaseChars.charAt(Math.floor(Math.random() * upperCaseChars.length))
     password += lowerCaseChars.charAt(Math.floor(Math.random() * lowerCaseChars.length))
     password += numberChars.charAt(Math.floor(Math.random() * numberChars.length))
     password += specialChars.charAt(Math.floor(Math.random() * specialChars.length))
-    
+
     // 나머지 글자 랜덤 추가 (총 10자리)
     const remainingLength = 6
     const allChars = upperCaseChars + lowerCaseChars + numberChars + specialChars
-    
+
     for (let i = 0; i < remainingLength; i++) {
       password += allChars.charAt(Math.floor(Math.random() * allChars.length))
     }
-    
+
     // 순서 섞기
-    return password.split("").sort(() => 0.5 - Math.random()).join("")
+    return password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("")
   }
 }

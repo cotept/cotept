@@ -1,77 +1,111 @@
+import { Token } from './token.vo';
+
 /**
- * 액세스 토큰과 리프레시 토큰 쌍을 나타내는 값 객체
- * 두 토큰을 함께 관리하고 관련 메타데이터를 제공합니다.
+ * 토큰 쌍 값 객체
+ * 액세스 토큰과 리프레시 토큰을 함께 관리하는 불변 객체입니다.
  */
 export class TokenPair {
-  private constructor(
-    readonly accessToken: string,
-    readonly refreshToken: string,
-    readonly accessTokenExpiresAt: Date,
-    readonly refreshTokenExpiresAt: Date
-  ) {}
+  private readonly _accessToken: Token;
+  private readonly _refreshToken: Token;
+  private readonly _tokenType: string;
+  private readonly _familyId?: string;
 
   /**
-   * TokenPair 객체를 생성합니다.
+   * @param accessToken 액세스 토큰
+   * @param refreshToken 리프레시 토큰
+   * @param tokenType 토큰 타입 (기본값: 'Bearer')
+   * @param familyId 토큰 패밀리 ID (선택)
    */
-  static create(params: {
-    accessToken: string;
-    refreshToken: string;
-    accessTokenExpiresAt: Date;
-    refreshTokenExpiresAt: Date;
-  }): TokenPair {
-    if (!params.accessToken) {
-      throw new Error('액세스 토큰은 필수입니다.');
-    }
-    
-    if (!params.refreshToken) {
-      throw new Error('리프레시 토큰은 필수입니다.');
-    }
-    
-    if (!params.accessTokenExpiresAt) {
-      throw new Error('액세스 토큰 만료 시간은 필수입니다.');
-    }
-    
-    if (!params.refreshTokenExpiresAt) {
-      throw new Error('리프레시 토큰 만료 시간은 필수입니다.');
-    }
-
-    return new TokenPair(
-      params.accessToken,
-      params.refreshToken,
-      params.accessTokenExpiresAt,
-      params.refreshTokenExpiresAt
-    );
+  constructor(
+    accessToken: Token,
+    refreshToken: Token,
+    tokenType: string = 'Bearer',
+    familyId?: string
+  ) {
+    this._accessToken = accessToken;
+    this._refreshToken = refreshToken;
+    this._tokenType = tokenType;
+    this._familyId = familyId;
   }
 
   /**
-   * 클라이언트 응답에 사용할 수 있는 DTO 형식으로 변환합니다.
+   * 액세스 토큰 조회
    */
-  toResponseDTO(): {
+  get accessToken(): Token {
+    return this._accessToken;
+  }
+
+  /**
+   * 리프레시 토큰 조회
+   */
+  get refreshToken(): Token {
+    return this._refreshToken;
+  }
+
+  /**
+   * 토큰 타입 조회
+   */
+  get tokenType(): string {
+    return this._tokenType;
+  }
+
+  /**
+   * 토큰 패밀리 ID 조회
+   */
+  get familyId(): string | undefined {
+    return this._familyId;
+  }
+
+  /**
+   * 액세스 토큰 만료 여부 확인
+   */
+  isAccessTokenExpired(now: Date = new Date()): boolean {
+    return this._accessToken.isExpired(now);
+  }
+
+  /**
+   * 리프레시 토큰 만료 여부 확인
+   */
+  isRefreshTokenExpired(now: Date = new Date()): boolean {
+    return this._refreshToken.isExpired(now);
+  }
+
+  /**
+   * 모든 토큰 만료 여부 확인
+   */
+  isExpired(now: Date = new Date()): boolean {
+    return this.isAccessTokenExpired(now) && this.isRefreshTokenExpired(now);
+  }
+
+  /**
+   * 액세스 토큰만 만료되었고 리프레시 토큰은 유효한지 확인
+   * (토큰 갱신이 필요한 경우)
+   */
+  needsRefresh(now: Date = new Date()): boolean {
+    return this.isAccessTokenExpired(now) && !this.isRefreshTokenExpired(now);
+  }
+
+  /**
+   * HTTP Authorization 헤더 형식으로 변환
+   */
+  toAuthorizationHeader(): string {
+    return `${this._tokenType} ${this._accessToken.value}`;
+  }
+
+  /**
+   * 클라이언트 응답용 객체로 변환
+   */
+  toResponseObject(): {
     accessToken: string;
     refreshToken: string;
+    tokenType: string;
     expiresIn: number;
   } {
-    const now = Date.now();
-    const expiresIn = Math.floor((this.accessTokenExpiresAt.getTime() - now) / 1000);
-    
     return {
-      accessToken: this.accessToken,
-      refreshToken: this.refreshToken,
-      expiresIn: expiresIn > 0 ? expiresIn : 0
+      accessToken: this._accessToken.value,
+      refreshToken: this._refreshToken.value,
+      tokenType: this._tokenType,
+      expiresIn: this._accessToken.timeToExpire()
     };
-  }
-
-  /**
-   * 액세스 토큰의 만료 여부를 확인합니다.
-   */
-  isAccessTokenExpired(): boolean {
-    return this.accessTokenExpiresAt.getTime() < Date.now();
-  }
-
-  /**
-   * 리프레시 토큰의 만료 여부를 확인합니다.
-   */
-  isRefreshTokenExpired(): boolean {
-    return this.refreshTokenExpiresAt.getTime() < Date.now();
   }
 }

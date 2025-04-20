@@ -36,14 +36,7 @@ export class ApiResponse<T> {
   }
 }
 
-// 단일 리소스 응답을 위한 제네릭 클래스
-export class GetOneResponse<T> {
-  @ApiProperty()
-  data: T
-}
-
-// 리소스 페이지네이션 목록 응답을 위한 제네릭 클래스
-export class GetListResponse<T> {
+export class ListData<T> {
   @ApiProperty({ description: "총 항목 수", example: 100 })
   total: number
 
@@ -56,24 +49,24 @@ export class GetListResponse<T> {
   @ApiProperty({ description: "페이지당 항목 수", example: 10 })
   pageSize: number
 
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ description: "항목 목록", isArray: true })
   items: T[]
 }
 
-// 생성 응답
-export class PostOneResponse {
+// 생성 응답 데이터
+export class CreateData {
   @ApiProperty({ description: "생성된 리소스 ID", example: "123e4567-e89b-12d3-a456-426614174000" })
   id: string
 }
 
-// 업데이트 성공 응답
-export class PutOneResponse {
+// 업데이트 응답 데이터
+export class UpdateData {
   @ApiProperty({ description: "수정된 항목 수", example: 1 })
   affected: number
 }
 
-// 삭제 성공 응답
-export class DeletOneResponse {
+// 삭제 응답 데이터
+export class DeleteData {
   @ApiProperty({ description: "삭제된 항목 수", example: 1 })
   affected: number
 }

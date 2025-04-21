@@ -4,6 +4,7 @@ import { Injectable, InternalServerErrorException, Logger, UnauthorizedException
 import { ConfigService } from "@nestjs/config"
 import { PassportStrategy } from "@nestjs/passport"
 import { Strategy, VerifyCallback } from "passport-google-oauth20"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 참고: 이 전략을 사용하기 위해서는 다음 패키지를 설치해야 합니다:
@@ -66,7 +67,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
       return done(null, user)
     } catch (error) {
       // 오류 케이스
-      this.logger.error(`Google 인증 오류: ${error.message}`, error.stack)
+      this.logger.error(
+        `Google 인증 오류: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error)
+      )
       return done(new InternalServerErrorException('Google 인증 처리 중 오류가 발생했습니다.'), false)
     }
   }

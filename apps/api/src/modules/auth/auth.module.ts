@@ -75,7 +75,7 @@ import {
   GoogleAuthController,
 } from "@/modules/auth/infrastructure/adapter/in/controllers"
 // 가드
-import { JwtAuthGuard, SocialAuthGuard } from "@/modules/auth/infrastructure/common/guards"
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 // 전략
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import {
@@ -183,7 +183,6 @@ import {
 
     // 가드
     JwtAuthGuard,
-    SocialAuthGuard,
 
     // 전략
     JwtStrategy,

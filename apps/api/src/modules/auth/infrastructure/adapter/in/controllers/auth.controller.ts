@@ -1,7 +1,6 @@
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { CurrentUserId } from "@/modules/auth/infrastructure/common/decorators"
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guard"
-import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/services/cookie-manager.adapter"
 import {
   ExchangeAuthCodeRequestDto,
   LoginRequestDto,
@@ -30,7 +29,6 @@ import { Request, Response } from "express"
 export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
-    private readonly cookieManager: CookieManagerAdapter
   ) {}
 
   /**
@@ -44,32 +42,14 @@ export class AuthController {
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "인증 실패" })
   async login(
-    @Body() loginRequestDto: LoginRequestDto, 
+    @Body() loginRequestDto: LoginRequestDto,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const ipAddress = req.ip
     const userAgent = req.headers["user-agent"] || ""
 
-    const response = await this.authFacadeService.login(loginRequestDto, ipAddress, userAgent)
-    
-    if (response.success && response.data) {
-      // 리프레시 토큰을 쿠키에 설정
-      const refreshToken = response.data.refreshToken
-      const expiresIn = 7 * 24 * 60 * 60 // 7일 (초 단위)
-      
-      this.cookieManager.setRefreshTokenCookie(res, refreshToken, expiresIn)
-      
-      // 응답에서 리프레시 토큰 제거 (쿠키로 설정했으므로)
-      const { refreshToken: _, ...responseData } = response.data
-      
-      return {
-        ...response,
-        data: responseData,
-      }
-    }
-    
-    return response
+    return await this.authFacadeService.login(loginRequestDto, ipAddress, userAgent, res)
   }
 
   /**
@@ -83,32 +63,14 @@ export class AuthController {
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "유효하지 않은 리프레시 토큰" })
   async refreshToken(
-    @Body() refreshTokenRequestDto: RefreshTokenRequestDto, 
+    @Body() refreshTokenRequestDto: RefreshTokenRequestDto,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const ipAddress = req.ip
     const userAgent = req.headers["user-agent"] || ""
 
-    const response = await this.authFacadeService.refreshToken(refreshTokenRequestDto, ipAddress, userAgent)
-    
-    if (response.success && response.data) {
-      // 리프레시 토큰을 쿠키에 설정
-      const refreshToken = response.data.refreshToken
-      const expiresIn = 7 * 24 * 60 * 60 // 7일 (초 단위)
-      
-      this.cookieManager.setRefreshTokenCookie(res, refreshToken, expiresIn)
-      
-      // 응답에서 리프레시 토큰 제거 (쿠키로 설정했으므로)
-      const { refreshToken: _, ...responseData } = response.data
-      
-      return {
-        ...response,
-        data: responseData,
-      }
-    }
-    
-    return response
+    return await this.authFacadeService.refreshToken(refreshTokenRequestDto, ipAddress, userAgent, res)
   }
 
   /**
@@ -133,18 +95,9 @@ export class AuthController {
   @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
   @ApiOkResponse({ description: "로그아웃 성공" })
   @ApiUnauthorizedResponse({ description: "인증 필요" })
-  async logout(
-    @Req() req: Request, 
-    @Res({ passthrough: true }) res: Response,
-    @CurrentUserId() userId: string
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string) {
     const token = req.headers.authorization?.split(" ")[1] || ""
-    const response = await this.authFacadeService.logout(userId, token)
-    
-    // 리프레시 토큰 쿠키 삭제
-    this.cookieManager.clearRefreshTokenCookie(res)
-    
-    return response
+    return await this.authFacadeService.logout(userId, token, res)
   }
 
   /**
@@ -190,32 +143,14 @@ export class AuthController {
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "소셜 인증 실패" })
   async socialLogin(
-    @Body() socialLoginRequestDto: SocialLoginRequestDto, 
+    @Body() socialLoginRequestDto: SocialLoginRequestDto,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const ipAddress = req.ip
     const userAgent = req.headers["user-agent"] || ""
 
-    const response = await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent)
-    
-    if (response.success && response.data) {
-      // 리프레시 토큰을 쿠키에 설정
-      const refreshToken = response.data.refreshToken
-      const expiresIn = 7 * 24 * 60 * 60 // 7일 (초 단위)
-      
-      this.cookieManager.setRefreshTokenCookie(res, refreshToken, expiresIn)
-      
-      // 응답에서 리프레시 토큰 제거 (쿠키로 설정했으므로)
-      const { refreshToken: _, ...responseData } = response.data
-      
-      return {
-        ...response,
-        data: responseData,
-      }
-    }
-    
-    return response
+    return await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent, res)
   }
 
   /**
@@ -229,77 +164,37 @@ export class AuthController {
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "깃허브 소셜 인증 실패" })
   async githubLogin(
-    @Body() socialLoginRequestDto: SocialLoginRequestDto, 
+    @Body() socialLoginRequestDto: SocialLoginRequestDto,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const ipAddress = req.ip
     const userAgent = req.headers["user-agent"] || ""
 
-    const response = await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent)
-    
-    if (response.success && response.data) {
-      // 리프레시 토큰을 쿠키에 설정
-      const refreshToken = response.data.refreshToken
-      const expiresIn = 7 * 24 * 60 * 60 // 7일 (초 단위)
-      
-      this.cookieManager.setRefreshTokenCookie(res, refreshToken, expiresIn)
-      
-      // 응답에서 리프레시 토큰 제거 (쿠키로 설정했으므로)
-      const { refreshToken: _, ...responseData } = response.data
-      
-      return {
-        ...response,
-        data: responseData,
-      }
-    }
-    
-    return response
+    return await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent, res)
   }
-  
+
   /**
    * 인증 코드 교환
    */
   @Post("exchange-code")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ 
-    summary: "인증 코드 교환", 
-    description: "소셜 로그인 후 발급된 인증 코드를 토큰으로 교환합니다." 
+  @ApiOperation({
+    summary: "인증 코드 교환",
+    description: "소셜 로그인 후 발급된 인증 코드를 토큰으로 교환합니다.",
   })
   @ApiBody({ type: ExchangeAuthCodeRequestDto })
   @ApiOkResponse({ description: "토큰 교환 성공" })
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "유효하지 않은 인증 코드" })
   async exchangeAuthCode(
-    @Body() exchangeAuthCodeRequestDto: ExchangeAuthCodeRequestDto, 
+    @Body() exchangeAuthCodeRequestDto: ExchangeAuthCodeRequestDto,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const ipAddress = req.ip;
-    const userAgent = req.headers["user-agent"] || "";
-    
-    const response = await this.authFacadeService.exchangeAuthCode(
-      exchangeAuthCodeRequestDto, 
-      ipAddress, 
-      userAgent
-    );
-    
-    if (response.success && response.data) {
-      // 리프레시 토큰을 쿠키에 설정
-      const refreshToken = response.data.refreshToken;
-      const expiresIn = 7 * 24 * 60 * 60; // 7일 (초 단위)
-      
-      this.cookieManager.setRefreshTokenCookie(res, refreshToken, expiresIn);
-      
-      // 응답에서 리프레시 토큰 제거 (쿠키로 설정했으므로)
-      const { refreshToken: _, ...responseData } = response.data;
-      
-      return {
-        ...response,
-        data: responseData,
-      };
-    }
-    
-    return response;
+    const ipAddress = req.ip
+    const userAgent = req.headers["user-agent"] || ""
+
+    return await this.authFacadeService.exchangeAuthCode(exchangeAuthCodeRequestDto, ipAddress, userAgent, res)
   }
 }

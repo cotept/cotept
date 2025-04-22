@@ -28,7 +28,7 @@ import {
 } from "@/modules/auth/infrastructure/dtos/request"
 import { ApiResponse } from "@/shared/infrastructure/dto/api-response.dto"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { HttpStatus, Inject, Injectable, Logger, UnauthorizedException } from "@nestjs/common"
+import { HttpStatus, Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 import { Response } from "express"
 
 /**
@@ -53,7 +53,6 @@ export class AuthFacadeService {
     private readonly authRequestMapper: AuthRequestMapper,
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
-    @Inject("PasswordHasher")
     private readonly passwordHasher: PasswordHasherPort,
   ) {}
 

@@ -1,25 +1,26 @@
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
+import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
+import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
-import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { AuthenticationFailedException } from "@/modules/auth/domain/model/auth-exception"
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
+import { ErrorUtils } from "@/shared/utils/error.util"
 import { Injectable, Logger } from "@nestjs/common"
 import { v4 as uuidv4 } from "uuid"
-import { ErrorUtils } from "@/shared/utils/error.util"
-
 /**
  * 로그인 유스케이스 구현체
  */
 @Injectable()
 export class LoginUseCaseImpl implements LoginUseCase {
-  private readonly logger = new Logger(LoginUseCaseImpl.name);
-  
+  private readonly logger = new Logger(LoginUseCaseImpl.name)
+
   constructor(
-    private readonly authFacadeService: AuthFacadeService,
+    private readonly authUserRepository: AuthUserRepositoryPort,
+    private readonly passwordHasher: PasswordHasherPort,
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly tokenGenerator: TokenGeneratorPort,
     private readonly tokenStorage: TokenStoragePort,
@@ -33,13 +34,13 @@ export class LoginUseCaseImpl implements LoginUseCase {
   async execute(loginDto: LoginDto): Promise<TokenPair> {
     try {
       // 1. 사용자 인증
-      const user = await this.authFacadeService.findUserByEmail(loginDto.email)
+      const user = await this.authUserRepository.findByEmail(loginDto.email)
       if (!user) {
         throw new AuthenticationFailedException("Invalid email or password")
       }
 
       // 2. 비밀번호 검증
-      const isValid = await this.authFacadeService.validateCredentials(loginDto.email, loginDto.password)
+      const isValid = await this.passwordHasher.verify(loginDto.password, user.getPasswordHash())
       if (!isValid) {
         throw new AuthenticationFailedException("Invalid email or password")
       }
@@ -79,9 +80,9 @@ export class LoginUseCaseImpl implements LoginUseCase {
     } catch (error) {
       this.logger.error(
         `로그인 처리 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
-        ErrorUtils.getErrorStack(error)
-      );
-      throw error;
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
     }
   }
 }

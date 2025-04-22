@@ -1,3 +1,4 @@
+import { CacheModule } from "@/shared/infrastructure/cache/redis/cache.module"
 import { Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { JwtModule } from "@nestjs/jwt"
@@ -18,6 +19,7 @@ import {
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 // 레포지토리
 import {
+  DummySocialProfileService,
   RedisTokenStorageRepository,
   TypeOrmAuthUserRepository,
   TypeOrmAuthVerificationRepository,
@@ -84,6 +86,9 @@ import {
   JwtStrategy,
   LocalStrategy,
 } from "@/modules/auth/infrastructure/common/strategies"
+import { CryptoService } from "@/shared/infrastructure/services"
+import { NotificationPort, SocialProfilePort } from "./application/ports/out"
+import { DummyNotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
 
 @Module({
   imports: [
@@ -110,6 +115,7 @@ import {
         },
       }),
     }),
+    CacheModule,
   ],
   controllers: [AuthController, GithubAuthController, GoogleAuthController],
   providers: [
@@ -204,6 +210,21 @@ import {
 
     // 쿠키 관리 어댑터
     CookieManagerAdapter,
+    //---------------------------더미---------------------------
+    // 더미 NotificationService 어댑터
+    {
+      provide: NotificationPort,
+      useClass: DummyNotificationService,
+    },
+    // 더미 SocialProfilePort 구현체 제공
+    {
+      provide: SocialProfilePort,
+      useClass: DummySocialProfileService,
+    },
+    //--------------------------------------------------------
+
+    // shared
+    CryptoService,
   ],
   exports: [
     LoginUseCase,

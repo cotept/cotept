@@ -29,48 +29,37 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
       this.configService.getOrThrow<JwtConfig>("jwt").accessExpiresIn || "1800", // 기본 30분
     )
     const accessTokenId = this.generateTokenId()
-    const accessTokenPayload: TokenPayload = {
+    const accessTokenPayload: Partial<TokenPayload> = {
       sub: userId,
       email,
       role,
       jti: accessTokenId,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + accessTokenExpiresIn,
+      // exp: Math.floor(Date.now() / 1000) + accessTokenExpiresIn,
       metadata: undefined,
-      isExpired: function (now?: Date): boolean {
-        throw new Error("Function not implemented.")
-      },
-      toJSON: function (): Record<string, any> {
-        throw new Error("Function not implemented.")
-      },
     }
 
-    const accessToken = this.jwtService.sign(accessTokenPayload)
+    const accessToken = this.jwtService.sign(accessTokenPayload, {
+      secret: this.configService.getOrThrow<JwtConfig>("jwt").jwtSecret,
+      expiresIn: accessTokenExpiresIn,
+    })
 
     // 리프레시 토큰 설정
     const refreshTokenExpiresIn = parseInt(
-      this.configService.get<string>("JWT_REFRESH_EXPIRES_IN_SECONDS") || "604800", // 기본 7일
+      this.configService.getOrThrow<JwtConfig>("jwt").refreshExpiresIn || "604800", // 기본 7일
     )
     const refreshTokenId = this.generateTokenId()
     const familyId = this.generateFamilyId()
-    const refreshTokenPayload: RefreshTokenPayload = {
+    const refreshTokenPayload: Partial<RefreshTokenPayload> = {
       sub: userId,
       family: familyId,
       jti: refreshTokenId,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + refreshTokenExpiresIn,
-      isExpired: function (now?: Date): boolean {
-        throw new Error("Function not implemented.")
-      },
-      toJSON: function (): Record<string, any> {
-        throw new Error("Function not implemented.")
-      },
+      // exp: Math.floor(Date.now() / 1000) + refreshTokenExpiresIn,
     }
 
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-      secret:
-        this.configService.getOrThrow<JwtConfig>("jwt").jwtRefreshSecret ||
-        this.configService.getOrThrow<JwtConfig>("jwt").jwtSecret,
+      secret: this.configService.getOrThrow<JwtConfig>("jwt").jwtRefreshSecret,
       expiresIn: refreshTokenExpiresIn,
     })
 

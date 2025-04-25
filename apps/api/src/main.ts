@@ -31,7 +31,8 @@ async function bootstrap() {
   swagger.setup(app)
 
   const port = process.env.PORT ?? 3002
-  await app.listen(port)
-  logger.log(`Application is running on port ${port}`)
+  await app.listen(port, "0.0.0.0", () => {
+    logger.log(`server is running on port ${port}`)
+  })
 }
 bootstrap()

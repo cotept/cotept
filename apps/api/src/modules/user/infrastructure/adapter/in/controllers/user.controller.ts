@@ -1,21 +1,9 @@
-import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
 import { ChangePasswordDto } from "@/modules/user/application/dtos/change-password.dto"
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Query,
-} from "@nestjs/common"
+import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -46,7 +34,7 @@ export class UserController {
     @Query("page") page?: number,
     @Query("limit") limit?: number,
     @Query("role") role?: string,
-    @Query("status") status?: string
+    @Query("status") status?: string,
   ) {
     return this.userFacadeService.getAllUsers(page, limit, role, status)
   }
@@ -60,7 +48,7 @@ export class UserController {
     return this.userFacadeService.getUserById(id)
   }
 
-  @Post()
+  @Post("register")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "사용자 생성", description: "새로운 사용자를 생성합니다." })
   @ApiCreatedResponse({ description: "성공적으로 사용자를 생성함" })

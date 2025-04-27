@@ -83,9 +83,12 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
    */
   verifyAccessToken(token: string): TokenPayload | null {
     try {
-      const payload = this.jwtService.verify<TokenPayload>(token)
+      const secret = this.configService.getOrThrow<JwtConfig>("jwt").jwtSecret
+      const payload = this.jwtService.verify<TokenPayload>(token, { secret })
+
       return payload
     } catch (error) {
+      error instanceof Error && console.error("JWT access verification error:", error.message, error.name)
       return null
     }
   }
@@ -97,12 +100,11 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
    */
   verifyRefreshToken(token: string): RefreshTokenPayload | null {
     try {
-      const secret =
-        this.configService.getOrThrow<JwtConfig>("jwt").jwtRefreshSecret ||
-        this.configService.getOrThrow<JwtConfig>("jwt").jwtSecret
+      const secret = this.configService.getOrThrow<JwtConfig>("jwt").jwtRefreshSecret
       const payload = this.jwtService.verify<RefreshTokenPayload>(token, { secret })
       return payload
     } catch (error) {
+      error instanceof Error && console.error("JWT refresh verification error:", error.message, error.name)
       return null
     }
   }

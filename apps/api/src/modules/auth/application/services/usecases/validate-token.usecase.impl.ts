@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { ValidateTokenUseCase } from '@/modules/auth/application/ports/in/validate-token.usecase';
-import { ValidateTokenDto } from '@/modules/auth/application/dtos/validate-token.dto';
-import { TokenGeneratorPort } from '@/modules/auth/application/ports/out/token-generator.port';
-import { TokenStoragePort } from '@/modules/auth/application/ports/out/token-storage.port';
-import { TokenPayload } from '@/modules/auth/domain/model/token-payload';
+import { ValidateTokenDto } from "@/modules/auth/application/dtos/validate-token.dto"
+import { TokenMapper } from "@/modules/auth/application/mappers"
+import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
+import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
+import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
+import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
+import { Injectable } from "@nestjs/common"
 
 /**
  * 토큰 검증 유스케이스 구현체
@@ -13,6 +14,7 @@ export class ValidateTokenUseCaseImpl implements ValidateTokenUseCase {
   constructor(
     private readonly tokenGenerator: TokenGeneratorPort,
     private readonly tokenStorage: TokenStoragePort,
+    private readonly tokenMapper: TokenMapper,
   ) {}
 
   /**
@@ -22,25 +24,25 @@ export class ValidateTokenUseCaseImpl implements ValidateTokenUseCase {
    */
   async execute(validateTokenDto: ValidateTokenDto): Promise<TokenPayload | null> {
     // 1. 토큰 구문 검증 및 페이로드 추출
-    const tokenPayload = this.tokenGenerator.verifyAccessToken(validateTokenDto.token);
-    if (!tokenPayload) {
-      return null;
+    const rawTokenPayload = this.tokenGenerator.verifyAccessToken(validateTokenDto.token)
+    if (!rawTokenPayload) {
+      return null
     }
-
+    const tokenPayload = this.tokenMapper.toTokenPayload(rawTokenPayload)
     // 2. 토큰 만료 확인
     if (tokenPayload.isExpired()) {
-      return null;
+      return null
     }
 
     // 3. 토큰 블랙리스트 확인
     if (tokenPayload.jti) {
-      const isBlacklisted = await this.tokenStorage.isBlacklisted(tokenPayload.jti);
+      const isBlacklisted = await this.tokenStorage.isBlacklisted(tokenPayload.jti)
       if (isBlacklisted) {
-        return null;
+        return null
       }
     }
 
     // 4. 유효한 토큰 - 페이로드 반환
-    return tokenPayload;
+    return tokenPayload
   }
 }

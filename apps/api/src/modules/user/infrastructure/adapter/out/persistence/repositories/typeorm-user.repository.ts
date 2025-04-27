@@ -1,3 +1,4 @@
+import { DeleteUserDto } from "@/modules/user/application/dtos"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
@@ -87,7 +88,21 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    * @param id 삭제할 사용자 ID
    * @returns 삭제 성공 여부
    */
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string, options: DeleteUserDto): Promise<boolean> {
+    const deleteType = options?.deleteType || "SOFT"
+
+    // 소프트 삭제 처리
+    if (deleteType === "SOFT") {
+      const userEntity = await this.userRepository.findOne({ where: { id } })
+      if (!userEntity) return false
+
+      userEntity.status = UserStatus.INACTIVE // 상태 변경
+      userEntity.deletedAt = new Date() // 삭제 시간 기록
+
+      await this.userRepository.save(userEntity)
+      return true
+    }
+
     const result = await this.userRepository.delete(id)
     return result.affected ? result.affected > 0 : false
   }

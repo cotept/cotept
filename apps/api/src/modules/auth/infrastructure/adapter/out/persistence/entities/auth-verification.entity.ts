@@ -9,7 +9,7 @@ export class AuthVerificationEntity {
   @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
   userId: string | null
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user: User | null
 

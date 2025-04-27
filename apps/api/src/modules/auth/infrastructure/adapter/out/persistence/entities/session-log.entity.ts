@@ -9,7 +9,7 @@ export class SessionLogEntity {
   @Column({ name: "user_id", type: "varchar2", length: 36 })
   userId: string
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user: User
 

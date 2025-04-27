@@ -1,6 +1,6 @@
+import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { DeleteUserUseCase } from "@/modules/user/application/ports/in/delete-user.usecase"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
-import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { Injectable, NotFoundException } from "@nestjs/common"
 
 @Injectable()
@@ -20,8 +20,15 @@ export class DeleteUserUseCaseImpl implements DeleteUserUseCase {
     if (!user) {
       throw new NotFoundException(`ID ${id}에 해당하는 사용자를 찾을 수 없습니다.`)
     }
-    
+
+    // 기본 옵션 설정
+    const options: DeleteUserDto = {
+      deleteType: deleteUserDto?.deleteType || "SOFT",
+      deleteRelatedData: deleteUserDto?.deleteRelatedData || false,
+      reason: deleteUserDto?.reason,
+    }
+
     // 사용자 삭제
-    return this.userRepository.delete(id)
+    return this.userRepository.delete(id, options)
   }
 }

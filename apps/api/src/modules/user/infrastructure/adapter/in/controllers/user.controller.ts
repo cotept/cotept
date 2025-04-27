@@ -23,7 +23,7 @@ import {
 export class UserController {
   constructor(private readonly userFacadeService: UserFacadeService) {}
 
-  @Get()
+  @Get("userlist")
   @ApiOperation({ summary: "사용자 목록 조회", description: "등록된 모든 사용자 목록을 조회합니다." })
   @ApiQuery({ name: "page", required: false, type: Number, description: "페이지 번호 (기본값: 1)" })
   @ApiQuery({ name: "limit", required: false, type: Number, description: "페이지당 항목 수 (기본값: 10)" })

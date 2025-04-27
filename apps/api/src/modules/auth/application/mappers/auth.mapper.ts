@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { LoginDto } from '@/modules/auth/application/dtos/login.dto';
-import { TokenPair } from '@/modules/auth/domain/vo';
+import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
+import { TokenPair } from "@/modules/auth/domain/model"
+import { Injectable } from "@nestjs/common"
+import { plainToInstance } from "class-transformer"
 
 /**
  * 인증 매퍼
@@ -15,12 +15,12 @@ export class AuthMapper {
   toLoginDto(request: any, metadata?: { ipAddress?: string; userAgent?: string }): LoginDto {
     const loginData = {
       ...request,
-      ...metadata
-    };
+      ...metadata,
+    }
 
     return plainToInstance(LoginDto, loginData, {
-      excludeExtraneousValues: true
-    });
+      excludeExtraneousValues: true,
+    })
   }
 
   /**
@@ -28,10 +28,10 @@ export class AuthMapper {
    */
   toLoginResponse(tokenPair: TokenPair): any {
     return {
-      accessToken: tokenPair.accessToken.value,
-      refreshToken: tokenPair.refreshToken.value,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
       tokenType: tokenPair.tokenType,
-      expiresIn: tokenPair.accessToken.timeToExpire()
-    };
+      expiresIn: tokenPair.accessToken,
+    }
   }
 }

@@ -1,4 +1,5 @@
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
+import { DeleteUserDto } from "../../dtos"
 
 /**
  * 사용자 저장소 인터페이스 (아웃바운드 포트)
@@ -43,7 +44,7 @@ export abstract class UserRepositoryPort {
    * @param id 삭제할 사용자 ID
    * @returns 삭제 성공 여부
    */
-  abstract delete(id: string): Promise<boolean>
+  abstract delete(id: string, options?: DeleteUserDto): Promise<boolean>
 
   /**
    * 중복 이메일 확인

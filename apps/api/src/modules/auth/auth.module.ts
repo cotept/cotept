@@ -27,6 +27,7 @@ import {
 } from "@/modules/auth/infrastructure/adapter/out/persistence/repositories"
 
 // 매퍼
+import { TokenMapper } from "@/modules/auth/application/mappers"
 import { AuthRequestMapper } from "@/modules/auth/infrastructure/adapter/in/mappers"
 import {
   AuthVerificationPersistenceMapper,
@@ -79,6 +80,7 @@ import {
 // 가드
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 // 전략
+import { JwtConfig } from "@/configs/token"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import {
   GithubStrategy,
@@ -109,9 +111,9 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>("JWT_SECRET"),
+        secret: configService.getOrThrow<JwtConfig>("jwt").jwtSecret,
         signOptions: {
-          expiresIn: configService.get<string>("JWT_ACCESS_EXPIRES_IN") || "30m",
+          expiresIn: configService.getOrThrow<JwtConfig>("jwt").accessExpiresIn,
         },
       }),
     }),
@@ -126,6 +128,7 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
     AuthVerificationPersistenceMapper,
     LoginSessionPersistenceMapper,
     AuthRequestMapper,
+    TokenMapper,
 
     // 레포지토리 구현체
     {

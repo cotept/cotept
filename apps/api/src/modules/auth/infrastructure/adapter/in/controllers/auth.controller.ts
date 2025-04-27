@@ -6,7 +6,6 @@ import {
   LoginRequestDto,
   RefreshTokenRequestDto,
   SendVerificationCodeRequestDto,
-  SocialLoginRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
@@ -27,9 +26,7 @@ import { Request, Response } from "express"
 @ApiTags("인증")
 @Controller("auth")
 export class AuthController {
-  constructor(
-    private readonly authFacadeService: AuthFacadeService,
-  ) {}
+  constructor(private readonly authFacadeService: AuthFacadeService) {}
 
   /**
    * 로그인
@@ -53,9 +50,23 @@ export class AuthController {
   }
 
   /**
+   * 로그아웃
+   */
+  @Post("logout")
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
+  @ApiOkResponse({ description: "로그아웃 성공" })
+  @ApiUnauthorizedResponse({ description: "인증 필요" })
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string) {
+    const token = req.headers.authorization?.split(" ")[1] || ""
+    return await this.authFacadeService.logout(userId, token, res)
+  }
+
+  /**
    * 토큰 갱신
    */
-  @Post("refresh-token")
+  @Post("slient-refresh")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "토큰 갱신", description: "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다." })
   @ApiBody({ type: RefreshTokenRequestDto })
@@ -84,20 +95,6 @@ export class AuthController {
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   async validateToken(@Body() validateTokenRequestDto: ValidateTokenRequestDto) {
     return this.authFacadeService.validateToken(validateTokenRequestDto)
-  }
-
-  /**
-   * 로그아웃
-   */
-  @Post("logout")
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
-  @ApiOkResponse({ description: "로그아웃 성공" })
-  @ApiUnauthorizedResponse({ description: "인증 필요" })
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string) {
-    const token = req.headers.authorization?.split(" ")[1] || ""
-    return await this.authFacadeService.logout(userId, token, res)
   }
 
   /**
@@ -133,55 +130,13 @@ export class AuthController {
   }
 
   /**
-   * 소셜 로그인
-   */
-  @Post("social-login")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "소셜 로그인", description: "소셜 인증 코드를 사용하여 로그인하고 토큰을 발급합니다." })
-  @ApiBody({ type: SocialLoginRequestDto })
-  @ApiOkResponse({ description: "소셜 로그인 성공" })
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
-  @ApiUnauthorizedResponse({ description: "소셜 인증 실패" })
-  async socialLogin(
-    @Body() socialLoginRequestDto: SocialLoginRequestDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const ipAddress = req.ip
-    const userAgent = req.headers["user-agent"] || ""
-
-    return await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent, res)
-  }
-
-  /**
-   * Github 로그인
-   */
-  @Post("github-login")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "깃허브 로그인", description: "소셜 인증 코드를 사용하여 로그인하고 토큰을 발급합니다." })
-  @ApiBody({ type: SocialLoginRequestDto })
-  @ApiOkResponse({ description: "깃허브 소셜 로그인 성공" })
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
-  @ApiUnauthorizedResponse({ description: "깃허브 소셜 인증 실패" })
-  async githubLogin(
-    @Body() socialLoginRequestDto: SocialLoginRequestDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const ipAddress = req.ip
-    const userAgent = req.headers["user-agent"] || ""
-
-    return await this.authFacadeService.socialLogin(socialLoginRequestDto, ipAddress, userAgent, res)
-  }
-
-  /**
-   * 인증 코드 교환
+   * 임시 인증 코드를 토큰으로 교환
    */
   @Post("exchange-code")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "인증 코드 교환",
-    description: "소셜 로그인 후 발급된 인증 코드를 토큰으로 교환합니다.",
+    summary: "임시 인증 코드를 실제 토큰으로 교환",
+    description: "소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.",
   })
   @ApiBody({ type: ExchangeAuthCodeRequestDto })
   @ApiOkResponse({ description: "토큰 교환 성공" })

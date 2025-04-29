@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "@/modules/user/domain/model/user.entity"
+import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm"
 
 /**
@@ -64,4 +64,7 @@ export class UserEntity {
 
   @Column({ name: "last_login_at", type: "timestamp", nullable: true })
   lastLoginAt?: Date
+
+  @Column({ name: "deleted_at", type: "timestamp", nullable: true })
+  deletedAt?: Date
 }

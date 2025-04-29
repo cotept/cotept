@@ -1,11 +1,7 @@
 export default module = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint", "simple-import-sort"],
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-  ],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   rules: {
     "no-console": "warn",
     "no-unused-vars": "warn",

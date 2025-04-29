@@ -1,6 +1,6 @@
 // application/mappers/user.mapper.ts
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
-import User from "@/modules/user/domain/model/user.entity"
+import User from "@/modules/user/domain/model/user"
 import { Injectable } from "@nestjs/common"
 import { plainToInstance } from "class-transformer"
 

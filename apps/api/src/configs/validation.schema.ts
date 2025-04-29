@@ -3,6 +3,8 @@ import { databaseSchema } from "./database"
 // import { nosqlSchema } from "./nosql/nosql.schema"
 // import { jwtSchema } from "./jwt/jwt.schema"
 import { redisSchema } from "./redis/redis.schema"
+import { githubSchema, googleSchema } from "./social-provider"
+import { authCodeSchema, clentUrlSchema, jwtSchema } from "./token"
 
 export const validationSchema = Joi.object({
   NODE_ENV: Joi.string().valid("local", "development", "test", "production").default("development"),
@@ -10,5 +12,9 @@ export const validationSchema = Joi.object({
   ...databaseSchema,
   ...redisSchema,
   // ...nosqlSchema,
-  // ...jwtSchema,
+  ...jwtSchema,
+  ...authCodeSchema,
+  ...clentUrlSchema,
+  ...githubSchema,
+  ...googleSchema,
 })

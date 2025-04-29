@@ -1,12 +1,19 @@
 import { ApiErrorFilter } from "@/shared/infrastructure/common/filters/api-error.filter"
-import { ValidationPipe } from "@nestjs/common"
+import { Logger, ValidationPipe } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
+import cookieParser from "cookie-parser"
 import { AppModule } from "./app.module"
 import { winstonLogger } from "./shared/infrastructure/common/logger"
 import { SwaggerModule } from "./swagger/swagger.module"
 
 async function bootstrap() {
+  const logger = new Logger("Bootstrap")
+
   const app = await NestFactory.create(AppModule, { bufferLogs: true, logger: winstonLogger })
+
+  // 쿠키 파서 미들웨어 추가
+  app.use(cookieParser())
+
   // 향상된 ValidationPipe 설정 적용
   app.useGlobalPipes(
     new ValidationPipe({
@@ -23,6 +30,9 @@ async function bootstrap() {
   const swagger = new SwaggerModule()
   swagger.setup(app)
 
-  await app.listen(process.env.PORT ?? 3002)
+  const port = process.env.PORT ?? 3002
+  await app.listen(port, "0.0.0.0", () => {
+    logger.log(`server is running on port ${port}`)
+  })
 }
 bootstrap()

@@ -8,6 +8,7 @@ import {
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
+  ConfirmSocialLinkRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
 import {
@@ -151,5 +152,29 @@ export class AuthController {
     const userAgent = req.headers["user-agent"] || ""
 
     return await this.authFacadeService.exchangeAuthCode(exchangeAuthCodeRequestDto, ipAddress, userAgent, res)
+  }
+
+  /**
+   * 소셜 계정 연결 확인
+   */
+  @Post("confirm-social-link")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "소셜 계정 연결 확인",
+    description: "기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.",
+  })
+  @ApiBody({ type: ConfirmSocialLinkRequestDto })
+  @ApiOkResponse({ description: "계정 연결 처리 성공" })
+  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiUnauthorizedResponse({ description: "유효하지 않은 토큰" })
+  async confirmSocialLink(
+    @Body() confirmSocialLinkRequestDto: ConfirmSocialLinkRequestDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const ipAddress = req.ip
+    const userAgent = req.headers["user-agent"] || ""
+
+    return await this.authFacadeService.confirmSocialLink(confirmSocialLinkRequestDto, ipAddress, userAgent, res)
   }
 }

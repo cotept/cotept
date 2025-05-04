@@ -9,6 +9,8 @@ import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/s
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
+import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
+import { CryptoService } from "@/shared/infrastructure/services/crypto"
 import { ErrorUtils } from "@/shared/utils/error.util"
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
@@ -29,6 +31,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly configService: ConfigService,
     private readonly authUserRepository: AuthUserRepositoryPort,
+    private readonly cryptoService: CryptoService,
   ) {}
 
   /**
@@ -72,17 +75,37 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
         const existingUserByEmail = await this.authUserRepository.findByEmail(user.email)
 
         if (existingUserByEmail) {
-          // 기존 사용자에게 소셜 계정 연결
-          await this.authUserRepository.connectSocialAccount(
-            existingUserByEmail.id,
+          // 기존 사용자가 있으면 연결 확인 절차 필요
+          const pendingLinkToken = this.cryptoService.generateRandomString(32)
+
+          // 임시 연결 정보 저장
+          const pendingInfo: PendingLinkInfo = {
+            userId: existingUserByEmail.id,
             provider,
-            user.socialId,
-            user.accessToken,
-            user.refreshToken,
-            user.profileData,
-          )
-          userId = existingUserByEmail.id
-          this.logger.debug(`Connected social account to existing user: ${userId}`)
+            socialId: user.socialId,
+            email: user.email,
+            name: user.name,
+            accessToken: user.accessToken,
+            refreshToken: user.refreshToken,
+            profileData: user.profileData,
+          }
+
+          await this.tokenStorage.savePendingLinkInfo(pendingLinkToken, pendingInfo, 300) // 5분 유효
+
+          this.logger.debug(`Created pending link token for existing user: ${existingUserByEmail.id}`)
+
+          // 클라이언트 리다이렉트 URL
+          const defaultRedirectUrl = this.CLIENT_REDIRECT_URL || "http://localhost:3000"
+          const clientRedirectUrl = redirectUrl || `${defaultRedirectUrl}/auth/social-link-callback`
+          const resultUrl = new URL(clientRedirectUrl)
+
+          // 연결 확인이 필요한 상태로 리다이렉트
+          resultUrl.searchParams.append("status", "pending_link")
+          resultUrl.searchParams.append("token", pendingLinkToken)
+          resultUrl.searchParams.append("email", user.email)
+          resultUrl.searchParams.append("provider", provider)
+
+          return { redirectUrl: resultUrl.toString() }
         } else {
           // 3. 새 사용자 생성
           const newUser = await this.authUserRepository.createSocialUser(
@@ -104,7 +127,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
       const generateAuthCodeDto = new GenerateAuthCodeDto(userId)
       const authCodeResult = await this.generateAuthCodeUseCase.execute(generateAuthCodeDto)
 
-      this.logger.debug(`Generated auth code for user ${user.id}, expires at ${authCodeResult.expiresAt.toISOString()}`)
+      this.logger.debug(`Generated auth code for user ${userId}, expires at ${authCodeResult.expiresAt.toISOString()}`)
 
       // 클라이언트 리다이렉트 URL
       const defaultRedirectUrl = this.CLIENT_REDIRECT_URL || "http://localhost:3000"

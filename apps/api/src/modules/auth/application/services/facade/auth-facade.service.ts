@@ -13,10 +13,12 @@ import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/valida
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
+import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { AuthRequestMapper } from "@/modules/auth/infrastructure/adapter/in/mappers/auth-request.mapper"
 import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/services/cookie-manager.adapter"
 import {
+  ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
@@ -51,6 +53,7 @@ export class AuthFacadeService {
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly passwordHasher: PasswordHasherPort,
+    private readonly tokenStorage: TokenStoragePort,
   ) {}
 
   /**
@@ -385,6 +388,74 @@ export class AuthFacadeService {
         ErrorUtils.getErrorStack(error),
       )
       return null
+    }
+  }
+
+  /**
+   * 소셜 계정 연결 확인
+   * @param confirmSocialLinkRequestDto 소셜 계정 연결 확인 요청 DTO
+   * @param ipAddress IP 주소
+   * @param userAgent 사용자 에이전트 문자열
+   * @param res Express Response 객체
+   * @returns 계정 연결 처리 결과
+   */
+  async confirmSocialLink(
+    confirmSocialLinkRequestDto: ConfirmSocialLinkRequestDto,
+    ipAddress?: string,
+    userAgent?: string,
+    res?: Response,
+  ) {
+    try {
+      // 1. 임시 토큰 검증
+      const pendingInfo = await this.tokenStorage.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
+      if (!pendingInfo) {
+        throw new UnauthorizedException("유효하지 않거나 만료된 요청입니다.")
+      }
+
+      // 2. 사용자 결정에 따른 처리
+      if (confirmSocialLinkRequestDto.approved) {
+        // 기존 connectSocialAccount 메서드 활용
+        await this.authUserRepository.connectSocialAccount(
+          pendingInfo.userId,
+          pendingInfo.provider,
+          pendingInfo.socialId,
+          pendingInfo.accessToken,
+          pendingInfo.refreshToken,
+          pendingInfo.profileData,
+        )
+
+        // 기존 login 로직 활용하여 토큰 발급
+        const loginDto = new LoginDto()
+        loginDto.email = pendingInfo.email
+        loginDto.password = "" // 소셜 로그인은 비밀번호 불필요
+        loginDto.ipAddress = ipAddress
+        loginDto.userAgent = userAgent
+
+        const tokenPair = await this.loginUseCase.execute(loginDto)
+
+        // 기존 쿠키 설정 로직 활용
+        if (res && tokenPair.refreshToken) {
+          this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, tokenPair.refreshTokenExpiresIn)
+        }
+
+        // 사용된 토큰 삭제
+        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+
+        return new ApiResponse(HttpStatus.OK, true, "계정 연결 및 로그인 성공", {
+          accessToken: tokenPair.accessToken,
+          expiresIn: tokenPair.accessTokenExpiresIn,
+        })
+      } else {
+        // 연결 거부
+        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+        return new ApiResponse(HttpStatus.OK, true, "계정 연결이 취소되었습니다.", { success: false })
+      }
+    } catch (error) {
+      this.logger.error(
+        `소셜 계정 연결 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
     }
   }
 }

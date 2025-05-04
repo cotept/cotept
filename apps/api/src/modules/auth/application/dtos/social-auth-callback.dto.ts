@@ -1,4 +1,4 @@
-import { SocialProvider } from "@/modules/auth/application/dtos"
+import { SocialProvider } from "@/modules/auth/domain/model"
 import { IsEnum, IsObject, IsOptional, IsString } from "class-validator"
 
 /**
@@ -8,33 +8,33 @@ export class SocialAuthCallbackDto {
   /**
    * 소셜 로그인 제공자
    */
-  @IsEnum(SocialProvider, { message: '유효한 소셜 로그인 제공자가 아닙니다.' })
-  provider: SocialProvider;
+  @IsEnum(SocialProvider, { message: "유효한 소셜 로그인 제공자가 아닙니다." })
+  provider: SocialProvider
 
   /**
    * Passport 인증으로 얻은 사용자 정보
    */
   @IsObject()
-  user: any;
+  user: any
 
   /**
    * 요청 IP 주소
    */
   @IsString()
-  ipAddress: string;
+  ipAddress: string
 
   /**
    * 사용자 에이전트
    */
   @IsString()
-  userAgent: string;
+  userAgent: string
 
   /**
    * 인증 성공 후 리다이렉트할 URL
    */
   @IsOptional()
   @IsString()
-  redirectUrl?: string;
+  redirectUrl?: string
 }
 
 /**
@@ -44,5 +44,5 @@ export class SocialAuthCallbackResponseDto {
   /**
    * 리다이렉트할 URL
    */
-  redirectUrl: string;
+  redirectUrl: string
 }

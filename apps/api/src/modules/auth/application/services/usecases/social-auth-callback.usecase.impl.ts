@@ -6,6 +6,7 @@ import {
 } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
+import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { ErrorUtils } from "@/shared/utils/error.util"
@@ -27,6 +28,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly configService: ConfigService,
+    private readonly authUserRepository: AuthUserRepositoryPort,
   ) {}
 
   /**
@@ -46,18 +48,60 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
       }
 
       // 필수 필드 확인
-      if (!user.id) {
-        this.logger.error("Social auth callback: User ID is missing")
-        throw new UnauthorizedException("사용자 ID 정보가 없습니다.")
-      }
-
       if (!user.email) {
         this.logger.error("Social auth callback: User email is missing")
         throw new UnauthorizedException("이메일 정보가 없습니다.")
       }
 
+      if (!user.socialId) {
+        this.logger.error("Social auth callback: Social ID is missing")
+        throw new UnauthorizedException("소셜 ID 정보가 없습니다.")
+      }
+
+      let userId: string
+
+      // 1. 소셜 ID로 기존 연결된 계정 찾기
+      const existingAuthUser = await this.authUserRepository.findBySocialId(provider, user.socialId)
+
+      if (existingAuthUser) {
+        // 기존에 연결된 소셜 계정으로 로그인
+        userId = existingAuthUser.id
+        this.logger.debug(`Found existing user by social ID: ${userId}`)
+      } else {
+        // 2. 이메일로 기존 사용자 찾기
+        const existingUserByEmail = await this.authUserRepository.findByEmail(user.email)
+
+        if (existingUserByEmail) {
+          // 기존 사용자에게 소셜 계정 연결
+          await this.authUserRepository.connectSocialAccount(
+            existingUserByEmail.id,
+            provider,
+            user.socialId,
+            user.accessToken,
+            user.refreshToken,
+            user.profileData,
+          )
+          userId = existingUserByEmail.id
+          this.logger.debug(`Connected social account to existing user: ${userId}`)
+        } else {
+          // 3. 새 사용자 생성
+          const newUser = await this.authUserRepository.createSocialUser(
+            user.email,
+            user.name || "",
+            provider,
+            user.socialId,
+            user.accessToken,
+            user.refreshToken,
+            user.profileImageUrl,
+            user.profileData,
+          )
+          userId = newUser.id
+          this.logger.debug(`Created new user from social profile: ${userId}`)
+        }
+      }
+
       // 임시 인증 코드 생성
-      const generateAuthCodeDto = new GenerateAuthCodeDto(user.id)
+      const generateAuthCodeDto = new GenerateAuthCodeDto(userId)
       const authCodeResult = await this.generateAuthCodeUseCase.execute(generateAuthCodeDto)
 
       this.logger.debug(`Generated auth code for user ${user.id}, expires at ${authCodeResult.expiresAt.toISOString()}`)

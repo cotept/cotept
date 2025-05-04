@@ -8,7 +8,6 @@ import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecas
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
-import { SocialLoginUseCase } from "@/modules/auth/application/ports/in/social-login.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
@@ -22,7 +21,6 @@ import {
   LoginRequestDto,
   RefreshTokenRequestDto,
   SendVerificationCodeRequestDto,
-  SocialLoginRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
@@ -46,7 +44,6 @@ export class AuthFacadeService {
     private readonly validateTokenUseCase: ValidateTokenUseCase,
     private readonly sendVerificationCodeUseCase: SendVerificationCodeUseCase,
     private readonly verifyCodeUseCase: VerifyCodeUseCase,
-    private readonly socialLoginUseCase: SocialLoginUseCase,
     private readonly socialAuthCallbackUseCase: SocialAuthCallbackUseCase,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly validateAuthCodeUseCase: ValidateAuthCodeUseCase,
@@ -231,45 +228,6 @@ export class AuthFacadeService {
   }
 
   /**
-   * 소셜 로그인
-   */
-  async socialLogin(
-    socialLoginRequestDto: SocialLoginRequestDto,
-    ipAddress?: string,
-    userAgent?: string,
-    res?: Response,
-  ) {
-    try {
-      const socialLoginDto = this.authRequestMapper.toSocialLoginDto(socialLoginRequestDto, ipAddress, userAgent)
-
-      const tokenPair = await this.socialLoginUseCase.execute(socialLoginDto)
-
-      // 응답 객체가 있는 경우 쿠키에 리프레시 토큰 설정
-      if (res && tokenPair.refreshToken) {
-        const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
-        this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
-
-        // 리프레시 토큰을 응답에서 제외
-        const responseObj = tokenPair.toResponseObject()
-        const responseData = {
-          accessToken: responseObj.accessToken,
-          expiresIn: responseObj.expiresIn,
-        }
-
-        return new ApiResponse(HttpStatus.OK, true, "소셜 로그인 성공", responseData)
-      }
-
-      return new ApiResponse(HttpStatus.OK, true, "소셜 로그인 성공", tokenPair.toResponseObject())
-    } catch (error) {
-      this.logger.error(
-        `소셜 로그인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
-        ErrorUtils.getErrorStack(error),
-      )
-      throw error
-    }
-  }
-
-  /**
    * 소셜 인증 콜백 처리
    * @param callbackParams 콜백 처리에 필요한 매개변수
    */
@@ -309,7 +267,7 @@ export class AuthFacadeService {
   }
 
   /**
-   * 인증 코드 교환
+   * 자체 인증 코드 교환
    * @param exchangeAuthCodeRequestDto 인증 코드 교환 요청 DTO
    * @param ipAddress IP 주소
    * @param userAgent 사용자 에이전트 문자열
@@ -333,13 +291,16 @@ export class AuthFacadeService {
 
       // 사용자 정보 조회
       const userId = validationResult.userId
+      const user = await this.authUserRepository.findById(userId)
+
+      if (!user) {
+        throw new UnauthorizedException("사용자를 찾을 수 없습니다.")
+      }
 
       // 토큰 생성을 위해 LoginDto 생성
       const loginDto = new LoginDto()
-      // 이메일 필드가 필요하지만 인증 코드 검증에서는 이메일이 없으므로 사용자 정보 조회 필요
-      // 실제 구현에서는 사용자 레포지토리를 통해 이메일을 조회해야 함
-      loginDto.email = `temp_${userId}@example.com` // 임시 이메일
-      loginDto.password = "" // 임시 비밀번호 (소셜 로그인은 비밀번호 검증을 하지 않음)
+      loginDto.email = user.getEmail() // 실제 이메일 사용
+      loginDto.password = "" // 소셜 로그인은 비밀번호 검증을 하지 않음
       loginDto.ipAddress = ipAddress
       loginDto.userAgent = userAgent
 

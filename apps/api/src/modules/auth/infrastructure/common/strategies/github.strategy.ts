@@ -1,10 +1,10 @@
 import { OAuthGithubConfig } from "@/configs/social-provider"
-import { SocialProvider } from "@/modules/auth/application/dtos"
+import { SocialProvider } from "@/modules/auth/domain/model"
+import { ErrorUtils } from "@/shared/utils/error.util"
 import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { PassportStrategy } from "@nestjs/passport"
 import { Strategy } from "passport-github2"
-import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 참고: 이 전략을 사용하기 위해서는 다음 패키지를 설치해야 합니다:
@@ -16,9 +16,7 @@ import { ErrorUtils } from "@/shared/utils/error.util"
 export class GithubStrategy extends PassportStrategy(Strategy, "github") {
   private readonly logger = new Logger(GithubStrategy.name)
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     super({
       ...configService.getOrThrow<OAuthGithubConfig>("github"),
       scope: ["user:email", "read:user"],
@@ -38,8 +36,8 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
 
       // 프로필 정보가 없는 경우
       if (!profile) {
-        this.logger.error('GitHub 인증: 프로필 정보가 없습니다.')
-        return done(new UnauthorizedException('GitHub 인증 정보가 유효하지 않습니다.'), false)
+        this.logger.error("GitHub 인증: 프로필 정보가 없습니다.")
+        return done(new UnauthorizedException("GitHub 인증 정보가 유효하지 않습니다."), false)
       }
 
       const { id, displayName, username, emails, photos } = profile
@@ -61,7 +59,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
         name: displayName || username,
         provider: SocialProvider.GITHUB,
         socialId: id,
-        role: "MENTEE", // 기본 역할
+        // role: "MENTEE", // 기본 역할
         accessToken,
         refreshToken: refreshToken || null, // GitHub는 리프레시 토큰을 제공하지 않을 수 있음
         profileImageUrl: photos && photos.length > 0 ? photos[0].value : null,
@@ -72,11 +70,8 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
       return done(null, user)
     } catch (error) {
       // 오류 케이스
-      this.logger.error(
-        `GitHub 인증 오류: ${ErrorUtils.getErrorMessage(error)}`,
-        ErrorUtils.getErrorStack(error)
-      )
-      return done(new InternalServerErrorException('GitHub 인증 처리 중 오류가 발생했습니다.'), false)
+      this.logger.error(`GitHub 인증 오류: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
+      return done(new InternalServerErrorException("GitHub 인증 처리 중 오류가 발생했습니다."), false)
     }
   }
 }

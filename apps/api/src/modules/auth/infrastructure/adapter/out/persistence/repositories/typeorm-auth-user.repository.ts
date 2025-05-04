@@ -1,5 +1,5 @@
-import { SocialProvider } from "@/modules/auth/application/dtos"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
+import { SocialProvider } from "@/modules/auth/domain/model"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import {
   OAuthProviderEntity,

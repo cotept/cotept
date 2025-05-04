@@ -1,5 +1,5 @@
-import { SocialProvider } from "@/modules/auth/application/dtos"
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
+import { SocialProvider } from "@/modules/auth/domain/model"
 import { ErrorUtils } from "@/shared/utils/error.util"
 import { Controller, Get, HttpCode, HttpStatus, Logger, Query, Req, Res, UseGuards } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"

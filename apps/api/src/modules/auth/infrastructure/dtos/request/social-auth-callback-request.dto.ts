@@ -1,4 +1,4 @@
-import { SocialProvider } from "@/modules/auth/application/dtos"
+import { SocialProvider } from "@/modules/auth/domain/model"
 import { ApiProperty } from "@nestjs/swagger"
 import { IsEnum, IsObject, IsOptional, IsString } from "class-validator"
 

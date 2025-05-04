@@ -1,4 +1,4 @@
-import { SocialProvider } from "@/modules/auth/application/dtos/social-login.dto"
+import { SocialProvider } from "@/modules/auth/domain/model"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 
 /**

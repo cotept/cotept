@@ -1,17 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-// import { ReactQueryDevtools } from "react-query/devtools"
-import { type ReactNode } from "react"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import type { PropsWithChildren } from "react"
 
-interface ProvidersProps {
-  children: ReactNode
-}
 const queryClient = new QueryClient()
 
-const Provider = ({ children }: ProvidersProps) => {
+const Provider = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   )
 }

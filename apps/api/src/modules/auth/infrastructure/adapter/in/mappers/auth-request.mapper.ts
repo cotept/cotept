@@ -1,22 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { 
+import {
   LoginDto,
   LogoutDto,
   RefreshTokenDto,
-  ValidateTokenDto,
   SendVerificationCodeDto,
+  ValidateTokenDto,
   VerifyCodeDto,
-  SocialLoginDto
-} from '@/modules/auth/application/dtos';
-import { 
+} from "@/modules/auth/application/dtos"
+import {
   LoginRequestDto,
   RefreshTokenRequestDto,
-  ValidateTokenRequestDto,
   SendVerificationCodeRequestDto,
+  ValidateTokenRequestDto,
   VerifyCodeRequestDto,
-  SocialLoginRequestDto
-} from '@/modules/auth/infrastructure/dtos/request';
+} from "@/modules/auth/infrastructure/dtos/request"
+import { Injectable } from "@nestjs/common"
+import { plainToInstance } from "class-transformer"
 
 /**
  * 인바운드 어댑터 매퍼
@@ -28,34 +26,38 @@ export class AuthRequestMapper {
    * 로그인 요청 DTO를 내부 DTO로 변환
    */
   toLoginDto(request: LoginRequestDto, ipAddress?: string, userAgent?: string): LoginDto {
-    const dto = plainToInstance(LoginDto, {
-      ...request,
-      ipAddress,
-      userAgent
-    }, {
-      excludeExtraneousValues: true
-    });
-    
-    return dto;
+    const dto = plainToInstance(
+      LoginDto,
+      {
+        ...request,
+        ipAddress,
+        userAgent,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
+
+    return dto
   }
 
   /**
    * 토큰 갱신 요청 DTO를 내부 DTO로 변환
    */
-  toRefreshTokenDto(
-    request: RefreshTokenRequestDto,
-    ipAddress?: string,
-    userAgent?: string,
-  ): RefreshTokenDto {
-    const dto = plainToInstance(RefreshTokenDto, {
-      ...request,
-      ipAddress,
-      userAgent
-    }, {
-      excludeExtraneousValues: true
-    });
-    
-    return dto;
+  toRefreshTokenDto(request: RefreshTokenRequestDto, ipAddress?: string, userAgent?: string): RefreshTokenDto {
+    const dto = plainToInstance(
+      RefreshTokenDto,
+      {
+        ...request,
+        ipAddress,
+        userAgent,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
+
+    return dto
   }
 
   /**
@@ -63,66 +65,55 @@ export class AuthRequestMapper {
    */
   toValidateTokenDto(request: ValidateTokenRequestDto): ValidateTokenDto {
     return plainToInstance(ValidateTokenDto, request, {
-      excludeExtraneousValues: true
-    });
+      excludeExtraneousValues: true,
+    })
   }
-  
+
   /**
    * 로그아웃 요청을 내부 DTO로 변환
    */
   toLogoutDto(userId: string, token: string): LogoutDto {
-    return plainToInstance(LogoutDto, {
-      userId,
-      token
-    }, {
-      excludeExtraneousValues: true
-    });
+    return plainToInstance(
+      LogoutDto,
+      {
+        userId,
+        token,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
   }
-  
+
   /**
    * 인증 코드 발송 요청 DTO를 내부 DTO로 변환
    */
   toSendVerificationCodeDto(
     request: SendVerificationCodeRequestDto,
     userId?: string,
-    ipAddress?: string
+    ipAddress?: string,
   ): SendVerificationCodeDto {
-    const dto = plainToInstance(SendVerificationCodeDto, {
-      ...request,
-      userId,
-      ipAddress
-    }, {
-      excludeExtraneousValues: true
-    });
-    
-    return dto;
+    const dto = plainToInstance(
+      SendVerificationCodeDto,
+      {
+        ...request,
+        userId,
+        ipAddress,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
+
+    return dto
   }
-  
+
   /**
    * 인증 코드 확인 요청 DTO를 내부 DTO로 변환
    */
   toVerifyCodeDto(request: VerifyCodeRequestDto): VerifyCodeDto {
     return plainToInstance(VerifyCodeDto, request, {
-      excludeExtraneousValues: true
-    });
-  }
-  
-  /**
-   * 소셜 로그인 요청 DTO를 내부 DTO로 변환
-   */
-  toSocialLoginDto(
-    request: SocialLoginRequestDto, 
-    ipAddress?: string,
-    userAgent?: string
-  ): SocialLoginDto {
-    const dto = plainToInstance(SocialLoginDto, {
-      ...request,
-      ipAddress,
-      userAgent
-    }, {
-      excludeExtraneousValues: true
-    });
-    
-    return dto;
+      excludeExtraneousValues: true,
+    })
   }
 }

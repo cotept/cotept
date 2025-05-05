@@ -39,7 +39,7 @@ export class GenerateAuthCodeUseCaseImpl implements GenerateAuthCodeUseCase {
       const { userId } = dto
 
       // 암호학적으로 안전한 랜덤 코드 생성
-      const authCode = randomBytes(this.AUTH_CODE_LENGTH).toString("hex")
+      const authCode = randomBytes(Number(this.AUTH_CODE_LENGTH)).toString("hex")
 
       // 만료 시간 계산
       const expiresAt = new Date()

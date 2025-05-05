@@ -1,4 +1,5 @@
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
+import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
 import { CacheService } from "@/shared/infrastructure/cache/redis"
 import { ErrorUtils } from "@/shared/utils/error.util"
 import { Injectable, Logger } from "@nestjs/common"
@@ -14,6 +15,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
   private readonly BLACKLIST_PREFIX = "bl:"
   private readonly REFRESH_FAMILY_PREFIX = "refresh:"
   private readonly AUTH_CODE_PREFIX = "auth_code:"
+  private readonly PENDING_LINK_PREFIX = "pending_link:"
 
   constructor(private readonly redisService: CacheService) {}
 
@@ -183,6 +185,68 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
     } catch (error) {
       this.logger.error(
         `Failed to delete auth code: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 소셜 계정 연결 대기 정보 저장
+   * @param token 임시 토큰
+   * @param pendingInfo 대기 중인 소셜 연결 정보
+   * @param expiresIn 만료 시간(초)
+   */
+  async savePendingLinkInfo(token: string, pendingInfo: PendingLinkInfo, expiresIn: number): Promise<void> {
+    try {
+      const key = `${this.PENDING_LINK_PREFIX}${token}`
+      await this.redisService.set(key, JSON.stringify(pendingInfo), expiresIn)
+      this.logger.debug(`Pending link info saved for token ${token} with expiration ${expiresIn}s`)
+    } catch (error) {
+      this.logger.error(
+        `Failed to save pending link info: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 소셜 계정 연결 대기 정보 조회
+   * @param token 임시 토큰
+   * @returns 대기 중인 연결 정보 또는 null
+   */
+  async getPendingLinkInfo(token: string): Promise<PendingLinkInfo | null> {
+    try {
+      const key = `${this.PENDING_LINK_PREFIX}${token}`
+      const data = await this.redisService.get<string>(key)
+
+      if (!data) {
+        return null
+      }
+
+      return JSON.parse(data) as PendingLinkInfo
+    } catch (error) {
+      this.logger.error(
+        `Failed to get pending link info: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 소셜 계정 연결 대기 정보 삭제
+   * @param token 임시 토큰
+   */
+  async deletePendingLinkInfo(token: string): Promise<void> {
+    try {
+      const key = `${this.PENDING_LINK_PREFIX}${token}`
+      await this.redisService.delete(key)
+      this.logger.debug(`Pending link info deleted: ${key}`)
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete pending link info: ${ErrorUtils.getErrorMessage(error)}`,
         ErrorUtils.getErrorStack(error),
       )
       throw error

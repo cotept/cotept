@@ -30,14 +30,20 @@ export class AuthUser {
    * 패스워드 해시 조회
    */
   getPasswordHash(): string {
-    return this.passwordHash;
+    return this.passwordHash
+  }
+  /**
+   * 패스워드 해시 조회
+   */
+  getEmail(): string {
+    return this.email
   }
 
   /**
    * 솔트 값 조회
    */
   getSalt(): string {
-    return this.salt;
+    return this.salt
   }
 
   /**
@@ -65,5 +71,3 @@ export class AuthUser {
     )
   }
 }
-
-

@@ -1,3 +1,5 @@
+import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
+
 /**
  * 토큰 저장소 포트
  * 토큰 저장, 블랙리스트 관리 및 토큰 패밀리 관리를 위한 인터페이스입니다.
@@ -67,4 +69,25 @@ export abstract class TokenStoragePort {
    * @param code 인증 코드
    */
   abstract deleteAuthCode(code: string): Promise<void>
+
+  /**
+   * 소셜 계정 연결 대기 정보 저장
+   * @param token 임시 토큰
+   * @param pendingInfo 대기 중인 소셜 연결 정보
+   * @param expiresIn 만료 시간(초)
+   */
+  abstract savePendingLinkInfo(token: string, pendingInfo: PendingLinkInfo, expiresIn: number): Promise<void>
+
+  /**
+   * 소셜 계정 연결 대기 정보 조회
+   * @param token 임시 토큰
+   * @returns 대기 중인 연결 정보 또는 null
+   */
+  abstract getPendingLinkInfo(token: string): Promise<PendingLinkInfo | null>
+
+  /**
+   * 소셜 계정 연결 대기 정보 삭제
+   * @param token 임시 토큰
+   */
+  abstract deletePendingLinkInfo(token: string): Promise<void>
 }

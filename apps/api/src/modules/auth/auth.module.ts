@@ -19,7 +19,6 @@ import {
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 // 레포지토리
 import {
-  DummySocialProfileService,
   RedisTokenStorageRepository,
   TypeOrmAuthUserRepository,
   TypeOrmAuthVerificationRepository,
@@ -44,7 +43,6 @@ import {
   RefreshTokenUseCaseImpl,
   SendVerificationCodeUseCaseImpl,
   SocialAuthCallbackUseCaseImpl,
-  SocialLoginUseCaseImpl,
   ValidateAuthCodeUseCaseImpl,
   ValidateTokenUseCaseImpl,
   VerifyCodeUseCaseImpl,
@@ -66,7 +64,6 @@ import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecas
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
-import { SocialLoginUseCase } from "@/modules/auth/application/ports/in/social-login.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
@@ -89,7 +86,7 @@ import {
   LocalStrategy,
 } from "@/modules/auth/infrastructure/common/strategies"
 import { CryptoService } from "@/shared/infrastructure/services"
-import { NotificationPort, SocialProfilePort } from "./application/ports/out"
+import { NotificationPort } from "./application/ports/out"
 import { DummyNotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
 
 @Module({
@@ -174,10 +171,6 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
       useClass: VerifyCodeUseCaseImpl,
     },
     {
-      provide: SocialLoginUseCase,
-      useClass: SocialLoginUseCaseImpl,
-    },
-    {
       provide: SocialAuthCallbackUseCase,
       useClass: SocialAuthCallbackUseCaseImpl,
     },
@@ -219,11 +212,6 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
       provide: NotificationPort,
       useClass: DummyNotificationService,
     },
-    // 더미 SocialProfilePort 구현체 제공
-    {
-      provide: SocialProfilePort,
-      useClass: DummySocialProfileService,
-    },
     //--------------------------------------------------------
 
     // shared
@@ -236,7 +224,6 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
     ValidateTokenUseCase,
     SendVerificationCodeUseCase,
     VerifyCodeUseCase,
-    SocialLoginUseCase,
     SocialAuthCallbackUseCase,
     GenerateAuthCodeUseCase,
     ValidateAuthCodeUseCase,

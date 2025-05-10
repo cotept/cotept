@@ -10,7 +10,11 @@
     "storybook": "cross-env STORYBOOK=true storybook dev -p 6006",
     "build-storybook": "cross-env STORYBOOK=true storybook build",
     "test": "cross-env NODE_ENV=test vitest",
-    "test:ui": "cross-env NODE_ENV=test vitest --ui"
+    "test:ui": "cross-env NODE_ENV=test vitest --ui",
+    "lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --fix",
+    "format": "prettier --check",
+    "format:fix": "prettier --write"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

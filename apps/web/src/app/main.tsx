@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { RouterProvider, createRouter } from "@tanstack/react-router"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
 import React, { startTransition } from "react"
 import ReactDOM from "react-dom/client"
+
+import "./app.css"
+
 import Provider from "~/app/providers/Provider"
 import { routeTree } from "~/app/routeTree.gen"
-import "./app.css"
 
 const queryClient = new QueryClient()
 
@@ -33,7 +35,7 @@ async function enableMocking() {
   const { worker } = await import("~/mocks/browser")
   return worker.start()
 }
-
+// web/feat/setting_provider
 const rootElement = document.getElementById("app")!
 
 if (!rootElement.innerHTML) {

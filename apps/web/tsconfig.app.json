@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*", "src/**/.server/**/*", "src/**/.client/**/*", "mocks"],
+  "include": ["src/**/*", "mocks", "stories"],
   "compilerOptions": {
     "composite": true,
     "strict": true,

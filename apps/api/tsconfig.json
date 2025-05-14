@@ -5,6 +5,8 @@
     "strictPropertyInitialization": false,
     "baseUrl": "./",
     "outDir": "./dist",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
     "paths": {
       "@/*": ["./src/*"]
     }

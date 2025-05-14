@@ -1,3 +1,5 @@
+import { MailRequestDto } from "@/modules/mail/infrastructure/adapter/in/dtos/mail-request.dto"
+
 /**
  * 알림 서비스 포트
  * 이메일, SMS 등 알림 발송 기능을 정의하는 인터페이스입니다.
@@ -11,7 +13,7 @@ export abstract class NotificationPort {
    * @param templateId 템플릿 ID(선택)
    * @returns 발송 성공 여부
    */
-  abstract sendEmail(to: string, subject: string, content: string, templateId?: string): Promise<boolean>;
+  abstract sendEmail(dto: MailRequestDto): Promise<boolean>
 
   /**
    * SMS 발송
@@ -20,5 +22,5 @@ export abstract class NotificationPort {
    * @param templateId 템플릿 ID(선택)
    * @returns 발송 성공 여부
    */
-  abstract sendSms(phoneNumber: string, message: string, templateId?: string): Promise<boolean>;
+  abstract sendSms(phoneNumber: string, message: string, templateId?: string): Promise<boolean>
 }

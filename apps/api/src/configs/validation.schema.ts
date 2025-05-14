@@ -1,7 +1,7 @@
 import * as Joi from "joi"
 import { databaseSchema } from "./database"
 // import { nosqlSchema } from "./nosql/nosql.schema"
-// import { jwtSchema } from "./jwt/jwt.schema"
+import { mailSchema } from "./mail"
 import { redisSchema } from "./redis/redis.schema"
 import { githubSchema, googleSchema } from "./social-provider"
 import { authCodeSchema, clentUrlSchema, jwtSchema } from "./token"
@@ -17,4 +17,5 @@ export const validationSchema = Joi.object({
   ...clentUrlSchema,
   ...githubSchema,
   ...googleSchema,
+  ...mailSchema,
 })

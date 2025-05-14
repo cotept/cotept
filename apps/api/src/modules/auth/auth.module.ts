@@ -85,9 +85,11 @@ import {
   JwtStrategy,
   LocalStrategy,
 } from "@/modules/auth/infrastructure/common/strategies"
+import { CacheService } from "@/shared/infrastructure/cache/redis"
 import { CryptoService } from "@/shared/infrastructure/services"
+import { MailModule } from "../mail/mail.module"
 import { NotificationPort } from "./application/ports/out"
-import { DummyNotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
+import { NotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
 
 @Module({
   imports: [
@@ -115,12 +117,13 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
       }),
     }),
     CacheModule,
+    MailModule,
   ],
   controllers: [AuthController, GithubAuthController, GoogleAuthController],
   providers: [
     // 파사드 서비스 - AuthService는 제거하고 AuthFacadeService만 사용
     AuthFacadeService,
-
+    CacheService,
     // 매퍼
     AuthVerificationPersistenceMapper,
     LoginSessionPersistenceMapper,
@@ -210,7 +213,7 @@ import { DummyNotificationService } from "./infrastructure/adapter/out/services/
     // 더미 NotificationService 어댑터
     {
       provide: NotificationPort,
-      useClass: DummyNotificationService,
+      useClass: NotificationService,
     },
     //--------------------------------------------------------
 

@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title [코테PT] 본인 인증
+    include components/styles/styles
+  body
+    include components/constants/constants
+    .container
+      .header
+      //-   include components/header
+      .title [코테PT] 본인 인증
+      
+      .help-text 계정 인증을 완료하기 위해 아래 코드를 입력해주세요.
+      
+      include components/code-block
+
+      .notice 이 인증코드는 3분 동안만 유효합니다.
+      
+      .security-notice 보안을 위해 이 코드를 다른 사람과 공유하지 마세요.
+      
+      .footer #{SERVICE_NAME} | #{DOMAIN_EMAIL_FROM}

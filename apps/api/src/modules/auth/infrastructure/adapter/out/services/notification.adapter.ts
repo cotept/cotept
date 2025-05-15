@@ -1,6 +1,6 @@
 import { NotificationPort } from "@/modules/auth/application/ports/out"
 import { MailFacadeService } from "@/modules/mail/application/services/facade/mail-facade.service"
-import { MailRequestDto } from "@/modules/mail/infrastructure/adapter/in/dtos/mail-request.dto"
+import { MailRequestDto } from "@/modules/mail/infrastructure/dtos/request/mail-request.dto"
 import { Injectable, Logger } from "@nestjs/common"
 
 // 임시 더미 NotificationService 구현

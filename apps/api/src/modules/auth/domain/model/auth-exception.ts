@@ -81,3 +81,13 @@ export class TokenTheftSuspectedException extends UnauthorizedException {
     super(message)
   }
 }
+
+/**
+ * 토큰 도난 의심 예외
+ * 다른 패밀리 ID로 리프레시 토큰 사용 시도 감지
+ */
+export class PasswordUpdateFailedException extends UnauthorizedException {
+  constructor(message: string = "비밀번호 재설정에 실패하였습니다. 다시 시도해주세요.") {
+    super(message)
+  }
+}

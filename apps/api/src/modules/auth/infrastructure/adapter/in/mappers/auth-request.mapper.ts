@@ -1,14 +1,18 @@
 import {
+  FindIdDto,
   LoginDto,
   LogoutDto,
   RefreshTokenDto,
+  ResetPasswordDto,
   SendVerificationCodeDto,
   ValidateTokenDto,
   VerifyCodeDto,
 } from "@/modules/auth/application/dtos"
 import {
+  FindIdRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
+  ResetPasswordRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
@@ -115,5 +119,41 @@ export class AuthRequestMapper {
     return plainToInstance(VerifyCodeDto, request, {
       excludeExtraneousValues: true,
     })
+  }
+
+  /**
+   * 아이디 찾기 요청 DTO를 내부 DTO로 변환
+   */
+  toFindIdDto(request: FindIdRequestDto, ipAddress?: string): FindIdDto {
+    const dto = plainToInstance(
+      FindIdDto,
+      {
+        ...request,
+        ipAddress,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
+
+    return dto
+  }
+
+  /**
+   * 비밀번호 재설정 요청 DTO를 내부 DTO로 변환
+   */
+  toResetPasswordDto(request: ResetPasswordRequestDto, ipAddress?: string): ResetPasswordDto {
+    const dto = plainToInstance(
+      ResetPasswordDto,
+      {
+        ...request,
+        ipAddress,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    )
+
+    return dto
   }
 }

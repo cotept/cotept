@@ -1,4 +1,4 @@
-import { MailRequestDto } from "@/modules/mail/infrastructure/adapter/in/dtos/mail-request.dto"
+import { MailRequestDto } from "@/modules/mail/infrastructure/dtos/request/mail-request.dto"
 
 /**
  * 알림 서비스 포트

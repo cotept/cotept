@@ -1,6 +1,6 @@
+import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
 import { Controller, Get, Logger, Param, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
 
 @ApiTags("메일 감사")
 @Controller("mail-audit")
@@ -25,22 +25,22 @@ export class MailAuditController {
     @Query("template") template?: string,
   ) {
     this.logger.log(`Searching mail audits with filters: ${JSON.stringify({ mailId, recipient, template })}`)
-    
+
     if (mailId) {
       const audits = await this.getMailAuditUseCase.getByMailId(mailId)
-      return audits.map(audit => audit.toData())
+      return audits.map((audit) => audit.toData())
     }
-    
+
     if (recipient) {
       const audits = await this.getMailAuditUseCase.getByRecipient(recipient)
-      return audits.map(audit => audit.toData())
+      return audits.map((audit) => audit.toData())
     }
-    
+
     if (template) {
       const audits = await this.getMailAuditUseCase.getByTemplate(template)
-      return audits.map(audit => audit.toData())
+      return audits.map((audit) => audit.toData())
     }
-    
+
     return []
   }
 }

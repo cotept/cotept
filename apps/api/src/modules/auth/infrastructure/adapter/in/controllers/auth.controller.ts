@@ -2,13 +2,15 @@ import { AuthFacadeService } from "@/modules/auth/application/services/facade/au
 import { CurrentUserId } from "@/modules/auth/infrastructure/common/decorators"
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guard"
 import {
+  ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
+  FindIdRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
+  ResetPasswordRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
-  ConfirmSocialLinkRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
 import {
@@ -103,7 +105,10 @@ export class AuthController {
    */
   @Post("send-verification-code")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "인증 코드 발송", description: "이메일 또는 전화번호로 인증 코드를 발송합니다." })
+  @ApiOperation({
+    summary: "인증 코드 발송",
+    description: "이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.",
+  })
   @ApiBody({ type: SendVerificationCodeRequestDto })
   @ApiOkResponse({ description: "인증 코드 발송 성공" })
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
@@ -122,7 +127,10 @@ export class AuthController {
    */
   @Post("verify-code")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "인증 코드 확인", description: "발송된 인증 코드의 유효성을 검증합니다." })
+  @ApiOperation({
+    summary: "인증 코드 확인",
+    description: "발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.",
+  })
   @ApiBody({ type: VerifyCodeRequestDto })
   @ApiOkResponse({ description: "인증 코드 확인 성공" })
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터 또는 유효하지 않은 인증 코드" })
@@ -176,5 +184,41 @@ export class AuthController {
     const userAgent = req.headers["user-agent"] || ""
 
     return await this.authFacadeService.confirmSocialLink(confirmSocialLinkRequestDto, ipAddress, userAgent, res)
+  }
+
+  /**
+   * 아이디 찾기
+   */
+  @Post("find-id")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "아이디 찾기",
+    description:
+      "인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
+  })
+  @ApiBody({ type: FindIdRequestDto })
+  @ApiOkResponse({ description: "아이디 찾기 성공" })
+  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  async findId(@Body() findIdRequestDto: FindIdRequestDto, @Req() req: Request) {
+    const ipAddress = req.ip
+    return await this.authFacadeService.findId(findIdRequestDto, ipAddress)
+  }
+
+  /**
+   * 비밀번호 재설정
+   */
+  @Post("reset-password")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "비밀번호 재설정",
+    description:
+      "인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
+  })
+  @ApiBody({ type: ResetPasswordRequestDto })
+  @ApiOkResponse({ description: "비밀번호 재설정 성공" })
+  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  async resetPassword(@Body() resetPasswordRequestDto: ResetPasswordRequestDto, @Req() req: Request) {
+    const ipAddress = req.ip
+    return await this.authFacadeService.resetPassword(resetPasswordRequestDto, ipAddress)
   }
 }

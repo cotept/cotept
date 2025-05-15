@@ -37,10 +37,12 @@ import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/
 
 // 유스케이스
 import {
+  FindIdUseCaseImpl,
   GenerateAuthCodeUseCaseImpl,
   LoginUseCaseImpl,
   LogoutUseCaseImpl,
   RefreshTokenUseCaseImpl,
+  ResetPasswordUseCaseImpl,
   SendVerificationCodeUseCaseImpl,
   SocialAuthCallbackUseCaseImpl,
   ValidateAuthCodeUseCaseImpl,
@@ -58,10 +60,12 @@ import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 
+import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
 import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecase"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
+import { ResetPasswordUseCase } from "@/modules/auth/application/ports/in/reset-password.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
@@ -121,7 +125,7 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
   ],
   controllers: [AuthController, GithubAuthController, GoogleAuthController],
   providers: [
-    // 파사드 서비스 - AuthService는 제거하고 AuthFacadeService만 사용
+    // 파사드 서비스
     AuthFacadeService,
     CacheService,
     // 매퍼
@@ -185,6 +189,15 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
       provide: ValidateAuthCodeUseCase,
       useClass: ValidateAuthCodeUseCaseImpl,
     },
+    // 새로 추가한 UseCase 구현체
+    {
+      provide: FindIdUseCase,
+      useClass: FindIdUseCaseImpl,
+    },
+    {
+      provide: ResetPasswordUseCase,
+      useClass: ResetPasswordUseCaseImpl,
+    },
 
     // 가드
     JwtAuthGuard,
@@ -230,6 +243,8 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
     SocialAuthCallbackUseCase,
     GenerateAuthCodeUseCase,
     ValidateAuthCodeUseCase,
+    FindIdUseCase,        // 내보내기 추가
+    ResetPasswordUseCase, // 내보내기 추가
     TokenGeneratorPort,
     JwtAuthGuard,
     AuthFacadeService, // AuthFacadeService를 내보내도록 추가

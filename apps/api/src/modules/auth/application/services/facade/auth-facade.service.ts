@@ -1,11 +1,15 @@
+import { FindIdDto } from "@/modules/auth/application/dtos/find-id.dto"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
+import { ResetPasswordDto } from "@/modules/auth/application/dtos/reset-password.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { ValidateAuthCodeDto } from "@/modules/auth/application/dtos/validate-auth-code.dto"
+import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
 import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecase"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
+import { ResetPasswordUseCase } from "@/modules/auth/application/ports/in/reset-password.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
@@ -20,8 +24,10 @@ import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/
 import {
   ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
+  FindIdRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
+  ResetPasswordRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
@@ -49,6 +55,8 @@ export class AuthFacadeService {
     private readonly socialAuthCallbackUseCase: SocialAuthCallbackUseCase,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly validateAuthCodeUseCase: ValidateAuthCodeUseCase,
+    private readonly findIdUseCase: FindIdUseCase,                // 추가
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,  // 추가
     private readonly authRequestMapper: AuthRequestMapper,
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
@@ -224,6 +232,51 @@ export class AuthFacadeService {
     } catch (error) {
       this.logger.error(
         `인증 코드 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 아이디 찾기
+   */
+  async findId(findIdRequestDto: FindIdRequestDto, ipAddress?: string) {
+    try {
+      const findIdDto = this.authRequestMapper.toFindIdDto(findIdRequestDto, ipAddress)
+
+      const result = await this.findIdUseCase.execute(findIdDto)
+
+      return new ApiResponse(HttpStatus.OK, true, "아이디 찾기 성공", {
+        email: result.maskingEmail, // 마스킹된 이메일만 반환
+      })
+    } catch (error) {
+      this.logger.error(
+        `아이디 찾기 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 비밀번호 재설정
+   */
+  async resetPassword(resetPasswordRequestDto: ResetPasswordRequestDto, ipAddress?: string) {
+    try {
+      const resetPasswordDto = this.authRequestMapper.toResetPasswordDto(resetPasswordRequestDto, ipAddress)
+
+      const success = await this.resetPasswordUseCase.execute(resetPasswordDto)
+
+      return new ApiResponse(
+        HttpStatus.OK,
+        success,
+        success ? "비밀번호가 성공적으로 변경되었습니다." : "비밀번호 변경에 실패했습니다.",
+        { success },
+      )
+    } catch (error) {
+      this.logger.error(
+        `비밀번호 재설정 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
         ErrorUtils.getErrorStack(error),
       )
       throw error

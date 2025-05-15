@@ -7,7 +7,8 @@ import {
 } from "@/modules/auth/infrastructure/adapter/out/persistence/entities"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common"
+import { ErrorUtils } from "@/shared/utils/error.util"
+import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { v4 as uuidv4 } from "uuid"
@@ -17,6 +18,8 @@ import { v4 as uuidv4 } from "uuid"
  */
 @Injectable()
 export class TypeOrmAuthUserRepository implements AuthUserRepositoryPort {
+  private readonly logger = new Logger(TypeOrmAuthUserRepository.name)
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -276,6 +279,73 @@ export class TypeOrmAuthUserRepository implements AuthUserRepositoryPort {
         throw error
       }
       throw new InternalServerErrorException("소셜 계정 사용자 생성 중 오류가 발생했습니다.")
+    }
+  }
+
+  /**
+   * 사용자 비밀번호 업데이트
+   * @param userId 사용자 ID
+   * @param hashedPassword 해싱된 새 비밀번호
+   * @returns 성공 여부
+   */
+  async updatePassword(userId: string, hashedPassword: { hash: string; salt: string }): Promise<boolean> {
+    try {
+      // 1. 사용자 존재 여부 확인
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      })
+
+      if (!user) {
+        throw new NotFoundException("사용자를 찾을 수 없습니다.")
+      }
+
+      // 2. 비밀번호 업데이트 (소금값은 해싱 과정에서 이미 포함됨)
+      const updateResult = await this.userRepository.update(
+        { id: userId },
+        {
+          passwordHash: hashedPassword.hash,
+          salt: hashedPassword.salt,
+          updatedAt: new Date(),
+        },
+      )
+      if (!updateResult) {
+        return false
+      }
+      return Number(updateResult?.affected) > 0
+    } catch (error) {
+      this.logger.error(
+        `비밀번호 업데이트 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      if (error instanceof NotFoundException) {
+        throw error
+      }
+      throw new InternalServerErrorException("비밀번호 업데이트 중 오류가 발생했습니다.")
+    }
+  }
+
+  /**
+   * 전화번호로 사용자 찾기
+   * @param phoneNumber 전화번호
+   * @returns 인증용 사용자 또는 null
+   */
+  async findByPhoneNumber(phoneNumber: string): Promise<AuthUser | null> {
+    try {
+      const userEntity = await this.userRepository.findOne({
+        where: { phoneNumber },
+        select: ["id", "email", "passwordHash", "salt", "role", "status"],
+      })
+
+      if (!userEntity) return null
+
+      return this.mapToAuthUser(userEntity)
+    } catch (error) {
+      this.logger.error(
+        `전화번호로 사용자 찾기 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+
+      return null
     }
   }
 

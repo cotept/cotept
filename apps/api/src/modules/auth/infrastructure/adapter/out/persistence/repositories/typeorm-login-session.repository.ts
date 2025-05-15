@@ -2,7 +2,8 @@ import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { SessionLogEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/session-log.entity"
 import { LoginSessionPersistenceMapper } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers/login-session-persistence.mapper"
-import { Injectable } from "@nestjs/common"
+import { ErrorUtils } from "@/shared/utils/error.util"
+import { Injectable, Logger } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { IsNull, LessThan, Repository } from "typeorm"
 
@@ -11,6 +12,8 @@ import { IsNull, LessThan, Repository } from "typeorm"
  */
 @Injectable()
 export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort {
+  private readonly logger = new Logger(TypeOrmLoginSessionRepository.name)
+
   constructor(
     @InjectRepository(SessionLogEntity)
     private readonly sessionLogRepository: Repository<SessionLogEntity>,
@@ -49,6 +52,7 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
     if (!entity) return null
     return this.loginSessionMapper.toDomain(entity)
   }
+
   /**
    * 사용자의 모든 활성 세션 찾기
    * @param userId 사용자 ID
@@ -81,5 +85,49 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
     })
 
     return this.loginSessionMapper.toDomainList(entities)
+  }
+
+  /**
+   * 사용자의 모든 활성 세션 종료
+   * @param userId 사용자 ID
+   * @returns 성공 여부
+   */
+  async terminateAllUserSessions(userId: string): Promise<boolean> {
+    try {
+      const now = new Date()
+
+      // 사용자의 모든 활성 세션 찾기
+      const activeSessionEntities = await this.sessionLogRepository.find({
+        where: {
+          userId,
+          endedAt: IsNull(),
+          expiresAt: LessThan(now),
+        },
+      })
+
+      if (activeSessionEntities.length === 0) {
+        // 활성 세션이 없는 경우 성공으로 처리
+        return true
+      }
+
+      // 모든 활성 세션을 종료 처리
+      const updatePromises = activeSessionEntities.map((session) => {
+        session.endedAt = new Date()
+        session.endReason = "PASSWORD_CHANGED"
+        return this.sessionLogRepository.save(session)
+      })
+
+      await Promise.all(updatePromises)
+
+      this.logger.log(`${userId} 사용자의 세션 ${updatePromises.length}개가 종료되었습니다. (사유: 비밀번호 변경)`)
+
+      return true
+    } catch (error) {
+      this.logger.error(
+        `세션 종료 중 오류 발생:  ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      return false
+    }
   }
 }

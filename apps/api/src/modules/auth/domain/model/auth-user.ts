@@ -13,6 +13,13 @@ export class AuthUser {
   ) {}
 
   /**
+   * 사용자 id 반환
+   */
+  getId(): string {
+    return this.id
+  }
+
+  /**
    * 사용자 계정이 활성 상태인지 확인
    */
   get isActive(): boolean {
@@ -33,7 +40,7 @@ export class AuthUser {
     return this.passwordHash
   }
   /**
-   * 패스워드 해시 조회
+   * 이메일 조회
    */
   getEmail(): string {
     return this.email

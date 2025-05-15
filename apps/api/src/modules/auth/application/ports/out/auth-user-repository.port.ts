@@ -69,4 +69,19 @@ export abstract class AuthUserRepositoryPort {
     profileImageUrl?: string,
     profileData?: any,
   ): Promise<AuthUser>
+
+  /**
+   * 사용자 비밀번호 업데이트
+   * @param userId 사용자 ID
+   * @param hashedPassword 해싱된 새 비밀번호
+   * @returns 성공 여부
+   */
+  abstract updatePassword(userId: string, hashedPassword: { hash: string; salt: string }): Promise<boolean>
+
+  /**
+   * 전화번호로 사용자 찾기
+   * @param phoneNumber 전화번호
+   * @returns 인증용 사용자 또는 null
+   */
+  abstract findByPhoneNumber(phoneNumber: string): Promise<AuthUser | null>
 }

@@ -6,7 +6,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeor
  * 메일 감사 엔티티
  * 메일 발송 감사 정보를 저장하는 TypeORM 엔티티
  */
-@Entity("mail_audits")
+@Entity("MAIL_AUDITS")
 export class MailAuditEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string

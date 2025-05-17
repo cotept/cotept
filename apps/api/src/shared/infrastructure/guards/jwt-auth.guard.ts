@@ -1,9 +1,9 @@
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
+import { JwtAuthenticatedUser } from "@/modules/auth/infrastructure/common/strategies/jwt.strategy"
 import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
 import { Request } from "express"
-import { JwtAuthenticatedUser } from "../strategies/jwt.strategy"
 
 /**
  * JWT 인증 가드

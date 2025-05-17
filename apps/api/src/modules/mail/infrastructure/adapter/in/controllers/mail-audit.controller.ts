@@ -1,5 +1,6 @@
 import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
-import { Controller, Get, Logger, Param, Query } from "@nestjs/common"
+import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
+import { Controller, Get, Logger, Param, Query, UseGuards } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 
 @ApiTags("메일 감사")
@@ -10,6 +11,7 @@ export class MailAuditController {
   constructor(private readonly getMailAuditUseCase: GetMailAuditUseCase) {}
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "메일 감사 조회 (ID)" })
   async getMailAuditById(@Param("id") id: string) {
     this.logger.log(`Querying mail audit by ID: ${id}`)
@@ -18,6 +20,7 @@ export class MailAuditController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "메일 감사 조회 (검색)" })
   async searchMailAudit(
     @Query("mailId") mailId?: string,

@@ -1,5 +1,5 @@
 import { CacheModule } from "@/shared/infrastructure/cache/redis/cache.module"
-import { Module } from "@nestjs/common"
+import { Global, Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { JwtModule } from "@nestjs/jwt"
 import { PassportModule } from "@nestjs/passport"
@@ -95,6 +95,7 @@ import { MailModule } from "../mail/mail.module"
 import { NotificationPort } from "./application/ports/out"
 import { NotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
 
+@Global()
 @Module({
   imports: [
     ConfigModule,

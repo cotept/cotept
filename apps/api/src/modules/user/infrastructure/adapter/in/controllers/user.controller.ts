@@ -3,7 +3,21 @@ import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
 import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query } from "@nestjs/common"
+import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -24,6 +38,7 @@ export class UserController {
   constructor(private readonly userFacadeService: UserFacadeService) {}
 
   @Get("userlist")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "사용자 목록 조회", description: "등록된 모든 사용자 목록을 조회합니다." })
   @ApiQuery({ name: "page", required: false, type: Number, description: "페이지 번호 (기본값: 1)" })
   @ApiQuery({ name: "limit", required: false, type: Number, description: "페이지당 항목 수 (기본값: 10)" })
@@ -40,6 +55,7 @@ export class UserController {
   }
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "사용자 상세 조회", description: "ID로 사용자 정보를 조회합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
   @ApiOkResponse({ description: "성공적으로 사용자를 조회함" })
@@ -59,6 +75,7 @@ export class UserController {
   }
 
   @Put(":id")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "사용자 정보 수정", description: "사용자 정보를 수정합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
   @ApiOkResponse({ description: "성공적으로 사용자 정보를 수정함" })
@@ -69,6 +86,7 @@ export class UserController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "사용자 삭제", description: "사용자를 삭제합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
@@ -79,6 +97,7 @@ export class UserController {
   }
 
   @Patch(":id/password")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "비밀번호 변경", description: "사용자 비밀번호를 변경합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
   @ApiOkResponse({ description: "성공적으로 비밀번호를 변경함" })

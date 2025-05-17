@@ -1,9 +1,9 @@
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import { ChangePasswordDto } from "@/modules/user/application/dtos/change-password.dto"
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
 import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
-import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
 import {
   Body,
   Controller,

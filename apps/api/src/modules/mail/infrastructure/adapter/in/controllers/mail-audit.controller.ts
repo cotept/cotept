@@ -1,5 +1,5 @@
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
-import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
 import { Controller, Get, Logger, Param, Query, UseGuards } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 

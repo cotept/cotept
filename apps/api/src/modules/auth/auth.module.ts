@@ -79,7 +79,7 @@ import {
   GoogleAuthController,
 } from "@/modules/auth/infrastructure/adapter/in/controllers"
 // 가드
-import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 // 전략
 import { JwtConfig } from "@/configs/token"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
@@ -244,7 +244,7 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
     SocialAuthCallbackUseCase,
     GenerateAuthCodeUseCase,
     ValidateAuthCodeUseCase,
-    FindIdUseCase,        // 내보내기 추가
+    FindIdUseCase, // 내보내기 추가
     ResetPasswordUseCase, // 내보내기 추가
     TokenGeneratorPort,
     JwtAuthGuard,

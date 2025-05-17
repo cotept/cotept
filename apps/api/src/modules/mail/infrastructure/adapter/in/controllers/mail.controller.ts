@@ -1,7 +1,7 @@
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import { MailFacadeService } from "@/modules/mail/application/services/facade/mail-facade.service"
 import { MailRequestMapper } from "@/modules/mail/infrastructure/adapter/in/mappers/mail-request.mapper"
 import { MailRequestDto } from "@/modules/mail/infrastructure/dtos/request/mail-request.dto"
-import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
 import { Body, Controller, Logger, Post, UseGuards } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 

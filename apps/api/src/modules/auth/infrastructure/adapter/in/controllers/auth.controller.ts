@@ -1,5 +1,6 @@
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { CurrentUserId } from "@/modules/auth/infrastructure/common/decorators"
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import {
   ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
@@ -11,7 +12,6 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import { JwtAuthGuard } from "@/shared/infrastructure/guards/jwt-auth.guard"
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
 import {
   ApiBadRequestResponse,

@@ -18,6 +18,7 @@
       "~/stories/*": ["./stories/*"]
     },
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noEmit": false
   }
 }

@@ -1,6 +1,13 @@
 {
   "files": [],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.app.json" }],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
   "compilerOptions": {
     "checkJs": true,
     "verbatimModuleSyntax": true,
@@ -9,10 +16,43 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "~/mocks/*": ["./mocks/*"],
-      "~/stories/*": ["./stories/*"]
+      "~/*": [
+        "./src/*"
+      ],
+      "~/mocks/*": [
+        "./mocks/*"
+      ],
+      "~/stories/*": [
+        "./stories/*"
+      ]
     },
-    "types": []
-  }
+    "types": [],
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,5 +1,7 @@
 name : cotept web workflow
-on : push
+on : 
+  push : 
+  branch : [main]
 jobs :
   echo:
     runs-on: ubuntu-latest

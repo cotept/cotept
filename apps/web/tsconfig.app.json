@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*", "mocks", "stories"],
+  "include": ["src/**/*", "mocks", "stories", "app/layout.tsx", "app/page.tsx", "app/routeTree.gen.ts"],
   "compilerOptions": {
     "composite": true,
     "strict": true,

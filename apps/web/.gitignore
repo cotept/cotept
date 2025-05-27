@@ -15,3 +15,9 @@
 *storybook.log
 
 .env.*
+
+# Next.js
+.next
+
+# vscode 세팅
+.vscode

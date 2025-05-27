@@ -21,6 +21,10 @@ coverage
 # Vercel
 .vercels
 
+# Next.js
+.next
+
+# vscode 세팅
 .vscode
 
 # Debug

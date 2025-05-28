@@ -1,7 +1,7 @@
-import { setupWorker } from "msw/browser"
+// import { setupWorker } from "msw/browser"
 
-import { mentorHandler } from "./hanlders"
+// import { mentorHandler } from "./handlers"
 
-const handlers = [...mentorHandler]
+// const handlers = [...mentorHandler]
 
-export const worker = setupWorker(...handlers)
+// export const worker = setupWorker(...handlers)

@@ -1,14 +1,17 @@
+
 import { http, HttpResponse } from "msw"
 
 import { mentor } from "../data"
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 export const mentorHandler = [
   // 사용자 API 핸들러
-  http.get("/api/users", () => {
+  http.get(`${baseUrl}/api/users`, () => {
     return HttpResponse.json(mentor)
   }),
 
-  http.get("/api/users/:id", ({ params }) => {
+  http.get(`${baseUrl}/api/users/:id`, ({ params }) => {
     const user = mentor.find((mentor) => mentor.id === params.id)
 
     if (!user) {

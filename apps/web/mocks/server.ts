@@ -1,7 +1,7 @@
-import { setupServer } from "msw/node"
+// import { setupServer } from "msw/node"
 
-import { mentorHandler } from "./handlers"
+// import { mentorHandler } from "./handlers"
 
-const handlers = [...mentorHandler]
+// const handlers = [...mentorHandler]
 
-export const server = setupServer(...handlers)
+// export const server = setupServer(...handlers)

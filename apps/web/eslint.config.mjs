@@ -1,22 +1,18 @@
 import { FlatCompat } from "@eslint/eslintrc"
-import js from "@eslint/js"
 import baseConfig from "@repo/eslint-config/base.js"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import { dirname } from "path"
+import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = dirname(__filename)
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
 })
 
-export default [
+const eslintConfig = [
   ...baseConfig,
-
-  // FSD 플러그인 수동 구현
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     plugins: {
       ...compat.plugins("boundaries").reduce((acc, config) => ({ ...acc, ...config.plugins }), {}),
@@ -24,10 +20,8 @@ export default [
     settings: {
       "boundaries/elements": [
         { type: "app", pattern: "src/app/*" },
-        { type: "pages", pattern: "src/pages/*" },
-        { type: "widgets", pattern: "src/widgets/*" },
+        { type: "components", pattern: "src/components/*" },
         { type: "features", pattern: "src/features/*" },
-        { type: "entities", pattern: "src/entities/*" },
         { type: "shared", pattern: "src/shared/*" },
       ],
       "boundaries/ignore": ["**/*.d.ts", "**/*.spec.ts", "**/*.test.ts"],
@@ -43,24 +37,20 @@ export default [
               allow: ["shared"],
             },
             {
-              from: "entities",
-              allow: ["shared", "entities"],
-            },
-            {
               from: "features",
-              allow: ["shared", "entities", "features"],
+              allow: ["shared", "features"],
             },
             {
-              from: "widgets",
-              allow: ["shared", "entities", "features", "widgets"],
+              from: "components",
+              allow: ["shared", "features", "components"],
             },
             {
               from: "pages",
-              allow: ["shared", "entities", "features", "widgets", "pages"],
+              allow: ["shared", "features", "components", "pages"],
             },
             {
               from: "app",
-              allow: ["shared", "entities", "features", "widgets", "pages", "app"],
+              allow: ["shared", "features", "components", "pages", "app"],
             },
           ],
         },
@@ -79,8 +69,6 @@ export default [
       ],
     },
   },
-
-  // Storybook 규칙은 stories 파일에만 적용
   {
     files: ["**/*.stories.@(js|jsx|ts|tsx)"],
     ...compat.plugins("storybook"),
@@ -98,3 +86,5 @@ export default [
     ignores: ["**/node_modules", "**/dist", "**/.next"],
   },
 ]
+
+export default eslintConfig

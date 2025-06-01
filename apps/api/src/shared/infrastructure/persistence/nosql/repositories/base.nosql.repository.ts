@@ -8,143 +8,123 @@ import {
 } from "@nestjs/common"
 import {
   AnyRow,
-  DeleteOpResult,
+  DeleteResult,
   ErrorCode,
-  FieldValue,
+  FieldRange,
   NoSQLArgumentError,
   NoSQLAuthorizationError,
   NoSQLClient,
   NoSQLError,
   NoSQLServiceError,
   NoSQLTimeoutError,
-  PutOpResult,
+  PreparedStatement,
+  PutResult,
+  QueryResult,
+  RowKey,
+  WriteMultipleOpt,
+  WriteMultipleResult,
 } from "oracle-nosqldb"
 import { AbstractNoSQLRepository } from "../../base/abstract.nosql.repository"
 import { OCI_NOSQL_CLIENT } from "../client/nosql-client.provider"
 
 /**
  * Oracle NoSQL 데이터베이스 레포지토리 기본 구현
- *
- * Oracle NoSQL SDK의 기본 CRUD 기능을 구현합니다.
- * 참조: https://oracle.github.io/nosql-node-sdk/classes/NoSQLClient.html
+ * 공식 타입을 적극적으로 적용한 버전
  */
-export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> extends AbstractNoSQLRepository<T> {
+export abstract class BaseNoSQLRepository<
+  TData extends AnyRow,
+  TKey extends RowKey<TData> = RowKey<TData>,
+> extends AbstractNoSQLRepository<TData, TKey> {
   protected readonly logger = new Logger(this.constructor.name)
 
   constructor(
-    @Inject(OCI_NOSQL_CLIENT) protected readonly client: NoSQLClient,
+    @Inject(OCI_NOSQL_CLIENT) protected readonly nosqlClient: NoSQLClient,
     protected readonly tableName: string,
   ) {
     super()
   }
 
   /**
-   * ID로 엔티티 조회
+   * PK로 엔티티 조회
    */
-  async getById(id: string): Promise<T> {
+  async getById(key: TKey): Promise<TData | null> {
     return this.executeOperation(async () => {
-      const key = this.getKeyObject(id)
-      const result = await this.client.get(this.tableName, key)
-
+      const result = await this.nosqlClient.get<TData>(this.tableName, key)
       if (!result.row) {
-        throw new NotFoundException(`Entity with id ${id} not found`)
+        throw new NotFoundException(`Entity with key ${JSON.stringify(key)} not found`)
       }
-
-      return result.row as T
+      return result.row as TData
     })
   }
 
   /**
    * 조건에 맞는 엔티티 목록 조회
    */
-  async getAll(filter: Partial<Record<string, FieldValue>> = {}): Promise<T[]> {
+  async getAll(query?: string): Promise<TData[]> {
     return this.executeOperation(async () => {
-      // 전체 테이블 쿼리
-      const query = `SELECT * FROM ${this.tableName}`
-      const result = await this.client.query(query)
-
-      // 결과에서 필터 조건에 맞는 항목만 필터링
-      if (Object.keys(filter).length === 0) {
-        return result.rows as T[]
-      }
-
-      return result.rows.filter((row) => {
-        for (const [key, value] of Object.entries(filter)) {
-          if (row[key] !== value) {
-            return false
-          }
-        }
-        return true
-      }) as T[]
+      const statement = query ?? `SELECT * FROM ${this.tableName}`
+      const result: QueryResult<TData> = await this.nosqlClient.query<TData>(statement)
+      return (result.rows ?? []) as TData[]
     })
   }
 
   /**
    * 사용자 정의 쿼리 실행
    */
-  async query(query: string): Promise<T[]> {
+  async query(statement: string | PreparedStatement): Promise<QueryResult<TData>> {
     return this.executeOperation(async () => {
-      const result = await this.client.query(query)
-      return result.rows as T[]
+      return this.nosqlClient.query<TData>(statement)
     })
   }
 
   /**
    * 엔티티 생성
    */
-  async create(entity: T): Promise<T> {
+  async create(entity: TData): Promise<PutResult<TData>> {
     return this.executeOperation(async () => {
-      await this.client.put(this.tableName, entity)
-      return entity
+      return this.nosqlClient.put<TData>(this.tableName, entity)
     })
   }
 
   /**
-   * 엔티티 수정
-   * @param id 수정할 엔티티의 ID
-   * @param partialEntity 수정할 필드가 포함된 부분 엔티티
+   * 엔티티 부분 업데이트 (get → merge → put)
    */
-  async update(id: string, partialEntity: Partial<T>): Promise<T> {
+  async update(key: TKey, updateFields: Partial<TData>): Promise<QueryResult<TData>> {
     return this.executeOperation(async () => {
-      // 먼저 기존 엔티티를 가져옵니다
-      const key = this.getKeyObject(id)
-      const result = await this.client.get(this.tableName, key)
-
+      const result = await this.nosqlClient.get<TData>(this.tableName, key)
       if (!result.row) {
-        throw new NotFoundException(`Entity with id ${id} not found`)
+        throw new NotFoundException(`Entity with key ${JSON.stringify(key)} not found`)
       }
+      const updatedEntity = { ...result.row, ...updateFields } as TData
+      await this.nosqlClient.put<TData>(this.tableName, updatedEntity)
 
-      // 부분 업데이트를 위해 기존 엔티티와 새 필드를 병합합니다
-      const updatedEntity = { ...result.row, ...partialEntity } as T
-
-      // 업데이트된 엔티티를 저장합니다
-      await this.client.put(this.tableName, updatedEntity)
-      return updatedEntity
+      // 반환값은 QueryResult<TData>로 맞춤
+      return {
+        rows: [updatedEntity],
+        continuationKey: undefined,
+      }
     })
   }
 
   /**
    * 엔티티 삭제
    */
-  async delete(id: string): Promise<boolean> {
+  async delete(key: TKey): Promise<DeleteResult<TData>> {
     return this.executeOperation(async () => {
-      const key = this.getKeyObject(id)
-      const result = await this.client.delete(this.tableName, key)
-
+      const result = await this.nosqlClient.delete<TData>(this.tableName, key)
       if (!result.success) {
-        throw new NotFoundException(`Entity with id ${id} not found`)
+        throw new NotFoundException(`Entity with key ${JSON.stringify(key)} not found`)
       }
-
-      return result.success
+      return result
     })
   }
 
   /**
    * 조건에 맞는 엔티티 개수 조회
    */
-  async count(filter: Partial<Record<string, FieldValue>> = {}): Promise<number> {
+  async count(query?: string): Promise<number> {
     return this.executeOperation(async () => {
-      const entities = await this.getAll(filter)
+      const entities = await this.getAll(query)
       return entities.length
     })
   }
@@ -152,37 +132,42 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
   /**
    * 여러 엔티티 일괄 생성
    */
-  async createBatch(entities: T[]): Promise<T[]> {
+  async createBatch(entities: TData[], opt?: WriteMultipleOpt): Promise<WriteMultipleResult<TData>> {
     return this.executeOperation(async () => {
-      await this.client.putMany(this.tableName, entities)
-      return entities
+      const ops = entities.map((entity) => ({
+        tableName: this.tableName,
+        put: entity,
+        abortOnFail: true,
+      }))
+      return this.nosqlClient.writeMany<TData>(ops, opt)
     })
   }
 
   /**
    * 여러 엔티티 일괄 삭제
    */
-  async deleteBatch(ids: string[]): Promise<(DeleteOpResult<AnyRow> | PutOpResult<AnyRow>)[]> {
+  async deleteBatch(keys: TKey[], opt?: WriteMultipleOpt): Promise<WriteMultipleResult<TData>> {
     return this.executeOperation(async () => {
-      const keys = ids.map((id) => this.getKeyObject(id))
-      const result = await this.client.deleteMany(this.tableName, keys)
-      return result.results || []
+      return this.nosqlClient.deleteMany<TData>(this.tableName, keys, opt)
     })
   }
 
   /**
-   * 범위 삭제 (필요한 경우에만 사용)
+   * 부분 PK/범위로 다건 삭제 (deleteRange)
    */
-  async deleteRange(partialKey: Partial<Record<string, FieldValue>>, fieldRange?: any): Promise<number> {
+  async deleteRange(partialKey: Partial<TKey>, fieldRange?: FieldRange): Promise<number> {
     return this.executeOperation(async () => {
-      const result = await this.client.deleteRange(this.tableName, partialKey, { fieldRange })
-      return result.deletedCount
+      const result = await this.nosqlClient.deleteRange(
+        this.tableName,
+        partialKey,
+        fieldRange ? { fieldRange } : undefined,
+      )
+      return result.deletedCount ?? 0
     })
   }
 
   /**
    * 공통 연산 실행 래퍼
-   * 에러 처리 로직을 중앙화합니다.
    */
   protected async executeOperation<R>(operation: () => Promise<R>): Promise<R> {
     try {
@@ -194,25 +179,22 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
 
   /**
    * DB 에러 핸들러
-   * NoSQL 에러를 적절한 HTTP 예외로 변환합니다.
    */
   protected handleDBError(error: unknown): never {
     if (error instanceof NoSQLArgumentError) {
-      this.logger.error(`Invalid argument: error.message`)
+      this.logger.error(`Invalid argument: ${error.message}`)
       throw new BadRequestException(error.message)
     } else if (error instanceof NoSQLTimeoutError) {
-      this.logger.error(`Timeout: error.message`)
+      this.logger.error(`Timeout: ${error.message}`)
       throw new InternalServerErrorException("Database operation timed out")
     } else if (error instanceof NoSQLServiceError) {
-      this.logger.error(`Service error: error.message`)
+      this.logger.error(`Service error: ${error.message}`)
       throw new InternalServerErrorException("NoSQL service error")
     } else if (error instanceof NoSQLAuthorizationError) {
-      this.logger.error(`Authorization error: error.message`)
+      this.logger.error(`Authorization error: ${error.message}`)
       throw new InternalServerErrorException("Authorization error")
     } else if (error instanceof NoSQLError) {
-      this.logger.error(`NoSQL error: error.message`)
-
-      // NoSQL 에러 코드 처리
+      this.logger.error(`NoSQL error: ${error.message}`)
       if (error.errorCode) {
         switch (error.errorCode) {
           case ErrorCode.ILLEGAL_ARGUMENT:
@@ -227,16 +209,12 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
             throw new BadRequestException("Row size limit exceeded")
         }
       }
-
       throw new InternalServerErrorException("NoSQL operation failed")
     } else if (error instanceof Error) {
-      this.logger.error(`Unknown error: error.message`)
-
-      // 이미 NestJS HttpException인 경우 그대로 전달
+      this.logger.error(`Unknown error: ${error.message}`)
       if ("status" in error && "message" in error) {
         throw error
       }
-
       throw new InternalServerErrorException(error.message)
     } else {
       this.logger.error(`Unknown error`, error)
@@ -245,10 +223,10 @@ export abstract class BaseNoSQLRepository<T extends Record<string, FieldValue>> 
   }
 
   /**
-   * ID로 키 객체 생성
-   * 복합키 사용 시 오버라이드
+   * RowKey 생성 (복합키 지원, 필요시 오버라이드)
    */
-  protected getKeyObject(id: string): Record<string, any> {
-    return { id }
+  protected getKeyObject(id: string | number | object): TKey {
+    if (typeof id === "object") return id as TKey
+    return { id } as unknown as TKey
   }
 }

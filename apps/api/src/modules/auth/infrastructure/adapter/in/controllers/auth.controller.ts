@@ -12,7 +12,7 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
+import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -29,6 +29,8 @@ import { Request, Response } from "express"
 @ApiTags("인증")
 @Controller("auth")
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name)
+
   constructor(private readonly authFacadeService: AuthFacadeService) {}
 
   /**

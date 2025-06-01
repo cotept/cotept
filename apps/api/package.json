@@ -29,6 +29,7 @@
   "dependencies": {
     "@keyv/redis": "^4.3.2",
     "@nestjs-modules/mailer": "^2.0.2",
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "11.0.11",
     "@nestjs/config": "^4.0.1",
@@ -40,6 +41,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "@repo/shared": "workspace:*",
     "@types/oracledb": "^6.5.3",
+    "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "cache-manager": "^6.4.1",
     "cacheable": "^1.8.9",

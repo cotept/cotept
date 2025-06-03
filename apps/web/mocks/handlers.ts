@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse } from "msw"
 import { mentor } from "./data"
- 
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 export const handlers = [

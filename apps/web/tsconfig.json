@@ -1,6 +1,7 @@
 {
   "extends": "@repo/typescript-config/next.json",
   "compilerOptions": {
+    "rootDir": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

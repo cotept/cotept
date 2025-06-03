@@ -1,22 +1,24 @@
 import { FlatCompat } from "@eslint/eslintrc"
-import js from "@eslint/js"
-import baseConfig from "@repo/eslint-config/base.js"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import baseConfig from "@repo/eslint-config/next"
+import { dirname } from "path"
+import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = dirname(__filename)
 
+/**
+ * eslint 8 -> 9 버전 이상부터는 FlatCompat를 사용하여
+ * 레거시 eslint 설정(8버전)의 extends, plugins, configs를 호환.
+ */
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
 })
 
-export default [
+const eslintConfig = [
   ...baseConfig,
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-  // FSD 플러그인 수동 구현
+  // file dependencies boundaries
   {
     plugins: {
       ...compat.plugins("boundaries").reduce((acc, config) => ({ ...acc, ...config.plugins }), {}),
@@ -25,9 +27,7 @@ export default [
       "boundaries/elements": [
         { type: "app", pattern: "src/app/*" },
         { type: "pages", pattern: "src/pages/*" },
-        { type: "widgets", pattern: "src/widgets/*" },
         { type: "features", pattern: "src/features/*" },
-        { type: "entities", pattern: "src/entities/*" },
         { type: "shared", pattern: "src/shared/*" },
       ],
       "boundaries/ignore": ["**/*.d.ts", "**/*.spec.ts", "**/*.test.ts"],
@@ -43,44 +43,46 @@ export default [
               allow: ["shared"],
             },
             {
-              from: "entities",
-              allow: ["shared", "entities"],
-            },
-            {
               from: "features",
-              allow: ["shared", "entities", "features"],
-            },
-            {
-              from: "widgets",
-              allow: ["shared", "entities", "features", "widgets"],
+              allow: ["shared", "features"],
             },
             {
               from: "pages",
-              allow: ["shared", "entities", "features", "widgets", "pages"],
+              allow: ["shared", "features", "pages"],
             },
             {
               from: "app",
-              allow: ["shared", "entities", "features", "widgets", "pages", "app"],
-            },
-          ],
-        },
-      ],
-      "boundaries/entry-point": [
-        "error",
-        {
-          default: "disallow",
-          rules: [
-            {
-              target: ["**"],
-              allow: ["**/index.js", "**/index.ts", "**/index.jsx", "**/index.tsx"],
+              allow: ["shared", "features", "pages", "app"],
             },
           ],
         },
       ],
     },
   },
-
-  // Storybook 규칙은 stories 파일에만 적용
+  //import sort
+  {
+    plugins: {
+      "simple-import-sort": compat.plugins("simple-import-sort"),
+    },
+    rules: {
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            ["^react$"], // 1. React
+            ["^next"], // 2. Next.js 관련 패키지
+            ["^@?\\w"], // 3. 외부 패키지
+            ["^@app/", "^@pages/", "^@features/", "^@customs/", "^@shared/"], // 4. 내부 alias
+            ["^src/"], // 5. src 절대경로 import
+            ["^\\.\\.(?!/?$)", "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"], // 6. 상대경로
+            ["^.+\\.s?css$"], // 7. 스타일(css, scss)
+            ["^.+\\.types$"], // 8. 타입 import
+          ],
+        },
+      ],
+    },
+  },
+  // storybook
   {
     files: ["**/*.stories.@(js|jsx|ts|tsx)"],
     ...compat.plugins("storybook"),
@@ -94,7 +96,10 @@ export default [
       },
     }),
   },
+  // ignore
   {
     ignores: ["**/node_modules", "**/dist", "**/.next"],
   },
 ]
+
+export default eslintConfig

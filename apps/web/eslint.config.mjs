@@ -1,7 +1,9 @@
 import { FlatCompat } from "@eslint/eslintrc"
-import baseConfig from "@repo/eslint-config/base.js"
+import baseConfig from "@repo/eslint-config/next.js"
 import { dirname } from "path"
 import { fileURLToPath } from "url"
+import boundaries from "eslint-plugin-boundaries";
+import storybook from "eslint-plugin-storybook";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -12,9 +14,10 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...baseConfig,
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals"),
   {
     plugins: {
+      boundaries,
       ...compat.plugins("boundaries").reduce((acc, config) => ({ ...acc, ...config.plugins }), {}),
     },
     settings: {
@@ -45,24 +48,8 @@ const eslintConfig = [
               allow: ["shared", "features", "components"],
             },
             {
-              from: "pages",
-              allow: ["shared", "features", "components", "pages"],
-            },
-            {
               from: "app",
-              allow: ["shared", "features", "components", "pages", "app"],
-            },
-          ],
-        },
-      ],
-      "boundaries/entry-point": [
-        "error",
-        {
-          default: "disallow",
-          rules: [
-            {
-              target: ["**"],
-              allow: ["**/index.js", "**/index.ts", "**/index.jsx", "**/index.tsx"],
+              allow: ["shared", "features", "components", "app"],
             },
           ],
         },

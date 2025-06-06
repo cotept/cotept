@@ -21,6 +21,10 @@ import {
   PutResult,
   QueryResult,
   RowKey,
+  TableDDLOpt,
+  TableLimits,
+  TableResult,
+  TableUsageResult,
   WriteMultipleOpt,
   WriteMultipleResult,
 } from "oracle-nosqldb"
@@ -42,6 +46,36 @@ export abstract class BaseNoSQLRepository<
     protected readonly tableName: string,
   ) {
     super()
+  }
+
+  /**
+   * 테이블 정보 조회
+   */
+  async getTableInfo(opt?: TableDDLOpt): Promise<TableResult> {
+    return this.executeOperation(async () => {
+      return this.nosqlClient.getTable(this.tableName, opt)
+    })
+  }
+
+  /**
+   * 테이블 생성 또는 업데이트 (DDL 실행)
+   */
+  async createOrUpdateTable(ddl: string, tableLimits: TableLimits, opt?: TableDDLOpt): Promise<TableResult> {
+    return this.executeOperation(async () => {
+      if (opt) {
+        return this.nosqlClient.tableDDL(ddl, opt)
+      }
+      return this.nosqlClient.tableDDL(ddl, { tableLimits })
+    })
+  }
+
+  /**
+   * 테이블 사용량 정보 조회
+   */
+  async getTableUsageInfo(): Promise<TableUsageResult> {
+    return this.executeOperation(async () => {
+      return this.nosqlClient.getTableUsage(this.tableName)
+    })
   }
 
   /**

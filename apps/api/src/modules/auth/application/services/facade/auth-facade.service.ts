@@ -1,7 +1,5 @@
-import { FindIdDto } from "@/modules/auth/application/dtos/find-id.dto"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
-import { ResetPasswordDto } from "@/modules/auth/application/dtos/reset-password.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { ValidateAuthCodeDto } from "@/modules/auth/application/dtos/validate-auth-code.dto"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
@@ -55,8 +53,8 @@ export class AuthFacadeService {
     private readonly socialAuthCallbackUseCase: SocialAuthCallbackUseCase,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly validateAuthCodeUseCase: ValidateAuthCodeUseCase,
-    private readonly findIdUseCase: FindIdUseCase,                // 추가
-    private readonly resetPasswordUseCase: ResetPasswordUseCase,  // 추가
+    private readonly findIdUseCase: FindIdUseCase, // 추가
+    private readonly resetPasswordUseCase: ResetPasswordUseCase, // 추가
     private readonly authRequestMapper: AuthRequestMapper,
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,

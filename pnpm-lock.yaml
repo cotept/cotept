@@ -274,6 +274,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.79.0
         version: 5.79.0(@tanstack/react-query@5.79.0)(react@19.1.0)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.1.0)(react@19.1.0)
       '@uidotdev/usehooks':
         specifier: ^2.4.1
         version: 2.4.1(react-dom@19.1.0)(react@19.1.0)
@@ -357,11 +360,17 @@ importers:
         specifier: ^19
         version: 19.1.5(@types/react@19.1.4)
       eslint:
-        specifier: ^9
+        specifier: ^9.26.0
         version: 9.26.0
       eslint-config-next:
         specifier: 15.3.3
         version: 15.3.3(eslint@9.26.0)(typescript@5.8.3)
+      eslint-plugin-boundaries:
+        specifier: ^5.0.1
+        version: 5.0.1(@typescript-eslint/parser@8.32.1)(eslint@9.26.0)
+      eslint-plugin-storybook:
+        specifier: ^9.0.4
+        version: 9.0.4(eslint@9.26.0)(storybook@8.6.14)(typescript@5.8.3)
       msw:
         specifier: ^2.8.7
         version: 2.8.7(@types/node@20.17.48)(typescript@5.8.3)
@@ -4877,6 +4886,23 @@ packages:
       react: 19.1.0
     dev: false
 
+  /@tanstack/react-table@8.21.3(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
+
+  /@tanstack/table-core@8.21.3:
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
+    dev: false
+
   /@testing-library/dom@10.4.0:
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
     engines: {node: '>=18'}
@@ -8538,6 +8564,24 @@ packages:
       - supports-color
     dev: true
 
+  /eslint-plugin-boundaries@5.0.1(@typescript-eslint/parser@8.32.1)(eslint@9.26.0):
+    resolution: {integrity: sha512-QBw1TgoA3JnD+AQ8EHqZL8LtiFVREnFmD2BnHzVl38UKtRTds8rawIg03ZLwFs/90yKSh+DVVXRpvVK631Z/0w==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      eslint: '>=6.0.0'
+    dependencies:
+      chalk: 4.1.2
+      eslint: 9.26.0
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.32.1)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0)
+      micromatch: 4.0.8
+    transitivePeerDependencies:
+      - '@typescript-eslint/parser'
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+    dev: true
+
   /eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.32.1)(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0):
     resolution: {integrity: sha512-ixmkI62Rbc2/w8Vfxyh1jQRTdRTF52VxwRVHl/ykPAmqG+Nb7/kNn+byLP0LxPgI7zWA16Jt82SybJInmMia3A==}
     engines: {node: '>=4'}
@@ -8667,6 +8711,21 @@ packages:
       eslint: '>=5.0.0'
     dependencies:
       eslint: 9.26.0
+    dev: true
+
+  /eslint-plugin-storybook@9.0.4(eslint@9.26.0)(storybook@8.6.14)(typescript@5.8.3):
+    resolution: {integrity: sha512-HdwbfgPkZKsWG859RQk4iROH8D4zGsXxH2C3/7RlqELoT+nZYtc1BzVWzDeMAHadSXRasX3J+O1/4HNyuPXpJw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      eslint: '>=8'
+      storybook: ^9.0.4
+    dependencies:
+      '@typescript-eslint/utils': 8.32.1(eslint@9.26.0)(typescript@5.8.3)
+      eslint: 9.26.0
+      storybook: 8.6.14(prettier@3.5.3)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: true
 
   /eslint-plugin-turbo@2.5.3(eslint@9.26.0)(turbo@2.5.3):

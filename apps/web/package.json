@@ -57,5 +57,10 @@
   },
   "volta": {
     "node": "20.16.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

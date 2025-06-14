@@ -1,3 +1,4 @@
+export { BaekjoonProfileRepositoryPort } from "./baekjoon-profile-repository.port"
 export { BaekjoonRepositoryPort } from "./baekjoon-repository.port"
 export { CachePort } from "./cache.port"
 export { RateLimitInfo, RateLimitPort } from "./rate-limit.port"

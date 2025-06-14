@@ -34,9 +34,6 @@ import { Module } from "@nestjs/common"
   exports: [
     // 포트 구현체들만 export (다른 모듈에서 주입받을 수 있도록)
     BaekjoonTagNosqlAdapter,
-
-    // 개별 레포지토리들도 export (직접 사용이 필요한 경우)
-    BaekjoonTagNosqlRepository,
   ],
 })
 export class BaekjoonNoSQLModule {}

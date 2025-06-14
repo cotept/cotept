@@ -29,37 +29,121 @@ export class GetProfileUseCaseImpl implements GetProfileUseCase {
     try {
       const { email: userId, handle } = requestDto
 
-      // 1. 핸들 유효성 검사
-      BaekjoonUser.validateUserIdAndHandle({ userId, handle })
+      // 1단계: 입력값 검증
+      this.validateInput(userId, handle)
 
-      const normalizedHandle = BaekjoonHandle.of(handle).value
+      // 2단계: 핸들 정규화
+      const normalizedHandle = this.normalizeHandle(handle)
 
-      // 2. 저장된 백준 사용자 정보 조회
-      const existingUser = await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+      // 3단계: 기존 사용자 조회
+      const existingUser = await this.findExistingUser(userId)
 
-      // 3. 저장된 데이터가 없으면 API에서 조회
-      if (!existingUser) {
-        const solvedAcProfile = await this.solvedAcApi.getUserProfile(normalizedHandle)
-        if (!solvedAcProfile) {
-          throw new BadRequestException("존재하지 않는 백준 ID입니다.")
-        }
-        // 3-1. solved.ac API에서 프로필 조회 결과를 BaekjoonUser로 변환
-        const currentUser = BaekjoonUser.fromSolvedAcApi({ ...solvedAcProfile, userId })
+      // 4단계: 사용자 데이터 획득 (기존 데이터 or API 조회)
+      const baekjoonUser = await this.getOrCreateBaekjoonUser(existingUser, normalizedHandle, userId)
 
-        // 저장
-        await this.baekjoonRepository.saveBaekjoonUser(currentUser)
-
-        // DTO로 변환하여 반환
-        return this.baekjoonMapper.toProfileDto(currentUser)
-      }
-
-      // 4. 저장된 데이터가 있는 경우 DTO로 변환하여 반환
-      return this.baekjoonMapper.toProfileDto(existingUser)
+      // 5단계: DTO 변환 및 반환
+      return this.convertToProfileDto(baekjoonUser)
     } catch (error) {
-      this.logger.error(
-        `baekjoon.service.${GetProfileUseCaseImpl.name}\n${ErrorUtils.getErrorMessage(error)}\n\n${ErrorUtils.getErrorStack(error)}`,
-      )
-      throw new BadRequestException("백준 프로파일 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+      this.handleError(error)
     }
+  }
+
+  /**
+   * 입력값 검증
+   */
+  private validateInput(userId: string, handle: string): void {
+    BaekjoonUser.validateUserIdAndHandle({ userId, handle })
+  }
+
+  /**
+   * 핸들 정규화
+   */
+  private normalizeHandle(handle: string): string {
+    return BaekjoonHandle.of(handle).value
+  }
+
+  /**
+   * 기존 사용자 조회
+   */
+  private async findExistingUser(userId: string): Promise<BaekjoonUser | null> {
+    return await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+  }
+
+  /**
+   * 백준 사용자 데이터 획득 (기존 데이터 반환 또는 새로 생성)
+   */
+  private async getOrCreateBaekjoonUser(
+    existingUser: BaekjoonUser | null,
+    normalizedHandle: string,
+    userId: string,
+  ): Promise<BaekjoonUser> {
+    if (existingUser) {
+      return existingUser
+    }
+
+    return await this.createBaekjoonUserFromApi(normalizedHandle, userId)
+  }
+
+  /**
+   * API에서 사용자 데이터 조회 및 백준 사용자 생성
+   */
+  private async createBaekjoonUserFromApi(normalizedHandle: string, userId: string): Promise<BaekjoonUser> {
+    // API에서 프로필 조회
+    const solvedAcProfile = await this.fetchSolvedAcProfile(normalizedHandle)
+
+    // 백준 사용자 객체 생성
+    const baekjoonUser = this.createBaekjoonUserFromProfile(solvedAcProfile, userId)
+
+    // 사용자 데이터 저장
+    await this.saveBaekjoonUser(baekjoonUser)
+
+    return baekjoonUser
+  }
+
+  /**
+   * solved.ac API에서 프로필 조회
+   */
+  private async fetchSolvedAcProfile(normalizedHandle: string): Promise<any> {
+    const solvedAcProfile = await this.solvedAcApi.getUserProfile(normalizedHandle)
+
+    if (!solvedAcProfile) {
+      throw new BadRequestException("존재하지 않는 백준 ID입니다.")
+    }
+
+    return solvedAcProfile
+  }
+
+  /**
+   * solved.ac 프로필로부터 백준 사용자 객체 생성
+   */
+  private createBaekjoonUserFromProfile(solvedAcProfile: any, userId: string): BaekjoonUser {
+    return BaekjoonUser.fromSolvedAcApi({
+      ...solvedAcProfile,
+      userId,
+    })
+  }
+
+  /**
+   * 백준 사용자 저장
+   */
+  private async saveBaekjoonUser(baekjoonUser: BaekjoonUser): Promise<void> {
+    await this.baekjoonRepository.saveBaekjoonUser(baekjoonUser)
+  }
+
+  /**
+   * 백준 사용자를 프로필 DTO로 변환
+   */
+  private convertToProfileDto(baekjoonUser: BaekjoonUser): BaekjoonProfileDto {
+    return this.baekjoonMapper.toProfileDto(baekjoonUser)
+  }
+
+  /**
+   * 에러 처리 및 로깅
+   */
+  private handleError(error: unknown): never {
+    this.logger.error(
+      `baekjoon.service.${GetProfileUseCaseImpl.name}\n${ErrorUtils.getErrorMessage(error)}\n\n${ErrorUtils.getErrorStack(error)}`,
+    )
+    throw new BadRequestException("백준 프로파일 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
   }
 }

@@ -35,12 +35,19 @@ export type BojTag = {
 /**
  * 백준 태그 캐시 문서 - API 응답 그대로 저장
  */
-export interface BaekjoonTagCacheDocument extends UserActivityDocument {
-  type: "tag_cache"
+export interface BaekjoonTagDocument extends UserActivityDocument {
+  type: "bog_tags"
   data: {
     handle: string
     apiResponse: BojTag[] // solved.ac API 응답 그대로!
-    cachedAt: string
-    responseTime?: number // API 응답 시간 (성능 모니터링용)
+    fetchedAt: string
   }
 }
+interface BojTagBaseParam {
+  userId: string
+  handle: string
+  apiResponse: BojTag[]
+}
+
+export interface SaveBojTagParam extends BojTagBaseParam {}
+export interface UpdateBojTagParam extends BojTagBaseParam {}

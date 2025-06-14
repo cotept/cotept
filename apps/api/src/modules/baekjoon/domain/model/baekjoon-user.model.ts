@@ -1,5 +1,11 @@
 import { BadRequestException } from "@nestjs/common"
 import { BaekjoonHandle, Tier, TierLevel } from "../vo"
+import {
+  BaekjoonProfileVerificationStatus,
+  BaekjoonProfileVerificationStatusType,
+  BaekjoonProfileVerificationStatusUtils,
+} from "../vo/baekjoon-profile-verification-status.vo"
+import { VerificationSession } from "./verification-session.model"
 
 /**
  * 백준 사용자 도메인 엔티티
@@ -19,6 +25,7 @@ export class BaekjoonUser {
 
   // 인증 관련 정보
   private verified?: boolean = false
+  private verificationStatus: BaekjoonProfileVerificationStatusType = BaekjoonProfileVerificationStatus.PENDING
   private verifiedAt?: Date
   private lastSyncedAt: Date
 
@@ -33,6 +40,7 @@ export class BaekjoonUser {
     solvedCount: number
     name?: string
     verified?: boolean
+    verificationStatus?: BaekjoonProfileVerificationStatusType
     verifiedAt?: Date
     lastSyncedAt?: Date
     createdAt?: Date
@@ -133,6 +141,24 @@ export class BaekjoonUser {
     return this.updatedAt
   }
 
+  public updateVerificationResult(result: BaekjoonProfileVerificationStatusType): BaekjoonUser {
+    if (!BaekjoonProfileVerificationStatusUtils.isValid(result)) {
+      throw new Error(`Invalid verification status: ${result}`)
+    }
+
+    this.verificationStatus = result
+    this.verified = result === BaekjoonProfileVerificationStatus.VERIFIED
+    this.verifiedAt = result === BaekjoonProfileVerificationStatus.VERIFIED ? new Date() : undefined
+    this.updatedAt = new Date()
+    return this
+  }
+  /**
+   * 인증 상태 조회
+   */
+  public getVerificationStatus(): BaekjoonProfileVerificationStatusType {
+    return this.verificationStatus
+  }
+
   /**
    * 인증 완료 처리
    */
@@ -168,7 +194,15 @@ export class BaekjoonUser {
    * 인증 완료 여부 확인
    */
   public isVerified(): boolean {
-    return this.verifiedAt !== undefined && this.verified !== undefined
+    return this.verificationStatus === BaekjoonProfileVerificationStatus.VERIFIED
+  }
+
+  public isPending(): boolean {
+    return this.verificationStatus === BaekjoonProfileVerificationStatus.PENDING
+  }
+
+  public isRejected(): boolean {
+    return this.verificationStatus === BaekjoonProfileVerificationStatus.REJECTED
   }
 
   /**
@@ -192,5 +226,24 @@ export class BaekjoonUser {
    */
   public equals(other: BaekjoonUser): boolean {
     return this.userId === other.userId && this.handle.equals(other.handle)
+  }
+
+  /**
+   * 세션 기반 인증 상태 업데이트 (새로 추가)
+   * VerificationSession의 결과를 BaekjoonUser에 반영
+   */
+  public updateVerificationFromSession(session: VerificationSession): BaekjoonUser {
+    if (session.isCompleted()) {
+      this.verificationStatus = BaekjoonProfileVerificationStatus.VERIFIED
+      this.verified = true
+      this.verifiedAt = new Date()
+    } else if (session.isFailed() || session.isExpired()) {
+      this.verificationStatus = BaekjoonProfileVerificationStatus.REJECTED
+      this.verified = false
+      this.verifiedAt = undefined
+    }
+
+    this.updatedAt = new Date()
+    return this
   }
 }

@@ -19,6 +19,7 @@ import {
   NoSQLTimeoutError,
   PreparedStatement,
   PutResult,
+  QueryOpt,
   QueryResult,
   RowKey,
   TableDDLOpt,
@@ -105,9 +106,9 @@ export abstract class BaseNoSQLRepository<
   /**
    * 사용자 정의 쿼리 실행
    */
-  async query(statement: string | PreparedStatement): Promise<QueryResult<TData>> {
+  async query(statement: string | PreparedStatement, opt?: QueryOpt): Promise<QueryResult<TData>> {
     return this.executeOperation(async () => {
-      return this.nosqlClient.query<TData>(statement)
+      return this.nosqlClient.query<TData>(statement, opt)
     })
   }
 

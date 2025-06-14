@@ -1,1 +1,1 @@
-export * from "./typeorm-user-baekjoon.entity"
+export * from "./typeorm-baekjoon-profile.entity"

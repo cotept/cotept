@@ -3,13 +3,13 @@ import { BaseNoSQLRepository } from "@/shared/infrastructure/persistence/nosql/r
 import { Inject, Injectable } from "@nestjs/common"
 import { NoSQLClient } from "oracle-nosqldb"
 import { BaekjoonNosqlMapper } from "../mappers/baekjoon.mapper"
-import { BaekjoonTagCacheDocument, BojTag } from "../schemas/baekjoon.schema"
+import { BaekjoonTagDocument, BojTag, SaveBojTagParam, UpdateBojTagParam } from "../schemas/baekjoon.schema"
 
 /**
  * 백준 태그 캐시 레포지토리 - Oracle NoSQL 기반 구현
  */
 @Injectable()
-export class BaekjoonTagNosqlRepository extends BaseNoSQLRepository<BaekjoonTagCacheDocument> {
+export class BaekjoonTagNosqlRepository extends BaseNoSQLRepository<BaekjoonTagDocument> {
   constructor(
     @Inject(OCI_NOSQL_CLIENT) client: NoSQLClient,
     private readonly mapper: BaekjoonNosqlMapper,
@@ -18,76 +18,163 @@ export class BaekjoonTagNosqlRepository extends BaseNoSQLRepository<BaekjoonTagC
   }
 
   /**
-   * 핸들로 태그 데이터 조회
+   * solved.ac API 응답 저장
+   *
+   * @param userId - 사용자 ID
+   * @param handle - solved.ac 핸들
+   * @param apiResponse - API 응답 데이터
+   */
+  async saveApiResponse({ userId, handle, apiResponse }: SaveBojTagParam): Promise<void> {
+    try {
+      this.logger.debug(`태그 데이터 저장: userId=${userId}, handle=${handle}, 태그수=${apiResponse.length}`)
+
+      const document = this.mapper.fromApiResponse(userId, handle, apiResponse)
+      await this.create(document)
+
+      this.logger.debug(`태그 데이터 저장 완료: userId=${userId}, handle=${handle}`)
+    } catch (error) {
+      this.logger.error(`태그 데이터 저장 실패: userId=${userId}, handle=${handle}`, error)
+      this.handleDBError(error)
+    }
+  }
+
+  /**
+   * 핸들로 최신 태그 데이터 조회
+   *
+   * @param handle - solved.ac 핸들
+   * @returns 태그 배열 또는 null (데이터가 없는 경우)
    */
   async findByHandle(handle: string): Promise<BojTag[] | null> {
     try {
-      const query = `SELECT * FROM user_activities WHERE type = "tag_cache" AND data.handle = "${handle}" ORDER BY timestamp DESC LIMIT 1`
+      this.logger.debug(`태그 데이터 조회 시작: handle=${handle}`)
+
+      // NoSQL 쿼리 - 가장 최신 데이터 1건 조회
+      const query = `
+      SELECT * FROM baekjoon_tags 
+      WHERE type = "bog_tags" AND data.handle = ${handle}
+      ORDER BY timestamp DESC 
+      LIMIT 1
+    `
+
       const result = await this.query(query)
 
       if (!result.rows || result.rows.length === 0) {
+        this.logger.debug(`태그 데이터 없음: handle=${handle}`)
         return null
       }
 
-      return this.mapper.toDomain(result.rows[0] as BaekjoonTagCacheDocument)
+      const document = result.rows[0] as BaekjoonTagDocument
+      const tags = this.mapper.toDomain(document)
+
+      this.logger.debug(`태그 데이터 조회 완료: handle=${handle}, 태그수=${tags.length}`)
+      return tags
     } catch (error) {
+      this.logger.error(`태그 데이터 조회 실패: handle=${handle}`, error)
       this.handleDBError(error)
     }
   }
 
   /**
-   * solved.ac API 응답 저장
+   * 핸들로 최신 태그 데이터 조회
+   *
+   * @param userId - solved.ac 핸들
+   * @returns 태그 배열 또는 null (데이터가 없는 경우)
    */
-  async saveApiResponse(userId: string, handle: string, apiResponse: BojTag[], responseTime?: number): Promise<void> {
+  async findByUserId(userId: string): Promise<BojTag[] | null> {
     try {
-      const document = this.mapper.fromApiResponse(userId, handle, apiResponse, responseTime)
-      await this.create(document)
-    } catch (error) {
-      this.handleDBError(error)
-    }
-  }
+      this.logger.debug(`태그 데이터 조회 시작: userId=${userId}`)
 
-  /**
-   * 캐시 유효성 확인 (24시간 기준)
-   */
-  async isCacheValid(handle: string, maxAgeHours: number = 24): Promise<boolean> {
-    try {
-      const query = `SELECT timestamp FROM user_activities WHERE type = "tag_cache" AND data.handle = "${handle}" ORDER BY timestamp DESC LIMIT 1`
+      // NoSQL 쿼리 - 가장 최신 데이터 1건 조회
+      const query = `
+      SELECT * FROM baekjoon_tags 
+      WHERE type = "bog_tags" AND data.userId = ${userId}
+      ORDER BY timestamp DESC 
+      LIMIT 1
+    `
+
       const result = await this.query(query)
 
       if (!result.rows || result.rows.length === 0) {
-        return false
+        this.logger.debug(`태그 데이터 없음: userId=${userId}`)
+        return null
       }
 
-      const cacheTime = new Date(result.rows[0].timestamp).getTime()
-      const now = Date.now()
-      const maxAge = maxAgeHours * 60 * 60 * 1000
+      const document = result.rows[0] as BaekjoonTagDocument
+      const tags = this.mapper.toDomain(document)
 
-      return now - cacheTime < maxAge
+      this.logger.debug(`태그 데이터 조회 완료: userId=${userId}, 태그수=${tags.length}`)
+      return tags
     } catch (error) {
+      this.logger.error(`태그 데이터 조회 실패: userId=${userId}`, error)
       this.handleDBError(error)
     }
   }
 
   /**
-   * 캐시 무효화
+   * 태그 데이터 업데이트
+   * 새로운 API 응답으로 기존 데이터를 업데이트합니다.
+   *
+   * @param userId - 사용자 ID
+   * @param handle - solved.ac 핸들
+   * @param apiResponse - 새로운 API 응답 데이터
    */
-  async invalidateCache(handle: string): Promise<void> {
+  async updateTagData({ userId, handle, apiResponse }: UpdateBojTagParam): Promise<void> {
     try {
-      const query = `SELECT userId FROM user_activities WHERE type = "tag_cache" AND data.handle = "${handle}"`
-      const result = await this.query(query)
+      this.logger.debug(`태그 데이터 업데이트: userId=${userId}, handle=${handle}`)
 
-      if (!result.rows) return
+      const document = this.mapper.fromApiResponse(userId, handle, apiResponse)
+      await this.create(document)
 
-      for (const row of result.rows) {
-        await this.delete(this.getKeyObject(row.userId))
-      }
+      this.logger.debug(`태그 데이터 업데이트 완료: userId=${userId}, handle=${handle}`)
     } catch (error) {
+      this.logger.error(`태그 데이터 업데이트 실패: userId=${userId}, handle=${handle}`, error)
       this.handleDBError(error)
     }
   }
 
-  protected getKeyObject(userId: string): Record<string, any> {
-    return { userId, type: "tag_cache" }
+  /**
+   * 사용자별 태그 데이터 삭제
+   *
+   * @param userId - 사용자 ID
+   */
+  async deleteByUserId(userId: string): Promise<void> {
+    try {
+      this.logger.debug(`사용자 태그 데이터 삭제: userId=${userId}`)
+
+      const deleteQuery = `
+        DELETE FROM user_activities 
+        WHERE userId = ${userId} AND type = "bog_tags"
+      `
+
+      await this.query(deleteQuery)
+
+      this.logger.debug(`사용자 태그 데이터 삭제 완료: userId=${userId}`)
+    } catch (error) {
+      this.logger.error(`사용자 태그 데이터 삭제 실패: userId=${userId}`, error)
+      this.handleDBError(error)
+    }
+  }
+
+  /**
+   * 특정 핸들의 태그 데이터 삭제
+   *
+   * @param handle - solved.ac 핸들
+   */
+  async deleteByHandle(handle: string): Promise<void> {
+    try {
+      this.logger.debug(`핸들별 태그 데이터 삭제: handle=${handle}`)
+
+      const deleteQuery = `
+          DELETE FROM user_activities 
+          WHERE type = "bog_tags" AND data.handle = ${handle}
+        `
+
+      await this.query(deleteQuery)
+
+      this.logger.debug(`핸들별 태그 데이터 삭제 완료: handle=${handle}`)
+    } catch (error) {
+      this.logger.error(`핸들별 태그 데이터 삭제 실패: handle=${handle}`, error)
+      this.handleDBError(error)
+    }
   }
 }

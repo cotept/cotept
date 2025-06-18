@@ -1,5 +1,11 @@
 import React from "react"
+import MentoringList from "./MentoringList"
 
 export default function Mentoring() {
-  return <div>멘토링 루트 컴포넌트</div>
+  return (
+    <div>
+      dkfjdslkfjaskfjak
+      <MentoringList />
+    </div>
+  )
 }

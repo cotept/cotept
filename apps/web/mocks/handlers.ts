@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { mentor } from "./data"
- 
+import { rest } from "msw";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 export const handlers = [
@@ -17,5 +18,15 @@ export const handlers = [
     }
 
     return HttpResponse.json(user)
+  }),
+
+  rest.get("/api/mentors", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json([
+        { id: "1", name: "홍길동", field: "프론트엔드" },
+        { id: "2", name: "이몽룡", field: "백엔드" },
+      ])
+    );
   }),
 ]

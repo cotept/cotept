@@ -3,21 +3,42 @@
   "version": "0.0.0",
   "private": true,
   "files": [
-    "base.js",
-    "next.js",
-    "nest.js",
-    "express.js"
+    "base.mjs",
+    "base.cjs",
+    "next.mjs",
+    "nest.cjs",
+    "express.cjs"
   ],
-  "devDependencies": {
+  "dependencies": {
     "@eslint/js": "^9.26.0",
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
-    "eslint": "9.26.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-turbo": "^2.0.0",
     "eslint-plugin-only-warn": "^1.1.0",
+    "globals": "^16.2.0"
+  },
+  "peerDependencies": {
+    "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-storybook": "^9.0.4"
+  },
+  "devDependencies": {
+    "eslint": "9.26.0",
     "typescript": "5.5.4"
   },
-  "type": "module"
+  "type": "module",
+  "exports": {
+    "./base": {
+      "import": "./base.mjs",
+      "require": "./base.cjs"
+    },
+    "./next": {
+      "import": "./next.mjs"
+    },
+    "./nest": {
+      "require": "./nest.cjs"
+    }
+  }
 }

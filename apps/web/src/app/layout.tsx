@@ -2,22 +2,13 @@
 
 import "@repo/shared/globals.css"
 
-import ReactQueryProvider from "@/app/_provider/ReactQueryProvider"
-import { ThemeProvider } from "@/app/_provider/ThemeProvider"
+import Providers from "@/app/_provider/Providers"
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>
-        <ReactQueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
-          </ThemeProvider>
-        </ReactQueryProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

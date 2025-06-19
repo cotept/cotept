@@ -1,14 +1,13 @@
-// packages/eslint-config/base.js
-import tsPlugin from "@typescript-eslint/eslint-plugin"
-import tsParser from "@typescript-eslint/parser"
-import simpleImportSort from "eslint-plugin-simple-import-sort"
+const tsPlugin = require("@typescript-eslint/eslint-plugin")
+const tsParser = require("@typescript-eslint/parser")
+const simpleImportSort = require("eslint-plugin-simple-import-sort")
 
 // 타입 체크를 요구하지 않는 TypeScript 규칙만 포함
-export default [
+module.exports = [
   {
     name: "base/typescript",
     files: ["**/*.{ts,tsx,js,jsx}"],
-    ignores: ["dist/**", ".turbo/**", "node_modules/**"],
+    ignores: ["dist/**", ".turbo/**", "node_modules/**", "logs/**"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -27,21 +26,6 @@ export default [
     rules: {
       "no-console": "warn",
       "no-unused-vars": "off", // TypeScript가 이미 체크하므로 off
-      "simple-import-sort/imports": [
-        "error",
-        {
-          groups: [
-            ["^node:"],
-            ["^@nestjs"],
-            ["^@?\\w"],
-            ["^@app/", "^@configs/", "^@modules/", "^@shared/", "^@libs/"],
-            ["^src/"],
-            ["^\\.\\.(?!/?$)", "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
-            ["^.+\\.s?css$"],
-            ["^.+\\.types$"],
-          ],
-        },
-      ],
       "simple-import-sort/exports": "error",
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "warn",

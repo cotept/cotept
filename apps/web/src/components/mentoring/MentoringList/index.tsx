@@ -2,19 +2,13 @@
 
 import { useMentors } from "@/features/mentoring/hooks/useMentors"
 
-export default function MentoringList() {
-  const { mentors, isLoading, error } = useMentors()
-
-  console.log("mentors", mentors)
-
-  if (isLoading) return <div>로딩중...</div>
-  if (error) return <div>에러 발생!</div>
-
+export default function MentoringList({ mentors }: { mentors: any }) {
+  console.log(mentors)
   return (
     <ul>
-      {mentors.map((mentor) => (
+      {mentors.map((mentor: any) => (
         <li key={mentor.id}>
-          {mentor.name} - {mentor.field}
+          {mentor.name} - {mentor.role} - {mentor.field}
         </li>
       ))}
     </ul>

@@ -4,11 +4,13 @@ export const mentor = [
       name: "홍길동",
       email: "hong@example.com",
       role: "mentor",
+      field: "frontend",
     },
     {
       id: "2",
       name: "김철수",
       email: "kim@example.com",
       role: "mentor",
+      field: "backend",
     },
   ]

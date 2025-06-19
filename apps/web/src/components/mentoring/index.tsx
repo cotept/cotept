@@ -1,11 +1,13 @@
 import React from "react"
 import MentoringList from "./MentoringList"
+import { getMentors } from "@/features/mentoring/apis/getMentors"
 
-export default function Mentoring() {
+export default async function Mentoring() {
+  const response = await getMentors()
+
   return (
     <div>
-      dkfjdslkfjaskfjak
-      <MentoringList />
+      <MentoringList mentors={response} />
     </div>
   )
 }

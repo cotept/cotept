@@ -1,7 +1,8 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query"
-import { toast } from "@repo/shared/components/sonner"
+import { isAxiosError } from "axios"
+import { toast } from "sonner"
+
 import { ApiError } from "./types"
-import { AxiosError, isAxiosError } from "axios"
 
 // 에러 타입 정의
 export enum ErrorCode {
@@ -78,7 +79,7 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       onError(error) {
-        isAxiosError(error)
+        return isAxiosError(error)
           ? GlobalErrorHandler.handle(error as unknown as ApiError)
           : toast.error("알 수 없는 오류가 발생했습니다.")
       },
@@ -87,7 +88,7 @@ export const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
-      isAxiosError(error)
+      return isAxiosError(error)
         ? GlobalErrorHandler.handle(error as unknown as ApiError)
         : toast.error("알 수 없는 오류가 발생했습니다.")
     },

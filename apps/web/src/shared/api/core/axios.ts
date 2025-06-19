@@ -1,7 +1,8 @@
+import { getCsrfToken, getSession } from "next-auth/react"
+
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
+
 import { ApiError } from "@/shared/api/core/types"
-import { ErrorCode } from "./error-handler"
-import { getSession, getCsrfToken } from "next-auth/react"
 
 class ApiClient {
   private instance: AxiosInstance

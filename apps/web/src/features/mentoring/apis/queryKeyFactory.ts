@@ -1,4 +1,4 @@
-import { createQueryKeys, createQueryKeyStore } from "@lukemorales/query-key-factory"
+import { createQueryKeyStore } from "@lukemorales/query-key-factory"
 // 하나의 파일에서 쿼리 키를 관리.
 export const queryKeys = createQueryKeyStore({
   // 사용자 관련 쿼리

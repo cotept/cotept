@@ -1,5 +1,5 @@
 import { apiClient } from "./axios"
-import { ApiResponse, PaginatedResponse, GetRequest, PostRequest, PutRequest, DeleteRequest } from "./types"
+import { ApiResponse, DeleteRequest, GetRequest, PaginatedResponse, PostRequest, PutRequest } from "./types"
 
 export abstract class BaseApiService {
   protected basePath: string

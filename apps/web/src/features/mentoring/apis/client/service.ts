@@ -1,5 +1,5 @@
 import { BaseApiService } from "@/shared/api/core/base-api-service"
-import { User, CreateUserRequest, UpdateUserRequest } from "@/shared/api/core/types"
+import { CreateUserRequest, UpdateUserRequest, User } from "@/shared/api/core/types"
 
 export class UserService extends BaseApiService {
   constructor() {

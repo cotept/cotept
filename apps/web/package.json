@@ -46,6 +46,8 @@
     "eslint": "^9.26.0",
     "eslint-config-next": "15.3.3",
     "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-storybook": "^9.0.4",
     "msw": "^2.8.7",
     "playwright": "^1.52.0",

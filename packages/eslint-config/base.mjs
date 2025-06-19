@@ -1,4 +1,5 @@
 import tsParser from "@typescript-eslint/parser"
+import importPlugin from "eslint-plugin-import"
 import simpleImportSort from "eslint-plugin-simple-import-sort"
 
 /** @type {import("eslint").FlatConfig[]} */
@@ -20,11 +21,16 @@ export default [
     },
     plugins: {
       "simple-import-sort": simpleImportSort,
+      import: importPlugin,
     },
     rules: {
       "no-console": "warn",
       "no-unused-vars": "off", // TypeScript가 이미 체크하므로 off
+      "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
     },
   },
 ]

@@ -1,10 +1,10 @@
 import baseConfig from "@repo/eslint-config/next"
 
-import { dirname } from "path"
+import { FlatCompat } from "@eslint/eslintrc"
 import boundariesPlugin from "eslint-plugin-boundaries"
 import storybookPlugin from "eslint-plugin-storybook"
+import { dirname } from "path"
 import { fileURLToPath } from "url"
-import { FlatCompat } from "@eslint/eslintrc"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -19,7 +19,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...baseConfig,
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  
+
   // Override typescript-eslint rules
   {
     rules: {

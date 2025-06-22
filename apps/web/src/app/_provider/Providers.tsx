@@ -1,6 +1,7 @@
+import { PropsWithChildren } from "react"
+
 import ReactQueryProvider from "@/app/_provider/ReactQueryProvider"
 import { ThemeProvider } from "@/app/_provider/ThemeProvider"
-import { PropsWithChildren } from "react"
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (

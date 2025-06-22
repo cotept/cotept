@@ -1,11 +1,13 @@
 import tsParser from "@typescript-eslint/parser"
+import importPlugin from "eslint-plugin-import"
 import simpleImportSort from "eslint-plugin-simple-import-sort"
+import unusedImports from "eslint-plugin-unused-imports"
 
 /** @type {import("eslint").FlatConfig[]} */
 export default [
   {
     name: "base/typescript",
-    files: ["**/*.{ts,tsx,js,jsx}"],
+    files: ["**/*.{ts,tsx,js,jsx,mjs}"],
     ignores: ["dist/**", ".turbo/**", "node_modules/**"],
     languageOptions: {
       parser: tsParser,
@@ -20,11 +22,31 @@ export default [
     },
     plugins: {
       "simple-import-sort": simpleImportSort,
+      import: importPlugin,
+      "unused-imports": unusedImports,
     },
     rules: {
       "no-console": "warn",
-      "no-unused-vars": "off", // TypeScript가 이미 체크하므로 off
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/interface-name-prefix": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
     },
   },
 ]

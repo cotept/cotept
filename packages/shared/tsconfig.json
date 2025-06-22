@@ -2,6 +2,7 @@
   "extends": "@repo/typescript-config/next.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@repo/shared/*": ["./src/*"]
     }

@@ -35,7 +35,7 @@ const eslintConfig = [
     settings: {
       "boundaries/elements": [
         { type: "app", pattern: "src/app/*" },
-        { type: "pages", pattern: "src/pages/*" },
+        { type: "containers", pattern: "src/containers/*" },
         { type: "features", pattern: "src/features/*" },
         { type: "shared", pattern: "src/shared/*" },
       ],
@@ -56,12 +56,12 @@ const eslintConfig = [
               allow: ["shared", "features"],
             },
             {
-              from: "pages",
-              allow: ["shared", "features", "pages"],
+              from: "containers",
+              allow: ["shared", "features", "containers"],
             },
             {
               from: "app",
-              allow: ["shared", "features", "pages", "app"],
+              allow: ["shared", "features", "containers", "app"],
             },
           ],
         },
@@ -92,7 +92,7 @@ const eslintConfig = [
             ["^@?\\w"],
 
             // 5. 내부 alias imports
-            ["^@app/", "^@pages/", "^@features/", "^@customs/", "^@shared/"],
+            ["^@app/", "^@containers/", "^@features/", "^@customs/", "^@shared/"],
 
             // 6. src 절대경로 import
             ["^src/"],

@@ -1,18 +1,11 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.app.json" }],
+  "extends": "@repo/typescript-config/next.json",
   "compilerOptions": {
-    "checkJs": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "~/mocks/*": ["./mocks/*"],
-      "~/stories/*": ["./stories/*"]
-    },
-    "types": []
-  }
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

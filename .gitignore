@@ -21,6 +21,9 @@ coverage
 # Vercel
 .vercels
 
+# vscode 세팅
+.vscode
+
 # Debug
 npm-debug.log*
 yarn-debug.log*

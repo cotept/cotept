@@ -57,6 +57,30 @@ services:
     labels:
       - "com.cotept.description=Local Redis for CotePT API"
       - "com.cotept.version=${API_VERSION}"
+  nosql:
+    image: ghcr.io/oracle/nosql:latest-ce
+    container_name: cotept-local-nosql
+    hostname: nosql
+    environment:
+      TZ: ${TZ}
+      KVHOST: nosql
+      KV_PROXY_PORT: 8080
+    ports:
+      - "${NOSQL_PORT:-8080}:8080"
+      - "${NOSQL_ADMIN_PORT:-5001}:5001" # 관리 포트 (선택사항)
+    volumes:
+      - ./docker/nosql/local_data:/kvroot
+    networks:
+      - cotept-local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/V2/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    labels:
+      - "com.cotept.description=Local Oracle NoSQL for CotePT API"
+      - "com.cotept.version=${API_VERSION}"
 
 networks:
   cotept-local:
@@ -71,3 +95,5 @@ volumes:
     name: cotept-local-oracle
   redis_local_data:
     name: cotept-local-redis
+  nosql_local_data:
+    name: cotept-local-nosql

@@ -7,6 +7,7 @@ services:
     env_file:
       - ./apps/api/.env
       - ./apps/api/.env.local
+      - ./apps/api/.env.arm64
     environment:
       ORACLE_SID: ORCLCDB
       PATH: /opt/oracle/product/19c/dbhome_1/bin:$PATH
@@ -32,3 +33,55 @@ services:
     labels:
       - "com.cotept.description=Local Oracle 19c for CotePT API"
       - "com.cotept.version=${API_VERSION}"
+  nosql:
+    image: oracle/nosql-ce:latest
+    platform: linux/arm64
+    container_name: cotept-local-nosql
+    hostname: nosql
+    env_file:
+      - ./apps/api/.env
+      - ./apps/api/.env.local
+      - ./apps/api/.env.arm64
+    environment:
+      TZ: ${TZ}
+      KVHOST: nosql
+      KV_PROXY_PORT: 8080
+    ports:
+      - "${NOSQL_PORT:-8080}:8080"
+      - "${NOSQL_ADMIN_PORT:-5001}:5001" # 관리 포트 (선택사항)
+    volumes:
+      - ./docker/nosql/local_data:/kvroot
+    networks:
+      - cotept-local
+    depends_on:
+      - oracle # Oracle DB 의존성
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/V2/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    labels:
+      - "com.cotept.description=Local Oracle NoSQL for CotePT API"
+      - "com.cotept.version=${API_VERSION}"
+      - "com.cotept.architecture=arm64" # 아키텍처 라벨 추가
+
+networks:
+  cotept-local:
+    name: cotept-local
+    driver: bridge
+    labels:
+      - "com.cotept.environment=local"
+      - "com.cotept.version=${API_VERSION}"
+
+volumes:
+  oracle_local_data:
+    name: cotept-local-oracle
+  redis_local_data:
+    name: cotept-local-redis
+  nosql_local_data:
+    name: cotept-local-nosql
+    labels:
+      - "com.cotept.environment=local"
+      - "com.cotept.version=${API_VERSION}"
+      - "com.cotept.architecture=arm64"

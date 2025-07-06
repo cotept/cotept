@@ -6,8 +6,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "generate": "openapi-generator-cli generate -i ./openapi-spec.yaml -g typescript-axios -o ./src -c ./config.json -t ./templates/mustache",
-    "gapi": "rm -rf ./src && docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/openapi-spec.yaml -g typescript-axios -o /local/src/api -c /local/config.json",
-    "test": "docker run --rm -v /c/Users/jtm99/project/cotept-update/cotept/packages/api-client:/local openapitools/openapi-generator-cli generate -i /local/openapi-spec.yaml -g typescript-axios -o /local/src/api -t /local/mustaches -c /local/config.json --global-property=apiDocs=false,modelDocs=false"
+    "gapi": "rm -rf ./src && docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/openapi-spec.yaml -g typescript-axios -o /local/src/api -c /local/config.json"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.18.4"

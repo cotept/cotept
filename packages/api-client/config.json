@@ -1,8 +1,11 @@
 {
+  "spaces": 2,
   "apiPackage": "api",
   "modelPackage": "models",
   "withInterfaces": true,
   "supportsES6": true,
-  "withSeparateModelsAndApi": true,
-  "inputSpec": "./openapi-spec.yaml"
+  "withNodeImports": false,
+  "useSingleRequestParameter": true,
+  "enumNameSuffix": "",
+  "withSeparateModelsAndApi": true
 }

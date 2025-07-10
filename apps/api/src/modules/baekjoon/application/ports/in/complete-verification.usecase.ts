@@ -1,5 +1,4 @@
-import { CompleteVerificationDto } from "@/modules/baekjoon/application/dtos"
-import { CompleteVerificationRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
+import { CompleteVerificationInputDto, CompleteVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
 
 /**
  * 인증 완료 유스케이스 포트
@@ -9,5 +8,5 @@ export abstract class CompleteVerificationUseCase {
   /**
    * 백준 ID 인증을 완료합니다
    */
-  abstract execute(requestDto: CompleteVerificationRequestDto): Promise<CompleteVerificationDto>
+  abstract execute(inputDto: CompleteVerificationInputDto): Promise<CompleteVerificationOutputDto>
 }

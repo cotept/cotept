@@ -1,7 +1,8 @@
+import { Injectable } from "@nestjs/common"
+
 import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
 import { Tier, TierLevel } from "@/modules/baekjoon/domain/vo"
-import { BaekjoonProfile } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entites"
-import { Injectable } from "@nestjs/common"
+import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 
 @Injectable()
 export class BaekjoonProfileMapper {
@@ -9,8 +10,8 @@ export class BaekjoonProfileMapper {
    * 도메인 엔티티 → 영속성 엔티티
    * BaekjoonUser → BaekjoonProfile
    */
-  toEntity(domainModel: BaekjoonUser): BaekjoonProfile {
-    const profile = new BaekjoonProfile()
+  toEntity(domainModel: BaekjoonUser): BaekjoonProfileEntity {
+    const profile = new BaekjoonProfileEntity()
 
     profile.userId = domainModel.getUserId()
     profile.baekjoonId = domainModel.getHandleString()
@@ -35,7 +36,7 @@ export class BaekjoonProfileMapper {
    * 영속성 엔티티 → 도메인 엔티티
    * BaekjoonProfile → BaekjoonUser
    */
-  toDomainModel(entity: BaekjoonProfile): BaekjoonUser {
+  toDomainModel(entity: BaekjoonProfileEntity): BaekjoonUser {
     return new BaekjoonUser({
       userId: entity.userId,
       handle: entity.baekjoonId,
@@ -53,14 +54,14 @@ export class BaekjoonProfileMapper {
   /**
    * 도메인 엔티티 배열 → 영속성 엔티티 배열
    */
-  toEntityArray(domainModels: BaekjoonUser[]): BaekjoonProfile[] {
+  toEntityArray(domainModels: BaekjoonUser[]): BaekjoonProfileEntity[] {
     return domainModels.map((model) => this.toEntity(model))
   }
 
   /**
    * 영속성 엔티티 배열 → 도메인 엔티티 배열
    */
-  toDomainModelArray(entities: BaekjoonProfile[]): BaekjoonUser[] {
+  toDomainModelArray(entities: BaekjoonProfileEntity[]): BaekjoonUser[] {
     return entities.map((entity) => this.toDomainModel(entity))
   }
 
@@ -68,7 +69,7 @@ export class BaekjoonProfileMapper {
    * 기존 엔티티를 도메인 모델로 업데이트
    * 부분 업데이트 시 유용
    */
-  updateEntityFromDomain(entity: BaekjoonProfile, domainModel: BaekjoonUser): BaekjoonProfile {
+  updateEntityFromDomain(entity: BaekjoonProfileEntity, domainModel: BaekjoonUser): BaekjoonProfileEntity {
     entity.currentTier = domainModel.getCurrentTier().getName()
     entity.verificationStatus = domainModel.getVerificationStatus()
     entity.isMentorEligible = domainModel.isMentorEligible()

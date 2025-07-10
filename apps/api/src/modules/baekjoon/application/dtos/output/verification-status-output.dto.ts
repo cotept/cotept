@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+
 import { Expose } from "class-transformer"
 import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator"
 
@@ -6,7 +7,7 @@ import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from "cla
  * 인증 상태 DTO
  * 백준 ID 인증 진행 상태를 담는 DTO
  */
-export class VerificationStatusDto {
+export class VerificationStatusOutputDto {
   @ApiProperty({
     description: "인증 진행 중 여부",
     example: true,

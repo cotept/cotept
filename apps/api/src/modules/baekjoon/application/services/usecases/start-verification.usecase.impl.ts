@@ -1,16 +1,3 @@
-import { StartVerificationDto } from "@/modules/baekjoon/application/dtos"
-import { BaekjoonMapper } from "@/modules/baekjoon/application/mappers"
-import {
-  BaekjoonRepositoryPort,
-  CachePort,
-  RateLimitPort,
-  SolvedAcApiPort,
-  StartVerificationUseCase,
-} from "@/modules/baekjoon/application/ports"
-import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon/domain/model"
-import { VerificationStatus, VerificationString } from "@/modules/baekjoon/domain/vo"
-import { StartVerificationRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import {
   BadRequestException,
   ConflictException,
@@ -19,6 +6,19 @@ import {
   Logger,
   RequestTimeoutException,
 } from "@nestjs/common"
+
+import { StartVerificationInputDto, StartVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
+import { BaekjoonDomainMapper } from "@/modules/baekjoon/application/mappers"
+import {
+  CachePort,
+  RateLimitPort,
+  SolvedAcApiPort,
+  StartVerificationUseCase,
+} from "@/modules/baekjoon/application/ports"
+import { BaekjoonProfileRepositoryPort } from "@/modules/baekjoon/application/ports/out/baekjoon-profile-repository.port"
+import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon/domain/model"
+import { VerificationStatus, VerificationString } from "@/modules/baekjoon/domain/vo"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 인증 시작 유스케이스 구현
@@ -32,8 +32,8 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
   private readonly SESSION_TTL = 5 * 60 // 5분
 
   constructor(
-    @Inject("BaekjoonRepositoryPort")
-    private readonly baekjoonRepository: BaekjoonRepositoryPort,
+    @Inject("BaekjoonProfileRepositoryPort")
+    private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
     @Inject("SolvedAcApiPort")
     private readonly solvedAcApi: SolvedAcApiPort,
     @Inject("RateLimitPort")
@@ -41,12 +41,12 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
     @Inject("CachePort")
     private readonly cacheAdapter: CachePort,
 
-    private readonly baekjoonMapper: BaekjoonMapper,
+    private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}
 
-  async execute(requestDto: StartVerificationRequestDto): Promise<StartVerificationDto & { sessionId: string }> {
+  async execute(inputDto: StartVerificationInputDto): Promise<StartVerificationOutputDto> {
     try {
-      const { email: userId, handle } = requestDto
+      const { email: userId, handle } = inputDto
 
       await this.checkRateLimit(userId)
       this.validateInput(userId, handle)
@@ -118,7 +118,7 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
    * 핸들 중복 사용 검증
    */
   private async validateUniqueHandle(handle: string): Promise<void> {
-    const existingUser = await this.baekjoonRepository.findBaekjoonUserByHandle(handle)
+    const existingUser = await this.baekjoonRepository.findByBaekjoonId(handle)
 
     if (existingUser && existingUser.isVerified()) {
       throw new ConflictException("이미 다른 사용자가 해당 백준 ID로 인증되었습니다.")
@@ -153,13 +153,8 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
   /**
    * 응답 DTO 생성
    */
-  private createResponse(session: VerificationSession): StartVerificationDto & { sessionId: string } {
-    const dto = this.baekjoonMapper.toStartVerificationDto(session)
-
-    return {
-      ...dto,
-      sessionId: session.getSessionId(),
-    }
+  private createResponse(session: VerificationSession): StartVerificationOutputDto {
+    return this.baekjoonMapper.toStartVerificationOutputDto(session)
   }
 
   /**

@@ -1,1 +1,1 @@
-export * from "./baekjoon-nosql.repository"
+export * from "./baekjoon-statistics.repository"

@@ -1,28 +1,30 @@
-import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon//domain/model"
-import {
-  BaekjoonProfileDto,
-  CompleteVerificationDto,
-  StartVerificationDto,
-  TagDto,
-  TagStatisticsDto,
-  TopTagDto,
-  VerificationStatusDto,
-} from "@/modules/baekjoon/application/dtos"
 import { Injectable } from "@nestjs/common"
+
 import { plainToInstance } from "class-transformer"
 
+import {
+  BaekjoonProfileOutputDto,
+  CompleteVerificationOutputDto,
+  StartVerificationOutputDto,
+  TagDto,
+  TagStatisticsOutputDto,
+  TopTagDto,
+  VerificationStatusOutputDto,
+} from "@/modules/baekjoon/application/dtos"
+import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon/domain/model"
+
 /**
- * 백준 모듈 애플리케이션 매퍼
+ * 백준 모듈 도메인 매퍼
  * 도메인 엔티티와 애플리케이션 DTO 간의 변환을 담당
  */
 @Injectable()
-export class BaekjoonMapper {
+export class BaekjoonDomainMapper {
   // ========== 도메인 엔티티 → DTO 변환 ==========
 
   /**
-   * BaekjoonUser 도메인 엔티티 → BaekjoonProfileDto 매핑
+   * BaekjoonUser 도메인 엔티티 → BaekjoonProfileOutputDto 매핑
    */
-  toProfileDto(baekjoonUser: BaekjoonUser): BaekjoonProfileDto {
+  toProfileDto(baekjoonUser: BaekjoonUser): BaekjoonProfileOutputDto {
     const plainProfile = {
       handle: baekjoonUser.getHandleString(),
       tier: baekjoonUser.getCurrentTier().toString(),
@@ -30,15 +32,15 @@ export class BaekjoonMapper {
       lastUpdated: baekjoonUser.getLastSyncedAt(),
     }
 
-    return plainToInstance(BaekjoonProfileDto, plainProfile, {
+    return plainToInstance(BaekjoonProfileOutputDto, plainProfile, {
       excludeExtraneousValues: true,
     })
   }
 
   /**
-   * VerificationSession 도메인 엔티티 → StartVerificationDto 매핑
+   * VerificationSession 도메인 엔티티 → StartVerificationOutputDto 매핑
    */
-  toStartVerificationDto(session: VerificationSession): StartVerificationDto {
+  toStartVerificationOutputDto(session: VerificationSession): StartVerificationOutputDto {
     const plainDto = {
       verificationString: session.getVerificationStringValue(),
       profileEditUrl: "https://solved.ac/settings/profile",
@@ -46,20 +48,20 @@ export class BaekjoonMapper {
       expiresAt: session.getExpiresAt(),
     }
 
-    return plainToInstance(StartVerificationDto, plainDto, {
+    return plainToInstance(StartVerificationOutputDto, plainDto, {
       excludeExtraneousValues: true,
     })
   }
 
   /**
-   * VerificationSession 도메인 엔티티 → CompleteVerificationDto 매핑
+   * VerificationSession 도메인 엔티티 → CompleteVerificationOutputDto 매핑
    */
-  toCompleteVerificationDto(
+  toCompleteVerificationOutputDto(
     session: VerificationSession,
     success: boolean,
     message: string,
     tier?: string,
-  ): CompleteVerificationDto {
+  ): CompleteVerificationOutputDto {
     const plainDto = {
       success,
       message,
@@ -67,15 +69,18 @@ export class BaekjoonMapper {
       tier,
     }
 
-    return plainToInstance(CompleteVerificationDto, plainDto, {
+    return plainToInstance(CompleteVerificationOutputDto, plainDto, {
       excludeExtraneousValues: true,
     })
   }
 
   /**
-   * VerificationSession 도메인 엔티티 → VerificationStatusDto 매핑
+   * VerificationSession 도메인 엔티티 → VerificationStatusOutputDto 매핑
    */
-  toVerificationStatusDto(session: VerificationSession | null, baekjoonUser?: BaekjoonUser): VerificationStatusDto {
+  toVerificationStatusOutputDto(
+    session: VerificationSession | null,
+    baekjoonUser?: BaekjoonUser,
+  ): VerificationStatusOutputDto {
     if (!session) {
       // 세션이 없는 경우 (인증되지 않은 상태)
       const plainDto = {
@@ -86,7 +91,7 @@ export class BaekjoonMapper {
         message: baekjoonUser?.isVerified() ? "백준 ID 인증이 완료되었습니다." : "백준 ID 인증이 필요합니다.",
       }
 
-      return plainToInstance(VerificationStatusDto, plainDto, {
+      return plainToInstance(VerificationStatusOutputDto, plainDto, {
         excludeExtraneousValues: true,
       })
     }
@@ -103,15 +108,15 @@ export class BaekjoonMapper {
       message: this.getStatusMessage(status, session.isInProgress()),
     }
 
-    return plainToInstance(VerificationStatusDto, plainDto, {
+    return plainToInstance(VerificationStatusOutputDto, plainDto, {
       excludeExtraneousValues: true,
     })
   }
 
   /**
-   * 외부 API 응답 → TagStatisticsDto 매핑
+   * 외부 API 응답 → TagStatisticsOutputDto 매핑
    */
-  toTagStatisticsDto(apiResponse: {
+  toTagStatisticsOutputDto(apiResponse: {
     totalCount: number
     tierStats: Record<string, number>
     topTags: Array<{
@@ -120,7 +125,7 @@ export class BaekjoonMapper {
       rating: number
     }>
     lastSynced?: Date
-  }): TagStatisticsDto {
+  }): TagStatisticsOutputDto {
     const topTags = apiResponse.topTags.map((tagData) => {
       const tagDto = plainToInstance(TagDto, tagData.tag, {
         excludeExtraneousValues: true,
@@ -144,7 +149,7 @@ export class BaekjoonMapper {
       lastSynced: apiResponse.lastSynced || new Date(),
     }
 
-    return plainToInstance(TagStatisticsDto, plainDto, {
+    return plainToInstance(TagStatisticsOutputDto, plainDto, {
       excludeExtraneousValues: true,
     })
   }

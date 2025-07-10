@@ -96,6 +96,13 @@ export class TagStatisticsResponseDto {
   totalTagCount: number
 
   @ApiProperty({
+    description: "총 해결한 문제 수",
+    example: 150,
+  })
+  @Expose()
+  totalSolvedCount: number
+
+  @ApiProperty({
     description: "평균 레이팅",
     example: 1250,
   })

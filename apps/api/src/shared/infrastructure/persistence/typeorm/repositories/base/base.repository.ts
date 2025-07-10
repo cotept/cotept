@@ -5,7 +5,8 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common"
-import { PaginatedResult, PaginationOptions } from "@repo/shared/src/pagination"
+
+import { PaginatedResult, PaginationOptions } from "@/shared/infrastructure/dto/api-response.dto"
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"

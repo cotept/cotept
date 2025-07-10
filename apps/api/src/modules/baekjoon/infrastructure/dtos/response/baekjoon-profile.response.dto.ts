@@ -27,11 +27,18 @@ export class BaekjoonProfileResponseDto {
   tier: string
 
   @ApiProperty({
-    description: "최고 티어",
-    example: "Platinum V",
+    description: "레이팅",
+    example: 2145,
   })
   @Expose()
-  maxTier: string
+  rating: number
+
+  @ApiProperty({
+    description: "전체 순위",
+    example: 1234,
+  })
+  @Expose()
+  rank: number
 
   @ApiProperty({
     description: "해결한 문제 수",
@@ -39,6 +46,22 @@ export class BaekjoonProfileResponseDto {
   })
   @Expose()
   solvedCount: number
+
+  @ApiProperty({
+    description: "프로필 이미지 URL",
+    example: "https://static.solved.ac/uploads/profile/picture.png",
+    required: false,
+  })
+  @Expose()
+  profileImageUrl?: string
+
+  @ApiProperty({
+    description: "사용자 bio",
+    example: "Hello World",
+    required: false,
+  })
+  @Expose()
+  bio?: string
 
   @ApiProperty({
     description: "마지막 업데이트 시간",

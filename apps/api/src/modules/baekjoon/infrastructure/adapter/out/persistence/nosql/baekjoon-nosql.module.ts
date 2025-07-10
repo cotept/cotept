@@ -1,8 +1,8 @@
-import { BaekjoonTagNosqlAdapter } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/nosql/baekjoon-nosql.adapter"
-import { BaekjoonNosqlMapper } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/nosql/mappers"
-import { BaekjoonTagNosqlRepository } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/nosql/repositories"
-import { NoSQLModule } from "@/shared/infrastructure/persistence/nosql/nosql.module"
 import { Module } from "@nestjs/common"
+
+import { BaekjoonNosqlMapper } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/nosql/mappers"
+import { BaekjoonStatisticsRepository } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/nosql/repositories/baekjoon-statistics.repository"
+import { DatabaseModule } from "@/shared/infrastructure/persistence/database.module"
 
 /**
  * 백준 NoSQL 모듈
@@ -11,29 +11,23 @@ import { Module } from "@nestjs/common"
 @Module({
   imports: [
     // Shared NoSQL 모듈을 feature 모드로 가져오기
-    NoSQLModule.forFeature([
+    DatabaseModule.forFeature([
       // 매퍼들 등록
       BaekjoonNosqlMapper,
 
-      // 레포지토리들 등록
-      BaekjoonTagNosqlRepository,
-
-      // 어댑터들 등록
-      BaekjoonTagNosqlAdapter,
+      // Repository 등록
+      BaekjoonStatisticsRepository,
     ]),
   ],
   providers: [
     // 매퍼들
     BaekjoonNosqlMapper,
-    // 레포지토리들
-    BaekjoonTagNosqlRepository,
-
-    // 어댑터들
-    BaekjoonTagNosqlAdapter,
+    // Repository
+    BaekjoonStatisticsRepository,
   ],
   exports: [
-    // 포트 구현체들만 export (다른 모듈에서 주입받을 수 있도록)
-    BaekjoonTagNosqlAdapter,
+    // Repository export (다른 모듈에서 주입받을 수 있도록)
+    BaekjoonStatisticsRepository,
   ],
 })
 export class BaekjoonNoSQLModule {}

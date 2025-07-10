@@ -1,7 +1,3 @@
-import { VerificationSession } from "@/modules/baekjoon/domain/model"
-import { VerificationString } from "@/modules/baekjoon/domain/vo"
-import { CompleteVerificationRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import {
   BadRequestException,
   ConflictException,
@@ -11,15 +7,20 @@ import {
   NotFoundException,
   RequestTimeoutException,
 } from "@nestjs/common"
+
 import { EntityManager } from "typeorm"
-import { BaekjoonUser } from "../../../domain/model/baekjoon-user.model"
-import { CompleteVerificationDto } from "../../dtos"
-import { BaekjoonMapper } from "../../mappers"
+
+import { BaekjoonDomainMapper } from "../../mappers"
 import { CachePort, SyncVerificationStatusUseCase } from "../../ports"
 import { CompleteVerificationUseCase } from "../../ports/in/complete-verification.usecase"
-import { BaekjoonRepositoryPort } from "../../ports/out/baekjoon-repository.port"
+import { BaekjoonProfileRepositoryPort } from "../../ports/out/baekjoon-profile-repository.port"
 import { RateLimitPort } from "../../ports/out/rate-limit.port"
 import { SolvedAcApiPort } from "../../ports/out/solved-ac-api.port"
+
+import { CompleteVerificationInputDto, CompleteVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
+import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon/domain/model"
+import { VerificationString } from "@/modules/baekjoon/domain/vo"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 인증 완료 유스케이스 구현
@@ -32,8 +33,8 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
   private readonly RATE_LIMIT_COUNT = 5 // 5회
 
   constructor(
-    @Inject("BaekjoonRepositoryPort")
-    private readonly baekjoonRepository: BaekjoonRepositoryPort,
+    @Inject("BaekjoonProfileRepositoryPort")
+    private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
     @Inject("SolvedAcApiPort")
     private readonly solvedAcApi: SolvedAcApiPort,
     @Inject("RateLimitPort")
@@ -43,12 +44,12 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
     @Inject("SyncVerificationStatusUseCase")
     private readonly syncVerificationUseCase: SyncVerificationStatusUseCase,
     private readonly entityManager: EntityManager,
-    private readonly baekjoonMapper: BaekjoonMapper,
+    private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}
 
-  async execute(requestDto: CompleteVerificationRequestDto): Promise<CompleteVerificationDto> {
+  async execute(inputDto: CompleteVerificationInputDto): Promise<CompleteVerificationOutputDto> {
     try {
-      const { email: userId, handle, sessionId } = requestDto
+      const { email: userId, handle, sessionId } = inputDto
 
       // 1단계: Rate limit 확인
       await this.checkRateLimit(userId)
@@ -231,7 +232,7 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
   private async handleVerificationFailure(
     session: VerificationSession,
     message: string,
-  ): Promise<CompleteVerificationDto> {
+  ): Promise<CompleteVerificationOutputDto> {
     try {
       // 세션 실패 상태로 변경
       session.fail(message)
@@ -244,11 +245,11 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
       )
 
       // 실패 응답 반환
-      return this.baekjoonMapper.toCompleteVerificationDto(session, false, message)
+      return this.baekjoonMapper.toCompleteVerificationOutputDto(session, false, message)
     } catch (cacheError) {
       this.logger.error(`Failed to update session cache for ${session.getSessionId()}:`, cacheError)
       // 캐시 업데이트 실패해도 응답은 반환
-      return this.baekjoonMapper.toCompleteVerificationDto(session, false, message)
+      return this.baekjoonMapper.toCompleteVerificationOutputDto(session, false, message)
     }
   }
 
@@ -309,7 +310,7 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
    * 기존 사용자 조회
    */
   private async findExistingUser(userId: string): Promise<BaekjoonUser | null> {
-    return await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+    return await this.baekjoonRepository.findByUserId(userId)
   }
 
   /**
@@ -349,14 +350,17 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
    * 백준 사용자 저장
    */
   private async saveBaekjoonUser(baekjoonUser: BaekjoonUser): Promise<void> {
-    await this.baekjoonRepository.saveBaekjoonUser(baekjoonUser)
+    await this.baekjoonRepository.save(baekjoonUser)
   }
 
   /**
    * 성공 응답 DTO 생성
    */
-  private createSuccessResponse(session: VerificationSession, baekjoonUser: BaekjoonUser): CompleteVerificationDto {
-    return this.baekjoonMapper.toCompleteVerificationDto(
+  private createSuccessResponse(
+    session: VerificationSession,
+    baekjoonUser: BaekjoonUser,
+  ): CompleteVerificationOutputDto {
+    return this.baekjoonMapper.toCompleteVerificationOutputDto(
       session,
       true,
       "백준 ID 인증이 완료되었습니다.",

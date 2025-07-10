@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common"
+
 import { BaekjoonTagDocument, BojTag } from "../schemas/baekjoon.schema"
 
 /**
@@ -23,7 +24,7 @@ export class BaekjoonNosqlMapper {
     return {
       userId,
       timestamp: this.getCurrentTimestamp(),
-      type: "bog_tags",
+      type: "baekjoon_tags",
       data: {
         handle,
         apiResponse, // solved.ac API 응답 그대로!
@@ -40,7 +41,7 @@ export class BaekjoonNosqlMapper {
 
     return {
       userId,
-      type: "bog_tags",
+      type: "baekjoon_tags",
       timestamp: now,
       data: {
         handle,

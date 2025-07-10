@@ -1,17 +1,19 @@
+import { Inject, Injectable, Logger } from "@nestjs/common"
+
+import { SyncVerificationStatusUseCase } from "../../ports/in/sync-verification-status.usecase"
+import { BaekjoonProfileRepositoryPort } from "../../ports/out/baekjoon-profile-repository.port"
+import { CachePort } from "../../ports/out/cache.port"
+
 import { VerificationSession } from "@/modules/baekjoon/domain/model"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Inject, Injectable, Logger } from "@nestjs/common"
-import { SyncVerificationStatusUseCase } from "../../ports/in/sync-verification-status.usecase"
-import { BaekjoonRepositoryPort } from "../../ports/out/baekjoon-repository.port"
-import { CachePort } from "../../ports/out/cache.port"
 
 @Injectable()
 export class SyncVerificationStatusUseCaseImpl implements SyncVerificationStatusUseCase {
   private readonly logger = new Logger(SyncVerificationStatusUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonRepositoryPort")
-    private readonly baekjoonRepository: BaekjoonRepositoryPort,
+    @Inject("BaekjoonProfileRepositoryPort")
+    private readonly profileRepository: BaekjoonProfileRepositoryPort,
     @Inject("CachePort")
     private readonly cacheAdapter: CachePort,
   ) {}
@@ -128,7 +130,7 @@ export class SyncVerificationStatusUseCaseImpl implements SyncVerificationStatus
    */
   private async getUser(userId: string) {
     try {
-      const user = await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+      const user = await this.profileRepository.findByUserId(userId)
       if (!user) {
         this.logger.warn(`User not found: ${userId}`)
         return null
@@ -168,7 +170,7 @@ export class SyncVerificationStatusUseCaseImpl implements SyncVerificationStatus
 
     // 변경사항이 있으면 저장
     if (shouldUpdate) {
-      await this.baekjoonRepository.saveBaekjoonUser(user)
+      await this.profileRepository.save(user)
     }
 
     return { updated: shouldUpdate, action }

@@ -6,6 +6,7 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common"
+
 import {
   AnyRow,
   DeleteResult,
@@ -29,6 +30,7 @@ import {
   WriteMultipleOpt,
   WriteMultipleResult,
 } from "oracle-nosqldb"
+
 import { AbstractNoSQLRepository } from "../../base/abstract.nosql.repository"
 import { OCI_NOSQL_CLIENT } from "../client/nosql-client.provider"
 

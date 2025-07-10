@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger"
+
 import { Expose, Transform } from "class-transformer"
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from "class-validator"
 
 /**
- * 백준 프로필 DTO
+ * 백준 프로필 응답 DTO
  * solved.ac API에서 가져온 사용자 프로필 정보를 담는 DTO
  */
-export class BaekjoonProfileDto {
+export class BaekjoonProfileOutputDto {
   @ApiProperty({
     description: "백준 사용자 핸들(ID)",
     example: "dudtod1596",
@@ -32,6 +33,11 @@ export class BaekjoonProfileDto {
     minimum: 0,
     maximum: 4000,
   })
+  @Expose()
+  @IsNumber({}, { message: "레이팅은 숫자여야 합니다." })
+  @Min(0, { message: "레이팅은 0 이상이어야 합니다." })
+  rating: number
+
   @ApiProperty({
     description: "해결한 문제 수",
     example: 150,
@@ -41,6 +47,16 @@ export class BaekjoonProfileDto {
   @IsNumber({}, { message: "해결한 문제 수는 숫자여야 합니다." })
   @Min(0, { message: "해결한 문제 수는 0 이상이어야 합니다." })
   solvedCount: number
+
+  @ApiProperty({
+    description: "전체 순위",
+    example: 1234,
+    minimum: 1,
+  })
+  @Expose()
+  @IsNumber({}, { message: "순위는 숫자여야 합니다." })
+  @Min(1, { message: "순위는 1 이상이어야 합니다." })
+  rank: number
 
   @ApiProperty({
     description: "프로필 이미지 URL",

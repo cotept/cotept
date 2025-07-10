@@ -3,30 +3,7 @@ import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 
 // Application Layer
-import { BaekjoonMapper } from "./application/mappers/baekjoon.mapper"
-import { BaekjoonFacadeService } from "./application/services/facade/baekjoon-facade.service"
-import {
-  CompleteVerificationUseCaseImpl,
-  GetProfileUseCaseImpl,
-  GetStatisticsUseCaseImpl,
-  StartVerificationUseCaseImpl,
-  SyncVerificationStatusUseCaseImpl,
-} from "./application/services/usecases"
-
-// Infrastructure Layer - In Adapters
-import { BaekjoonController } from "./infrastructure/adapter/in/controllers/baekjoon.controller"
-import { BaekjoonRequestMapper } from "./infrastructure/adapter/in/mappers/baekjoon-request.mapper"
-
-// Infrastructure Layer - Out Adapters
-import { SolvedAcApiAdapter } from "./infrastructure/adapter/out/external/solved-ac-api.adapter"
-import { SolvedAcHttpClient } from "./infrastructure/adapter/out/external/solved-ac-http.client"
-import { BaekjoonPersistenceMapper } from "./infrastructure/adapter/out/persistence/mappers/baekjoon-persistence.mapper"
-import { NoSqlBaekjoonRepository } from "./infrastructure/adapter/out/persistence/repositories/nosql-baekjoon.repository"
-import { BaekjoonCacheService } from "./infrastructure/adapter/out/services/cache/baekjoon-cache.service"
-import { BaekjoonRateLimitService } from "./infrastructure/adapter/out/services/rate-limit/baekjoon-rate-limit.service"
-// ✅ NoSQL 모듈 import 추가
-import { BaekjoonNoSQLModule } from "./infrastructure/adapter/out/persistence/nosql/baekjoon-nosql.module"
-
+import { BaekjoonDomainMapper, BaekjoonResponseMapper } from "./application/mappers"
 // Ports
 import {
   CompleteVerificationUseCase,
@@ -35,16 +12,38 @@ import {
   StartVerificationUseCase,
   SyncVerificationStatusUseCase,
 } from "./application/ports/in"
-import { BaekjoonRepositoryPort } from "./application/ports/out/baekjoon-repository.port"
+import { BaekjoonProfileRepositoryPort } from "./application/ports/out/baekjoon-profile-repository.port"
+import { BaekjoonStatisticsRepositoryPort } from "./application/ports/out/baekjoon-statistics-repository.port"
 import { CachePort } from "./application/ports/out/cache.port"
 import { RateLimitPort } from "./application/ports/out/rate-limit.port"
 import { SolvedAcApiPort } from "./application/ports/out/solved-ac-api.port"
+import { BaekjoonFacadeService } from "./application/services/facade/baekjoon-facade.service"
+import {
+  CompleteVerificationUseCaseImpl,
+  GetProfileUseCaseImpl,
+  GetStatisticsUseCaseImpl,
+  StartVerificationUseCaseImpl,
+  SyncVerificationStatusUseCaseImpl,
+} from "./application/services/usecases"
+// Infrastructure Layer - In Adapters
+import { BaekjoonController } from "./infrastructure/adapter/in/controllers/baekjoon.controller"
+import { BaekjoonRequestMapper } from "./infrastructure/adapter/in/mappers/baekjoon-request.mapper"
+// Infrastructure Layer - Out Adapters
+import { SolvedAcApiAdapter } from "./infrastructure/adapter/out/external/solved-ac-api.adapter"
+import { SolvedAcHttpClient } from "./infrastructure/adapter/out/external/solved-ac-http.client"
+import { BaekjoonStatisticsRepository } from "./infrastructure/adapter/out/persistence/nosql"
+// ✅ NoSQL 모듈 import 추가
+import { BaekjoonNoSQLModule } from "./infrastructure/adapter/out/persistence/nosql/baekjoon-nosql.module"
+import { BaekjoonProfileEntity } from "./infrastructure/adapter/out/persistence/typeorm/entities"
+import { BaekjoonProfileMapper } from "./infrastructure/adapter/out/persistence/typeorm/mappers/baekjoon.mapper"
+import { BaekjoonProfileRepository } from "./infrastructure/adapter/out/persistence/typeorm/repositories/typeorm-baekjoon-profile.repository"
+// Infrastructure Layer - Out Adapters - Services
+import { BaekjoonCacheService } from "./infrastructure/adapter/out/services/cache/baekjoon-cache.service"
+import { BaekjoonRateLimitService } from "./infrastructure/adapter/out/services/rate-limit/baekjoon-rate-limit.service"
 
 // Shared Modules
 import { CacheModule } from "@/shared/infrastructure/cache/redis/cache.module"
-import { NoSQLModule } from "@/shared/infrastructure/persistence/nosql/nosql.module"
-import { BaekjoonStatisticsRepositoryPort } from "./application/ports/out/baekjoon-statistics-repository.port"
-import { BaekjoonTagNosqlAdapter } from "./infrastructure/adapter/out/persistence/nosql"
+import { DatabaseModule } from "@/shared/infrastructure/persistence/database.module"
 
 /**
  * 백준 모듈
@@ -58,15 +57,15 @@ import { BaekjoonTagNosqlAdapter } from "./infrastructure/adapter/out/persistenc
     }),
     ConfigModule,
     CacheModule,
-    // ✅ NoSQL 모듈 import
-    NoSQLModule,
+    DatabaseModule.forFeature([BaekjoonProfileEntity]),
     BaekjoonNoSQLModule,
   ],
   controllers: [BaekjoonController],
   providers: [
     // Application Services
     BaekjoonFacadeService,
-    BaekjoonMapper,
+    BaekjoonDomainMapper,
+    BaekjoonResponseMapper,
 
     // Use Cases
     {
@@ -98,14 +97,22 @@ import { BaekjoonTagNosqlAdapter } from "./infrastructure/adapter/out/persistenc
     },
 
     // Infrastructure Adapters - Persistence
-    BaekjoonPersistenceMapper,
+    BaekjoonProfileMapper,
     {
-      provide: BaekjoonRepositoryPort,
-      useClass: NoSqlBaekjoonRepository,
+      provide: BaekjoonProfileRepositoryPort,
+      useClass: BaekjoonProfileRepository,
+    },
+    {
+      provide: "BaekjoonProfileRepositoryPort",
+      useClass: BaekjoonProfileRepository,
     },
     {
       provide: BaekjoonStatisticsRepositoryPort, // 태그 통계용 포트
-      useClass: BaekjoonTagNosqlAdapter, // NoSQL 어댑터 사용
+      useClass: BaekjoonStatisticsRepository, // NoSQL Repository 사용
+    },
+    {
+      provide: "BaekjoonStatisticsRepositoryPort",
+      useClass: BaekjoonStatisticsRepository,
     },
     // Infrastructure Adapters - Services
     {

@@ -1,6 +1,7 @@
-import { BaekjoonProfile } from "@/modules/baekjoon/infrastructure/adapter"
-import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Column, CreateDateColumn, Entity, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm"
+
+import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
+import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 
 /**
  * User 엔티티
@@ -36,8 +37,8 @@ export class UserEntity {
   })
   status: UserStatus
 
-  @OneToOne(() => BaekjoonProfile, (profile) => profile.user)
-  baekjoonProfile?: BaekjoonProfile
+  @OneToOne(() => BaekjoonProfileEntity, (profile) => profile.user)
+  baekjoonProfile?: BaekjoonProfileEntity
 
   @Column({ name: "phone_number", type: "varchar2", length: 20, nullable: true })
   phoneNumber?: string

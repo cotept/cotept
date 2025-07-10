@@ -1,10 +1,4 @@
 import {
-  BaekjoonProfileVerificationStatus,
-  BaekjoonProfileVerificationStatusType,
-} from "@/modules/baekjoon/domain/vo/baekjoon-profile-verification-status.vo"
-import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
-import { booleanTransformer } from "@/shared/utils/database.util"
-import {
   Column,
   CreateDateColumn,
   Entity,
@@ -14,9 +8,16 @@ import {
   UpdateDateColumn,
 } from "typeorm"
 
+import {
+  BaekjoonProfileVerificationStatus,
+  BaekjoonProfileVerificationStatusType,
+} from "@/modules/baekjoon/domain/vo/baekjoon-profile-verification-status.vo"
+import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
+import { booleanTransformer } from "@/shared/utils/database.util"
+
 // UserBaekjoonProfile 엔티티 (수정된 버전)
 @Entity("BAEKJOON_PROFILE")
-export class BaekjoonProfile {
+export class BaekjoonProfileEntity {
   @PrimaryGeneratedColumn()
   idx: number
 

@@ -1,5 +1,5 @@
-export * from "./baekjoon-nosql.adapter"
 export * from "./baekjoon-nosql.module"
 export * from "./mappers"
 export * from "./repositories"
+export * from "./repositories/baekjoon-statistics.repository"
 export * from "./schemas"

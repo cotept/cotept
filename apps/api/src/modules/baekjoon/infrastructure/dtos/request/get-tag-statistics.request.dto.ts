@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
 
+import { IsEmail, IsNotEmpty, IsString } from "class-validator"
 /**
  * 사용자 태그 통계 요청 DTO
  */
@@ -14,7 +14,7 @@ export class GetTagStatisticsRequestDto {
   email: string
 
   @ApiProperty({
-    description: "백준 ID (사용자명)",
+    description: "백준 ID",
     example: "solved_user123",
   })
   @IsNotEmpty({ message: "백준 ID는 필수입니다" })

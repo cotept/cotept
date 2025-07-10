@@ -1,9 +1,10 @@
-import { MailConfig } from "@/configs/mail"
-import { MailerModule, MailerService } from "@nestjs-modules/mailer"
-import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter"
 import { Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
-import { TypeOrmModule } from "@nestjs/typeorm"
+import { MailerModule, MailerService } from "@nestjs-modules/mailer"
+import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter"
+
+// 인프라스트럭처 계층
+import { join } from "path"
 
 // 애플리케이션 계층
 import { MailMapper } from "./application/mappers/mail.mapper"
@@ -14,19 +15,19 @@ import { MailServicePort } from "./application/ports/out/mail-service.port"
 import { MailFacadeService } from "./application/services/facade/mail-facade.service"
 import { SendMailUseCaseImpl } from "./application/services/usecases"
 import { GetMailAuditUseCaseImpl } from "./application/services/usecases/get-mail-audit.usecase.impl"
-
-// 인프라스트럭처 계층
-import { join } from "path"
-import { MailAuditController } from "./infrastructure/adapter/in/controllers/mail-audit.controller"
 import { MailController } from "./infrastructure/adapter/in/controllers/mail.controller"
+import { MailAuditController } from "./infrastructure/adapter/in/controllers/mail-audit.controller"
 import { MailAuditEntity } from "./infrastructure/adapter/out/persistence/entities/mail-audit.entity"
 import { TypeOrmMailAuditRepository } from "./infrastructure/adapter/out/persistence/repositories/typeorm-mail-audit.repository"
 import { MailService } from "./infrastructure/adapter/out/services/mail.service"
 
+import { MailConfig } from "@/configs/mail"
+import { DatabaseModule } from "@/shared/infrastructure/persistence/database.module"
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([MailAuditEntity]),
+    DatabaseModule.forFeature([MailAuditEntity]),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

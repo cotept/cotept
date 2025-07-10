@@ -1,13 +1,14 @@
-import { BaekjoonHandle } from "@/modules/baekjoon/domain/vo"
-import { GetProfileRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import { BadRequestException, Inject, Injectable, Logger } from "@nestjs/common"
-import { BaekjoonUser } from "../../../domain/model/baekjoon-user.model"
-import { BaekjoonProfileDto } from "../../dtos"
-import { BaekjoonMapper } from "../../mappers"
+
+import { BaekjoonDomainMapper } from "../../mappers"
 import { GetProfileUseCase } from "../../ports/in/get-profile.usecase"
-import { BaekjoonRepositoryPort } from "../../ports/out/baekjoon-repository.port"
+import { BaekjoonProfileRepositoryPort } from "../../ports/out/baekjoon-profile-repository.port"
 import { SolvedAcApiPort } from "../../ports/out/solved-ac-api.port"
+
+import { BaekjoonProfileOutputDto, GetProfileInputDto } from "@/modules/baekjoon/application/dtos"
+import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
+import { BaekjoonHandle } from "@/modules/baekjoon/domain/vo"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 프로필 조회 유스케이스 구현
@@ -18,16 +19,16 @@ export class GetProfileUseCaseImpl implements GetProfileUseCase {
   private readonly logger = new Logger(GetProfileUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonRepositoryPort")
-    private readonly baekjoonRepository: BaekjoonRepositoryPort,
+    @Inject("BaekjoonProfileRepositoryPort")
+    private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
     @Inject("SolvedAcApiPort")
     private readonly solvedAcApi: SolvedAcApiPort,
-    private readonly baekjoonMapper: BaekjoonMapper,
+    private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}
 
-  async execute(requestDto: GetProfileRequestDto): Promise<BaekjoonProfileDto> {
+  async execute(inputDto: GetProfileInputDto): Promise<BaekjoonProfileOutputDto> {
     try {
-      const { email: userId, handle } = requestDto
+      const { userId, handle } = inputDto
 
       // 1단계: 입력값 검증
       this.validateInput(userId, handle)
@@ -66,7 +67,7 @@ export class GetProfileUseCaseImpl implements GetProfileUseCase {
    * 기존 사용자 조회
    */
   private async findExistingUser(userId: string): Promise<BaekjoonUser | null> {
-    return await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+    return await this.baekjoonRepository.findByUserId(userId)
   }
 
   /**
@@ -127,13 +128,13 @@ export class GetProfileUseCaseImpl implements GetProfileUseCase {
    * 백준 사용자 저장
    */
   private async saveBaekjoonUser(baekjoonUser: BaekjoonUser): Promise<void> {
-    await this.baekjoonRepository.saveBaekjoonUser(baekjoonUser)
+    await this.baekjoonRepository.save(baekjoonUser)
   }
 
   /**
    * 백준 사용자를 프로필 DTO로 변환
    */
-  private convertToProfileDto(baekjoonUser: BaekjoonUser): BaekjoonProfileDto {
+  private convertToProfileDto(baekjoonUser: BaekjoonUser): BaekjoonProfileOutputDto {
     return this.baekjoonMapper.toProfileDto(baekjoonUser)
   }
 

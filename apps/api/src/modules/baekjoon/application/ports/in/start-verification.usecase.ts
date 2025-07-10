@@ -1,5 +1,4 @@
-import { StartVerificationDto } from "@/modules/baekjoon/application/dtos"
-import { StartVerificationRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
+import { StartVerificationInputDto, StartVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
 
 /**
  * 인증 시작 유스케이스 포트
@@ -9,5 +8,5 @@ export abstract class StartVerificationUseCase {
   /**
    * 백준 ID 인증을 시작합니다
    */
-  abstract execute(requestDto: StartVerificationRequestDto): Promise<StartVerificationDto & { sessionId: string }>
+  abstract execute(inputDto: StartVerificationInputDto): Promise<StartVerificationOutputDto>
 }

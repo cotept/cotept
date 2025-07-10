@@ -36,7 +36,7 @@ export type BojTag = {
  * 백준 태그 캐시 문서 - API 응답 그대로 저장
  */
 export interface BaekjoonTagDocument extends UserActivityDocument {
-  type: "bog_tags"
+  type: "baekjoon_tags"
   data: {
     handle: string
     apiResponse: BojTag[] // solved.ac API 응답 그대로!

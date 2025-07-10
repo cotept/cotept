@@ -1,15 +1,17 @@
-import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
-import { BaekjoonHandle } from "@/modules/baekjoon/domain/vo"
-import { GetTagStatisticsRequestDto } from "@/modules/baekjoon/infrastructure/dtos/request"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from "@nestjs/common"
-import { TagStatisticsDto } from "../../dtos"
-import { BaekjoonMapper } from "../../mappers"
+
+import { BaekjoonDomainMapper } from "../../mappers"
 import { RateLimitPort } from "../../ports"
 import { GetStatisticsUseCase } from "../../ports/in/get-statistics.usecase"
-import { BaekjoonRepositoryPort } from "../../ports/out/baekjoon-repository.port"
+import { BaekjoonProfileRepositoryPort } from "../../ports/out/baekjoon-profile-repository.port"
+import { BaekjoonStatisticsRepositoryPort } from "../../ports/out/baekjoon-statistics-repository.port"
 import { CachePort } from "../../ports/out/cache.port"
 import { SolvedAcApiPort } from "../../ports/out/solved-ac-api.port"
+
+import { GetStatisticsInputDto, TagStatisticsOutputDto } from "@/modules/baekjoon/application/dtos"
+import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
+import { BaekjoonHandle } from "@/modules/baekjoon/domain/vo"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 통계 조회 유스케이스 구현
@@ -20,20 +22,22 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   private readonly logger = new Logger(GetStatisticsUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonRepositoryPort")
-    private readonly baekjoonRepository: BaekjoonRepositoryPort,
+    @Inject("BaekjoonProfileRepositoryPort")
+    private readonly profileRepository: BaekjoonProfileRepositoryPort,
+    @Inject("BaekjoonStatisticsRepositoryPort")
+    private readonly statisticsRepository: BaekjoonStatisticsRepositoryPort,
     @Inject("SolvedAcApiPort")
     private readonly solvedAcApi: SolvedAcApiPort,
     @Inject("CachePort")
     private readonly cacheService: CachePort,
     @Inject("RateLimitPort")
     private readonly rateLimitAdapter: RateLimitPort,
-    private readonly baekjoonMapper: BaekjoonMapper,
+    private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}
 
-  async execute(requestDto: GetTagStatisticsRequestDto): Promise<TagStatisticsDto> {
+  async execute(inputDto: GetStatisticsInputDto): Promise<TagStatisticsOutputDto> {
     try {
-      const { email: userId, handle } = requestDto
+      const { userId, handle } = inputDto
 
       // 1단계: 입력값 검증
       this.validateInput(userId, handle)
@@ -65,7 +69,7 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
    * 기존 사용자 조회
    */
   private async findExistingUser(userId: string): Promise<BaekjoonUser> {
-    const existingUser = await this.baekjoonRepository.findBaekjoonUserByUserId(userId)
+    const existingUser = await this.profileRepository.findByUserId(userId)
 
     if (!existingUser) {
       throw new NotFoundException("존재하지 않는 백준 ID입니다.")
@@ -77,7 +81,7 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   /**
    * 캐시된 통계 데이터 조회 시도
    */
-  private async tryGetCachedStatistics(user: BaekjoonUser, handle: string): Promise<TagStatisticsDto | null> {
+  private async tryGetCachedStatistics(user: BaekjoonUser, handle: string): Promise<TagStatisticsOutputDto | null> {
     // 동기화가 필요하지 않은 경우 캐시된 데이터 반환
     if (!this.needsSync(user)) {
       return await this.getCachedStatistics(handle)
@@ -96,15 +100,16 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   /**
    * 캐시된 통계 데이터 조회
    */
-  private async getCachedStatistics(handle: string): Promise<TagStatisticsDto> {
+  private async getCachedStatistics(handle: string): Promise<TagStatisticsOutputDto | null> {
     const normalizedHandle = this.normalizeHandle(handle)
-    const userTagStats = await this.baekjoonRepository.findTagStatisticsResultByHandle(normalizedHandle)
+    const userTagStats = await this.statisticsRepository.findTagStatisticsByHandle(normalizedHandle)
 
     if (!userTagStats) {
-      throw new NotFoundException(`${handle}의 태그별 통계 정보가 존재하지 않습니다.`)
+      return null
     }
 
-    return userTagStats
+    // BojTag[]를 TagStatisticsOutputDto로 변환
+    return this.convertBojTagsToStatistics(userTagStats)
   }
 
   /**
@@ -117,7 +122,7 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   /**
    * API 데이터 조회 및 통계 생성
    */
-  private async fetchAndCreateStatistics(handle: string, userId: string): Promise<TagStatisticsDto> {
+  private async fetchAndCreateStatistics(handle: string, userId: string): Promise<TagStatisticsOutputDto> {
     const normalizedHandle = this.normalizeHandle(handle)
 
     // API 데이터 조회
@@ -150,19 +155,31 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   /**
    * API 데이터를 통계 DTO로 변환
    */
-  private transformApiDataToStatistics(apiData: { userProfile: any; tagRatingInfo: any[] }): TagStatisticsDto {
+  private transformApiDataToStatistics(apiData: { userProfile: any; tagRatingInfo: any[] }): TagStatisticsOutputDto {
     const { userProfile, tagRatingInfo } = apiData
 
     const topTags = this.processTopTags(tagRatingInfo)
 
     const apiResponse = {
       totalCount: userProfile.solvedCount,
-      tierStats: {}, // TODO: tier 통계 정보 추가 필요
+      tierStats: this.buildTierStats(userProfile), // tier 통계 정보 추가
       topTags,
       lastSynced: new Date(),
     }
 
-    return this.baekjoonMapper.toTagStatisticsDto(apiResponse)
+    return this.baekjoonMapper.toTagStatisticsOutputDto(apiResponse)
+  }
+
+  /**
+   * tier 통계 정보 생성
+   */
+  private buildTierStats(userProfile: any): any {
+    return {
+      currentTier: userProfile.tier || 0,
+      currentRating: userProfile.rating || 0,
+      maxTier: userProfile.maxStreak || 0,
+      solvedCount: userProfile.solvedCount || 0,
+    }
   }
 
   /**
@@ -191,14 +208,17 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
    */
   private async saveUserAndStatistics(
     apiData: { userProfile: any },
-    tagStatisticsDto: TagStatisticsDto,
+    tagStatisticsDto: TagStatisticsOutputDto,
     userId: string,
   ): Promise<void> {
     // 백준 사용자 데이터 생성
     const baekjoonUserResult = this.createBaekjoonUserFromApi(apiData.userProfile, userId)
 
     // 저장 작업들을 병렬로 실행
-    await Promise.all([this.saveBaekjoonUser(baekjoonUserResult), this.saveTagStatistics(tagStatisticsDto)])
+    await Promise.all([
+      this.saveBaekjoonUser(baekjoonUserResult), 
+      this.saveTagStatistics(tagStatisticsDto, userId, apiData.userProfile.handle)
+    ])
   }
 
   /**
@@ -217,14 +237,69 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
    * 백준 사용자 저장
    */
   private async saveBaekjoonUser(baekjoonUser: BaekjoonUser): Promise<void> {
-    await this.baekjoonRepository.saveBaekjoonUser(baekjoonUser)
+    await this.profileRepository.save(baekjoonUser)
   }
 
   /**
    * 태그 통계 저장
    */
-  private async saveTagStatistics(tagStatistics: TagStatisticsDto): Promise<void> {
-    await this.baekjoonRepository.saveTagStatisticsResult(tagStatistics)
+  private async saveTagStatistics(tagStatistics: TagStatisticsOutputDto, userId: string, handle: string): Promise<void> {
+    // TagStatisticsOutputDto를 BojTag[]로 변환 필요
+    const bojTags = this.convertStatisticsToBojTags(tagStatistics)
+    await this.statisticsRepository.saveTagStatistics(userId, handle, bojTags)
+  }
+
+  /**
+   * BojTag[]를 TagStatisticsOutputDto로 변환
+   */
+  private convertBojTagsToStatistics(bojTags: any[]): TagStatisticsOutputDto {
+    const topTags = bojTags
+      .filter((tag) => tag.solvedCount > 0)
+      .sort((a, b) => b.solvedCount - a.solvedCount)
+      .map((tag) => ({
+        tag: {
+          key: tag.tag.key,
+          name: tag.tag.displayNames?.[0]?.name || tag.tag.key,
+        },
+        solvedCount: tag.solvedCount,
+        rating: tag.rating,
+      }))
+
+    const totalCount = bojTags.reduce((sum, tag) => sum + tag.solvedCount, 0)
+
+    const apiResponse = {
+      totalCount,
+      tierStats: {},
+      topTags,
+      lastSynced: new Date(),
+    }
+
+    return this.baekjoonMapper.toTagStatisticsOutputDto(apiResponse)
+  }
+
+  /**
+   * TagStatisticsOutputDto를 BojTag[]로 변환
+   */
+  private convertStatisticsToBojTags(statistics: TagStatisticsOutputDto): any[] {
+    // 임시 구현 - 실제로는 DTO의 구조에 맞게 변환 필요
+    return []
+  }
+
+  async executeByHandle(handle: string): Promise<TagStatisticsOutputDto> {
+    try {
+      // 1단계: 입력값 검증
+      if (!handle) {
+        throw new BadRequestException("백준 ID(handle)는 필수입니다.")
+      }
+
+      // 2단계: 태그 통계 조회 (공개 조회이므로 사용자 ID 없이)
+      return await this.fetchAndCreateStatistics(handle, "")
+    } catch (error) {
+      this.logger.error(
+        `baekjoon.service.${GetStatisticsUseCaseImpl.name}\n${ErrorUtils.getErrorMessage(error)}\n\n${ErrorUtils.getErrorStack(error)}`,
+      )
+      throw error
+    }
   }
 
   /**

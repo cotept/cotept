@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+
 import { Expose, Type } from "class-transformer"
 import { IsArray, IsDate, IsNotEmpty, IsNumber, IsObject, IsString, Min, ValidateNested } from "class-validator"
 
@@ -53,7 +54,36 @@ export class TopTagDto {
  * 태그 통계 DTO
  * 백준 사용자의 태그별 문제 풀이 통계를 담는 DTO
  */
-export class TagStatisticsDto {
+export class TagStatisticsOutputDto {
+  @ApiProperty({
+    description: "백준 사용자 핸들",
+    example: "dudtod1596",
+  })
+  @Expose()
+  @IsString({ message: "백준 핸들은 문자열이어야 합니다." })
+  @IsNotEmpty({ message: "백준 핸들은 필수 값입니다." })
+  handle: string
+
+  @ApiProperty({
+    description: "상위 태그 목록 (해결한 문제 수 기준)",
+    type: [TopTagDto],
+  })
+  @Expose()
+  @IsArray({ message: "상위 태그 목록은 배열이어야 합니다." })
+  @ValidateNested({ each: true })
+  @Type(() => TopTagDto)
+  tags: TopTagDto[]
+
+  @ApiProperty({
+    description: "총 태그 수",
+    example: 25,
+    minimum: 0,
+  })
+  @Expose()
+  @IsNumber({}, { message: "총 태그 수는 숫자여야 합니다." })
+  @Min(0, { message: "총 태그 수는 0 이상이어야 합니다." })
+  totalTagCount: number
+
   @ApiProperty({
     description: "총 해결한 문제 수",
     example: 150,
@@ -62,7 +92,7 @@ export class TagStatisticsDto {
   @Expose()
   @IsNumber({}, { message: "총 문제 수는 숫자여야 합니다." })
   @Min(0, { message: "총 문제 수는 0 이상이어야 합니다." })
-  totalCount: number
+  totalSolvedCount: number
 
   @ApiProperty({
     description: "티어별 통계 (티어명: 문제 수)",
@@ -76,16 +106,6 @@ export class TagStatisticsDto {
   @Expose()
   @IsObject({ message: "티어별 통계는 객체여야 합니다." })
   tierStats: Record<string, number>
-
-  @ApiProperty({
-    description: "상위 태그 목록 (해결한 문제 수 기준)",
-    type: [TopTagDto],
-  })
-  @Expose()
-  @IsArray({ message: "상위 태그 목록은 배열이어야 합니다." })
-  @ValidateNested({ each: true })
-  @Type(() => TopTagDto)
-  topTags: TopTagDto[]
 
   @ApiProperty({
     description: "통계 데이터가 마지막으로 동기화된 시간",

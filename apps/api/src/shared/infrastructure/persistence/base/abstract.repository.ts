@@ -1,5 +1,4 @@
 import { Logger } from "@nestjs/common"
-import { PaginatedResult, PaginationOptions } from "@repo/shared/src/pagination"
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
@@ -79,9 +78,4 @@ export abstract class AbstractRepository<T extends BaseEntity<T>> {
    * 조건에 맞는 엔티티 일괄 삭제
    */
   abstract bulkDelete(where: FindOptionsWhere<T>): Promise<number>
-
-  /**
-   * 페이지네이션 조회
-   */
-  abstract paginate(where: FindOptionsWhere<T>, options: PaginationOptions): Promise<PaginatedResult<T>>
 }

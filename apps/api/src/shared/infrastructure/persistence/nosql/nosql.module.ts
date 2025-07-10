@@ -1,8 +1,9 @@
-import { Module, DynamicModule, Provider } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { NoSQLClientOptions } from './client/nosql-client.interface';
-import { NoSQLClientProvider, createNoSQLOptionsProvider, OCI_NOSQL_CLIENT } from './client/nosql-client.provider';
-import { SessionMapper } from './mappers/session.mapper';
+import { DynamicModule, Module, Provider } from "@nestjs/common"
+import { ConfigModule } from "@nestjs/config"
+
+import { NoSQLClientOptions } from "./client/nosql-client.interface"
+import { createNoSQLOptionsProvider, NoSQLClientProvider } from "./client/nosql-client.provider"
+import { SessionMapper } from "./mappers/session.mapper"
 
 @Module({
   imports: [ConfigModule],
@@ -14,7 +15,7 @@ import { SessionMapper } from './mappers/session.mapper';
   exports: [
     SessionMapper,
     // 다른 매퍼들...
-  ]
+  ],
 })
 export class NoSQLMappersModule {}
 
@@ -24,16 +25,16 @@ export class NoSQLModule {
    * NoSQL 모듈 루트 설정 (비동기)
    */
   static forRootAsync(options: {
-    imports: any[];
-    useFactory: (...args: any[]) => NoSQLClientOptions;
-    inject: any[];
+    imports: any[]
+    useFactory: (...args: any[]) => NoSQLClientOptions
+    inject: any[]
   }): DynamicModule {
     return {
       module: NoSQLModule,
       imports: [...options.imports, NoSQLMappersModule],
       providers: [
         {
-          provide: 'OCI_NOSQL_OPTIONS',
+          provide: "OCI_NOSQL_OPTIONS",
           useFactory: options.useFactory,
           inject: options.inject,
         },
@@ -41,7 +42,7 @@ export class NoSQLModule {
       ],
       exports: [NoSQLClientProvider, NoSQLMappersModule],
       global: true,
-    };
+    }
   }
 
   /**
@@ -51,13 +52,10 @@ export class NoSQLModule {
     return {
       module: NoSQLModule,
       imports: [NoSQLMappersModule],
-      providers: [
-        createNoSQLOptionsProvider(options),
-        NoSQLClientProvider,
-      ],
+      providers: [createNoSQLOptionsProvider(options), NoSQLClientProvider],
       exports: [NoSQLClientProvider, NoSQLMappersModule],
       global: true,
-    };
+    }
   }
 
   /**
@@ -70,6 +68,6 @@ export class NoSQLModule {
       imports: [NoSQLMappersModule],
       providers: [...repositories],
       exports: [...repositories],
-    };
+    }
   }
 }

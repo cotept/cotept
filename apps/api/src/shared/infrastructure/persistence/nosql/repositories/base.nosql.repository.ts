@@ -6,6 +6,7 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common"
+
 import {
   AnyRow,
   DeleteResult,
@@ -19,11 +20,17 @@ import {
   NoSQLTimeoutError,
   PreparedStatement,
   PutResult,
+  QueryOpt,
   QueryResult,
   RowKey,
+  TableDDLOpt,
+  TableLimits,
+  TableResult,
+  TableUsageResult,
   WriteMultipleOpt,
   WriteMultipleResult,
 } from "oracle-nosqldb"
+
 import { AbstractNoSQLRepository } from "../../base/abstract.nosql.repository"
 import { OCI_NOSQL_CLIENT } from "../client/nosql-client.provider"
 
@@ -42,6 +49,36 @@ export abstract class BaseNoSQLRepository<
     protected readonly tableName: string,
   ) {
     super()
+  }
+
+  /**
+   * 테이블 정보 조회
+   */
+  async getTableInfo(opt?: TableDDLOpt): Promise<TableResult> {
+    return this.executeOperation(async () => {
+      return this.nosqlClient.getTable(this.tableName, opt)
+    })
+  }
+
+  /**
+   * 테이블 생성 또는 업데이트 (DDL 실행)
+   */
+  async createOrUpdateTable(ddl: string, tableLimits: TableLimits, opt?: TableDDLOpt): Promise<TableResult> {
+    return this.executeOperation(async () => {
+      if (opt) {
+        return this.nosqlClient.tableDDL(ddl, opt)
+      }
+      return this.nosqlClient.tableDDL(ddl, { tableLimits })
+    })
+  }
+
+  /**
+   * 테이블 사용량 정보 조회
+   */
+  async getTableUsageInfo(): Promise<TableUsageResult> {
+    return this.executeOperation(async () => {
+      return this.nosqlClient.getTableUsage(this.tableName)
+    })
   }
 
   /**
@@ -71,9 +108,9 @@ export abstract class BaseNoSQLRepository<
   /**
    * 사용자 정의 쿼리 실행
    */
-  async query(statement: string | PreparedStatement): Promise<QueryResult<TData>> {
+  async query(statement: string | PreparedStatement, opt?: QueryOpt): Promise<QueryResult<TData>> {
     return this.executeOperation(async () => {
-      return this.nosqlClient.query<TData>(statement)
+      return this.nosqlClient.query<TData>(statement, opt)
     })
   }
 

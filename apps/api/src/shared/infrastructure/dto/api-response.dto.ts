@@ -51,6 +51,53 @@ export class ListData<T> {
 
   @ApiProperty({ description: "항목 목록", isArray: true })
   items: T[]
+
+  constructor(items: T[], total: number, page: number, pageSize: number) {
+    this.items = items
+    this.total = total
+    this.page = page
+    this.pageSize = pageSize
+    this.totalPages = Math.ceil(total / pageSize)
+  }
+}
+
+// base.repository.ts 호환용 별칭
+export class PaginatedResult<T> {
+  @ApiProperty({ description: "항목 목록", isArray: true })
+  items: T[]
+
+  @ApiProperty({ description: "총 항목 수", example: 100 })
+  totalItemCount: number
+
+  @ApiProperty({ description: "현재 페이지", example: 1 })
+  currentPage: number
+
+  @ApiProperty({ description: "페이지당 항목 수", example: 10 })
+  limit: number
+
+  @ApiProperty({ description: "총 페이지 수", example: 10 })
+  totalPageCount: number
+
+  constructor(items: T[], totalItemCount: number, currentPage: number, limit: number) {
+    this.items = items
+    this.totalItemCount = totalItemCount
+    this.currentPage = currentPage
+    this.limit = limit
+    this.totalPageCount = Math.ceil(totalItemCount / limit)
+  }
+}
+
+export class PaginationOptions {
+  @ApiProperty({ description: "현재 페이지", example: 1 })
+  currentPage: number
+
+  @ApiProperty({ description: "페이지당 항목 수", example: 10 })
+  limit: number
+
+  constructor(currentPage: number = 1, limit: number = 10) {
+    this.currentPage = currentPage
+    this.limit = limit
+  }
 }
 
 // 생성 응답 데이터

@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common"
+
 import {
   AnyRow,
-  ConsumedCapacityResult,
   DeleteOpt,
   DeleteResult,
   FieldRange,
@@ -18,6 +18,7 @@ import {
   TableDDLOpt,
   TableLimits,
   TableResult,
+  TableUsageResult,
   WriteMultipleOpt,
   WriteMultipleResult,
 } from "oracle-nosqldb"
@@ -94,7 +95,7 @@ export abstract class AbstractNoSQLRepository<TData extends AnyRow, TKey extends
   /**
    * 테이블 사용량/용량 조회 (ConsumedCapacityResult)
    */
-  abstract getTableUsage(): Promise<ConsumedCapacityResult>
+  abstract getTableUsageInfo(): Promise<TableUsageResult>
 
   /**
    * 에러 타입 명시 (공식 에러 타입 활용)

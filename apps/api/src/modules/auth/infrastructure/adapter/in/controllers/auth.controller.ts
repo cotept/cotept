@@ -12,6 +12,10 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
+import {
+  TokenResponseDto,
+  LogoutResponseDto,
+} from "@/modules/auth/infrastructure/dtos/response"
 import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
@@ -40,14 +44,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "로그인", description: "이메일과 비밀번호로 로그인하고 토큰을 발급합니다." })
   @ApiBody({ type: LoginRequestDto })
-  @ApiOkResponse({ description: "로그인 성공" })
+  @ApiOkResponse({ description: "로그인 성공", type: TokenResponseDto })
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "인증 실패" })
   async login(
     @Body() loginRequestDto: LoginRequestDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<TokenResponseDto> {
     const ipAddress = req.ip
     const userAgent = req.headers["user-agent"] || ""
 
@@ -61,9 +65,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
-  @ApiOkResponse({ description: "로그아웃 성공" })
+  @ApiOkResponse({ description: "로그아웃 성공", type: LogoutResponseDto })
   @ApiUnauthorizedResponse({ description: "인증 필요" })
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string): Promise<LogoutResponseDto> {
     const token = req.headers.authorization?.split(" ")[1] || ""
     return await this.authFacadeService.logout(userId, token, res)
   }

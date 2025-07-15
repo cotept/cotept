@@ -1,7 +1,12 @@
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
+
+import { Response } from "express"
+
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { ValidateAuthCodeDto } from "@/modules/auth/application/dtos/validate-auth-code.dto"
+import { AuthResponseMapper } from "@/modules/auth/application/mappers/auth-response.mapper"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
@@ -30,10 +35,18 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import { ApiResponse } from "@/shared/infrastructure/dto/api-response.dto"
+import {
+  FindIdResponseDto,
+  LogoutResponseDto,
+  ResetPasswordResponseDto,
+  SocialLinkConfirmationResponseDto,
+  SocialRedirectResponseDto,
+  TokenResponseDto,
+  ValidationResultResponseDto,
+  VerificationCodeResponseDto,
+  VerificationResultResponseDto,
+} from "@/modules/auth/infrastructure/dtos/response"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { HttpStatus, Injectable, Logger, UnauthorizedException } from "@nestjs/common"
-import { Response } from "express"
 
 /**
  * 인증 관련 파사드 서비스
@@ -56,6 +69,7 @@ export class AuthFacadeService {
     private readonly findIdUseCase: FindIdUseCase, // 추가
     private readonly resetPasswordUseCase: ResetPasswordUseCase, // 추가
     private readonly authRequestMapper: AuthRequestMapper,
+    private readonly authResponseMapper: AuthResponseMapper,
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly passwordHasher: PasswordHasherPort,
@@ -65,7 +79,12 @@ export class AuthFacadeService {
   /**
    * 사용자 로그인 및 토큰 발급
    */
-  async login(loginRequestDto: LoginRequestDto, ipAddress?: string, userAgent?: string, res?: Response) {
+  async login(
+    loginRequestDto: LoginRequestDto,
+    ipAddress?: string,
+    userAgent?: string,
+    res?: Response,
+  ): Promise<TokenResponseDto> {
     try {
       const loginDto = this.authRequestMapper.toLoginDto(loginRequestDto, ipAddress, userAgent)
 
@@ -76,18 +95,14 @@ export class AuthFacadeService {
         const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
-        // 리프레시 토큰을 응답에서 제외
-        const responseObj = tokenPair.toResponseObject()
-        const responseData = {
-          accessToken: responseObj.accessToken,
-          expiresIn: responseObj.expiresIn,
-        }
-
-        return new ApiResponse(HttpStatus.OK, true, "로그인 성공", responseData)
+        // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
+        return tokenResponse
       }
 
       // 응답 객체가 없는 경우 모든 정보 반환
-      return new ApiResponse(HttpStatus.OK, true, "로그인 성공", tokenPair.toResponseObject())
+      return this.authResponseMapper.toTokenResponse(tokenPair)
     } catch (error) {
       this.logger.error(`로그인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -97,7 +112,7 @@ export class AuthFacadeService {
   /**
    * 사용자 로그아웃
    */
-  async logout(userId: string, token: string, res?: Response) {
+  async logout(userId: string, token: string, res?: Response): Promise<LogoutResponseDto> {
     try {
       const logoutDto = this.authRequestMapper.toLogoutDto(userId, token)
 
@@ -108,7 +123,7 @@ export class AuthFacadeService {
         this.cookieManager.clearRefreshTokenCookie(res)
       }
 
-      return new ApiResponse(HttpStatus.OK, true, "로그아웃 성공")
+      return this.authResponseMapper.toLogoutResponse()
     } catch (error) {
       this.logger.error(`로그아웃 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -123,7 +138,7 @@ export class AuthFacadeService {
     ipAddress?: string,
     userAgent?: string,
     res?: Response,
-  ) {
+  ): Promise<TokenResponseDto> {
     try {
       const refreshTokenDto = this.authRequestMapper.toRefreshTokenDto(refreshTokenRequestDto, ipAddress, userAgent)
 
@@ -134,17 +149,14 @@ export class AuthFacadeService {
         const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
-        // 리프레시 토큰을 응답에서 제외
-        const responseObj = tokenPair.toResponseObject()
-        const responseData = {
-          accessToken: responseObj.accessToken,
-          expiresIn: responseObj.expiresIn,
-        }
-
-        return new ApiResponse(HttpStatus.OK, true, "토큰 갱신 성공", responseData)
+        // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
+        return tokenResponse
       }
 
-      return new ApiResponse(HttpStatus.OK, true, "토큰 갱신 성공", tokenPair.toResponseObject())
+      // 응답 객체가 없는 경우 모든 정보 반환
+      return this.authResponseMapper.toTokenResponse(tokenPair)
     } catch (error) {
       this.logger.error(`토큰 갱신 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -154,28 +166,16 @@ export class AuthFacadeService {
   /**
    * 토큰 유효성 검증
    */
-  async validateToken(validateTokenRequestDto: ValidateTokenRequestDto) {
+  async validateToken(validateTokenRequestDto: ValidateTokenRequestDto): Promise<ValidationResultResponseDto> {
     try {
       const validateTokenDto = this.authRequestMapper.toValidateTokenDto(validateTokenRequestDto)
 
       const tokenPayload = await this.validateTokenUseCase.execute(validateTokenDto)
 
       const isValid = !!tokenPayload
-      const response = {
-        isValid,
-        ...(isValid && {
-          userId: tokenPayload!.sub,
-          email: tokenPayload!.email,
-          role: tokenPayload!.role,
-        }),
-      }
+      const userId = isValid ? tokenPayload!.sub : undefined
 
-      return new ApiResponse(
-        HttpStatus.OK,
-        true,
-        isValid ? "유효한 토큰입니다." : "유효하지 않은 토큰입니다.",
-        response,
-      )
+      return this.authResponseMapper.toValidationResponse(isValid, userId)
     } catch (error) {
       this.logger.error(`토큰 검증 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -189,7 +189,7 @@ export class AuthFacadeService {
     sendVerificationCodeRequestDto: SendVerificationCodeRequestDto,
     userId?: string,
     ipAddress?: string,
-  ) {
+  ): Promise<VerificationCodeResponseDto> {
     try {
       const sendVerificationCodeDto = this.authRequestMapper.toSendVerificationCodeDto(
         sendVerificationCodeRequestDto,
@@ -199,10 +199,7 @@ export class AuthFacadeService {
 
       const result = await this.sendVerificationCodeUseCase.execute(sendVerificationCodeDto)
 
-      return new ApiResponse(HttpStatus.OK, true, "인증 코드가 발송되었습니다.", {
-        verificationId: result.verificationId,
-        expiresAt: result.expiresAt.toISOString(),
-      })
+      return this.authResponseMapper.toVerificationCodeResponse(result.verificationId, result.expiresAt)
     } catch (error) {
       this.logger.error(
         `인증 코드 발송 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -215,18 +212,13 @@ export class AuthFacadeService {
   /**
    * 인증 코드 확인
    */
-  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto) {
+  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
     try {
       const verifyCodeDto = this.authRequestMapper.toVerifyCodeDto(verifyCodeRequestDto)
 
       const success = await this.verifyCodeUseCase.execute(verifyCodeDto)
 
-      return new ApiResponse(
-        HttpStatus.OK,
-        success,
-        success ? "인증이 완료되었습니다." : "유효하지 않은 인증 코드입니다.",
-        { success },
-      )
+      return this.authResponseMapper.toVerificationResultResponse(success)
     } catch (error) {
       this.logger.error(
         `인증 코드 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -239,15 +231,13 @@ export class AuthFacadeService {
   /**
    * 아이디 찾기
    */
-  async findId(findIdRequestDto: FindIdRequestDto, ipAddress?: string) {
+  async findId(findIdRequestDto: FindIdRequestDto, ipAddress?: string): Promise<FindIdResponseDto> {
     try {
       const findIdDto = this.authRequestMapper.toFindIdDto(findIdRequestDto, ipAddress)
 
       const result = await this.findIdUseCase.execute(findIdDto)
 
-      return new ApiResponse(HttpStatus.OK, true, "아이디 찾기 성공", {
-        email: result.maskingEmail, // 마스킹된 이메일만 반환
-      })
+      return this.authResponseMapper.toFindIdResponse(result.maskingId)
     } catch (error) {
       this.logger.error(
         `아이디 찾기 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -260,18 +250,16 @@ export class AuthFacadeService {
   /**
    * 비밀번호 재설정
    */
-  async resetPassword(resetPasswordRequestDto: ResetPasswordRequestDto, ipAddress?: string) {
+  async resetPassword(
+    resetPasswordRequestDto: ResetPasswordRequestDto,
+    ipAddress?: string,
+  ): Promise<ResetPasswordResponseDto> {
     try {
       const resetPasswordDto = this.authRequestMapper.toResetPasswordDto(resetPasswordRequestDto, ipAddress)
 
-      const success = await this.resetPasswordUseCase.execute(resetPasswordDto)
+      await this.resetPasswordUseCase.execute(resetPasswordDto)
 
-      return new ApiResponse(
-        HttpStatus.OK,
-        success,
-        success ? "비밀번호가 성공적으로 변경되었습니다." : "비밀번호 변경에 실패했습니다.",
-        { success },
-      )
+      return this.authResponseMapper.toResetPasswordResponse()
     } catch (error) {
       this.logger.error(
         `비밀번호 재설정 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -285,9 +273,10 @@ export class AuthFacadeService {
    * 소셜 인증 콜백 처리
    * @param callbackParams 콜백 처리에 필요한 매개변수
    */
-  async handleSocialAuthCallback(callbackParams: SocialAuthCallbackDto) {
+  async handleSocialAuthCallback(callbackParams: SocialAuthCallbackDto): Promise<SocialRedirectResponseDto> {
     try {
-      return await this.socialAuthCallbackUseCase.execute(callbackParams)
+      const result = await this.socialAuthCallbackUseCase.execute(callbackParams)
+      return this.authResponseMapper.toSocialRedirectResponse(result.redirectUrl)
     } catch (error) {
       this.logger.error(
         `소셜 인증 콜백 처리 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -302,15 +291,12 @@ export class AuthFacadeService {
    * @param userId 사용자 ID
    * @returns 인증 코드 정보
    */
-  async generateAuthCode(userId: string) {
+  async generateAuthCode(userId: string): Promise<VerificationCodeResponseDto> {
     try {
       const generateAuthCodeDto = new GenerateAuthCodeDto(userId)
       const result = await this.generateAuthCodeUseCase.execute(generateAuthCodeDto)
 
-      return new ApiResponse(HttpStatus.OK, true, "인증 코드 생성 성공", {
-        code: result.code,
-        expiresAt: result.expiresAt.toISOString(),
-      })
+      return this.authResponseMapper.toVerificationCodeResponse(result.code, result.expiresAt)
     } catch (error) {
       this.logger.error(
         `인증 코드 생성 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -333,7 +319,7 @@ export class AuthFacadeService {
     ipAddress?: string,
     userAgent?: string,
     res?: Response,
-  ) {
+  ): Promise<TokenResponseDto> {
     try {
       // 인증 코드 검증
       const validateAuthCodeDto = new ValidateAuthCodeDto(exchangeAuthCodeRequestDto.code)
@@ -353,7 +339,7 @@ export class AuthFacadeService {
 
       // 토큰 생성을 위해 LoginDto 생성
       const loginDto = new LoginDto()
-      loginDto.email = user.getEmail() // 실제 이메일 사용
+      loginDto.id = user.getId() // 실제 아이디 사용
       loginDto.password = "" // 소셜 로그인은 비밀번호 검증을 하지 않음
       loginDto.ipAddress = ipAddress
       loginDto.userAgent = userAgent
@@ -366,17 +352,14 @@ export class AuthFacadeService {
         const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
-        // 리프레시 토큰을 응답에서 제외
-        const responseObj = tokenPair.toResponseObject()
-        const responseData = {
-          accessToken: responseObj.accessToken,
-          expiresIn: responseObj.expiresIn,
-        }
-
-        return new ApiResponse(HttpStatus.OK, true, "인증 코드 교환 성공", responseData)
+        // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
+        return tokenResponse
       }
 
-      return new ApiResponse(HttpStatus.OK, true, "인증 코드 교환 성공", tokenPair.toResponseObject())
+      // 응답 객체가 없는 경우 모든 정보 반환
+      return this.authResponseMapper.toTokenResponse(tokenPair)
     } catch (error) {
       this.logger.error(
         `인증 코드 교환 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -455,7 +438,7 @@ export class AuthFacadeService {
     ipAddress?: string,
     userAgent?: string,
     res?: Response,
-  ) {
+  ): Promise<SocialLinkConfirmationResponseDto | TokenResponseDto> {
     try {
       // 1. 임시 토큰 검증
       const pendingInfo = await this.tokenStorage.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
@@ -475,9 +458,15 @@ export class AuthFacadeService {
           pendingInfo.profileData,
         )
 
+        // 이메일로 사용자 찾아서 아이디 가져오기
+        const user = await this.authUserRepository.findByEmail(pendingInfo.email)
+        if (!user) {
+          throw new UnauthorizedException("해당 이메일과 연결된 사용자를 찾을 수 없습니다.")
+        }
+
         // 기존 login 로직 활용하여 토큰 발급
         const loginDto = new LoginDto()
-        loginDto.email = pendingInfo.email
+        loginDto.id = user.getId() // 이메일 대신 실제 아이디 사용
         loginDto.password = "" // 소셜 로그인은 비밀번호 불필요
         loginDto.ipAddress = ipAddress
         loginDto.userAgent = userAgent
@@ -492,14 +481,16 @@ export class AuthFacadeService {
         // 사용된 토큰 삭제
         await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
 
-        return new ApiResponse(HttpStatus.OK, true, "계정 연결 및 로그인 성공", {
-          accessToken: tokenPair.accessToken,
-          expiresIn: tokenPair.accessTokenExpiresIn,
-        })
+        // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        if (res) {
+          tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
+        }
+        return tokenResponse
       } else {
         // 연결 거부
         await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
-        return new ApiResponse(HttpStatus.OK, true, "계정 연결이 취소되었습니다.", { success: false })
+        return this.authResponseMapper.toSocialLinkConfirmationResponse(false)
       }
     } catch (error) {
       this.logger.error(

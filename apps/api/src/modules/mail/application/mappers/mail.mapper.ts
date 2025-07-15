@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common"
+
 import { Mail } from "../../domain/model/mail"
-import { TemplateNames } from "../../domain/types/template.types"
 import { MailDto } from "../dtos/mail.dto"
 import { SendMailDto } from "../dtos/send-mail.dto"
+
+import { TemplateNames } from "../../domain/types/template.types"
 
 @Injectable()
 export class MailMapper {

@@ -27,22 +27,22 @@ export class LoginUseCaseImpl implements LoginUseCase {
   ) {}
 
   /**
-   * 이메일과 비밀번호로 사용자를 인증하고 토큰 발급
-   * @param loginDto 로그인 정보(이메일, 비밀번호, IP, User-Agent)
+   * 아이디와 비밀번호로 사용자를 인증하고 토큰 발급
+   * @param loginDto 로그인 정보(아이디, 비밀번호, IP, User-Agent)
    * @returns 액세스 토큰과 리프레시 토큰 쌍
    */
   async execute(loginDto: LoginDto): Promise<TokenPair> {
     try {
       // 1. 사용자 인증
-      const user = await this.authUserRepository.findByEmail(loginDto.email)
+      const user = await this.authUserRepository.findById(loginDto.id)
       if (!user) {
-        throw new AuthenticationFailedException("Invalid email or password")
+        throw new AuthenticationFailedException("Invalid ID or password")
       }
 
       // 2. 비밀번호 검증
       const isValid = await this.passwordHasher.verify(loginDto.password, user.getPasswordHash())
       if (!isValid) {
-        throw new AuthenticationFailedException("Invalid email or password")
+        throw new AuthenticationFailedException("Invalid ID or password")
       }
 
       // 3. 계정 상태 확인

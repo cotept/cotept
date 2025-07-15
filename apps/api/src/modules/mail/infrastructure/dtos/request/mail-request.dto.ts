@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
+
 import { IsEmail, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator"
+
 import { LocaleType, TemplateContextMap, TemplateNames } from "../../../domain/types/template.types"
 
 /**

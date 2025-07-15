@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common"
+
 import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
 import { MailAuditRepositoryPort } from "@/modules/mail/application/ports/out/mail-audit-repository.port"
 import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
@@ -6,7 +7,7 @@ import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
 @Injectable()
 export class GetMailAuditUseCaseImpl extends GetMailAuditUseCase {
   constructor(private readonly mailAuditRepository: MailAuditRepositoryPort) {
-    super();
+    super()
   }
 
   async getById(id: string): Promise<MailAudit | undefined> {

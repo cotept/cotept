@@ -1,22 +1,32 @@
-doctype html
-html
-  head
-    meta(charset="utf-8")
-    title [코테PT] 본인 인증
-    include components/styles/styles
-  body
-    include components/constants/constants
-    .container
-      .header
-      //-   include components/header
-      .title [코테PT] 본인 인증
-      
-      .help-text 계정 인증을 완료하기 위해 아래 코드를 입력해주세요.
-      
-      include components/code-block
+extends layout/base.pug
 
-      .notice 이 인증코드는 3분 동안만 유효합니다.
-      
-      .security-notice 보안을 위해 이 코드를 다른 사람과 공유하지 마세요.
-      
-      .footer #{SERVICE_NAME} | #{DOMAIN_EMAIL_FROM}
+block content
+  //- 제목 섹션
+  table(width="100%" border="0" cellpadding="0" cellspacing="0")
+    tr
+      td(style="font-size: 16px; font-weight: normal; color: #333; text-align: center; padding: 20px 0 10px 0;")
+        | [코테PT] 본인 인증
+  
+  //- 도움말 텍스트
+  table(width="100%" border="0" cellpadding="0" cellspacing="0")
+    tr
+      td(style="font-size: 14px; color: #666; text-align: center; line-height: 1.5; padding: 0 0 20px 0;")
+        | 계정 인증을 완료하기 위해 아래 코드를 입력해주세요.
+  
+  //- 인증 코드 블록
+  table(width="100%" border="0" cellpadding="0" cellspacing="0")
+    tr
+      td(style="background-color: #f5f5f7; padding: 28px 0; text-align: center;")
+        span(style="font-size: 24px; font-weight: bold; letter-spacing: 8px; color: #333;") #{authNumber}
+  
+  //- 유효시간 안내
+  table(width="100%" border="0" cellpadding="0" cellspacing="0")
+    tr
+      td(style="text-align: center; font-size: 14px; color: #666; padding: 20px 0 10px 0;")
+        | 이 인증코드는 3분 동안만 유효합니다.
+  
+  //- 보안 안내
+  table(width="100%" border="0" cellpadding="0" cellspacing="0")
+    tr
+      td(style="text-align: center; font-size: 13px; color: #666; padding: 10px 0 20px 0;")
+        | 보안을 위해 이 코드를 다른 사람과 공유하지 마세요.

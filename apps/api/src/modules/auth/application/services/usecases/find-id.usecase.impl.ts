@@ -18,11 +18,11 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
   ) {}
 
   /**
-   * 사용자 아이디(이메일) 찾기
+   * 사용자 아이디 찾기
    * @param findIdDto 아이디 찾기 정보(인증 타입, 인증 대상, 인증 ID 등)
-   * @returns 마스킹된 이메일 주소
+   * @returns 마스킹된 아이디
    */
-  async execute(findIdDto: FindIdDto): Promise<{ email: string; maskingEmail: string }> {
+  async execute(findIdDto: FindIdDto): Promise<{ id: string; maskingId: string }> {
     // 1. 인증 코드 검증
     const redisKey = `verification:${findIdDto.verificationId}`
 
@@ -113,29 +113,26 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
       throw new NotFoundException("해당 정보와 일치하는 사용자를 찾을 수 없습니다.")
     }
 
-    // 3. 이메일 마스킹 처리
-    const email = user.getEmail()
-    const maskingEmail = this.maskEmail(email)
+    // 3. 아이디 마스킹 처리
+    const id = user.getId()
+    const maskingId = this.maskId(id)
 
     return {
-      email,
-      maskingEmail,
+      id,
+      maskingId,
     }
   }
 
   /**
-   * 이메일 마스킹 처리
+   * 아이디 마스킹 처리
    */
-  private maskEmail(email: string): string {
-    const [username, domain] = email.split("@")
-
-    let maskedUsername = username
-    if (username.length > 2) {
-      maskedUsername = username.substring(0, 2) + "*".repeat(username.length - 2)
-    } else if (username.length === 2) {
-      maskedUsername = username.substring(0, 1) + "*"
+  private maskId(id: string): string {
+    if (id.length <= 2) {
+      return id.substring(0, 1) + "*"
+    } else if (id.length <= 4) {
+      return id.substring(0, 2) + "*".repeat(id.length - 2)
+    } else {
+      return id.substring(0, 3) + "*".repeat(id.length - 3)
     }
-
-    return `${maskedUsername}@${domain}`
   }
 }

@@ -10,7 +10,7 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
 // 전략
 import { JwtConfig } from "@/configs/token"
 // 매퍼
-import { TokenMapper } from "@/modules/auth/application/mappers"
+import { AuthResponseMapper, TokenMapper } from "@/modules/auth/application/mappers"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
@@ -128,6 +128,7 @@ import { CryptoService } from "@/shared/infrastructure/services"
     AuthVerificationPersistenceMapper,
     LoginSessionPersistenceMapper,
     AuthRequestMapper,
+    AuthResponseMapper,
     TokenMapper,
 
     // 레포지토리 구현체

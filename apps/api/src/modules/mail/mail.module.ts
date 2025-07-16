@@ -7,16 +7,18 @@ import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter"
 import { join } from "path"
 
 // 애플리케이션 계층
-import { MailMapper } from "./application/mappers/mail.mapper"
+import { MailAuditResponseMapper, MailMapper } from "./application/mappers"
 import { GetMailAuditUseCase } from "./application/ports/in/get-mail-audit.usecase"
 import { SendMailUseCase } from "./application/ports/in/send-mail.usecase"
 import { MailAuditRepositoryPort } from "./application/ports/out/mail-audit-repository.port"
 import { MailServicePort } from "./application/ports/out/mail-service.port"
+import { MailAuditFacadeService } from "./application/services/facade/mail-audit-facade.service"
 import { MailFacadeService } from "./application/services/facade/mail-facade.service"
 import { SendMailUseCaseImpl } from "./application/services/usecases"
 import { GetMailAuditUseCaseImpl } from "./application/services/usecases/get-mail-audit.usecase.impl"
 import { MailController } from "./infrastructure/adapter/in/controllers/mail.controller"
 import { MailAuditController } from "./infrastructure/adapter/in/controllers/mail-audit.controller"
+import { MailAuditRequestMapper, MailRequestMapper } from "./infrastructure/adapter/in/mappers"
 import { MailAuditEntity } from "./infrastructure/adapter/out/persistence/entities/mail-audit.entity"
 import { TypeOrmMailAuditRepository } from "./infrastructure/adapter/out/persistence/repositories/typeorm-mail-audit.repository"
 import { MailService } from "./infrastructure/adapter/out/services/mail.service"
@@ -62,6 +64,9 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
   providers: [
     // 매퍼
     MailMapper,
+    MailRequestMapper,
+    MailAuditRequestMapper,
+    MailAuditResponseMapper,
 
     // 리포지토리
     {
@@ -93,6 +98,7 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
       },
       inject: [MailerService, SendMailUseCase],
     },
+    MailAuditFacadeService,
   ],
   controllers: [MailController, MailAuditController],
   exports: [MailFacadeService],

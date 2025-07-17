@@ -1,8 +1,17 @@
 import { getCsrfToken, getSession } from "next-auth/react"
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+  isAxiosError,
+} from "axios"
 
+import { update } from "@/auth"
 import { ApiError } from "@/shared/api/core/types"
+import authApi from "@/shared/auth/services/auth-api"
 
 class ApiClient {
   private instance: AxiosInstance
@@ -48,10 +57,32 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => response,
       async (error: AxiosError) => {
-        if (error.response?.status === 401) {
-          // 토큰 만료 시 로그아웃 처리
-          if (typeof window !== "undefined") {
-            window.location.href = "/auth/login"
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+        // 401 에러이고, 재시도한 요청이 아닐 경우
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true // 재시도 플래그 설정
+          try {
+            // 1. 토큰 갱신 시도
+            const response = await authApi.refreshToken()
+            const newTokens = response.data
+            // 2. NextAuth 세션 업데이트
+            await update({
+              user: {
+                accessToken: newTokens.accessToken,
+                refreshToken: newTokens.refreshToken,
+              },
+            })
+            // 3. 새로운 토큰으로 헤더 설정 후 원래 요청 재시도
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`
+            }
+            return this.instance(originalRequest)
+          } catch (refreshError) {
+            if (typeof window !== "undefined") {
+              // 토큰 갱신 실패 시 signOut()을 호출하거나 로그인 페이지로 리다이렉트
+              window.location.href = "/auth/login"
+            }
+            return Promise.reject(refreshError)
           }
         }
 
@@ -60,17 +91,32 @@ class ApiClient {
     )
   }
 
-  private normalizeError(error: AxiosError): ApiError {
-    if (error.response?.data) {
-      // 서버에서 ApiError 형태로 응답이 온 경우
-      return error.response.data as ApiError
+  private normalizeError(error: unknown): ApiError {
+    if (isAxiosError(error)) {
+      // 서버에서 내려준 에러 데이터가 있다면 그대로 사용
+      return {
+        ...error,
+        message: error.response?.data?.message || error.message,
+        timestamp: new Date().toISOString(),
+        ...error.response?.data, // 서버에서 보낸 추가 필드(code, details 등)를 포함
+      }
     }
 
-    // 네트워크 에러나 기타 에러의 경우 ApiError 형태로 변환
-    return {
-      ...error,
-      timestamp: new Date().toISOString(),
+    if (error instanceof Error) {
+      // 일반 Error 객체인 경우
+      return {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+      } as ApiError
     }
+
+    // 그 외 알 수 없는 에러
+    return {
+      message: "An unknown error occurred",
+      timestamp: new Date().toISOString(),
+    } as ApiError
   }
 
   // 요청 취소

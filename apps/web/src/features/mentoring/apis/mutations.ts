@@ -1,81 +1,50 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { userService } from "./client/service"
 import { queryKeys } from "./queryKeyFactory"
 
 import { ApiError, CreateUserRequest, MutationConfig, UpdateUserRequest } from "@/shared/api/core/types"
+import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 사용자 생성
 export function useCreateUser(config?: MutationConfig) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
+  return useBaseMutation({
     mutationFn: (data: CreateUserRequest) => userService.createUser(data),
+    queryKey: queryKeys.users.lists().queryKey,
+    successMessage: "사용자가 성공적으로 생성되었습니다.",
     onSuccess: (response) => {
-      // 사용자 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.lists().queryKey,
-      })
-
-      toast.success("사용자가 성공적으로 생성되었습니다.")
       config?.onSuccess?.(response.data)
     },
     onError: (error: ApiError) => {
-      toast.error(error.message || "사용자 생성에 실패했습니다.")
       config?.onError?.(error)
     },
   })
 }
 
 // 사용자 정보 수정 (Optimistic Update)
-export function useUpdateUser(config?: MutationConfig) {
+export function useUpdateUser(id: string, config?: MutationConfig) {
   const queryClient = useQueryClient()
 
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) => userService.updateUser(id, data),
-    onMutate: async ({ id, data }) => {
-      // 진행 중인 쿼리 취소
-      await queryClient.cancelQueries({
-        queryKey: queryKeys.users.detail(id).queryKey,
-      })
-
-      // 이전 데이터 스냅샷
-      const previousUser = queryClient.getQueryData(queryKeys.users.detail(id).queryKey)
-
-      // Optimistic update
+  return useBaseMutation({
+    mutationFn: (data: UpdateUserRequest) => userService.updateUser(id, data),
+    queryKey: queryKeys.users.detail(id).queryKey,
+    successMessage: "사용자 정보가 성공적으로 수정되었습니다.",
+    onMutate: (data: UpdateUserRequest) => {
+      // Optimistic Update 로직
       queryClient.setQueryData(queryKeys.users.detail(id).queryKey, (old: any) =>
-        old
-          ? {
-              ...old,
-              data: { ...old.data, ...data },
-            }
-          : undefined,
+        old ? { ...old, data: { ...old.data, ...data } } : undefined,
       )
-
-      return { previousUser, id }
     },
-    onError: (error: ApiError, variables, context) => {
-      // 롤백
-      if (context?.previousUser) {
-        queryClient.setQueryData(queryKeys.users.detail(context.id).queryKey, context.previousUser)
-      }
-
-      toast.error(error.message || "사용자 정보 수정에 실패했습니다.")
-      config?.onError?.(error)
-    },
-    onSettled: (data, error, variables) => {
-      // 관련 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.detail(variables.id).queryKey,
-      })
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.lists().queryKey,
-      })
+    onSettled: () => {
+      // 상세 정보와 목록 모두 무효화
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists().queryKey })
     },
     onSuccess: (response) => {
-      toast.success("사용자 정보가 성공적으로 수정되었습니다.")
       config?.onSuccess?.(response.data)
+    },
+    onError: (error: ApiError) => {
+      config?.onError?.(error)
     },
   })
 }
@@ -84,24 +53,18 @@ export function useUpdateUser(config?: MutationConfig) {
 export function useDeleteUser(config?: MutationConfig) {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useBaseMutation({
     mutationFn: (id: string) => userService.deleteUser(id),
+    queryKey: queryKeys.users.lists().queryKey, // 목록을 무효화하기 위한 키
+    successMessage: "사용자가 성공적으로 삭제되었습니다.",
     onSuccess: (response, deletedId) => {
-      // 관련 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.lists().queryKey,
-      })
-
-      // 삭제된 사용자의 상세 쿼리 제거
+      // 삭제된 사용자의 상세 쿼리 캐시를 직접 제거
       queryClient.removeQueries({
         queryKey: queryKeys.users.detail(deletedId).queryKey,
       })
-
-      toast.success("사용자가 성공적으로 삭제되었습니다.")
       config?.onSuccess?.(response.data)
     },
     onError: (error: ApiError) => {
-      toast.error(error.message || "사용자 삭제에 실패했습니다.")
       config?.onError?.(error)
     },
   })
@@ -111,47 +74,21 @@ export function useDeleteUser(config?: MutationConfig) {
 export function useUpdateProfile(config?: MutationConfig) {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useBaseMutation({
     mutationFn: (data: UpdateUserRequest) => userService.updateUser("me", data),
-    onMutate: async (data) => {
-      // 진행 중인 쿼리 취소
-      await queryClient.cancelQueries({
-        queryKey: queryKeys.users.profile("me").queryKey,
-      })
-
-      // 이전 데이터 스냅샷
-      const previousProfile = queryClient.getQueryData(queryKeys.users.profile("me").queryKey)
-
-      // Optimistic update
+    queryKey: queryKeys.users.profile("me").queryKey,
+    successMessage: "프로필이 성공적으로 수정되었습니다.",
+    onMutate: (data: UpdateUserRequest) => {
+      // Optimistic Update
       queryClient.setQueryData(queryKeys.users.profile("me").queryKey, (old: any) =>
-        old
-          ? {
-              ...old,
-              data: { ...old.data, ...data },
-            }
-          : undefined,
+        old ? { ...old, data: { ...old.data, ...data } } : undefined,
       )
-
-      return { previousProfile }
-    },
-    onError: (error: ApiError, variables, context) => {
-      // 롤백
-      if (context?.previousProfile) {
-        queryClient.setQueryData(queryKeys.users.profile("me").queryKey, context.previousProfile)
-      }
-
-      toast.error(error.message || "프로필 수정에 실패했습니다.")
-      config?.onError?.(error)
-    },
-    onSettled: () => {
-      // 프로필 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.profile("me").queryKey,
-      })
     },
     onSuccess: (response) => {
-      toast.success("프로필이 성공적으로 수정되었습니다.")
       config?.onSuccess?.(response.data)
+    },
+    onError: (error: ApiError) => {
+      config?.onError?.(error)
     },
   })
 }
@@ -160,24 +97,21 @@ export function useUpdateProfile(config?: MutationConfig) {
 export function useToggleUserStatus(config?: MutationConfig) {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useBaseMutation({
     mutationFn: ({ id, status }: { id: string; status: "ACTIVE" | "SUSPENDED" }) =>
       userService.updateUser(id, { status } as any),
+    queryKey: queryKeys.users.all.queryKey, // users 관련 모든 쿼리를 무효화
     onSuccess: (response, variables) => {
-      // 관련 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.detail(variables.id).queryKey,
-      })
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.lists().queryKey,
-      })
-
       const statusText = variables.status === "ACTIVE" ? "활성화" : "비활성화"
       toast.success(`사용자가 성공적으로 ${statusText}되었습니다.`)
+
+      // 목록과 상세 뷰를 모두 확실하게 무효화
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists().queryKey })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(variables.id).queryKey })
+
       config?.onSuccess?.(response.data)
     },
     onError: (error: ApiError) => {
-      toast.error(error.message || "사용자 상태 변경에 실패했습니다.")
       config?.onError?.(error)
     },
   })
@@ -187,30 +121,23 @@ export function useToggleUserStatus(config?: MutationConfig) {
 export function useBulkDeleteUsers(config?: MutationConfig) {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useBaseMutation({
     mutationFn: async (userIds: string[]) => {
-      // 여러 삭제 요청을 병렬로 처리
       const deletePromises = userIds.map((id) => userService.deleteUser(id))
       return Promise.all(deletePromises)
     },
+    queryKey: queryKeys.users.lists().queryKey,
     onSuccess: (responses, deletedIds) => {
-      // 관련 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.lists().queryKey,
-      })
-
-      // 삭제된 사용자들의 상세 쿼리 제거
+      // 삭제된 사용자들의 상세 쿼리 캐시를 제거
       deletedIds.forEach((id) => {
         queryClient.removeQueries({
           queryKey: queryKeys.users.detail(id).queryKey,
         })
       })
-
       toast.success(`${deletedIds.length}명의 사용자가 성공적으로 삭제되었습니다.`)
       config?.onSuccess?.(responses)
     },
     onError: (error: ApiError) => {
-      toast.error(error.message || "일괄 삭제에 실패했습니다.")
       config?.onError?.(error)
     },
   })

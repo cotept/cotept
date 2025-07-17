@@ -1,3 +1,5 @@
+import { compile } from "path-to-regexp"
+
 import { apiClient } from "./axios"
 import { ApiResponse, DeleteRequest, GetRequest, PaginatedResponse, PostRequest, PutRequest } from "./types"
 
@@ -38,15 +40,29 @@ export abstract class BaseApiService {
     return apiClient.delete(url)
   }
 
+  /**
+   * API 엔드포인트와 파라미터를 결합하여 완전한 URL을 생성합니다.
+   *
+   * `path-to-regexp` 라이브러리를 사용하여 URL 파라미터(:id 등)를 안전하게 치환합니다.
+   * 이를 통해 잘못된 치환으로 인한 버그를 방지하고 URL 인코딩을 보장합니다.
+   *
+   * @param endpoint - 기본 경로(basePath) 뒤에 추가될 엔드포인트 경로입니다. (예: "/:id/posts")
+   * @param params - URL 경로에 포함될 파라미터 객체입니다. (예: { id: 123 })
+   * @returns 파라미터가 적용된 완전한 URL 문자열을 반환합니다.
+   *
+   * @example
+   * // basePath가 "/api/users"일 때
+   * buildUrl("/:id", { id: 100 }); // 결과: "/api/users/100"
+   * buildUrl("/:id/comments", { id: 100 }); // 결과: "/api/users/100/comments"
+   */
   private buildUrl(endpoint: string, params?: Record<string, any>): string {
-    let url = `${this.basePath}${endpoint ? `/${endpoint}` : ""}`
+    const urlTemplate = `${this.basePath}${endpoint ? `/${endpoint}` : ""}`
 
-    if (params) {
-      Object.keys(params).forEach((key) => {
-        url = url.replace(`:${key}`, params[key])
-      })
+    if (!params) {
+      return urlTemplate
     }
 
-    return url
+    const toPath = compile(urlTemplate, { encode: encodeURIComponent })
+    return toPath(params)
   }
 }

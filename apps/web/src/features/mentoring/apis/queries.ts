@@ -21,24 +21,18 @@ export const userQueries = {
   list: (params: { page?: number; limit?: number; search?: string } = {}) => ({
     queryKey: userKeys.list(params).queryKey,
     queryFn: () => userService.getUsers(params),
-    staleTime: 2 * 60 * 1000, // 2분
-    gcTime: 5 * 60 * 1000, // 5분
   }),
 
   // 상세 쿼리
   detail: (id: string) => ({
     queryKey: userKeys.detail(id).queryKey,
     queryFn: () => userService.getUser(id),
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
   }),
 
   // 프로필 쿼리
   profile: () => ({
     queryKey: userKeys.profile("me").queryKey,
     queryFn: () => userService.getProfile(),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   }),
 } as const
 

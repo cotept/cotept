@@ -1,5 +1,3 @@
-import { QueryCache, QueryClient } from "@tanstack/react-query"
-import { isAxiosError } from "axios"
 import { toast } from "sonner"
 
 import { ApiError } from "./types"
@@ -66,31 +64,3 @@ export class GlobalErrorHandler {
     toast.error(error.message || "오류가 발생했습니다.")
   }
 }
-
-// React Query 전역 에러 핸들러 설정
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error: any) => {
-        // 네트워크 에러는 재시도, 인증 에러는 재시도 안함
-        if (error?.code === ErrorCode.UNAUTHORIZED) return false
-        return failureCount < 2
-      },
-    },
-    mutations: {
-      onError(error) {
-        return isAxiosError(error)
-          ? GlobalErrorHandler.handle(error as unknown as ApiError)
-          : toast.error("알 수 없는 오류가 발생했습니다.")
-      },
-      retry: false, // 뮤테이션은 재시도 안함
-    },
-  },
-  queryCache: new QueryCache({
-    onError: (error) => {
-      return isAxiosError(error)
-        ? GlobalErrorHandler.handle(error as unknown as ApiError)
-        : toast.error("알 수 없는 오류가 발생했습니다.")
-    },
-  }),
-})

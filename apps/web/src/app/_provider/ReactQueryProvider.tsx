@@ -13,13 +13,12 @@ const getQueryClient = (): QueryClient =>
   new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: false,
-        refetchInterval: false,
-        refetchOnReconnect: true,
-        refetchOnMount: true,
-        staleTime: Infinity,
-        gcTime: Infinity,
-        retry: false,
+        refetchOnWindowFocus: true, // 사용자가 창에 다시 포커스했을 때 데이터 갱신
+        refetchOnReconnect: true, // 네트워크 재연결 시 데이터 갱신
+        refetchOnMount: true, // 컴포넌트 마운트 시 데이터 갱신 (stale 상태일 때)
+        retry: 1, // 실패 시 1번 재시도
+        staleTime: 1000 * 60 * 5, // 5분
+        gcTime: 1000 * 60 * 10, // 10분
       },
     },
   })

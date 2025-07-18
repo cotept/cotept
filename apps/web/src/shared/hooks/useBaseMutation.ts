@@ -5,10 +5,13 @@ import { toast } from "sonner"
  * @typeParam TData - 뮤테이션 함수의 반환 타입
  * @typeParam TError - 에러 타입
  * @typeParam TVariables - 뮤테이션 함수에 전달되는 변수 타입
- * @typeParam TContext - onMutate에서 반환되어 다른 콜백으로 전달되는 컨텍스트 타입
+ * @typeParam TContext - onMutate에서 반환되어 다른 콜백으로 전달되는 컨텍스트 타입. 기본값은 `{ previousData: TData | undefined }`입니다.
  */
 interface BaseMutationOptions<TData, TError, TVariables, TContext>
-  extends Omit<UseMutationOptions<TData, TError, TVariables, TContext>, "onSuccess" | "onError" | "onSettled"> {
+  extends Omit<
+    UseMutationOptions<TData, TError, TVariables, TContext>,
+    "onSuccess" | "onError" | "onSettled" | "onMutate"
+  > {
   /** 각 뮤테이션을 식별하고 관련 쿼리를 관리하기 위한 필수 키 */
   queryKey: QueryKey
 
@@ -27,12 +30,21 @@ interface BaseMutationOptions<TData, TError, TVariables, TContext>
     variables: TVariables,
     context: TContext | undefined,
   ) => void
-  onMutate?: (variables: TVariables) => Promise<TContext | undefined> | TContext | undefined
+  /**
+   * 뮤테이션이 실행되기 전에 호출됩니다. 낙관적 업데이트 로직을 구현하는 데 사용됩니다.
+   * `useBaseMutation` 내부에서 이미 `queryClient.cancelQueries`와 `queryClient.getQueryData`를 수행하므로,
+   * 이 콜백에서는 `previousData`를 인자로 받아 바로 사용할 수 있습니다.
+   * 반환하는 값은 `TContext`에 병합되어 `onSuccess`, `onError`, `onSettled` 콜백으로 전달됩니다.
+   */
+  onMutate?: (
+    variables: TVariables,
+    previousData: TData | undefined,
+  ) => Promise<Partial<TContext> | undefined> | Partial<TContext> | undefined
 }
 
 /**
  * 공통 로직(성공/에러 토스트, 쿼리 무효화, 낙관적 업데이트 롤백)을 처리하는 useMutation의 래퍼 훅입니다.
- * 
+ *
  * @param options - useMutation 옵션과 추가적인 공통 옵션을 포함합니다.
  * @returns React Query의 useMutation 훅에서 반환하는 것과 동일한 값을 반환합니다.
  *
@@ -49,14 +61,21 @@ interface BaseMutationOptions<TData, TError, TVariables, TContext>
  *   mutationFn: (updatedUser) => api.users.update(updatedUser.id, updatedUser),
  *   queryKey: userKeys.detail(userId).queryKey,
  *   successMessage: '사용자가 수정되었습니다.',
- *   onMutate: (updatedUser) => {
- *     // 낙관적 업데이트 로직
+ *   onMutate: (updatedUser, previousData) => {
+ *     // `previousData`를 사용하여 낙관적 업데이트 로직 구현
+ *     queryClient.setQueryData(userKeys.detail(userId).queryKey, (old) =>
+ *       old ? { ...old, name: updatedUser.name } : undefined
+ *     );
+ *     return { previousData }; // 롤백을 위해 previousData 반환
  *   }
  * });
  */
-export function useBaseMutation<TData = unknown, TError = unknown, TVariables = unknown, TContext = unknown>(
-  options: BaseMutationOptions<TData, TError, TVariables, TContext>,
-) {
+export function useBaseMutation<
+  TData = unknown,
+  TError = unknown,
+  TVariables = unknown,
+  TContext = { previousData: TData | undefined },
+>(options: BaseMutationOptions<TData, TError, TVariables, TContext>) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -66,11 +85,11 @@ export function useBaseMutation<TData = unknown, TError = unknown, TVariables = 
       // 기존 쿼리 취소
       await queryClient.cancelQueries({ queryKey: options.queryKey })
       // 이전 데이터 스냅샷
-      const previousData = queryClient.getQueryData(options.queryKey)
+      const previousData = queryClient.getQueryData<TData>(options.queryKey)
       // 사용자가 정의한 onMutate 실행 (e.g., optimistic update 로직)
-      const context = options.onMutate ? await options.onMutate(variables) : undefined
+      const userDefinedContext = options.onMutate ? await options.onMutate(variables, previousData) : undefined
       // 이전 데이터와 사용자 정의 context를 함께 반환
-      return { previousData, ...((context as object) ?? {}) } as TContext
+      return { previousData, ...((userDefinedContext as object) ?? {}) } as TContext
     },
 
     onSuccess: (data, variables, context) => {

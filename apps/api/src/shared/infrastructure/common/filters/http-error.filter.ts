@@ -1,31 +1,36 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common"
 
-import { Request, Response } from "express"
+import { Response } from "express"
+
+import { ErrorResponse } from "@/shared/infrastructure/dto/api-response.dto"
 
 @Catch(HttpException)
-export class ApiErrorFilter implements ExceptionFilter {
+export class HttpErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
+    // HTTP/HTTPS 프로토콜인지 체크
+    if (host.getType() !== 'http') {
+      // HTTP가 아니면 처리하지 않음 (WebSocket, RPC 등은 별도 필터에서 처리)
+      return
+    }
+
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
-    const request = ctx.getRequest<Request>()
+    // const request = ctx.getRequest<Request>()
     const status = exception.getStatus()
     const exceptionResponse = exception.getResponse() as string | { message: string | string[]; error: string }
 
     const errorMessage = typeof exceptionResponse === "string" ? exceptionResponse : exceptionResponse.message
 
-    response.status(status).json({
-      statusCode: status,
-      success: false,
-      message: Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    })
+    const formattedMessage = Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage
+
+    response.status(status).json(ErrorResponse.create(status, formattedMessage))
   }
 }
 
 /**
  * 
-🚨 NestJS 공통 예외 클래스 목록 (@nestjs/common)
+NestJS 공통 예외 클래스 목록 (@nestjs/common)
+
 예외 클래스	상태 코드	설명
 BadRequestException	400	잘못된 요청 파라미터나 유효성 검사 오류 시 사용
 UnauthorizedException	401	인증이 필요한 요청에 대해 인증이 안 된 경우

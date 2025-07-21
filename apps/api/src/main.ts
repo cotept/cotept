@@ -1,10 +1,14 @@
-import { ApiErrorFilter } from "@/shared/infrastructure/common/filters/api-error.filter"
 import { Logger, ValidationPipe } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
+
 import cookieParser from "cookie-parser"
-import { AppModule } from "./app.module"
+
 import { winstonLogger } from "./shared/infrastructure/common/logger"
 import { SwaggerModule } from "./swagger/swagger.module"
+import { AppModule } from "./app.module"
+
+import { HttpErrorFilter } from "@/shared/infrastructure/common/filters/http-error.filter"
+import { HttpResponseInterceptor } from "@/shared/infrastructure/common/interceptors/http-response.interceptor"
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap")
@@ -25,7 +29,8 @@ async function bootstrap() {
       },
     }),
   )
-  app.useGlobalFilters(new ApiErrorFilter())
+  app.useGlobalFilters(new HttpErrorFilter())
+  app.useGlobalInterceptors(new HttpResponseInterceptor())
 
   const swagger = new SwaggerModule()
   swagger.setup(app)

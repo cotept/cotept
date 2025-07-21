@@ -12,8 +12,10 @@ export class MailRequestDto {
   @ApiProperty({
     description: "수신자 이메일",
     example: "user@example.com",
-    type: [String],
-    isArray: true,
+    oneOf: [
+      { type: 'string', format: 'email' },
+      { type: 'array', items: { type: 'string', format: 'email' } }
+    ],
   })
   @IsEmail({}, { each: true, message: "유효한 이메일 주소를 입력해주세요" })
   @IsNotEmpty({ message: "이메일 주소는 필수입니다" })

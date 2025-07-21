@@ -1,12 +1,13 @@
 import { Controller, Get, HttpCode, HttpStatus, Logger, Query, Req, Res, UseGuards } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
+import { ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
 
 import { Request, Response } from "express"
 
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { SocialProvider } from "@/modules/auth/domain/model"
 import { ErrorUtils } from "@/shared/utils/error.util"
+import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-response.decorator"
 
 /**
  * Google 소셜 로그인 컨트롤러
@@ -32,7 +33,7 @@ export class GoogleAuthController {
     required: false,
     description: "인증 성공 후 리다이렉트할 클라이언트 URL",
   })
-  @ApiResponse({ status: 302, description: "Google 인증 페이지로 리다이렉트" })
+  @ApiOkResponseEmpty("Google 인증 페이지로 리다이렉트")
   async googleLogin(@Query("redirectUrl") _redirectUrl?: string): Promise<void> {
     // AuthGuard('google')가 자동으로 Google 인증 페이지로 리다이렉트합니다.
     // 실제로는 리다이렉트만 발생하므로 응답 반환 없음
@@ -58,7 +59,7 @@ export class GoogleAuthController {
     required: false,
     description: "인증 성공 후 리다이렉트할 클라이언트 URL",
   })
-  @ApiResponse({ status: 302, description: "클라이언트로 리다이렉트" })
+  @ApiOkResponseEmpty("클라이언트로 리다이렉트")
   @ApiUnauthorizedResponse({ description: "Google 인증 실패" })
   async googleCallback(@Req() req: Request, @Res() res: Response, @Query("redirectUrl") redirectUrl?: string) {
     try {

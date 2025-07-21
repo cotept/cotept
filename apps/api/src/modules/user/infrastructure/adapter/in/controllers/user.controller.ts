@@ -15,9 +15,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
-  ApiCreatedResponse,
   ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -40,6 +38,7 @@ import {
   UserListResponseDto,
   UserResponseDto,
 } from "@/modules/user/infrastructure/dtos/response"
+import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 
 @ApiTags("사용자 관리")
 @Controller("users")
@@ -56,7 +55,7 @@ export class UserController {
   @ApiQuery({ name: "limit", required: false, type: Number, description: "페이지당 항목 수 (기본값: 10)" })
   @ApiQuery({ name: "role", required: false, enum: ["MENTEE", "MENTOR", "ADMIN"], description: "역할 필터" })
   @ApiQuery({ name: "status", required: false, enum: ["ACTIVE", "INACTIVE", "SUSPENDED"], description: "상태 필터" })
-  @ApiOkResponse({ description: "성공적으로 사용자 목록을 조회함", type: UserListResponseDto })
+  @ApiOkResponseWrapper(UserListResponseDto, "성공적으로 사용자 목록을 조회함")
   async getAllUsers(
     @Query("page") page?: number,
     @Query("limit") limit?: number,
@@ -70,7 +69,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "사용자 상세 조회", description: "ID로 사용자 정보를 조회합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
-  @ApiOkResponse({ description: "성공적으로 사용자를 조회함", type: UserResponseDto })
+  @ApiOkResponseWrapper(UserResponseDto, "성공적으로 사용자를 조회함")
   @ApiNotFoundResponse({ description: "사용자를 찾을 수 없음" })
   async getUserById(@Param("id") id: string): Promise<UserResponseDto> {
     return this.userFacadeService.getUserById(id)
@@ -79,7 +78,7 @@ export class UserController {
   @Post("register")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "사용자 생성", description: "새로운 사용자를 생성합니다." })
-  @ApiCreatedResponse({ description: "성공적으로 사용자를 생성함", type: UserResponseDto })
+  @ApiOkResponseWrapper(UserResponseDto, "성공적으로 사용자를 생성함")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiConflictResponse({ description: "이미 사용 중인 이메일" })
   async createUser(@Body() createUserRequestDto: CreateUserRequestDto): Promise<UserResponseDto> {
@@ -91,10 +90,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "사용자 정보 수정", description: "사용자 정보를 수정합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
-  @ApiOkResponse({ description: "성공적으로 사용자 정보를 수정함", type: UserResponseDto })
+  @ApiOkResponseWrapper(UserResponseDto, "성공적으로 사용자 정보를 수정함")
   @ApiNotFoundResponse({ description: "사용자를 찾을 수 없음" })
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
-  async updateUser(@Param("id") id: string, @Body() updateUserRequestDto: UpdateUserRequestDto): Promise<UserResponseDto> {
+  async updateUser(
+    @Param("id") id: string,
+    @Body() updateUserRequestDto: UpdateUserRequestDto,
+  ): Promise<UserResponseDto> {
     const updateUserDto = this.requestMapper.toUpdateUserDto(updateUserRequestDto)
     return this.userFacadeService.updateUser(id, updateUserDto)
   }
@@ -104,7 +106,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "사용자 삭제", description: "사용자를 삭제합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
-  @ApiOkResponse({ description: "성공적으로 사용자를 삭제함", type: UserDeletionResponseDto })
+  @ApiOkResponseWrapper(UserDeletionResponseDto, "성공적으로 사용자를 삭제함")
   @ApiNotFoundResponse({ description: "사용자를 찾을 수 없음" })
   async deleteUser(
     @Param("id") id: string,
@@ -118,7 +120,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "비밀번호 변경", description: "사용자 비밀번호를 변경합니다." })
   @ApiParam({ name: "id", description: "사용자 ID" })
-  @ApiOkResponse({ description: "성공적으로 비밀번호를 변경함", type: PasswordChangeResponseDto })
+  @ApiOkResponseWrapper(PasswordChangeResponseDto, "성공적으로 비밀번호를 변경함")
   @ApiNotFoundResponse({ description: "사용자를 찾을 수 없음" })
   @ApiUnauthorizedResponse({ description: "현재 비밀번호가 일치하지 않음" })
   @ApiBadRequestResponse({ description: "비밀번호 정책 위반 또는 확인 불일치" })

@@ -5,6 +5,7 @@ import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-au
 import { MailFacadeService } from "@/modules/mail/application/services/facade/mail-facade.service"
 import { MailRequestMapper } from "@/modules/mail/infrastructure/adapter/in/mappers/mail-request.mapper"
 import { MailRequestDto } from "@/modules/mail/infrastructure/dtos/request/mail-request.dto"
+import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-response.decorator"
 
 @ApiTags("메일")
 @Controller("mail")
@@ -15,6 +16,7 @@ export class MailController {
 
   @Post("email-verification")
   @ApiOperation({ summary: "이메일 본인확인" })
+  @ApiOkResponseEmpty("이메일 본인확인 발송 성공")
   async sendEmailVerification(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendEmailVerification", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"email_verification">(requestDto)
@@ -23,6 +25,7 @@ export class MailController {
 
   @Post("password-recovery")
   @ApiOperation({ summary: "비밀번호 찾기" })
+  @ApiOkResponseEmpty("비밀번호 찾기 이메일 발송 성공")
   async sendPasswordRecovery(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendPasswordRecovery", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"password_recovery">(requestDto)
@@ -31,6 +34,7 @@ export class MailController {
 
   @Post("verification-code")
   @ApiOperation({ summary: "인증번호 발송" })
+  @ApiOkResponseEmpty("인증번호 발송 성공")
   async sendVerificationCode(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendVerificationCode", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"verification_code">(requestDto)
@@ -39,6 +43,7 @@ export class MailController {
 
   @Post("reservation-create")
   @ApiOperation({ summary: "멘토링 예약 신청" })
+  @ApiOkResponseEmpty("멘토링 예약 신청 이메일 발송 성공")
   async sendReservationCreate(
     @Body()
     requestDto: MailRequestDto,
@@ -51,6 +56,7 @@ export class MailController {
   @Post("reservation-fix")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 확정" })
+  @ApiOkResponseEmpty("멘토링 예약 확정 이메일 발송 성공")
   async sendReservationFix(
     @Body()
     requestDto: MailRequestDto,
@@ -63,6 +69,7 @@ export class MailController {
   @Post("reservation-cancel")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 취소" })
+  @ApiOkResponseEmpty("멘토링 예약 취소 이메일 발송 성공")
   async sendReservationCancel(
     @Body()
     requestDto: MailRequestDto,
@@ -75,6 +82,7 @@ export class MailController {
   @Post("reservation-change")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 변경" })
+  @ApiOkResponseEmpty("멘토링 예약 변경 이메일 발송 성공")
   async sendReservationChange(
     @Body()
     requestDto: MailRequestDto,
@@ -87,6 +95,7 @@ export class MailController {
   @Post("reservation-prenotice")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 사전안내" })
+  @ApiOkResponseEmpty("멘토링 사전안내 이메일 발송 성공")
   async sendReservationPrenotice(
     @Body()
     requestDto: MailRequestDto,

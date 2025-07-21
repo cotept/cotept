@@ -60,7 +60,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserListResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/UserListResponseDto'
       summary: 사용자 목록 조회
       tags: &ref_1
         - 사용자 관리
@@ -81,7 +85,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/UserResponseDto'
         '404':
           description: 사용자를 찾을 수 없음
       summary: 사용자 상세 조회
@@ -108,7 +116,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/UserResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '404':
@@ -137,7 +149,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDeletionResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/UserDeletionResponseDto'
         '404':
           description: 사용자를 찾을 수 없음
       summary: 사용자 삭제
@@ -154,12 +170,16 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateUserRequestDto'
       responses:
-        '201':
+        '200':
           description: 성공적으로 사용자를 생성함
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/UserResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '409':
@@ -189,7 +209,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PasswordChangeResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/PasswordChangeResponseDto'
         '400':
           description: 비밀번호 정책 위반 또는 확인 불일치
         '401':
@@ -215,7 +239,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '401':
@@ -234,12 +262,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogoutResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/LogoutResponseDto'
         '401':
           description: 인증 필요
       summary: 로그아웃
       tags: *ref_2
-  /auth/slient-refresh:
+  /auth/silent-refresh:
     post:
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
       operationId: AuthController_refreshToken
@@ -253,6 +285,14 @@ paths:
       responses:
         '200':
           description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '401':
@@ -273,6 +313,14 @@ paths:
       responses:
         '200':
           description: 토큰 검증 결과
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '400':
           description: 잘못된 요청 데이터
       summary: 토큰 검증
@@ -291,6 +339,14 @@ paths:
       responses:
         '200':
           description: 인증 코드 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '400':
           description: 잘못된 요청 데이터
       summary: 인증 코드 발송
@@ -309,6 +365,14 @@ paths:
       responses:
         '200':
           description: 인증 코드 확인 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '400':
           description: 잘못된 요청 데이터 또는 유효하지 않은 인증 코드
       summary: 인증 코드 확인
@@ -327,6 +391,14 @@ paths:
       responses:
         '200':
           description: 토큰 교환 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '401':
@@ -347,6 +419,14 @@ paths:
       responses:
         '200':
           description: 계정 연결 처리 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
         '401':
@@ -369,6 +449,14 @@ paths:
       responses:
         '200':
           description: 아이디 찾기 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '400':
           description: 잘못된 요청 데이터
       summary: 아이디 찾기
@@ -387,6 +475,14 @@ paths:
       responses:
         '200':
           description: 비밀번호 재설정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '400':
           description: 잘못된 요청 데이터
       summary: 비밀번호 재설정
@@ -403,8 +499,16 @@ paths:
           schema:
             type: string
       responses:
-        '302':
+        '200':
           description: GitHub 인증 페이지로 리다이렉트
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: GitHub 로그인 시작
       tags: &ref_3
         - GitHub 인증
@@ -425,8 +529,16 @@ paths:
           description: GitHub 인증 코드 (자동으로 처리됨)
           schema: {}
       responses:
-        '302':
+        '200':
           description: 클라이언트로 리다이렉트
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '401':
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
@@ -443,8 +555,16 @@ paths:
           schema:
             type: string
       responses:
-        '302':
+        '200':
           description: Google 인증 페이지로 리다이렉트
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: Google 로그인 시작
       tags: &ref_4
         - Google 인증
@@ -465,8 +585,16 @@ paths:
           description: Google 인증 코드 (자동으로 처리됨)
           schema: {}
       responses:
-        '302':
+        '200':
           description: 클라이언트로 리다이렉트
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
         '401':
           description: Google 인증 실패
       summary: Google 로그인 콜백
@@ -482,8 +610,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 이메일 본인확인 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 이메일 본인확인
       tags: &ref_5
         - 메일
@@ -498,8 +634,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 비밀번호 찾기 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 비밀번호 찾기
       tags: *ref_5
   /mail/verification-code:
@@ -513,8 +657,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 인증번호 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 인증번호 발송
       tags: *ref_5
   /mail/reservation-create:
@@ -528,8 +680,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 멘토링 예약 신청 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 멘토링 예약 신청
       tags: *ref_5
   /mail/reservation-fix:
@@ -543,8 +703,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 멘토링 예약 확정 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 멘토링 예약 확정
       tags: *ref_5
   /mail/reservation-cancel:
@@ -558,8 +726,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 멘토링 예약 취소 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 멘토링 예약 취소
       tags: *ref_5
   /mail/reservation-change:
@@ -573,8 +749,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 멘토링 예약 변경 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 멘토링 예약 변경
       tags: *ref_5
   /mail/reservation-prenotice:
@@ -588,8 +772,16 @@ paths:
             schema:
               $ref: '#/components/schemas/MailRequestDto'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: 멘토링 사전안내 이메일 발송 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        type: 'null'
       summary: 멘토링 사전안내
       tags: *ref_5
   /mail-audit/{id}:
@@ -607,7 +799,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MailAuditResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (ID)
       tags: &ref_6
         - 메일 감사
@@ -636,9 +832,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MailAuditResponseDto'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (검색)
       tags: *ref_6
 info:
@@ -668,6 +866,16 @@ components:
       description: JWT 토큰을 입력하세요
       in: header
   schemas:
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공적으로 처리되었습니다.
+        data:
+          type: object
+          description: 응답 데이터
     UserResponseDto:
       type: object
       properties:
@@ -806,17 +1014,6 @@ components:
           type: string
           description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
-    DeleteUserRequestDto:
-      type: object
-      properties:
-        reason:
-          type: string
-          description: 삭제 사유
-          example: 사용자 요청에 의한 계정 삭제
-        password:
-          type: string
-          description: 삭제 확인을 위한 비밀번호
-          example: UserP@ss123
     UserDeletionResponseDto:
       type: object
       properties:
@@ -841,25 +1038,17 @@ components:
         - deletedUserId
         - deletedAt
         - message
-    ChangePasswordRequestDto:
+    DeleteUserRequestDto:
       type: object
       properties:
-        currentPassword:
+        reason:
           type: string
-          description: 현재 비밀번호
-          example: CurrentP@ss123
-        newPassword:
+          description: 삭제 사유
+          example: 사용자 요청에 의한 계정 삭제
+        password:
           type: string
-          description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: NewP@ss123
-        confirmPassword:
-          type: string
-          description: 새 비밀번호 확인
-          example: NewP@ss123
-      required:
-        - currentPassword
-        - newPassword
-        - confirmPassword
+          description: 삭제 확인을 위한 비밀번호
+          example: UserP@ss123
     PasswordChangeResponseDto:
       type: object
       properties:
@@ -879,20 +1068,25 @@ components:
         - success
         - changedAt
         - message
-    LoginRequestDto:
+    ChangePasswordRequestDto:
       type: object
       properties:
-        id:
+        currentPassword:
           type: string
-          example: user123
-          description: 사용자 아이디
-        password:
+          description: 현재 비밀번호
+          example: CurrentP@ss123
+        newPassword:
           type: string
-          example: Password123!
-          description: 사용자 비밀번호
+          description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          example: NewP@ss123
+        confirmPassword:
+          type: string
+          description: 새 비밀번호 확인
+          example: NewP@ss123
       required:
-        - id
-        - password
+        - currentPassword
+        - newPassword
+        - confirmPassword
     TokenResponseDto:
       type: object
       properties:
@@ -917,6 +1111,20 @@ components:
         - refreshToken
         - tokenType
         - expiresIn
+    LoginRequestDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: user123
+          description: 사용자 아이디
+        password:
+          type: string
+          example: Password123!
+          description: 사용자 비밀번호
+      required:
+        - id
+        - password
     LogoutResponseDto:
       type: object
       properties:
@@ -1066,9 +1274,13 @@ components:
         to:
           description: 수신자 이메일
           example: user@example.com
-          items:
-            type: array
-          type: array
+          oneOf:
+            - type: string
+              format: email
+            - type: array
+              items:
+                type: string
+                format: email
         template:
           type: string
           description: 템플릿 유형

@@ -1,38 +1,58 @@
-import { HttpStatus } from "@nestjs/common"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
 /**
  * API 공통 응답 형식
  */
 export class ApiResponse<T> {
-  @ApiProperty({ description: "HTTP 상태 코드", example: 200 })
-  statusCode: HttpStatus
-
-  @ApiProperty({ description: "성공 여부", example: true })
-  success: boolean
-
   @ApiPropertyOptional({ description: "응답 메시지", example: "성공적으로 처리되었습니다." })
   message?: string
 
   @ApiPropertyOptional({ description: "응답 데이터" })
   data?: T
 
-  constructor(statusCode: HttpStatus, success: boolean, message?: string, data?: T) {
-    this.statusCode = statusCode
-    this.success = success
+  constructor(message?: string, data?: T) {
     this.message = message
     this.data = data
   }
 
   static success<T>(
-    statusCode: HttpStatus = HttpStatus.OK,
     data: T,
-    message: string = "성공적으로 처리되었습니다.",
+    message?: string,
   ): ApiResponse<T> {
-    return new ApiResponse<T>(statusCode, true, message, data)
+    return new ApiResponse<T>(message, data)
   }
-  static fail<T>(statusCode: HttpStatus, message: string): ApiResponse<T> {
-    return new ApiResponse<T>(statusCode, false, message)
+}
+
+/**
+ * API 에러 응답 형식
+ */
+export class ErrorResponse {
+  @ApiProperty({ description: "HTTP 상태 코드", example: 400 })
+  statusCode: number
+
+  @ApiProperty({ description: "에러 메시지", example: "잘못된 요청입니다." })
+  message: string
+
+  @ApiPropertyOptional({ description: "에러 코드", example: "VALIDATION_ERROR" })
+  code?: string
+
+  @ApiPropertyOptional({ description: "에러 상세 정보" })
+  details?: any[]
+
+  constructor(statusCode: number, message: string, code?: string, details?: any[]) {
+    this.statusCode = statusCode
+    this.message = message
+    this.code = code
+    this.details = details
+  }
+
+  static create(
+    statusCode: number, 
+    message: string, 
+    code?: string, 
+    details?: any[]
+  ): ErrorResponse {
+    return new ErrorResponse(statusCode, message, code, details)
   }
 }
 

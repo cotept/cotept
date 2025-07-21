@@ -1,14 +1,15 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { Column, Entity, OneToOne, PrimaryColumn } from "typeorm"
 
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 /**
  * User 엔티티
  * USERS 테이블에 매핑되는 TypeORM 엔티티
  */
 @Entity("USERS")
-export class UserEntity {
+export class UserEntity extends BaseEntity<UserEntity> {
   @PrimaryColumn({ name: "user_id", type: "varchar2", length: 36 })
   id: string
 
@@ -61,11 +62,6 @@ export class UserEntity {
   @Column({ name: "gender", type: "varchar2", length: 1, nullable: true })
   gender?: string
 
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
-  updatedAt: Date
 
   @Column({ name: "last_login_at", type: "timestamp", nullable: true })
   lastLoginAt?: Date

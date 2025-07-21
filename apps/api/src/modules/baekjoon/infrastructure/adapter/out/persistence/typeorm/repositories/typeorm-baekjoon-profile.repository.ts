@@ -1,30 +1,40 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
-import { Repository } from "typeorm"
+import { EntityManager, Repository } from "typeorm"
 
 import { BaekjoonProfileRepositoryPort } from "@/modules/baekjoon/application/ports/out"
 import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
 import { BaekjoonProfileVerificationStatusType } from "@/modules/baekjoon/domain/vo/baekjoon-profile-verification-status.vo"
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { BaekjoonProfileMapper } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/mappers"
+import { BaseRepository } from "@/shared/infrastructure/persistence/typeorm/repositories/base/base.repository"
 
 @Injectable()
-export class BaekjoonProfileRepository implements BaekjoonProfileRepositoryPort {
+export class BaekjoonProfileRepository
+  extends BaseRepository<BaekjoonProfileEntity>
+  implements BaekjoonProfileRepositoryPort
+{
   constructor(
     @InjectRepository(BaekjoonProfileEntity)
-    private readonly repository: Repository<BaekjoonProfileEntity>,
+    baekjoonProfileRepository: Repository<BaekjoonProfileEntity>,
+    entityManager: EntityManager,
     private readonly mapper: BaekjoonProfileMapper,
-  ) {}
+  ) {
+    super(baekjoonProfileRepository, entityManager, "BaekjoonProfile")
+  }
   async updateVerificationStatus(userId: string, status: BaekjoonProfileVerificationStatusType): Promise<void> {
-    const result = await this.repository.update({ userId }, { verificationStatus: status })
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+    try {
+      await this.findOneAndUpdate({ userId }, { verificationStatus: status })
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+      }
+      this.handleDBError(error, "[BaekjoonProfile]")
     }
   }
   async findPendingVerificationUsers(limit: number = 50): Promise<BaekjoonUser[]> {
-    const entities = await this.repository.find({
+    const entities = await this.entityRepository.find({
       where: { verificationStatus: "PENDING" },
       take: limit,
       order: { createdAt: "ASC" },
@@ -32,7 +42,7 @@ export class BaekjoonProfileRepository implements BaekjoonProfileRepositoryPort 
     return entities.map((entity) => this.mapper.toDomainModel(entity))
   }
   async findVerifiedUsers(limit: number = 100): Promise<BaekjoonUser[]> {
-    const entities = await this.repository.find({
+    const entities = await this.entityRepository.find({
       where: { verificationStatus: "VERIFIED" },
       take: limit,
       order: { updatedAt: "DESC" },
@@ -40,7 +50,7 @@ export class BaekjoonProfileRepository implements BaekjoonProfileRepositoryPort 
     return entities.map((entity) => this.mapper.toDomainModel(entity))
   }
   async findMentorEligibleUsers(limit: number = 100): Promise<BaekjoonUser[]> {
-    const entities = await this.repository.find({
+    const entities = await this.entityRepository.find({
       where: {
         isMentorEligible: true,
         verificationStatus: "VERIFIED",
@@ -51,11 +61,9 @@ export class BaekjoonProfileRepository implements BaekjoonProfileRepositoryPort 
     return entities.map((entity) => this.mapper.toDomainModel(entity))
   }
   async countMentorEligibleUsers(): Promise<number> {
-    return await this.repository.count({
-      where: {
-        isMentorEligible: true,
-        verificationStatus: "VERIFIED",
-      },
+    return await this.count({
+      isMentorEligible: true,
+      verificationStatus: "VERIFIED",
     })
   }
 
@@ -63,57 +71,61 @@ export class BaekjoonProfileRepository implements BaekjoonProfileRepositoryPort 
     // 도메인 모델 → 엔티티 변환
     const entity = this.mapper.toEntity(baekjoonUser)
 
-    const savedEntity = await this.repository.save(entity)
+    const savedEntity = await this.create(entity)
 
     // 엔티티 → 도메인 모델 변환
     return this.mapper.toDomainModel(savedEntity)
   }
 
   async findByUserId(userId: string): Promise<BaekjoonUser | null> {
-    const entity = await this.repository.findOne({
-      where: { userId },
-    })
-
-    return entity ? this.mapper.toDomainModel(entity) : null
+    try {
+      const entity = await this.findOne({ userId })
+      return this.mapper.toDomainModel(entity)
+    } catch {
+      return null
+    }
   }
 
   async findByBaekjoonId(baekjoonId: string): Promise<BaekjoonUser | null> {
-    const entity = await this.repository.findOne({
-      where: { baekjoonId },
-    })
-
-    return entity ? this.mapper.toDomainModel(entity) : null
+    try {
+      const entity = await this.findOne({ baekjoonId })
+      return this.mapper.toDomainModel(entity)
+    } catch {
+      return null
+    }
   }
 
   async update(userId: string, baekjoonUser: BaekjoonUser): Promise<BaekjoonUser> {
-    const existingEntity = await this.repository.findOne({
-      where: { userId },
-    })
+    try {
+      const existingEntity = await this.findOne({ userId })
 
-    if (!existingEntity) {
-      throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+      // 기존 엔티티를 도메인 모델로 업데이트
+      const updatedEntity = this.mapper.updateEntityFromDomain(existingEntity, baekjoonUser)
+
+      const savedEntity = await this.entityRepository.save(updatedEntity)
+
+      return this.mapper.toDomainModel(savedEntity)
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+      }
+      this.handleDBError(error, "[BaekjoonProfile]")
     }
-
-    // 기존 엔티티를 도메인 모델로 업데이트
-    const updatedEntity = this.mapper.updateEntityFromDomain(existingEntity, baekjoonUser)
-
-    const savedEntity = await this.repository.save(updatedEntity)
-
-    return this.mapper.toDomainModel(savedEntity)
   }
 
   async exists(userId: string): Promise<boolean> {
-    const count = await this.repository.count({
-      where: { userId },
-    })
+    const count = await this.count({ userId })
     return count > 0
   }
 
   async delete(userId: string): Promise<void> {
-    const result = await this.repository.delete({ userId })
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+    try {
+      await this.softDelete({ userId })
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`${userId}에 해당하는 백준 프로파일을(를) 찾을 수 없습니다.`)
+      }
+      this.handleDBError(error, "[BaekjoonProfile]")
     }
   }
   // // === 비즈니스 로직 지원 조회 ===

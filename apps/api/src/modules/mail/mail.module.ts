@@ -20,6 +20,7 @@ import { MailController } from "./infrastructure/adapter/in/controllers/mail.con
 import { MailAuditController } from "./infrastructure/adapter/in/controllers/mail-audit.controller"
 import { MailAuditRequestMapper, MailRequestMapper } from "./infrastructure/adapter/in/mappers"
 import { MailAuditEntity } from "./infrastructure/adapter/out/persistence/entities/mail-audit.entity"
+import { MailAuditPersistenceMapper } from "./infrastructure/adapter/out/persistence/mappers/mail-audit-persistence.mapper"
 import { TypeOrmMailAuditRepository } from "./infrastructure/adapter/out/persistence/repositories/typeorm-mail-audit.repository"
 import { MailService } from "./infrastructure/adapter/out/services/mail.service"
 
@@ -67,6 +68,7 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
     MailRequestMapper,
     MailAuditRequestMapper,
     MailAuditResponseMapper,
+    MailAuditPersistenceMapper,
 
     // 리포지토리
     {

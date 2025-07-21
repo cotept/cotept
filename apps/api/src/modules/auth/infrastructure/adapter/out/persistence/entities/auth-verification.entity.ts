@@ -1,9 +1,10 @@
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("AUTH_VERIFICATIONS")
-export class AuthVerificationEntity {
-  @PrimaryColumn({ name: "verification_id", type: "varchar2", length: 36 })
+export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
+  @PrimaryGeneratedColumn("uuid", { name: "verification_id" })
   id: string
 
   @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
@@ -37,6 +38,4 @@ export class AuthVerificationEntity {
   @Column({ name: "ip_address", type: "varchar2", length: 50, nullable: true })
   ipAddress: string | null
 
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
 }

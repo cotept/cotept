@@ -1,22 +1,28 @@
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+
+import { EntityManager, Repository } from "typeorm"
+
 import { DeleteUserDto } from "@/modules/user/application/dtos"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { UserPersistenceMapper } from "@/modules/user/infrastructure/adapter/out/persistence/mappers/user-persistence.mapper"
-import { Injectable } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
+import { BaseRepository } from "@/shared/infrastructure/persistence/typeorm/repositories/base/base.repository"
 
 /**
  * TypeORM을 사용한 User 레포지토리 구현
  */
 @Injectable()
-export class TypeOrmUserRepository implements UserRepositoryPort {
+export class TypeOrmUserRepository extends BaseRepository<UserEntity> implements UserRepositoryPort {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    userRepository: Repository<UserEntity>,
+    entityManager: EntityManager,
     private readonly userMapper: UserPersistenceMapper,
-  ) {}
+  ) {
+    super(userRepository, entityManager, "User")
+  }
 
   /**
    * ID로 사용자 조회
@@ -24,10 +30,12 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    * @returns 사용자 도메인 엔티티 또는 null
    */
   async findById(id: string): Promise<User | null> {
-    const userEntity = await this.userRepository.findOne({ where: { id } })
-    if (!userEntity) return null
-
-    return this.userMapper.toDomain(userEntity)
+    try {
+      const userEntity = await this.findOne({ id })
+      return this.userMapper.toDomain(userEntity)
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -36,10 +44,12 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    * @returns 사용자 도메인 엔티티 또는 null
    */
   async findByEmail(email: string): Promise<User | null> {
-    const userEntity = await this.userRepository.findOne({ where: { email } })
-    if (!userEntity) return null
-
-    return this.userMapper.toDomain(userEntity)
+    try {
+      const userEntity = await this.findOne({ email })
+      return this.userMapper.toDomain(userEntity)
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -47,7 +57,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    * @param options 페이지네이션 및 필터링 옵션
    * @returns 사용자 도메인 엔티티 배열 및 총 개수
    */
-  async findAll(options?: {
+  async findAllUsers(options?: {
     page?: number
     limit?: number
     role?: UserRole
@@ -55,21 +65,19 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
   }): Promise<{ users: User[]; total: number }> {
     const page = options?.page || 1
     const limit = options?.limit || 10
-    const skip = (page - 1) * limit
 
     const whereConditions: any = {}
     if (options?.role) whereConditions.role = options.role
     if (options?.status) whereConditions.status = options.status
 
-    const [userEntities, total] = await this.userRepository.findAndCount({
-      where: whereConditions,
-      skip,
-      take: limit,
-      order: { createdAt: "DESC" },
+    const paginationOptions = { currentPage: page, limit }
+    const result = await this.paginateWithSort(whereConditions, {
+      ...paginationOptions,
+      sort: { field: "createdAt", order: "DESC" },
     })
 
-    const users = this.userMapper.toDomainList(userEntities)
-    return { users, total }
+    const users = this.userMapper.toDomainList(result.items)
+    return { users, total: result.totalItemCount }
   }
 
   /**
@@ -79,7 +87,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    */
   async save(user: User): Promise<User> {
     const userEntity = this.userMapper.toEntity(user)
-    const savedEntity = await this.userRepository.save(userEntity)
+    const savedEntity = await this.create(userEntity)
     return this.userMapper.toDomain(savedEntity)
   }
 
@@ -93,18 +101,20 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
 
     // 소프트 삭제 처리
     if (deleteType === "SOFT") {
-      const userEntity = await this.userRepository.findOne({ where: { id } })
-      if (!userEntity) return false
-
-      userEntity.status = UserStatus.INACTIVE // 상태 변경
-      userEntity.deletedAt = new Date() // 삭제 시간 기록
-
-      await this.userRepository.save(userEntity)
-      return true
+      try {
+        await this.softDelete({ id })
+        return true
+      } catch {
+        return false
+      }
     }
 
-    const result = await this.userRepository.delete(id)
-    return result.affected ? result.affected > 0 : false
+    try {
+      await this.findOneAndDelete({ id })
+      return true
+    } catch {
+      return false
+    }
   }
 
   /**
@@ -113,7 +123,7 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
    * @returns 중복 여부
    */
   async existsByEmail(email: string): Promise<boolean> {
-    const count = await this.userRepository.count({ where: { email } })
+    const count = await this.count({ email })
     return count > 0
   }
 }

@@ -6,13 +6,14 @@ import {
   NotFoundException,
 } from "@nestjs/common"
 
-import { PaginatedResult, PaginationOptions } from "@/shared/infrastructure/dto/api-response.dto"
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
 
 import { AbstractRepository } from "../../../base/abstract.repository"
 import { BaseEntity } from "../../../base/base.entity"
+
+import { PaginatedResult, PaginationOptions } from "@/shared/infrastructure/dto/api-response.dto"
 
 export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<T> {
   protected readonly logger: Logger
@@ -44,10 +45,12 @@ export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<
       const dbError = error as { code: string }
 
       switch (dbError.code) {
-        case "23505": // PostgreSQL unique violation
+        case "ORA-00001": // Oracle unique violation
           throw new ConflictException(`${prefix} Entity already exists`)
-        case "23503": // PostgreSQL foreign key violation
+        case "ORA-02291": // Oracle foreign key violation
           throw new BadRequestException(`${prefix} Related entity not found`)
+        case "ORA-02292": // Oracle foreign key constraint violation (child record exists)
+          throw new BadRequestException(`${prefix} Cannot delete entity - related records exist`)
       }
     }
 

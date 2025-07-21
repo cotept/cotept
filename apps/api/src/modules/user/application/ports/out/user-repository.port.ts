@@ -25,7 +25,7 @@ export abstract class UserRepositoryPort {
    * @param options 페이지네이션 및 필터링 옵션
    * @returns 사용자 도메인 엔티티 배열 및 총 개수
    */
-  abstract findAll(options?: {
+  abstract findAllUsers(options?: {
     page?: number
     limit?: number
     role?: UserRole

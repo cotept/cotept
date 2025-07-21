@@ -58,7 +58,7 @@ export class GetUserUseCaseImpl implements GetUserUseCase {
     const userRole = options?.role ? (options.role as UserRole) : undefined
     const userStatus = options?.status ? (options.status as UserStatus) : undefined
 
-    const { users, total } = await this.userRepository.findAll({
+    const { users, total } = await this.userRepository.findAllUsers({
       page,
       limit,
       role: userRole,

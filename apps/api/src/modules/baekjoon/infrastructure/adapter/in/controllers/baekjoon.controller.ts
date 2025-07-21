@@ -2,9 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGua
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
-  ApiCreatedResponse,
   ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -28,6 +26,7 @@ import {
   VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
+import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 
 @ApiTags("백준 인증 및 프로필")
 @Controller("baekjoon")
@@ -43,10 +42,7 @@ export class BaekjoonController {
     summary: "백준 ID 인증 시작",
     description: "백준 ID 인증 프로세스를 시작하고 인증 문자열을 발급받습니다.",
   })
-  @ApiCreatedResponse({
-    description: "인증 세션이 성공적으로 생성됨",
-    type: VerificationStatusResponseDto,
-  })
+  @ApiOkResponseWrapper(VerificationStatusResponseDto, "인증 세션이 성공적으로 생성됨")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "인증이 필요함" })
   @ApiNotFoundResponse({ description: "백준 사용자를 찾을 수 없음" })
@@ -67,10 +63,7 @@ export class BaekjoonController {
     summary: "백준 ID 인증 완료",
     description: "solved.ac 프로필 이름을 확인하여 백준 ID 인증을 완료합니다.",
   })
-  @ApiOkResponse({
-    description: "인증이 성공적으로 완료됨",
-    type: VerificationResultResponseDto,
-  })
+  @ApiOkResponseWrapper(VerificationResultResponseDto, "인증이 성공적으로 완료됨")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터 또는 인증 문자열 불일치" })
   @ApiUnauthorizedResponse({ description: "인증이 필요함" })
   @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없음" })
@@ -94,10 +87,7 @@ export class BaekjoonController {
     description: "사용자 ID (이메일 형식)",
     example: "user@example.com",
   })
-  @ApiOkResponse({
-    description: "인증 상태 조회 성공",
-    type: VerificationStatusResponseDto,
-  })
+  @ApiOkResponseWrapper(VerificationStatusResponseDto, "인증 상태 조회 성공")
   @ApiUnauthorizedResponse({ description: "인증이 필요함" })
   @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없음" })
   async getVerificationStatus(
@@ -119,10 +109,7 @@ export class BaekjoonController {
     description: "백준 ID",
     example: "solved_user123",
   })
-  @ApiOkResponse({
-    description: "프로필 조회 성공",
-    type: BaekjoonProfileResponseDto,
-  })
+  @ApiOkResponseWrapper(BaekjoonProfileResponseDto, "프로필 조회 성공")
   @ApiUnauthorizedResponse({ description: "인증이 필요함" })
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없음" })
   async getProfile(
@@ -145,10 +132,7 @@ export class BaekjoonController {
     description: "백준 ID",
     example: "solved_user123",
   })
-  @ApiOkResponse({
-    description: "태그 통계 조회 성공",
-    type: TagStatisticsResponseDto,
-  })
+  @ApiOkResponseWrapper(TagStatisticsResponseDto, "태그 통계 조회 성공")
   @ApiUnauthorizedResponse({ description: "인증이 필요함" })
   @ApiNotFoundResponse({ description: "태그 통계를 찾을 수 없음" })
   async getStatistics(@Query() query: GetTagStatisticsRequestDto): Promise<TagStatisticsResponseDto> {

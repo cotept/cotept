@@ -1,3 +1,8 @@
+import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
+import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
+
+import { Request, Response } from "express"
+
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { CurrentUserId } from "@/modules/auth/infrastructure/common/decorators"
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
@@ -12,20 +17,8 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import {
-  TokenResponseDto,
-  LogoutResponseDto,
-} from "@/modules/auth/infrastructure/dtos/response"
-import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from "@nestjs/swagger"
-import { Request, Response } from "express"
+import { LogoutResponseDto, TokenResponseDto } from "@/modules/auth/infrastructure/dtos/response"
+import { ApiOkResponseEmpty, ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 
 /**
  * 인증 컨트롤러
@@ -44,7 +37,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "로그인", description: "이메일과 비밀번호로 로그인하고 토큰을 발급합니다." })
   @ApiBody({ type: LoginRequestDto })
-  @ApiOkResponse({ description: "로그인 성공", type: TokenResponseDto })
+  @ApiOkResponseWrapper(TokenResponseDto, "로그인 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "인증 실패" })
   async login(
@@ -65,9 +58,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
-  @ApiOkResponse({ description: "로그아웃 성공", type: LogoutResponseDto })
+  @ApiOkResponseWrapper(LogoutResponseDto, "로그아웃 성공")
   @ApiUnauthorizedResponse({ description: "인증 필요" })
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response, @CurrentUserId() userId: string): Promise<LogoutResponseDto> {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUserId() userId: string,
+  ): Promise<LogoutResponseDto> {
     const token = req.headers.authorization?.split(" ")[1] || ""
     return await this.authFacadeService.logout(userId, token, res)
   }
@@ -75,11 +72,11 @@ export class AuthController {
   /**
    * 토큰 갱신
    */
-  @Post("slient-refresh")
+  @Post("silent-refresh")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "토큰 갱신", description: "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다." })
   @ApiBody({ type: RefreshTokenRequestDto })
-  @ApiOkResponse({ description: "토큰 갱신 성공" })
+  @ApiOkResponseWrapper(TokenResponseDto, "토큰 갱신 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "유효하지 않은 리프레시 토큰" })
   async refreshToken(
@@ -100,7 +97,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "토큰 검증", description: "액세스 토큰의 유효성을 검증합니다." })
   @ApiBody({ type: ValidateTokenRequestDto })
-  @ApiOkResponse({ description: "토큰 검증 결과" })
+  @ApiOkResponseEmpty("토큰 검증 결과")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   async validateToken(@Body() validateTokenRequestDto: ValidateTokenRequestDto) {
     return this.authFacadeService.validateToken(validateTokenRequestDto)
@@ -116,7 +113,7 @@ export class AuthController {
     description: "이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.",
   })
   @ApiBody({ type: SendVerificationCodeRequestDto })
-  @ApiOkResponse({ description: "인증 코드 발송 성공" })
+  @ApiOkResponseEmpty("인증 코드 발송 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   async sendVerificationCode(
     @Body() sendVerificationCodeRequestDto: SendVerificationCodeRequestDto,
@@ -138,7 +135,7 @@ export class AuthController {
     description: "발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.",
   })
   @ApiBody({ type: VerifyCodeRequestDto })
-  @ApiOkResponse({ description: "인증 코드 확인 성공" })
+  @ApiOkResponseEmpty("인증 코드 확인 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터 또는 유효하지 않은 인증 코드" })
   async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto) {
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
@@ -154,7 +151,7 @@ export class AuthController {
     description: "소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.",
   })
   @ApiBody({ type: ExchangeAuthCodeRequestDto })
-  @ApiOkResponse({ description: "토큰 교환 성공" })
+  @ApiOkResponseWrapper(TokenResponseDto, "토큰 교환 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "유효하지 않은 인증 코드" })
   async exchangeAuthCode(
@@ -178,7 +175,7 @@ export class AuthController {
     description: "기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.",
   })
   @ApiBody({ type: ConfirmSocialLinkRequestDto })
-  @ApiOkResponse({ description: "계정 연결 처리 성공" })
+  @ApiOkResponseWrapper(TokenResponseDto, "계정 연결 처리 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   @ApiUnauthorizedResponse({ description: "유효하지 않은 토큰" })
   async confirmSocialLink(
@@ -203,7 +200,7 @@ export class AuthController {
       "인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
   })
   @ApiBody({ type: FindIdRequestDto })
-  @ApiOkResponse({ description: "아이디 찾기 성공" })
+  @ApiOkResponseEmpty("아이디 찾기 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   async findId(@Body() findIdRequestDto: FindIdRequestDto, @Req() req: Request) {
     const ipAddress = req.ip
@@ -221,7 +218,7 @@ export class AuthController {
       "인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
   })
   @ApiBody({ type: ResetPasswordRequestDto })
-  @ApiOkResponse({ description: "비밀번호 재설정 성공" })
+  @ApiOkResponseEmpty("비밀번호 재설정 성공")
   @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
   async resetPassword(@Body() resetPasswordRequestDto: ResetPasswordRequestDto, @Req() req: Request) {
     const ipAddress = req.ip

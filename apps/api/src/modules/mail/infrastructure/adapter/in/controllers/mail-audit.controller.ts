@@ -7,7 +7,7 @@ import { GetMailAuditByIdRequestDto, GetMailAuditRequestDto } from "@/modules/ma
 import { MailAuditResponseDto } from "@/modules/mail/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 
-@ApiTags("메일 감사")
+@ApiTags("MailAudit")
 @Controller("mail-audit")
 export class MailAuditController {
   private readonly logger = new Logger(MailAuditController.name)

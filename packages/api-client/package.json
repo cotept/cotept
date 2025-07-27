@@ -5,8 +5,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "generate": "openapi-generator-cli generate -i ./openapi-spec.yaml -g typescript-axios -o ./src -c ./config.json -t ./custom-templates",
-    "gapi": "rm -rf ./src && docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/openapi-spec.yaml -g typescript-axios -o /local/src/api -c /local/config.json"
+    "clean": "rm -rf ./src",
+    "generate:client": "openapi-generator-cli generate -i ./openapi-spec.yaml -g typescript-axios -o ./src -c ./config.json",
+    "generate": "npm run clean && npm run generate:client && npm run organize",
+    "organize": "node scripts/organize-types.js",
+    "validate": "openapi-generator-cli validate -i ./openapi-spec.yaml",
+    "generate:docker": "rm -rf ./src && docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/openapi-spec.yaml -g typescript-axios -o /local/src -c /local/config.json && npm run organize && npm run consolidate"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.18.4"

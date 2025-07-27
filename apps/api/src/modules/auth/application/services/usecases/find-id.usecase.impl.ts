@@ -2,10 +2,10 @@ import { FindIdDto } from "@/modules/auth/application/dtos/find-id.dto"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
-import { VerificationException } from "@/modules/auth/domain/model/auth-exception"
+import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
-import { Injectable, Logger, NotFoundException } from "@nestjs/common"
+import { BadRequestException, Injectable, Logger, NotFoundException } from "@nestjs/common"
 
 @Injectable()
 export class FindIdUseCaseImpl implements FindIdUseCase {
@@ -41,7 +41,7 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
     const verification = await this.authVerificationRepository.findById(findIdDto.verificationId)
 
     if (!verification) {
-      throw new VerificationException("유효하지 않은 인증 정보입니다.")
+      throw new BadRequestException(AUTH_ERROR_MESSAGES.INVALID_VERIFICATION_DATA)
     }
 
     // 이미 인증된 경우는 패스
@@ -53,12 +53,12 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
       if (verification.isExpired) {
         // Redis 데이터도 삭제
         if (cachedData) await this.cacheService.delete(redisKey)
-        throw new VerificationException("인증 시간이 만료되었습니다. 다시 시도해주세요.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_CODE_EXPIRED)
       }
 
       // 최대 시도 횟수 확인
       if (verification.attemptCount >= 5) {
-        throw new VerificationException("인증 시도 횟수를 초과했습니다. 다시 인증 코드를 요청해주세요.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_ATTEMPTS_EXCEEDED)
       }
 
       // 코드 및 다른 필드 확인
@@ -78,7 +78,7 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
           await this.cacheService.setObject(redisKey, cachedData, ttl > 0 ? ttl : 300)
         }
 
-        throw new VerificationException("인증 코드가 일치하지 않습니다.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_CODE_MISMATCH)
       }
 
       // 인증 성공 처리
@@ -95,7 +95,7 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
     }
 
     if (!isVerified) {
-      throw new VerificationException("인증에 실패했습니다.")
+      throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_FAILED)
     }
 
     // 2. 인증 타입에 따라 사용자 찾기
@@ -110,7 +110,7 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
     }
 
     if (!user) {
-      throw new NotFoundException("해당 정보와 일치하는 사용자를 찾을 수 없습니다.")
+      throw new NotFoundException(AUTH_ERROR_MESSAGES.USER_NOT_FOUND)
     }
 
     // 3. 아이디 마스킹 처리

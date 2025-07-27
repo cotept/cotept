@@ -12,7 +12,7 @@ import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-respo
 /**
  * Google 소셜 로그인 컨트롤러
  */
-@ApiTags("Google 인증")
+@ApiTags("GoogleAuth")
 @Controller("auth/google")
 export class GoogleAuthController {
   private readonly logger = new Logger(GoogleAuthController.name)
@@ -52,6 +52,7 @@ export class GoogleAuthController {
   @ApiQuery({
     name: "code",
     required: false,
+    type: String,
     description: "Google 인증 코드 (자동으로 처리됨)",
   })
   @ApiQuery({

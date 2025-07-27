@@ -4,10 +4,10 @@ import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/aut
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
-import { PasswordUpdateFailedException, VerificationException } from "@/modules/auth/domain/model/auth-exception"
+import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger, NotFoundException } from "@nestjs/common"
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from "@nestjs/common"
 
 @Injectable()
 export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
@@ -30,7 +30,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
     // 1. 사용자 존재 확인
     const user = await this.authUserRepository.findByEmail(resetPasswordDto.email)
     if (!user) {
-      throw new NotFoundException("해당 이메일을 가진 사용자를 찾을 수 없습니다.")
+      throw new NotFoundException(AUTH_ERROR_MESSAGES.USER_NOT_FOUND)
     }
 
     // 2. 인증 코드 검증
@@ -51,7 +51,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
     const verification = await this.authVerificationRepository.findById(resetPasswordDto.verificationId)
 
     if (!verification) {
-      throw new VerificationException("유효하지 않은 인증 정보입니다.")
+      throw new BadRequestException(AUTH_ERROR_MESSAGES.INVALID_VERIFICATION_DATA)
     }
 
     // 이미 인증된 경우는 패스
@@ -63,12 +63,12 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
       if (verification.isExpired) {
         // Redis 데이터도 삭제
         if (cachedData) await this.cacheService.delete(redisKey)
-        throw new VerificationException("인증 시간이 만료되었습니다. 다시 시도해주세요.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_CODE_EXPIRED)
       }
 
       // 최대 시도 횟수 확인
       if (verification.attemptCount >= 5) {
-        throw new VerificationException("인증 시도 횟수를 초과했습니다. 다시 인증 코드를 요청해주세요.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_ATTEMPTS_EXCEEDED)
       }
 
       // 코드 및 이메일 일치 확인
@@ -87,7 +87,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
           await this.cacheService.setObject(redisKey, cachedData, ttl > 0 ? ttl : 300)
         }
 
-        throw new VerificationException("인증 코드가 일치하지 않습니다.")
+        throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_CODE_MISMATCH)
       }
 
       // 인증 성공 처리
@@ -104,7 +104,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
     }
 
     if (!isVerified) {
-      throw new VerificationException("인증에 실패했습니다.")
+      throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_FAILED)
     }
 
     // 3. 비밀번호 변경 로직
@@ -115,7 +115,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
     const updateResult = await this.authUserRepository.updatePassword(user.getId(), hashedPassword)
 
     if (!updateResult) {
-      throw new PasswordUpdateFailedException("비밀번호 업데이트에 실패했습니다.")
+      throw new UnauthorizedException(AUTH_ERROR_MESSAGES.PASSWORD_UPDATE_FAILED)
     }
 
     // 4. Redis 캐시 삭제 (비밀번호 변경 완료 후 인증 정보 삭제)

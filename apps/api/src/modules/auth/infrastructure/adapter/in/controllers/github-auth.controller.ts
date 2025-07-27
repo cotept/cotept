@@ -12,7 +12,7 @@ import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-respo
 /**
  * GitHub 소셜 로그인 컨트롤러
  */
-@ApiTags("GitHub 인증")
+@ApiTags("GithubAuth")
 @Controller("auth/github")
 export class GithubAuthController {
   private readonly logger = new Logger(GithubAuthController.name)
@@ -53,6 +53,7 @@ export class GithubAuthController {
   @ApiQuery({
     name: "code",
     required: false,
+    type: String,
     description: "GitHub 인증 코드 (자동으로 처리됨)",
   })
   @ApiQuery({

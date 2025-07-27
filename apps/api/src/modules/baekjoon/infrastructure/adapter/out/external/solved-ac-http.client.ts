@@ -34,7 +34,7 @@ export class SolvedAcHttpClient {
     this.logger.debug(`[GET] ${url}`, { params })
 
     try {
-      const response: AxiosResponse<T> = await firstValueFrom(
+      const response = await firstValueFrom(
         this.httpService
           .get<T>(url, {
             params,

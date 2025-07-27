@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
-import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
+import { ApiBadRequestResponse, ApiBody, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiTooManyRequestsResponse, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger"
+import { ApiStandardErrors, ApiAuthRequiredErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 import { Request, Response } from "express"
 
@@ -23,7 +24,7 @@ import { ApiOkResponseEmpty, ApiOkResponseWrapper } from "@/shared/infrastructur
 /**
  * 인증 컨트롤러
  */
-@ApiTags("인증")
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   private readonly logger = new Logger(AuthController.name)
@@ -38,8 +39,10 @@ export class AuthController {
   @ApiOperation({ summary: "로그인", description: "이메일과 비밀번호로 로그인하고 토큰을 발급합니다." })
   @ApiBody({ type: LoginRequestDto })
   @ApiOkResponseWrapper(TokenResponseDto, "로그인 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
-  @ApiUnauthorizedResponse({ description: "인증 실패" })
+  @ApiStandardErrors()
+  @ApiUnauthorizedResponse({ description: "이메일 또는 비밀번호가 올바르지 않습니다" })
+  @ApiUnprocessableEntityResponse({ description: "요청은 형식이 맞으나 처리할 수 없습니다" })
+  @ApiTooManyRequestsResponse({ description: "로그인 시도 횟수를 초과했습니다" })
   async login(
     @Body() loginRequestDto: LoginRequestDto,
     @Req() req: Request,
@@ -59,7 +62,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "로그아웃", description: "사용자를 로그아웃하고 토큰을 무효화합니다." })
   @ApiOkResponseWrapper(LogoutResponseDto, "로그아웃 성공")
-  @ApiUnauthorizedResponse({ description: "인증 필요" })
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -77,8 +81,9 @@ export class AuthController {
   @ApiOperation({ summary: "토큰 갱신", description: "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다." })
   @ApiBody({ type: RefreshTokenRequestDto })
   @ApiOkResponseWrapper(TokenResponseDto, "토큰 갱신 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "유효하지 않은 리프레시 토큰" })
+  @ApiUnprocessableEntityResponse({ description: "요청은 형식이 맞으나 처리할 수 없습니다" })
   async refreshToken(
     @Body() refreshTokenRequestDto: RefreshTokenRequestDto,
     @Req() req: Request,
@@ -98,7 +103,8 @@ export class AuthController {
   @ApiOperation({ summary: "토큰 검증", description: "액세스 토큰의 유효성을 검증합니다." })
   @ApiBody({ type: ValidateTokenRequestDto })
   @ApiOkResponseEmpty("토큰 검증 결과")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
+  @ApiUnauthorizedResponse({ description: "유효하지 않은 토큰" })
   async validateToken(@Body() validateTokenRequestDto: ValidateTokenRequestDto) {
     return this.authFacadeService.validateToken(validateTokenRequestDto)
   }
@@ -114,7 +120,8 @@ export class AuthController {
   })
   @ApiBody({ type: SendVerificationCodeRequestDto })
   @ApiOkResponseEmpty("인증 코드 발송 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
+  @ApiTooManyRequestsResponse({ description: "인증 코드 발송 제한을 초과했습니다" })
   async sendVerificationCode(
     @Body() sendVerificationCodeRequestDto: SendVerificationCodeRequestDto,
     @Req() req: Request,
@@ -136,7 +143,8 @@ export class AuthController {
   })
   @ApiBody({ type: VerifyCodeRequestDto })
   @ApiOkResponseEmpty("인증 코드 확인 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터 또는 유효하지 않은 인증 코드" })
+  @ApiStandardErrors()
+  @ApiUnauthorizedResponse({ description: "인증 코드가 일치하지 않습니다" })
   async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto) {
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
   }
@@ -152,7 +160,7 @@ export class AuthController {
   })
   @ApiBody({ type: ExchangeAuthCodeRequestDto })
   @ApiOkResponseWrapper(TokenResponseDto, "토큰 교환 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "유효하지 않은 인증 코드" })
   async exchangeAuthCode(
     @Body() exchangeAuthCodeRequestDto: ExchangeAuthCodeRequestDto,
@@ -176,7 +184,7 @@ export class AuthController {
   })
   @ApiBody({ type: ConfirmSocialLinkRequestDto })
   @ApiOkResponseWrapper(TokenResponseDto, "계정 연결 처리 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "유효하지 않은 토큰" })
   async confirmSocialLink(
     @Body() confirmSocialLinkRequestDto: ConfirmSocialLinkRequestDto,
@@ -201,7 +209,7 @@ export class AuthController {
   })
   @ApiBody({ type: FindIdRequestDto })
   @ApiOkResponseEmpty("아이디 찾기 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
   async findId(@Body() findIdRequestDto: FindIdRequestDto, @Req() req: Request) {
     const ipAddress = req.ip
     return await this.authFacadeService.findId(findIdRequestDto, ipAddress)
@@ -219,7 +227,7 @@ export class AuthController {
   })
   @ApiBody({ type: ResetPasswordRequestDto })
   @ApiOkResponseEmpty("비밀번호 재설정 성공")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
+  @ApiStandardErrors()
   async resetPassword(@Body() resetPasswordRequestDto: ResetPasswordRequestDto, @Req() req: Request) {
     const ipAddress = req.ip
     return await this.authFacadeService.resetPassword(resetPasswordRequestDto, ipAddress)

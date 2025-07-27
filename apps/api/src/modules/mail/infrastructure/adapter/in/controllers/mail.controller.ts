@@ -1,5 +1,6 @@
 import { Body, Controller, Logger, Post, UseGuards } from "@nestjs/common"
-import { ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiOperation, ApiServiceUnavailableResponse, ApiTags, ApiTooManyRequestsResponse, ApiUnauthorizedResponse } from "@nestjs/swagger"
+import { ApiStandardErrors, ApiAuthRequiredErrors, ApiMailServiceErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import { MailFacadeService } from "@/modules/mail/application/services/facade/mail-facade.service"
@@ -7,7 +8,7 @@ import { MailRequestMapper } from "@/modules/mail/infrastructure/adapter/in/mapp
 import { MailRequestDto } from "@/modules/mail/infrastructure/dtos/request/mail-request.dto"
 import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-response.decorator"
 
-@ApiTags("메일")
+@ApiTags("Mail")
 @Controller("mail")
 export class MailController {
   private readonly logger = new Logger(MailController.name)
@@ -17,6 +18,8 @@ export class MailController {
   @Post("email-verification")
   @ApiOperation({ summary: "이메일 본인확인" })
   @ApiOkResponseEmpty("이메일 본인확인 발송 성공")
+  @ApiStandardErrors()
+  @ApiMailServiceErrors()
   async sendEmailVerification(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendEmailVerification", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"email_verification">(requestDto)
@@ -26,6 +29,8 @@ export class MailController {
   @Post("password-recovery")
   @ApiOperation({ summary: "비밀번호 찾기" })
   @ApiOkResponseEmpty("비밀번호 찾기 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiMailServiceErrors()
   async sendPasswordRecovery(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendPasswordRecovery", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"password_recovery">(requestDto)
@@ -35,7 +40,9 @@ export class MailController {
   @Post("verification-code")
   @ApiOperation({ summary: "인증번호 발송" })
   @ApiOkResponseEmpty("인증번호 발송 성공")
-  async sendVerificationCode(@Body() requestDto: MailRequestDto): Promise<void> {
+  @ApiStandardErrors()
+  @ApiMailServiceErrors()
+  async sendMailVerificationCode(@Body() requestDto: MailRequestDto): Promise<void> {
     this.logger.log("sendVerificationCode", { requestDto })
     const sendMailDtoAlt = MailRequestMapper.toSendMailDtoWithTransformer<"verification_code">(requestDto)
     return await this.mailFacadeService.sendVerificationCode(sendMailDtoAlt)
@@ -44,6 +51,8 @@ export class MailController {
   @Post("reservation-create")
   @ApiOperation({ summary: "멘토링 예약 신청" })
   @ApiOkResponseEmpty("멘토링 예약 신청 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiServiceUnavailableResponse({ description: "메일 서비스를 사용할 수 없습니다" })
   async sendReservationCreate(
     @Body()
     requestDto: MailRequestDto,
@@ -57,6 +66,9 @@ export class MailController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 확정" })
   @ApiOkResponseEmpty("멘토링 예약 확정 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiServiceUnavailableResponse({ description: "메일 서비스를 사용할 수 없습니다" })
   async sendReservationFix(
     @Body()
     requestDto: MailRequestDto,
@@ -70,6 +82,9 @@ export class MailController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 취소" })
   @ApiOkResponseEmpty("멘토링 예약 취소 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiServiceUnavailableResponse({ description: "메일 서비스를 사용할 수 없습니다" })
   async sendReservationCancel(
     @Body()
     requestDto: MailRequestDto,
@@ -83,6 +98,9 @@ export class MailController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 예약 변경" })
   @ApiOkResponseEmpty("멘토링 예약 변경 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiServiceUnavailableResponse({ description: "메일 서비스를 사용할 수 없습니다" })
   async sendReservationChange(
     @Body()
     requestDto: MailRequestDto,
@@ -96,6 +114,9 @@ export class MailController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "멘토링 사전안내" })
   @ApiOkResponseEmpty("멘토링 사전안내 이메일 발송 성공")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiServiceUnavailableResponse({ description: "메일 서비스를 사용할 수 없습니다" })
   async sendReservationPrenotice(
     @Body()
     requestDto: MailRequestDto,

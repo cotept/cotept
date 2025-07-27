@@ -1,6 +1,7 @@
 // src/swagger/swagger.config.ts
 import { INestApplication } from "@nestjs/common"
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from "@nestjs/swagger"
+
 import { ISwaggerConfig } from "./swagger.interface"
 
 export class SwaggerConfig {
@@ -55,7 +56,17 @@ export class SwaggerConfig {
 
   public setup(app: INestApplication) {
     const options = this.buildDocumentOptions()
-    const document = SwaggerModule.createDocument(app, options)
+    const document = SwaggerModule.createDocument(app, options, {
+      operationIdFactory: (controllerKey: string, methodKey: string) => {
+        // 간단한 메소드명 정리
+        return methodKey
+          .replace(/^get([A-Z])/, "get$1") // getXXX -> getXXX (그대로)
+          .replace(/^getAll([A-Z])/, "get$1s") // getAllUsers -> getUsers (오타 수정)
+          .replace(/^findAll/, "getAll") // findAll -> getAll
+          .replace(/^findOne/, "getById") // findOne -> getById
+          .replace(/^remove/, "delete") // remove -> delete
+      },
+    })
     SwaggerModule.setup(this.config.path, app, document, this.customOptions)
     return document
   }

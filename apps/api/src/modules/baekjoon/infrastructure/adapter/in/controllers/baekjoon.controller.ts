@@ -2,14 +2,18 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGua
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiRequestTimeoutResponse,
+  ApiServiceUnavailableResponse,
   ApiTags,
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger"
+import { ApiStandardErrors, ApiAuthRequiredErrors, ApiExternalServiceErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services/facade/baekjoon-facade.service"
@@ -28,7 +32,7 @@ import {
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 
-@ApiTags("백준 인증 및 프로필")
+@ApiTags("Baekjoon")
 @Controller("baekjoon")
 export class BaekjoonController {
   constructor(
@@ -43,11 +47,10 @@ export class BaekjoonController {
     description: "백준 ID 인증 프로세스를 시작하고 인증 문자열을 발급받습니다.",
   })
   @ApiOkResponseWrapper(VerificationStatusResponseDto, "인증 세션이 성공적으로 생성됨")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터" })
-  @ApiUnauthorizedResponse({ description: "인증이 필요함" })
-  @ApiNotFoundResponse({ description: "백준 사용자를 찾을 수 없음" })
-  @ApiConflictResponse({ description: "이미 진행 중인 인증 세션이 있음" })
-  @ApiTooManyRequestsResponse({ description: "API 호출 한도 초과" })
+  @ApiStandardErrors()
+  @ApiNotFoundResponse({ description: "백준 사용자를 찾을 수 없습니다" })
+  @ApiConflictResponse({ description: "이미 진행 중인 인증 세션이 있습니다" })
+  @ApiExternalServiceErrors()
   async startVerification(
     @Body() request: StartVerificationRequestDto,
     // @CurrentUser() user: UserContext, // TODO: 인증 가드 구현 후 추가
@@ -64,10 +67,10 @@ export class BaekjoonController {
     description: "solved.ac 프로필 이름을 확인하여 백준 ID 인증을 완료합니다.",
   })
   @ApiOkResponseWrapper(VerificationResultResponseDto, "인증이 성공적으로 완료됨")
-  @ApiBadRequestResponse({ description: "잘못된 요청 데이터 또는 인증 문자열 불일치" })
-  @ApiUnauthorizedResponse({ description: "인증이 필요함" })
-  @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없음" })
-  @ApiTooManyRequestsResponse({ description: "인증 시도 한도 초과" })
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없습니다" })
+  @ApiExternalServiceErrors()
   async completeVerification(
     @Body() request: CompleteVerificationRequestDto,
     // @CurrentUser() user: UserContext, // TODO: 인증 가드 구현 후 추가
@@ -88,8 +91,9 @@ export class BaekjoonController {
     example: "user@example.com",
   })
   @ApiOkResponseWrapper(VerificationStatusResponseDto, "인증 상태 조회 성공")
-  @ApiUnauthorizedResponse({ description: "인증이 필요함" })
-  @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없음" })
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없습니다" })
   async getVerificationStatus(
     @Param("userId") userId: string,
     // @CurrentUser() user: UserContext, // TODO: 인증 가드 구현 후 추가
@@ -110,8 +114,10 @@ export class BaekjoonController {
     example: "solved_user123",
   })
   @ApiOkResponseWrapper(BaekjoonProfileResponseDto, "프로필 조회 성공")
-  @ApiUnauthorizedResponse({ description: "인증이 필요함" })
-  @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없음" })
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다" })
+  @ApiExternalServiceErrors()
   async getProfile(
     @Query() query: GetProfileRequestDto,
     // @CurrentUser() user: UserContext, // TODO: 인증 가드 구현 후 추가
@@ -133,8 +139,10 @@ export class BaekjoonController {
     example: "solved_user123",
   })
   @ApiOkResponseWrapper(TagStatisticsResponseDto, "태그 통계 조회 성공")
-  @ApiUnauthorizedResponse({ description: "인증이 필요함" })
-  @ApiNotFoundResponse({ description: "태그 통계를 찾을 수 없음" })
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "태그 통계를 찾을 수 없습니다" })
+  @ApiExternalServiceErrors()
   async getStatistics(@Query() query: GetTagStatisticsRequestDto): Promise<TagStatisticsResponseDto> {
     const inputDto = this.requestMapper.toGetStatisticsInput(query)
     return this.baekjoonFacadeService.getStatistics(inputDto)

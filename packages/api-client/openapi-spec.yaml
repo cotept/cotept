@@ -2,16 +2,20 @@ openapi: 3.0.0
 paths:
   /:
     get:
-      operationId: AppController_getHello
+      operationId: getHello
       parameters: []
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: string
       tags: &ref_0
         - App
   /health:
     get:
-      operationId: AppController_checkHealth
+      operationId: checkHealth
       parameters: []
       responses:
         '200':
@@ -20,7 +24,7 @@ paths:
   /users/userlist:
     get:
       description: 등록된 모든 사용자 목록을 조회합니다.
-      operationId: UserController_getAllUsers
+      operationId: getAllUsers
       parameters:
         - name: page
           required: false
@@ -60,18 +64,86 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/UserListResponseDto'
+                title: UserListResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserListResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 목록 조회
       tags: &ref_1
-        - 사용자 관리
+        - User
   /users/{id}:
     get:
       description: ID로 사용자 정보를 조회합니다.
-      operationId: UserController_getUserById
+      operationId: getUserById
       parameters:
         - name: id
           required: true
@@ -85,18 +157,86 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/UserResponseDto'
+                title: UserResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '404':
-          description: 사용자를 찾을 수 없음
+          description: 요청하신 사용자를 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 상세 조회
       tags: *ref_1
     put:
       description: 사용자 정보를 수정합니다.
-      operationId: UserController_updateUser
+      operationId: updateUser
       parameters:
         - name: id
           required: true
@@ -116,20 +256,132 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/UserResponseDto'
+                title: UserResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '404':
-          description: 사용자를 찾을 수 없음
+          description: 사용자를 찾을 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 404
+                  message:
+                    type: string
+                    example: 요청하신 사용자를 찾을 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '409':
+          description: 사용자 데이터 충돌
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 409
+                  message:
+                    type: string
+                    example: 이미 사용 중인 이메일 또는 전화번호입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '422':
+          description: 처리할 수 없는 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 422
+                  message:
+                    type: string
+                    example: 요청은 형식이 맞으나 처리할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 정보 수정
       tags: *ref_1
     delete:
       description: 사용자를 삭제합니다.
-      operationId: UserController_deleteUser
+      operationId: deleteUser
       parameters:
         - name: id
           required: true
@@ -149,47 +401,195 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/UserDeletionResponseDto'
+                title: UserDeletionResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserDeletionResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '404':
-          description: 사용자를 찾을 수 없음
+          description: 요청하신 사용자를 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 삭제
       tags: *ref_1
   /users/register:
     post:
       description: 새로운 사용자를 생성합니다.
-      operationId: UserController_createUser
+      operationId: createUser
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserRequestDto'
       responses:
         '200':
           description: 성공적으로 사용자를 생성함
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/UserResponseDto'
+                title: UserResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserResponseDto'
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 사용자를 찾을 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 404
+                  message:
+                    type: string
+                    example: 요청하신 사용자를 찾을 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '409':
-          description: 이미 사용 중인 이메일
+          description: 사용자 데이터 충돌
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 409
+                  message:
+                    type: string
+                    example: 이미 사용 중인 이메일 또는 전화번호입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '422':
+          description: 처리할 수 없는 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 422
+                  message:
+                    type: string
+                    example: 요청은 형식이 맞으나 처리할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 생성
       tags: *ref_1
   /users/{id}/password:
     patch:
       description: 사용자 비밀번호를 변경합니다.
-      operationId: UserController_changePassword
+      operationId: changePassword
       parameters:
         - name: id
           required: true
@@ -209,23 +609,133 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/PasswordChangeResponseDto'
+                title: PasswordChangeResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/PasswordChangeResponseDto'
         '400':
-          description: 비밀번호 정책 위반 또는 확인 불일치
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
-          description: 현재 비밀번호가 일치하지 않음
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '404':
-          description: 사용자를 찾을 수 없음
+          description: 사용자를 찾을 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 404
+                  message:
+                    type: string
+                    example: 요청하신 사용자를 찾을 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '409':
+          description: 사용자 데이터 충돌
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 409
+                  message:
+                    type: string
+                    example: 이미 사용 중인 이메일 또는 전화번호입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '422':
+          description: 처리할 수 없는 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 422
+                  message:
+                    type: string
+                    example: 요청은 형식이 맞으나 처리할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 변경
       tags: *ref_1
   /auth/login:
     post:
       description: 이메일과 비밀번호로 로그인하고 토큰을 발급합니다.
-      operationId: AuthController_login
+      operationId: login
       parameters: []
       requestBody:
         required: true
@@ -239,22 +749,60 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/TokenResponseDto'
+                title: TokenResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
-          description: 인증 실패
+          description: 이메일 또는 비밀번호가 올바르지 않습니다
+        '422':
+          description: 요청은 형식이 맞으나 처리할 수 없습니다
+        '429':
+          description: 로그인 시도 횟수를 초과했습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 로그인
       tags: &ref_2
-        - 인증
+        - Auth
   /auth/logout:
     post:
       description: 사용자를 로그아웃하고 토큰을 무효화합니다.
-      operationId: AuthController_logout
+      operationId: logout
       parameters: []
       responses:
         '200':
@@ -262,19 +810,85 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/LogoutResponseDto'
+                title: LogoutResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/LogoutResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
-          description: 인증 필요
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 로그아웃
       tags: *ref_2
   /auth/silent-refresh:
     post:
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
-      operationId: AuthController_refreshToken
+      operationId: refreshToken
       parameters: []
       requestBody:
         required: true
@@ -288,21 +902,57 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/TokenResponseDto'
+                title: TokenResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
           description: 유효하지 않은 리프레시 토큰
+        '422':
+          description: 요청은 형식이 맞으나 처리할 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 갱신
       tags: *ref_2
   /auth/validate-token:
     post:
       description: 액세스 토큰의 유효성을 검증합니다.
-      operationId: AuthController_validateToken
+      operationId: validateToken
       parameters: []
       requestBody:
         required: true
@@ -316,19 +966,56 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 유효하지 않은 토큰
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 검증
       tags: *ref_2
   /auth/send-verification-code:
     post:
       description: 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
-      operationId: AuthController_sendVerificationCode
+      operationId: sendVerificationCode
       parameters: []
       requestBody:
         required: true
@@ -342,19 +1029,56 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '429':
+          description: 인증 코드 발송 제한을 초과했습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 발송
       tags: *ref_2
   /auth/verify-code:
     post:
       description: 발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.
-      operationId: AuthController_verifyCode
+      operationId: verifyCode
       parameters: []
       requestBody:
         required: true
@@ -368,19 +1092,56 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
         '400':
-          description: 잘못된 요청 데이터 또는 유효하지 않은 인증 코드
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증 코드가 일치하지 않습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 확인
       tags: *ref_2
   /auth/exchange-code:
     post:
       description: 소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.
-      operationId: AuthController_exchangeAuthCode
+      operationId: exchangeAuthCode
       parameters: []
       requestBody:
         required: true
@@ -394,21 +1155,55 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/TokenResponseDto'
+                title: TokenResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
           description: 유효하지 않은 인증 코드
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 임시 인증 코드를 실제 토큰으로 교환
       tags: *ref_2
   /auth/confirm-social-link:
     post:
       description: 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
-      operationId: AuthController_confirmSocialLink
+      operationId: confirmSocialLink
       parameters: []
       requestBody:
         required: true
@@ -422,15 +1217,49 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/TokenResponseDto'
+                title: TokenResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/TokenResponseDto'
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
         '401':
           description: 유효하지 않은 토큰
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 소셜 계정 연결 확인
       tags: *ref_2
   /auth/find-id:
@@ -438,7 +1267,7 @@ paths:
       description: >-
         인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후
         인증 코드를 발급받아야 합니다.
-      operationId: AuthController_findId
+      operationId: findId
       parameters: []
       requestBody:
         required: true
@@ -452,19 +1281,54 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 아이디 찾기
       tags: *ref_2
   /auth/reset-password:
     post:
       description: 인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.
-      operationId: AuthController_resetPassword
+      operationId: resetPassword
       parameters: []
       requestBody:
         required: true
@@ -478,19 +1342,54 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
         '400':
           description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 재설정
       tags: *ref_2
   /auth/github:
     get:
       description: GitHub OAuth 인증을 시작합니다.
-      operationId: GithubAuthController_githubLogin
+      operationId: githubLogin
       parameters:
         - name: redirectUrl
           required: false
@@ -504,18 +1403,25 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '302':
+          description: ''
       summary: GitHub 로그인 시작
       tags: &ref_3
-        - GitHub 인증
+        - GithubAuth
   /auth/github/callback:
     get:
       description: GitHub 인증 후 리다이렉트되는 엔드포인트입니다.
-      operationId: GithubAuthController_githubCallback
+      operationId: githubCallback
       parameters:
         - name: redirectUrl
           required: false
@@ -527,18 +1433,26 @@ paths:
           required: false
           in: query
           description: GitHub 인증 코드 (자동으로 처리됨)
-          schema: {}
+          schema:
+            type: string
       responses:
         '200':
           description: 클라이언트로 리다이렉트
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '302':
+          description: ''
         '401':
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
@@ -546,7 +1460,7 @@ paths:
   /auth/google:
     get:
       description: Google OAuth 인증을 시작합니다.
-      operationId: GoogleAuthController_googleLogin
+      operationId: googleLogin
       parameters:
         - name: redirectUrl
           required: false
@@ -560,18 +1474,25 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '302':
+          description: ''
       summary: Google 로그인 시작
       tags: &ref_4
-        - Google 인증
+        - GoogleAuth
   /auth/google/callback:
     get:
       description: Google 인증 후 리다이렉트되는 엔드포인트입니다.
-      operationId: GoogleAuthController_googleCallback
+      operationId: googleCallback
       parameters:
         - name: redirectUrl
           required: false
@@ -583,25 +1504,33 @@ paths:
           required: false
           in: query
           description: Google 인증 코드 (자동으로 처리됨)
-          schema: {}
+          schema:
+            type: string
       responses:
         '200':
           description: 클라이언트로 리다이렉트
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '302':
+          description: ''
         '401':
           description: Google 인증 실패
       summary: Google 로그인 콜백
       tags: *ref_4
   /mail/email-verification:
     post:
-      operationId: MailController_sendEmailVerification
+      operationId: sendEmailVerification
       parameters: []
       requestBody:
         required: true
@@ -615,17 +1544,88 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '429':
+          description: 메일 발송 제한을 초과했습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 429
+                  message:
+                    type: string
+                    example: 메일 발송 제한을 초과했습니다. 잠시 후 다시 시도해주세요.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 503
+                  message:
+                    type: string
+                    example: 메일 서비스를 사용할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 이메일 본인확인
       tags: &ref_5
-        - 메일
+        - Mail
   /mail/password-recovery:
     post:
-      operationId: MailController_sendPasswordRecovery
+      operationId: sendPasswordRecovery
       parameters: []
       requestBody:
         required: true
@@ -639,16 +1639,87 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '429':
+          description: 메일 발송 제한을 초과했습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 429
+                  message:
+                    type: string
+                    example: 메일 발송 제한을 초과했습니다. 잠시 후 다시 시도해주세요.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 503
+                  message:
+                    type: string
+                    example: 메일 서비스를 사용할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 찾기
       tags: *ref_5
   /mail/verification-code:
     post:
-      operationId: MailController_sendVerificationCode
+      operationId: sendMailVerificationCode
       parameters: []
       requestBody:
         required: true
@@ -662,16 +1733,87 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '429':
+          description: 메일 발송 제한을 초과했습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 429
+                  message:
+                    type: string
+                    example: 메일 발송 제한을 초과했습니다. 잠시 후 다시 시도해주세요.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 503
+                  message:
+                    type: string
+                    example: 메일 서비스를 사용할 수 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
       summary: 인증번호 발송
       tags: *ref_5
   /mail/reservation-create:
     post:
-      operationId: MailController_sendReservationCreate
+      operationId: sendReservationCreate
       parameters: []
       requestBody:
         required: true
@@ -685,16 +1827,57 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 신청
       tags: *ref_5
   /mail/reservation-fix:
     post:
-      operationId: MailController_sendReservationFix
+      operationId: sendReservationFix
       parameters: []
       requestBody:
         required: true
@@ -708,16 +1891,89 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 확정
       tags: *ref_5
   /mail/reservation-cancel:
     post:
-      operationId: MailController_sendReservationCancel
+      operationId: sendReservationCancel
       parameters: []
       requestBody:
         required: true
@@ -731,16 +1987,89 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 취소
       tags: *ref_5
   /mail/reservation-change:
     post:
-      operationId: MailController_sendReservationChange
+      operationId: sendReservationChange
       parameters: []
       requestBody:
         required: true
@@ -754,16 +2083,89 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 변경
       tags: *ref_5
   /mail/reservation-prenotice:
     post:
-      operationId: MailController_sendReservationPrenotice
+      operationId: sendReservationPrenotice
       parameters: []
       requestBody:
         required: true
@@ -777,16 +2179,89 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        type: 'null'
+                title: EmptyWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    type: 'null'
+                    description: 응답 데이터 없음
+        '201':
+          description: ''
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '503':
+          description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 사전안내
       tags: *ref_5
   /mail-audit/{id}:
     get:
-      operationId: MailAuditController_getMailAuditById
+      operationId: getMailAuditById
       parameters:
         - name: id
           required: true
@@ -799,17 +2274,21 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/MailAuditResponseDto'
+                title: MailAuditResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (ID)
       tags: &ref_6
-        - 메일 감사
+        - MailAudit
   /mail-audit:
     get:
-      operationId: MailAuditController_searchMailAudit
+      operationId: searchMailAudit
       parameters:
         - name: mailId
           required: true
@@ -832,11 +2311,15 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiResponse'
-                  - properties:
-                      data:
-                        $ref: '#/components/schemas/MailAuditResponseDto'
+                title: MailAuditResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (검색)
       tags: *ref_6
 info:
@@ -866,16 +2349,9 @@ components:
       description: JWT 토큰을 입력하세요
       in: header
   schemas:
-    ApiResponse:
+    ApiResponseUserListResponseDto:
       type: object
-      properties:
-        message:
-          type: string
-          description: 응답 메시지
-          example: 성공적으로 처리되었습니다.
-        data:
-          type: object
-          description: 응답 데이터
+      properties: {}
     UserResponseDto:
       type: object
       properties:
@@ -974,46 +2450,27 @@ components:
         - totalPages
         - hasNext
         - hasPrevious
-    CreateUserRequestDto:
+    ApiResponseUserResponseDto:
       type: object
-      properties:
-        email:
-          type: string
-          description: 사용자 이메일
-          example: user@example.com
-        password:
-          type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: StrongP@ss123
-        name:
-          type: string
-          description: 사용자 이름 (2~50자, 한글/영문만 허용)
-          example: 홍길동
-        phoneNumber:
-          type: string
-          description: 전화번호 (- 없이 숫자만)
-          example: '01012345678'
-        role:
-          type: string
-          description: '사용자 역할 (기본값: MENTEE)'
-          enum:
-            - MENTEE
-            - MENTOR
-          example: MENTEE
-      required:
-        - email
-        - password
+      properties: {}
     UpdateUserRequestDto:
       type: object
       properties:
         name:
           type: string
+          minLength: 2
+          maxLength: 50
+          pattern: /^[가-힣a-zA-Z\s]+$/
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
         phoneNumber:
           type: string
+          pattern: /^01[0-9]{8,9}$/
           description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
+    ApiResponseUserDeletionResponseDto:
+      type: object
+      properties: {}
     UserDeletionResponseDto:
       type: object
       properties:
@@ -1049,6 +2506,9 @@ components:
           type: string
           description: 삭제 확인을 위한 비밀번호
           example: UserP@ss123
+    ApiResponsePasswordChangeResponseDto:
+      type: object
+      properties: {}
     PasswordChangeResponseDto:
       type: object
       properties:
@@ -1077,6 +2537,10 @@ components:
           example: CurrentP@ss123
         newPassword:
           type: string
+          minLength: 8
+          maxLength: 32
+          pattern: >-
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
           description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
           example: NewP@ss123
         confirmPassword:
@@ -1087,6 +2551,9 @@ components:
         - currentPassword
         - newPassword
         - confirmPassword
+    ApiResponseTokenResponseDto:
+      type: object
+      properties: {}
     TokenResponseDto:
       type: object
       properties:
@@ -1120,11 +2587,15 @@ components:
           description: 사용자 아이디
         password:
           type: string
+          minLength: 8
           example: Password123!
           description: 사용자 비밀번호
       required:
         - id
         - password
+    ApiResponseLogoutResponseDto:
+      type: object
+      properties: {}
     LogoutResponseDto:
       type: object
       properties:
@@ -1166,12 +2637,12 @@ components:
       type: object
       properties:
         authType:
-          type: string
-          description: 인증 유형
           enum:
             - PHONE
             - EMAIL
             - COMPANY
+          type: string
+          description: 인증 유형
           example: EMAIL
         target:
           type: string
@@ -1185,10 +2656,13 @@ components:
       properties:
         verificationId:
           type: string
+          format: uuid
           description: 검증 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         code:
           type: string
+          minLength: 6
+          maxLength: 6
           description: 인증 코드 (6자리)
           example: '123456'
       required:
@@ -1222,11 +2696,11 @@ components:
       properties:
         authType:
           type: string
-          description: 인증 방식 ('EMAIL' 또는 'PHONE')
-          example: PHONE
           enum:
             - EMAIL
             - PHONE
+          description: 인증 방식 ('EMAIL' 또는 'PHONE')
+          example: PHONE
         target:
           type: string
           description: 인증 대상 (이메일 주소 또는 전화번호)
@@ -1237,6 +2711,8 @@ components:
           example: f47ac10b-58cc-4372-a567-0e02b2c3d479
         verificationCode:
           type: string
+          minLength: 6
+          maxLength: 6
           description: 인증 코드
           example: '123456'
       required:
@@ -1249,6 +2725,7 @@ components:
       properties:
         email:
           type: string
+          format: email
           description: 사용자 이메일
           example: user@example.com
         verificationId:
@@ -1257,10 +2734,16 @@ components:
           example: f47ac10b-58cc-4372-a567-0e02b2c3d479
         verificationCode:
           type: string
+          minLength: 6
+          maxLength: 6
           description: 인증 코드
           example: '123456'
         newPassword:
           type: string
+          minLength: 8
+          maxLength: 20
+          pattern: >-
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
           description: 새 비밀번호
           example: NewPassword123!
       required:
@@ -1272,6 +2755,7 @@ components:
       type: object
       properties:
         to:
+          format: email
           description: 수신자 이메일
           example: user@example.com
           oneOf:
@@ -1302,12 +2786,12 @@ components:
             authNumber: '123456'
         locale:
           type: string
+          default: ko
           description: 언어 설정
           example: ko
           enum:
             - ko
             - en
-          default: ko
         attachments:
           type: array
           description: 첨부 파일
@@ -1323,15 +2807,20 @@ components:
         - to
         - template
         - data
+    ApiResponseMailAuditResponseDto:
+      type: object
+      properties: {}
     MailAuditResponseDto:
       type: object
       properties:
         id:
           type: string
+          format: uuid
           description: 메일 감사 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         mailId:
           type: string
+          format: uuid
           description: 메일 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         template:
@@ -1347,15 +2836,16 @@ components:
           items:
             type: string
         status:
-          type: string
-          description: 메일 상태
           enum:
             - PENDING
             - SENT
             - FAILED
+          type: string
+          description: 메일 상태
           example: SENT
         sentAt:
-          type: object
+          type: string
+          nullable: true
           description: 발송 시간
           example: '2023-06-15T09:30:00.000Z'
         error:

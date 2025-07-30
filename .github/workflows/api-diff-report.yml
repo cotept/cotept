@@ -72,12 +72,24 @@ jobs:
           # 워크플로우 시작 시간
           WORKFLOW_START_TIME=$(date +%s)
           
-          # 결과 출력 (값들을 따옴표로 감싸서 안전하게 처리)
-          echo "api_version=\"$API_VERSION\"" >> $GITHUB_OUTPUT
-          echo "api_title=\"$API_TITLE\"" >> $GITHUB_OUTPUT
-          echo "current_time=\"$CURRENT_TIME\"" >> $GITHUB_OUTPUT
-          echo "short_sha=\"$SHORT_SHA\"" >> $GITHUB_OUTPUT
-          echo "workflow_start_time=\"$WORKFLOW_START_TIME\"" >> $GITHUB_OUTPUT
+          # 결과 출력 (멀티라인 방식으로 안전하게 처리)
+          {
+            echo "api_version<<EOF"
+            echo "$API_VERSION"
+            echo "EOF"
+            echo "api_title<<EOF"
+            echo "$API_TITLE"
+            echo "EOF"
+            echo "current_time<<EOF"
+            echo "$CURRENT_TIME"
+            echo "EOF"
+            echo "short_sha<<EOF"
+            echo "$SHORT_SHA"
+            echo "EOF"
+            echo "workflow_start_time<<EOF"
+            echo "$WORKFLOW_START_TIME"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       # 6. 변경사항이 있는지 확인하고 처리
       - name: Process API Changes

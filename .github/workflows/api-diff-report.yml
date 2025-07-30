@@ -54,8 +54,10 @@ jobs:
         run: |
           # API 버전 추출 (openapi-spec.yaml에서)
           if [ -f "packages/api-client/openapi-spec.yaml" ]; then
-            API_VERSION=$(grep -E "^\s*version:" packages/api-client/openapi-spec.yaml | sed 's/.*version:\s*//' | tr -d '"' || echo "unknown")
-            API_TITLE=$(grep -E "^\s*title:" packages/api-client/openapi-spec.yaml | sed 's/.*title:\s*//' | tr -d '"' || echo "CotePT API")
+            # info 섹션 아래의 version 추출 (앞에 공백 2개 있음)
+            API_VERSION=$(grep -E "^  version:" packages/api-client/openapi-spec.yaml | awk '{print $2}' | tr -d '"' | tr -d "'" || echo "unknown")
+            # info 섹션 아래의 title 추출 (앞에 공백 2개 있음)  
+            API_TITLE=$(grep -E "^  title:" packages/api-client/openapi-spec.yaml | awk -F': ' '{print $2}' | sed 's/^ *//' | tr -d '"' | tr -d "'" || echo "CotePT API")
           else
             API_VERSION="unknown"
             API_TITLE="CotePT API"

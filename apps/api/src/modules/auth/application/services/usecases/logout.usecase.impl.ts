@@ -3,7 +3,7 @@ import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecas
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
-import { InvalidTokenException } from "@/modules/auth/domain/model/auth-exception"
+import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 
 /**
@@ -25,12 +25,12 @@ export class LogoutUseCaseImpl implements LogoutUseCase {
     // 1. 액세스 토큰 검증
     const tokenPayload = this.tokenGenerator.verifyAccessToken(logoutDto.token)
     if (!tokenPayload) {
-      throw new InvalidTokenException("Invalid token")
+      throw new UnauthorizedException(AUTH_ERROR_MESSAGES.INVALID_TOKEN)
     }
 
     // 2. 토큰의 사용자 ID와 요청 사용자 ID 일치 확인
     if (tokenPayload.sub !== logoutDto.userId) {
-      throw new UnauthorizedException("Unauthorized")
+      throw new UnauthorizedException(AUTH_ERROR_MESSAGES.AUTHENTICATION_REQUIRED)
     }
 
     // 3. 토큰 블랙리스트에 추가

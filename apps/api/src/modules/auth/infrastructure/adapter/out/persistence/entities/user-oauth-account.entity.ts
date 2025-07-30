@@ -1,9 +1,10 @@
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
 import { OAuthProviderEntity } from "./oauth-provider.entity"
 
 @Entity("USER_OAUTH_ACCOUNTS")
-export class UserOAuthAccountEntity {
+export class UserOAuthAccountEntity extends BaseEntity<UserOAuthAccountEntity> {
   @PrimaryColumn({ name: "oauth_id", type: "varchar2", length: 36 })
   id: string
 
@@ -35,10 +36,4 @@ export class UserOAuthAccountEntity {
 
   @Column({ name: "profile_data", type: "clob", nullable: true })
   profileData: string | null
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true })
-  updatedAt: Date | null
 }

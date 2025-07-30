@@ -1,8 +1,9 @@
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
 
 @Entity("SESSION_LOGS")
-export class SessionLogEntity {
+export class SessionLogEntity extends BaseEntity<SessionLogEntity> {
   @PrimaryColumn({ name: "log_id", type: "varchar2", length: 36 })
   id: string
 
@@ -24,9 +25,6 @@ export class SessionLogEntity {
 
   @Column({ name: "expires_at", type: "timestamp" })
   expiresAt: Date
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
 
   @Column({ name: "ended_at", type: "timestamp", nullable: true })
   endedAt: Date | null

@@ -5,11 +5,11 @@ import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
-import { AuthenticationFailedException } from "@/modules/auth/domain/model/auth-exception"
+import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger } from "@nestjs/common"
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 import { v4 as uuidv4 } from "uuid"
 /**
  * 로그인 유스케이스 구현체
@@ -27,27 +27,27 @@ export class LoginUseCaseImpl implements LoginUseCase {
   ) {}
 
   /**
-   * 이메일과 비밀번호로 사용자를 인증하고 토큰 발급
-   * @param loginDto 로그인 정보(이메일, 비밀번호, IP, User-Agent)
+   * 아이디와 비밀번호로 사용자를 인증하고 토큰 발급
+   * @param loginDto 로그인 정보(아이디, 비밀번호, IP, User-Agent)
    * @returns 액세스 토큰과 리프레시 토큰 쌍
    */
   async execute(loginDto: LoginDto): Promise<TokenPair> {
     try {
       // 1. 사용자 인증
-      const user = await this.authUserRepository.findByEmail(loginDto.email)
+      const user = await this.authUserRepository.findById(loginDto.id)
       if (!user) {
-        throw new AuthenticationFailedException("Invalid email or password")
+        throw new UnauthorizedException(AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS)
       }
 
       // 2. 비밀번호 검증
       const isValid = await this.passwordHasher.verify(loginDto.password, user.getPasswordHash())
       if (!isValid) {
-        throw new AuthenticationFailedException("Invalid email or password")
+        throw new UnauthorizedException(AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS)
       }
 
       // 3. 계정 상태 확인
       if (!user.canLogin()) {
-        throw new AuthenticationFailedException("Account is not active")
+        throw new UnauthorizedException(AUTH_ERROR_MESSAGES.ACCOUNT_NOT_ACTIVE)
       }
 
       // 4. 토큰 생성

@@ -1,25 +1,27 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm"
 
 import {
   BaekjoonProfileVerificationStatus,
   BaekjoonProfileVerificationStatusType,
 } from "@/modules/baekjoon/domain/vo/baekjoon-profile-verification-status.vo"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
 import { booleanTransformer } from "@/shared/utils/database.util"
 
 // UserBaekjoonProfile 엔티티 (수정된 버전)
 @Entity("BAEKJOON_PROFILE")
-export class BaekjoonProfileEntity {
-  @PrimaryGeneratedColumn()
-  idx: number
+export class BaekjoonProfileEntity extends BaseEntity<BaekjoonProfileEntity> {
+  @PrimaryGeneratedColumn("uuid")
+  id: string
+  
+  @Column({ name: "idx", type: "number", nullable: true })
+  idx?: number
 
   @OneToOne(() => UserEntity, (user) => user.baekjoonProfile)
   @JoinColumn({ name: "user_id" })
@@ -56,10 +58,4 @@ export class BaekjoonProfileEntity {
 
   @Column({ name: "last_synced_at", type: "timestamp", nullable: true })
   lastSyncedAt?: Date
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
-  updatedAt: Date
 }

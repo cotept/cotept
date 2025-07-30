@@ -168,7 +168,7 @@ describe("타입ORM 사용자 리포지토리", () => {
     })
   })
 
-  describe("findAll 메소드", () => {
+  describe("findAllUsers 메소드", () => {
     it("필터링 및 페이지네이션을 적용하여 모든 사용자를 조회해야 한다", async () => {
       // Given
       const page = 2
@@ -223,7 +223,7 @@ describe("타입ORM 사용자 리포지토리", () => {
       mockUserMapper.toDomainList.mockReturnValue(domainUsers)
 
       // When
-      const result = await repository.findAll({ page, limit, role, status })
+      const result = await repository.findAllUsers({ page, limit, role, status })
 
       // Then
       expect(mockUserRepository.findAndCount).toHaveBeenCalledWith({
@@ -251,7 +251,7 @@ describe("타입ORM 사용자 리포지토리", () => {
       mockUserMapper.toDomainList.mockReturnValue([])
 
       // When
-      const result = await repository.findAll()
+      const result = await repository.findAllUsers()
 
       // Then
       expect(mockUserRepository.findAndCount).toHaveBeenCalledWith({

@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config"
 
 // 매퍼
 import { UserMapper } from "./application/mappers/user.mapper"
+import { UserResponseMapper } from "./application/mappers/user-response.mapper"
 // 포트
 import { ChangePasswordUseCase } from "./application/ports/in/change-password.usecase"
 import { CreateUserUseCase } from "./application/ports/in/create-user.usecase"
@@ -46,6 +47,7 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
     UserMapper,
     UserPersistenceMapper,
     UserRequestMapper,
+    UserResponseMapper,
 
     // 파사드 서비스
     UserFacadeService,

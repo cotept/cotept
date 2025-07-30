@@ -22,7 +22,7 @@
     "infra:up:arm64": "docker-compose -f docker-compose.yml -f docker-compose.arm64.yml --env-file ./apps/api/.env --env-file ./apps/api/.env.local --env-file ./apps/api/.env.arm64 up -d",
     "infra:down:arm64": "docker-compose -f docker-compose.yml -f docker-compose.arm64.yml --env-file ./apps/api/.env --env-file ./apps/api/.env.local --env-file ./apps/api/.env.arm64 down -v",
     "infra:logs:arm64": "docker-compose -f docker-compose.yml -f docker-compose.arm64.yml --env-file ./apps/api/.env --env-file ./apps/api/.env.local --env-file ./apps/api/.env.arm64 logs -f",
-    "openapi:export": "cd apps/api && cross-env NODE_ENV=local EXPORT_OPENAPI=true nest start",
+    "openapi:export": "cd apps/api && cross-env NODE_ENV=local EXPORT_OPENAPI=true pnpm nest start",
     "openapi:generate": "cd packages/api-client && pnpm generate",
     "gen:api": "pnpm openapi:export && pnpm openapi:generate"
   },

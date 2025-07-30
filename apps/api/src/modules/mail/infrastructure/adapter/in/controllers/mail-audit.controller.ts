@@ -1,49 +1,46 @@
-import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
-import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
 import { Controller, Get, Logger, Param, Query, UseGuards } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 
-@ApiTags("메일 감사")
+import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
+import { MailAuditFacadeService } from "@/modules/mail/application/services/facade/mail-audit-facade.service"
+import { GetMailAuditByIdRequestDto, GetMailAuditRequestDto } from "@/modules/mail/infrastructure/dtos/request"
+import { MailAuditResponseDto } from "@/modules/mail/infrastructure/dtos/response"
+import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
+
+@ApiTags("MailAudit")
 @Controller("mail-audit")
 export class MailAuditController {
   private readonly logger = new Logger(MailAuditController.name)
 
-  constructor(private readonly getMailAuditUseCase: GetMailAuditUseCase) {}
+  constructor(private readonly mailAuditFacadeService: MailAuditFacadeService) {}
 
   @Get(":id")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "메일 감사 조회 (ID)" })
-  async getMailAuditById(@Param("id") id: string) {
+  @ApiOkResponseWrapper(MailAuditResponseDto, "메일 감사 조회 성공")
+  async getMailAuditById(@Param("id") id: string): Promise<MailAuditResponseDto | null> {
     this.logger.log(`Querying mail audit by ID: ${id}`)
-    const mailAudit = await this.getMailAuditUseCase.getById(id)
-    return mailAudit ? mailAudit.toData() : null
+    const request = new GetMailAuditByIdRequestDto()
+    request.id = id
+    return await this.mailAuditFacadeService.getMailAuditById(request)
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "메일 감사 조회 (검색)" })
+  @ApiOkResponseWrapper(MailAuditResponseDto, "메일 감사 검색 성공")
   async searchMailAudit(
     @Query("mailId") mailId?: string,
     @Query("recipient") recipient?: string,
     @Query("template") template?: string,
-  ) {
+  ): Promise<MailAuditResponseDto[]> {
     this.logger.log(`Searching mail audits with filters: ${JSON.stringify({ mailId, recipient, template })}`)
 
-    if (mailId) {
-      const audits = await this.getMailAuditUseCase.getByMailId(mailId)
-      return audits.map((audit) => audit.toData())
-    }
+    const request = new GetMailAuditRequestDto()
+    request.mailId = mailId
+    request.recipient = recipient
+    request.template = template
 
-    if (recipient) {
-      const audits = await this.getMailAuditUseCase.getByRecipient(recipient)
-      return audits.map((audit) => audit.toData())
-    }
-
-    if (template) {
-      const audits = await this.getMailAuditUseCase.getByTemplate(template)
-      return audits.map((audit) => audit.toData())
-    }
-
-    return []
+    return await this.mailAuditFacadeService.searchMailAudit(request)
   }
 }

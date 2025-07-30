@@ -1,21 +1,30 @@
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+
+import { EntityManager, Repository } from "typeorm"
+
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
 import { AuthType, AuthVerification } from "@/modules/auth/domain/model/auth-verification"
 import { AuthVerificationEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/auth-verification.entity"
 import { AuthVerificationPersistenceMapper } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers/auth-verification-persistence.mapper"
-import { Injectable } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
+import { BaseRepository } from "@/shared/infrastructure/persistence/typeorm/repositories/base/base.repository"
 
 /**
  * TypeORM을 사용한 인증 검증 레포지토리 구현
  */
 @Injectable()
-export class TypeOrmAuthVerificationRepository implements AuthVerificationRepositoryPort {
+export class TypeOrmAuthVerificationRepository
+  extends BaseRepository<AuthVerificationEntity>
+  implements AuthVerificationRepositoryPort
+{
   constructor(
     @InjectRepository(AuthVerificationEntity)
-    private readonly authVerificationRepository: Repository<AuthVerificationEntity>,
+    authVerificationRepository: Repository<AuthVerificationEntity>,
+    entityManager: EntityManager,
     private readonly authVerificationMapper: AuthVerificationPersistenceMapper,
-  ) {}
+  ) {
+    super(authVerificationRepository, entityManager, "AuthVerification")
+  }
 
   /**
    * 인증 검증 저장
@@ -24,7 +33,7 @@ export class TypeOrmAuthVerificationRepository implements AuthVerificationReposi
    */
   async save(verification: AuthVerification): Promise<AuthVerification> {
     const entity = this.authVerificationMapper.toEntity(verification)
-    const savedEntity = await this.authVerificationRepository.save(entity)
+    const savedEntity = await this.create(entity)
     return this.authVerificationMapper.toDomain(savedEntity)
   }
 
@@ -34,9 +43,12 @@ export class TypeOrmAuthVerificationRepository implements AuthVerificationReposi
    * @returns 인증 검증 도메인 엔티티 또는 null
    */
   async findById(id: string): Promise<AuthVerification | null> {
-    const entity = await this.authVerificationRepository.findOne({ where: { id } })
-    if (!entity) return null
-    return this.authVerificationMapper.toDomain(entity)
+    try {
+      const entity = await this.findOne({ id })
+      return this.authVerificationMapper.toDomain(entity)
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -46,7 +58,7 @@ export class TypeOrmAuthVerificationRepository implements AuthVerificationReposi
    * @returns 인증 검증 도메인 엔티티 또는 null
    */
   async findLatestByTypeAndTarget(authType: AuthType, target: string): Promise<AuthVerification | null> {
-    const entity = await this.authVerificationRepository.findOne({
+    const entity = await this.entityRepository.findOne({
       where: { authType, target },
       order: { createdAt: "DESC" },
     })
@@ -60,7 +72,7 @@ export class TypeOrmAuthVerificationRepository implements AuthVerificationReposi
    * @returns 인증 검증 도메인 엔티티 목록
    */
   async findAllByUserId(userId: string): Promise<AuthVerification[]> {
-    const entities = await this.authVerificationRepository.find({
+    const entities = await this.entityRepository.find({
       where: { userId },
       order: { createdAt: "DESC" },
     })

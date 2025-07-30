@@ -1,4 +1,8 @@
 openapi: 3.0.0
+info:
+  title: CotePT API
+  description: API for CotePT mentoring platform
+  version: 1.0.0
 paths:
   /:
     get:

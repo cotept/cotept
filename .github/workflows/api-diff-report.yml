@@ -169,14 +169,23 @@ jobs:
             echo "EOF"
           } >> $GITHUB_OUTPUT
 
-      # 8. 간단한 Slack 알림 전송
-      - name: Send Simple Slack Notification
+      # 8. 안전한 Slack 알림 전송
+      - name: Send Safe Slack Notification
         if: steps.analysis.outputs.has_changes == 'true'
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "text": "API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}\n\n감지 시간: ${{ steps.metadata.outputs.current_time }}\n작성자: @${{ github.event.pull_request.user.login }}\n커밋: ${{ steps.metadata.outputs.short_sha }}\n브랜치: ${{ github.head_ref }} -> ${{ github.base_ref }}\n\nPR: ${{ github.event.pull_request.html_url }}\n\noasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요."
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}
+        run: |
+          # 안전한 메시지 생성
+          MESSAGE="API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}
+
+          변경 시간: ${{ steps.metadata.outputs.current_time }}
+          작성자: @${{ github.event.pull_request.user.login }}
+          커밋: ${{ steps.metadata.outputs.short_sha }}
+          브랜치: ${{ github.head_ref }} -> ${{ github.base_ref }}
+
+          PR: ${{ github.event.pull_request.html_url }}
+
+          oasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요."
+
+          # curl로 직접 전송
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$MESSAGE\"}" \
+            "${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}"

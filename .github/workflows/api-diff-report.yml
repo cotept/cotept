@@ -117,7 +117,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "${{ steps.analysis.outputs.slack_message }}",
+              "text": "🚀 API 변경사항 감지",
               "blocks": [
                 {
                   "type": "section",

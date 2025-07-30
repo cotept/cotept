@@ -153,109 +153,30 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.analysis.outputs.pr_comment }}
 
-      # 7. 실행 시간 계산 및 Slack 페이로드 생성
-      - name: Generate Slack Payload
+      # 7. 실행 시간 계산
+      - name: Calculate Workflow Duration
         if: steps.analysis.outputs.has_changes == 'true'
-        id: slack_payload
+        id: timing
         run: |
           # 실행 시간 계산
           WORKFLOW_END_TIME=$(date +%s)
           WORKFLOW_DURATION=$((WORKFLOW_END_TIME - ${{ steps.metadata.outputs.workflow_start_time }}))
           
-          # 워크플로우 URL 생성
-          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
-          # Slack 페이로드 생성 (이모지 제거하고 간단하게)
-          cat > slack_payload.json << EOF
+          # 결과 출력
           {
-            "text": "API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}",
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": "API 스펙 변경 알림"
-                }
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*감지 시간:*\\n${{ steps.metadata.outputs.current_time }}"
-                  },
-                  {
-                    "type": "mrkdwn", 
-                    "text": "*API 버전:*\\nv${{ steps.metadata.outputs.api_version }}"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*작성자:*\\n@${{ github.event.pull_request.user.login }}"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*커밋:*\\n${{ steps.metadata.outputs.short_sha }}"
-                  }
-                ]
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*브랜치:*\\n${{ github.head_ref }} -> ${{ github.base_ref }}"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*변경 통계:*\\n+${{ github.event.pull_request.additions }}/-${{ github.event.pull_request.deletions }} lines"
-                  },
-                  {
-                    "type": "mrkdwn", 
-                    "text": "*분석 시간:*\\n${WORKFLOW_DURATION}초"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*실행 번호:*\\n#${{ github.run_number }}"
-                  }
-                ]
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*oasdiff 분석이 완료되었습니다*\\n상세한 변경사항은 PR 코멘트에서 확인하세요."
-                }
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "PR 보기"
-                    },
-                    "url": "${{ github.event.pull_request.html_url }}"
-                  },
-                  {
-                    "type": "button", 
-                    "text": {
-                      "type": "plain_text",
-                      "text": "워크플로우 로그"
-                    },
-                    "url": "${WORKFLOW_URL}"
-                  }
-                ]
-              }
-            ]
-          }
-          EOF
+            echo "workflow_duration<<EOF"
+            echo "${WORKFLOW_DURATION}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
-      # 8. 향상된 Slack 알림 전송
-      - name: Send Enhanced Slack Notification
+      # 8. 간단한 Slack 알림 전송
+      - name: Send Simple Slack Notification
         if: steps.analysis.outputs.has_changes == 'true'
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          payload-file-path: ./slack_payload.json
+          payload: |
+            {
+              "text": "API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}\n\n감지 시간: ${{ steps.metadata.outputs.current_time }}\n작성자: @${{ github.event.pull_request.user.login }}\n커밋: ${{ steps.metadata.outputs.short_sha }}\n브랜치: ${{ github.head_ref }} -> ${{ github.base_ref }}\n\nPR: ${{ github.event.pull_request.html_url }}\n\noasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요."
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}

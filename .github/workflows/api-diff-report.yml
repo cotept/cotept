@@ -106,20 +106,20 @@ jobs:
 
           echo "has_changes=true" >> $GITHUB_OUTPUT
 
-          # PR 코멘트 생성
-          PR_COMMENT=$(cat <<'EOL'
-          ## 📊 API 변경사항 요약
+          # PR 코멘트 생성 (변수 치환 가능하도록 따옴표 제거)
+          PR_COMMENT=$(cat <<EOL
+          ## API 변경사항 요약
 
-          ### 🔗 관련 PR
+          ### 관련 PR
           - **PR**: #${{ github.event.pull_request.number }}
-          - **브랜치**: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+          - **브랜치**: ${{ github.head_ref }} → ${{ github.base_ref }}
           - **작성자**: @${{ github.event.pull_request.user.login }}
 
-          ### 📋 변경 내용
+          ### 변경 내용
           $DIFF_CONTENT
 
           ---
-          *🤖 자동 생성된 API 변경 리포트*
+          *자동 생성된 API 변경 리포트*
           EOL
           )
 
@@ -169,23 +169,21 @@ jobs:
             echo "EOF"
           } >> $GITHUB_OUTPUT
 
-      # 8. 안전한 Slack 알림 전송
-      - name: Send Safe Slack Notification
+      # 8. 구조화된 Slack 알림 전송
+      - name: Send Structured Slack Notification
         if: steps.analysis.outputs.has_changes == 'true'
-        run: |
-          # 안전한 메시지 생성
-          MESSAGE="API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}
-
-          변경 시간: ${{ steps.metadata.outputs.current_time }}
-          작성자: @${{ github.event.pull_request.user.login }}
-          커밋: ${{ steps.metadata.outputs.short_sha }}
-          브랜치: ${{ github.head_ref }} -> ${{ github.base_ref }}
-
-          PR: ${{ github.event.pull_request.html_url }}
-
-          oasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요."
-
-          # curl로 직접 전송
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"$MESSAGE\"}" \
-            "${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}"
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: api-changes
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: API 스펙 변경 알림
+          SLACK_MESSAGE: |
+            *변경 시간:* ${{ steps.metadata.outputs.current_time }}
+            *API 버전:* v${{ steps.metadata.outputs.api_version }}
+            *작성자:* ${{ github.event.pull_request.user.login }}
+            *커밋:* ${{ steps.metadata.outputs.short_sha }}
+            *브랜치:* ${{ github.head_ref }} -> ${{ github.base_ref }}
+            
+            oasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요.
+          SLACK_FOOTER: CotePT API 자동화 시스템
+          SLACK_WEBHOOK: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}

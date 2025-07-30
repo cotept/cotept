@@ -1,0 +1,140 @@
+name: API Diff Report
+
+on:
+  pull_request:
+    paths:
+      - "packages/api-client/openapi-spec.yaml"
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Head 브랜치(PR 브랜치)의 코드를 checkout
+      - name: Checkout Head Branch
+        uses: actions/checkout@v4
+
+      # 2. Base 브랜치(e.g., main)의 코드를 별도 디렉토리에 checkout
+      - name: Checkout Base Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      # 3. oasdiff 설치
+      - name: Install oasdiff
+        run: go install github.com/tufin/oasdiff@latest
+
+      # 4. oasdiff 실행하여 변경점 추출 (Markdown 포맷)
+      - name: Run oasdiff
+        id: diff
+        run: |
+          OAS_BASE_PATH="base/packages/api-client/openapi-spec.yaml"
+          OAS_HEAD_PATH="packages/api-client/openapi-spec.yaml"
+
+          # Base 파일이 존재하지 않는 경우 (새로운 파일)
+          if [ ! -f "$OAS_BASE_PATH" ]; then
+            echo "diff_markdown<<EOF" >> $GITHUB_OUTPUT
+            echo "## 🆕 새로운 OpenAPI 스펙 파일이 추가되었습니다!" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # oasdiff 실행
+            DIFF_OUTPUT=$(oasdiff -base "$OAS_BASE_PATH" -revision "$OAS_HEAD_PATH" -format markdown 2>/dev/null || echo "변경사항을 분석할 수 없습니다.")
+            echo "diff_markdown<<EOF" >> $GITHUB_OUTPUT
+            echo "$DIFF_OUTPUT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      # 5. 변경사항이 있는지 확인하고 처리
+      - name: Process API Changes
+        id: analysis
+        run: |
+          DIFF_CONTENT="${{ steps.diff.outputs.diff_markdown }}"
+
+          # 변경사항이 비어있거나 "No changes" 포함 시 스킵
+          if [ -z "$DIFF_CONTENT" ] || [[ "$DIFF_CONTENT" == *"No changes"* ]]; then
+            echo "변경사항이 없습니다."
+            echo "has_changes=false" >> $GITHUB_OUTPUT  
+            exit 0
+          fi
+
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+
+          # PR 코멘트 생성
+          PR_COMMENT=$(cat <<'EOL'
+          ## 📊 API 변경사항 요약
+
+          ### 🔗 관련 PR
+          - **PR**: #${{ github.event.pull_request.number }}
+          - **브랜치**: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+          - **작성자**: @${{ github.event.pull_request.user.login }}
+
+          ### 📋 변경 내용
+          $DIFF_CONTENT
+
+          ---
+          *🤖 자동 생성된 API 변경 리포트*
+          EOL
+          )
+
+          # Slack 메시지 생성  
+          SLACK_MESSAGE=$(cat <<'EOL'
+          🚀 *API 변경사항 감지*
+
+          *PR*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>
+          *브랜치*: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+          *작성자*: ${{ github.event.pull_request.user.login }}
+
+          변경사항을 확인해주세요! 👆
+          EOL
+          )
+
+          # 출력 설정
+          echo "pr_comment<<EOF" >> $GITHUB_OUTPUT
+          echo "$PR_COMMENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "slack_message<<EOF" >> $GITHUB_OUTPUT
+          echo "$SLACK_MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # 6. GitHub PR에 분석 결과 코멘트 작성 (변경사항이 있을 때만)
+      - name: Create or Update PR Comment
+        if: steps.analysis.outputs.has_changes == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.analysis.outputs.pr_comment }}
+
+      # 7. Slack 채널로 알림 전송 (변경사항이 있을 때만)
+      - name: Send Slack Notification
+        if: steps.analysis.outputs.has_changes == 'true'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "${{ steps.analysis.outputs.slack_message }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "📝 *API 변경사항 알림*\n\n<${{ github.event.pull_request.html_url }}|PR #${{ github.event.pull_request.number }}>에서 OpenAPI 명세 변경이 감지되었습니다.\n\n*브랜치*: `${{ github.head_ref }}` → `${{ github.base_ref }}`\n*작성자*: ${{ github.event.pull_request.user.login }}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "PR 확인하기"
+                      },
+                      "url": "${{ github.event.pull_request.html_url }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}

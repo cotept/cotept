@@ -165,16 +165,16 @@ jobs:
           # 워크플로우 URL 생성
           WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
-          # Slack 페이로드 생성
-          cat > slack_payload.json << 'EOF'
+          # Slack 페이로드 생성 (이모지 제거하고 간단하게)
+          cat > slack_payload.json << EOF
           {
-            "text": "🚀 ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }} 변경사항 감지",
+            "text": "API 변경사항 감지: ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }}",
             "blocks": [
               {
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "📊 API 스펙 변경 알림"
+                  "text": "API 스펙 변경 알림"
                 }
               },
               {
@@ -182,19 +182,19 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*📅 감지 시간:*\n${{ steps.metadata.outputs.current_time }}"
+                    "text": "*감지 시간:*\\n${{ steps.metadata.outputs.current_time }}"
                   },
                   {
                     "type": "mrkdwn", 
-                    "text": "*📋 API 버전:*\nv${{ steps.metadata.outputs.api_version }}"
+                    "text": "*API 버전:*\\nv${{ steps.metadata.outputs.api_version }}"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*👤 작성자:*\n@${{ github.event.pull_request.user.login }}"
+                    "text": "*작성자:*\\n@${{ github.event.pull_request.user.login }}"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*🔗 커밋:*\n`${{ steps.metadata.outputs.short_sha }}`"
+                    "text": "*커밋:*\\n${{ steps.metadata.outputs.short_sha }}"
                   }
                 ]
               },
@@ -203,19 +203,19 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*🏷️ 브랜치:*\n`${{ github.head_ref }}` → `${{ github.base_ref }}`"
+                    "text": "*브랜치:*\\n${{ github.head_ref }} -> ${{ github.base_ref }}"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*📈 변경 통계:*\n+${{ github.event.pull_request.additions }}/-${{ github.event.pull_request.deletions }} lines"
+                    "text": "*변경 통계:*\\n+${{ github.event.pull_request.additions }}/-${{ github.event.pull_request.deletions }} lines"
                   },
                   {
                     "type": "mrkdwn", 
-                    "text": "*⏱️ 분석 시간:*\n${WORKFLOW_DURATION}초"
+                    "text": "*분석 시간:*\\n${WORKFLOW_DURATION}초"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*🔄 실행 번호:*\n#${{ github.run_number }}"
+                    "text": "*실행 번호:*\\n#${{ github.run_number }}"
                   }
                 ]
               },
@@ -223,7 +223,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "🤖 *oasdiff 분석이 완료되었습니다*\n📝 상세한 변경사항은 PR 코멘트에서 확인하세요."
+                  "text": "*oasdiff 분석이 완료되었습니다*\\n상세한 변경사항은 PR 코멘트에서 확인하세요."
                 }
               },
               {
@@ -233,7 +233,7 @@ jobs:
                     "type": "button",
                     "text": {
                       "type": "plain_text",
-                      "text": "📋 PR 보기"
+                      "text": "PR 보기"
                     },
                     "url": "${{ github.event.pull_request.html_url }}"
                   },
@@ -241,7 +241,7 @@ jobs:
                     "type": "button", 
                     "text": {
                       "type": "plain_text",
-                      "text": "🔍 워크플로우 로그"
+                      "text": "워크플로우 로그"
                     },
                     "url": "${WORKFLOW_URL}"
                   }

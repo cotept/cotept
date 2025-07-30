@@ -48,7 +48,36 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
 
-      # 5. 변경사항이 있는지 확인하고 처리
+      # 5. 메타데이터 수집
+      - name: Collect Metadata
+        id: metadata
+        run: |
+          # API 버전 추출 (openapi-spec.yaml에서)
+          if [ -f "packages/api-client/openapi-spec.yaml" ]; then
+            API_VERSION=$(grep -E "^\s*version:" packages/api-client/openapi-spec.yaml | sed 's/.*version:\s*//' | tr -d '"' || echo "unknown")
+            API_TITLE=$(grep -E "^\s*title:" packages/api-client/openapi-spec.yaml | sed 's/.*title:\s*//' | tr -d '"' || echo "CotePT API")
+          else
+            API_VERSION="unknown"
+            API_TITLE="CotePT API"
+          fi
+          
+          # 시간 정보 (KST)
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # 커밋 정보
+          SHORT_SHA=${GITHUB_SHA:0:7}
+          
+          # 워크플로우 시작 시간
+          WORKFLOW_START_TIME=$(date +%s)
+          
+          # 결과 출력
+          echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+          echo "api_title=$API_TITLE" >> $GITHUB_OUTPUT
+          echo "current_time=$CURRENT_TIME" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "workflow_start_time=$WORKFLOW_START_TIME" >> $GITHUB_OUTPUT
+
+      # 6. 변경사항이 있는지 확인하고 처리
       - name: Process API Changes
         id: analysis
         run: |
@@ -110,36 +139,109 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.analysis.outputs.pr_comment }}
 
-      # 7. Slack 채널로 알림 전송 (변경사항이 있을 때만)
-      - name: Send Slack Notification
+      # 7. 실행 시간 계산 및 Slack 페이로드 생성
+      - name: Generate Slack Payload
+        if: steps.analysis.outputs.has_changes == 'true'
+        id: slack_payload
+        run: |
+          # 실행 시간 계산
+          WORKFLOW_END_TIME=$(date +%s)
+          WORKFLOW_DURATION=$((WORKFLOW_END_TIME - ${{ steps.metadata.outputs.workflow_start_time }}))
+          
+          # 워크플로우 URL 생성
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          # Slack 페이로드 생성
+          cat > slack_payload.json << 'EOF'
+          {
+            "text": "🚀 ${{ steps.metadata.outputs.api_title }} v${{ steps.metadata.outputs.api_version }} 변경사항 감지",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "📊 API 스펙 변경 알림"
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*📅 감지 시간:*\n${{ steps.metadata.outputs.current_time }}"
+                  },
+                  {
+                    "type": "mrkdwn", 
+                    "text": "*📋 API 버전:*\nv${{ steps.metadata.outputs.api_version }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*👤 작성자:*\n@${{ github.event.pull_request.user.login }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*🔗 커밋:*\n`${{ steps.metadata.outputs.short_sha }}`"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*🏷️ 브랜치:*\n`${{ github.head_ref }}` → `${{ github.base_ref }}`"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*📈 변경 통계:*\n+${{ github.event.pull_request.additions }}/-${{ github.event.pull_request.deletions }} lines"
+                  },
+                  {
+                    "type": "mrkdwn", 
+                    "text": "*⏱️ 분석 시간:*\n${WORKFLOW_DURATION}초"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*🔄 실행 번호:*\n#${{ github.run_number }}"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "🤖 *oasdiff 분석이 완료되었습니다*\n📝 상세한 변경사항은 PR 코멘트에서 확인하세요."
+                }
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "📋 PR 보기"
+                    },
+                    "url": "${{ github.event.pull_request.html_url }}"
+                  },
+                  {
+                    "type": "button", 
+                    "text": {
+                      "type": "plain_text",
+                      "text": "🔍 워크플로우 로그"
+                    },
+                    "url": "${WORKFLOW_URL}"
+                  }
+                ]
+              }
+            ]
+          }
+          EOF
+
+      # 8. 향상된 Slack 알림 전송
+      - name: Send Enhanced Slack Notification
         if: steps.analysis.outputs.has_changes == 'true'
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          payload: |
-            {
-              "text": "🚀 API 변경사항 감지",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "📝 *API 변경사항 알림*\n\n<${{ github.event.pull_request.html_url }}|PR #${{ github.event.pull_request.number }}>에서 OpenAPI 명세 변경이 감지되었습니다.\n\n*브랜치*: `${{ github.head_ref }}` → `${{ github.base_ref }}`\n*작성자*: ${{ github.event.pull_request.user.login }}"
-                  }
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "PR 확인하기"
-                      },
-                      "url": "${{ github.event.pull_request.html_url }}"
-                    }
-                  ]
-                }
-              ]
-            }
+          payload-file-path: ./slack_payload.json
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}

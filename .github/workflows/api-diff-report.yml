@@ -22,7 +22,7 @@ jobs:
 
       # 3. oasdiff 설치
       - name: Install oasdiff
-        run: go install github.com/tufin/oasdiff@latest
+        run: go install github.com/oasdiff/oasdiff@latest
 
       # 4. oasdiff 실행하여 변경점 추출 (Markdown 포맷)
       - name: Run oasdiff

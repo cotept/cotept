@@ -20,6 +20,7 @@ tsconfig.esm.json
 tsconfig.json
 types/change-password-request-dto.ts
 types/confirm-social-link-request-dto.ts
+types/create-user-request-dto.ts
 types/delete-user-request-dto.ts
 types/empty-wrapper.ts
 types/exchange-auth-code-request-dto.ts

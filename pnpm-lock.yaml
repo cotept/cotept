@@ -289,6 +289,9 @@ importers:
       '@lukemorales/query-key-factory':
         specifier: ^1.3.4
         version: 1.3.4(@tanstack/query-core@5.80.7)(@tanstack/react-query@5.80.7)
+      '@repo/api-client':
+        specifier: workspace:^
+        version: link:../../packages/api-client
       '@repo/shared':
         specifier: workspace:*
         version: link:../../packages/shared

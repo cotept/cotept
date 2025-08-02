@@ -125,6 +125,11 @@ class ApiClient {
     this.abortController = new AbortController()
   }
 
+  // OpenAPI 클라이언트를 위한 axios 인스턴스 접근자
+  get axiosInstance(): AxiosInstance {
+    return this.instance
+  }
+
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const res = await this.instance.get(url, config)
     return res.data

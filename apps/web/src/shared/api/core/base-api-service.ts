@@ -2,7 +2,10 @@ import { compile } from "path-to-regexp"
 
 import { apiClient } from "./axios"
 import { ApiResponse, DeleteRequest, GetRequest, PaginatedResponse, PostRequest, PutRequest } from "./types"
-
+/**
+ * @deprecated
+ * 이 파일은 더 이상 사용되지 않습니다. 새로운 API 서비스는 `apps/web/src/shared/api/service/user-api-service.ts`를 참조하세요.
+ */
 export abstract class BaseApiService {
   protected basePath: string
 

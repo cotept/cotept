@@ -1,8 +1,4 @@
 openapi: 3.0.0
-info:
-  title: CotePT API
-  description: API for CotePT mentoring platform
-  version: 1.0.0
 paths:
   /:
     get:
@@ -487,6 +483,12 @@ paths:
       description: 새로운 사용자를 생성합니다.
       operationId: createUser
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequestDto'
       responses:
         '200':
           description: 성공적으로 사용자를 생성함
@@ -2457,6 +2459,45 @@ components:
     ApiResponseUserResponseDto:
       type: object
       properties: {}
+    CreateUserRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: 사용자 이메일
+          example: user@example.com
+        password:
+          type: string
+          minLength: 8
+          maxLength: 32
+          pattern: >-
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
+          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          example: StrongP@ss123
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: /^[가-힣a-zA-Z\s]+$/
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
+          example: 홍길동
+        phoneNumber:
+          type: string
+          pattern: /^01[0-9]{8,9}$/
+          description: 전화번호 (- 없이 숫자만)
+          example: '01012345678'
+        role:
+          type: string
+          default: MENTEE
+          description: '사용자 역할 (기본값: MENTEE)'
+          enum:
+            - MENTEE
+            - MENTOR
+          example: MENTEE
+      required:
+        - email
+        - password
     UpdateUserRequestDto:
       type: object
       properties:

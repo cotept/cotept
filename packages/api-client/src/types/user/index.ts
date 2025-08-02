@@ -1,5 +1,6 @@
 // User Domain Types
 export * from './change-password-request-dto';
+export * from './create-user-request-dto';
 export * from './delete-user-request-dto';
 export * from './get-all-users400-response';
 export * from './get-all-users401-response';

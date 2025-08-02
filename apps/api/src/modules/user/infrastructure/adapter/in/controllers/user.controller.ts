@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -14,20 +13,14 @@ import {
   UseGuards,
 } from "@nestjs/common"
 import {
-  ApiBadRequestResponse,
-  ApiConflictResponse,
   ApiForbiddenResponse,
-  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
-  ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger"
-import { ApiStandardErrors, ApiAuthRequiredErrors, ApiUserCrudErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
-import { PreventAdminRole } from "@/shared/infrastructure/decorators/prevent-admin-role.decorator"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
@@ -45,6 +38,7 @@ import {
   UserResponseDto,
 } from "@/modules/user/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
+import { ApiAuthRequiredErrors, ApiStandardErrors, ApiUserCrudErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 @ApiTags("User")
 @Controller("users")
@@ -97,7 +91,8 @@ export class UserController {
   @ApiOkResponseWrapper(UserResponseDto, "성공적으로 사용자를 생성함")
   @ApiStandardErrors()
   @ApiUserCrudErrors()
-  async createUser(@PreventAdminRole() createUserRequestDto: CreateUserRequestDto): Promise<UserResponseDto> {
+  // async createUser(@PreventAdminRole() createUserRequestDto: CreateUserRequestDto): Promise<UserResponseDto> {
+  async createUser(@Body() createUserRequestDto: CreateUserRequestDto): Promise<UserResponseDto> {
     const createUserDto = this.requestMapper.toCreateUserDto(createUserRequestDto)
     return this.userFacadeService.createUser(createUserDto)
   }

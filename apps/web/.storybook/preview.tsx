@@ -1,5 +1,6 @@
+import "@repo/shared/globals.css" // 전역 스타일 import
+
 import type { Preview } from "@storybook/react"
-import "@/app/app.css" // 전역 스타일 import
 
 const preview: Preview = {
   parameters: {

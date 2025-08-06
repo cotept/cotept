@@ -4,11 +4,11 @@ import { z } from "zod"
 
 import type { Provider } from "next-auth/providers"
 
+import { authApiService } from "@/shared/api/services/auth-api-service"
 import { AuthErrorHandler } from "@/shared/auth/errors/handler"
-import authApi from "@/shared/auth/services/auth-api"
 
 const signInSchema = z.object({
-  email: z.string({ required_error: "Email is required" }).min(1, "Email is required").email("Invalid email"),
+  id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
   password: z
     .string({ required_error: "Password is required" })
     .min(1, "Password is required")
@@ -20,22 +20,26 @@ export const credentialsProvider: Provider = CredentialsProvider({
   id: "credentials",
   name: "credentials",
   credentials: {
-    email: { label: "Email", type: "email" },
+    id: { label: "ID", type: "text" },
     password: { label: "Password", type: "password" },
   },
   authorize: async (credentials) => {
     try {
-      const { email, password } = signInSchema.parse(credentials)
+      const { id, password } = signInSchema.parse(credentials)
 
-      const response = await authApi.login({ email, password })
+      const response = await authApiService.login({ 
+        loginRequestDto: { id, password } 
+      })
 
-      if (response.success && response.data?.accessToken) {
+      if (response.data?.accessToken) {
+        // TODO: 백엔드 API 응답 구조에 맞게 수정 필요
+        const responseData = response.data as any
         return {
-          id: response.data.userId || email,
-          email,
+          id: responseData.userId || id,
+          email: responseData.email || id,
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
-          role: response.data.role,
+          role: responseData.role,
         }
       }
 

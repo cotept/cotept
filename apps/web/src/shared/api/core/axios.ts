@@ -11,7 +11,7 @@ import axios, {
 
 import { update } from "@/auth"
 import { ApiError } from "@/shared/api/core/types"
-import authApi from "@/shared/auth/services/auth-api"
+import { authApiService } from "@/shared/api/services/auth-api-service"
 
 class ApiClient {
   private instance: AxiosInstance
@@ -62,9 +62,22 @@ class ApiClient {
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true // 재시도 플래그 설정
           try {
+            // 현재 세션에서 refreshToken 가져오기
+            const session = await getSession()
+            if (!session?.refreshToken) {
+              throw new Error("No refresh token available")
+            }
+
             // 1. 토큰 갱신 시도
-            const response = await authApi.refreshToken()
+            const response = await authApiService.refreshToken({
+              refreshTokenRequestDto: { refreshToken: session.refreshToken },
+            })
             const newTokens = response.data
+
+            if (!newTokens) {
+              throw new Error("Token refresh failed - no data received")
+            }
+
             // 2. NextAuth 세션 업데이트
             await update({
               user: {
@@ -72,6 +85,7 @@ class ApiClient {
                 refreshToken: newTokens.refreshToken,
               },
             })
+
             // 3. 새로운 토큰으로 헤더 설정 후 원래 요청 재시도
             if (originalRequest.headers) {
               originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`
@@ -79,8 +93,8 @@ class ApiClient {
             return this.instance(originalRequest)
           } catch (refreshError) {
             if (typeof window !== "undefined") {
-              // 토큰 갱신 실패 시 signOut()을 호출하거나 로그인 페이지로 리다이렉트
-              window.location.href = "/auth/login"
+              // 토큰 갱신 실패 시 로그인 페이지로 리다이렉트
+              window.location.href = "/auth/signin?message=세션이 만료되었습니다. 다시 로그인해주세요."
             }
             return Promise.reject(refreshError)
           }

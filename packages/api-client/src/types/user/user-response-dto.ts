@@ -13,6 +13,12 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { UserRole } from './user-role';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { UserStatus } from './user-status';
 
 /**
  * 
@@ -34,16 +40,16 @@ export interface UserResponseDto {
     'email': string;
     /**
      * 사용자 역할
-     * @type {string}
+     * @type {UserRole}
      * @memberof UserResponseDto
      */
-    'role': Role;
+    'role': UserRole;
     /**
      * 사용자 상태
-     * @type {string}
+     * @type {UserStatus}
      * @memberof UserResponseDto
      */
-    'status': Status;
+    'status': UserStatus;
     /**
      * 사용자 생성일
      * @type {string}
@@ -82,23 +88,5 @@ export interface UserResponseDto {
     'lastLoginAt'?: string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum Role {
-    mentee = 'MENTEE',
-    mentor = 'MENTOR',
-    admin = 'ADMIN'
-}
-/**
-    * @export
-    * @enum {string}
-    */
-export enum Status {
-    active = 'ACTIVE',
-    inactive = 'INACTIVE',
-    suspended = 'SUSPENDED'
-}
 
 

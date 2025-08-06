@@ -1,4 +1,5 @@
 // Auth Domain Types
+export * from './auth-type';
 export * from './confirm-social-link-request-dto';
 export * from './exchange-auth-code-request-dto';
 export * from './find-id-request-dto';

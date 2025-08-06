@@ -18,3 +18,5 @@ export * from './user-list-response-dto';
 export * from './user-list-response-wrapper';
 export * from './user-response-dto';
 export * from './user-response-wrapper';
+export * from './user-role';
+export * from './user-status';

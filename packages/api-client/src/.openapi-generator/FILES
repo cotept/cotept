@@ -18,6 +18,7 @@ services/mail-audit-api.ts
 services/user-api.ts
 tsconfig.esm.json
 tsconfig.json
+types/auth-type.ts
 types/change-password-request-dto.ts
 types/confirm-social-link-request-dto.ts
 types/create-user-request-dto.ts
@@ -38,6 +39,7 @@ types/mail-audit-response-wrapper.ts
 types/mail-request-dto-attachments-inner.ts
 types/mail-request-dto-to.ts
 types/mail-request-dto.ts
+types/mail-status.ts
 types/password-change-response-dto.ts
 types/password-change-response-wrapper.ts
 types/refresh-token-request-dto.ts
@@ -57,5 +59,7 @@ types/user-list-response-dto.ts
 types/user-list-response-wrapper.ts
 types/user-response-dto.ts
 types/user-response-wrapper.ts
+types/user-role.ts
+types/user-status.ts
 types/validate-token-request-dto.ts
 types/verify-code-request-dto.ts

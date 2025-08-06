@@ -4,5 +4,6 @@ export * from './mail-audit-response-wrapper';
 export * from './mail-request-dto-attachments-inner';
 export * from './mail-request-dto-to';
 export * from './mail-request-dto';
+export * from './mail-status';
 export * from './send-email-verification429-response';
 export * from './send-email-verification503-response';

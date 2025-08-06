@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { AuthType } from './auth-type';
 
 /**
  * 
@@ -22,7 +25,7 @@
 export interface SendVerificationCodeRequestDto {
     /**
      * 인증 유형
-     * @type {string}
+     * @type {AuthType}
      * @memberof SendVerificationCodeRequestDto
      */
     'authType': AuthType;
@@ -34,14 +37,5 @@ export interface SendVerificationCodeRequestDto {
     'target': string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum AuthType {
-    phone = 'PHONE',
-    email = 'EMAIL',
-    company = 'COMPANY'
-}
 
 

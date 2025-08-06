@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { MailStatus } from './mail-status';
 
 /**
  * 
@@ -46,10 +49,10 @@ export interface MailAuditResponseDto {
     'recipients': Array<string>;
     /**
      * 메일 상태
-     * @type {string}
+     * @type {MailStatus}
      * @memberof MailAuditResponseDto
      */
-    'status': Status;
+    'status': MailStatus;
     /**
      * 생성 시간
      * @type {string}
@@ -82,14 +85,5 @@ export interface MailAuditResponseDto {
     'error'?: string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum Status {
-    pending = 'PENDING',
-    sent = 'SENT',
-    failed = 'FAILED'
-}
 
 

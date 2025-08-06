@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { AuthType } from './auth-type';
 
 /**
  * 
@@ -22,7 +25,7 @@
 export interface FindIdRequestDto {
     /**
      * 인증 방식 (\'EMAIL\' 또는 \'PHONE\')
-     * @type {string}
+     * @type {AuthType}
      * @memberof FindIdRequestDto
      */
     'authType': AuthType;
@@ -46,13 +49,5 @@ export interface FindIdRequestDto {
     'verificationCode': string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum AuthType {
-    email = 'EMAIL',
-    phone = 'PHONE'
-}
 
 

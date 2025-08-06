@@ -1,0 +1,118 @@
+# Chromatic Storybook 배포 워크플로우
+name: "Chromatic"
+
+# PR과 main 브랜치 push에서 실행
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/web/**"
+      - "packages/shared/**"
+      - ".github/workflows/chromatic.yml"
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/shared/**"
+      - ".github/workflows/chromatic.yml"
+
+# 동시 실행 제한
+concurrency:
+  group: chromatic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromatic-deployment:
+    runs-on: ubuntu-latest
+    name: Deploy Storybook to Chromatic
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Chromatic이 git history를 필요로 함 (변경사항 추적용)
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared packages
+        run: pnpm build --filter=@repo/shared
+
+      - name: Build Storybook
+        run: pnpm --filter=web build-storybook
+        env:
+          NODE_ENV: production
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          # Chromatic 프로젝트 토큰
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          # Storybook 빌드 결과물 위치
+          storybookBuildDir: apps/web/storybook-static
+          # 변경사항이 없어도 실패하지 않음
+          exitZeroOnChanges: true
+          # PR에서만 시각적 변경사항 감지
+          onlyChanged: ${{ github.event_name == 'pull_request' }}
+          # 자동 승인 (main 브랜치의 경우)
+          autoAcceptChanges: ${{ github.ref == 'refs/heads/main' }}
+          # 업로드 완료 시점에서 바로 작업을 종료
+          exitOnceUploaded: true
+        env:
+          # GitHub 토큰 (PR 코멘트 작성용)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment PR with Storybook URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📚 Storybook Preview')
+            );
+
+            const storybookUrl = process.env.CHROMATIC_BUILD_URL || 'Building...';
+            const body = `## 📚 Storybook Preview
+
+            ✨ **Storybook이 배포되었습니다!**
+
+            🔗 **미리보기 링크**: ${storybookUrl}
+
+            > 🎨 이 PR의 컴포넌트 변경사항을 Storybook에서 확인해보세요.
+            > 시각적 변경사항이 있다면 Chromatic에서 리뷰를 진행해주세요.
+            `;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }

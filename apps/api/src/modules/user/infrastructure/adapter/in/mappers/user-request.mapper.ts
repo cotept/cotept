@@ -11,6 +11,7 @@ import {
   ChangePasswordRequestDto,
   DeleteUserRequestDto,
 } from '@/modules/user/infrastructure/dtos/request';
+import { UserRole } from '@/modules/user/domain/model/user';
 
 /**
  * 사용자 요청 매퍼
@@ -24,7 +25,7 @@ export class UserRequestMapper {
       password: request.password,
       name: request.name,
       phoneNumber: request.phoneNumber,
-      role: request.role || 'MENTEE',
+      role: request.role || UserRole.MENTEE,
     };
   }
 

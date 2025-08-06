@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { UserRole, UserStatus } from '@/modules/user/domain/model/user';
 
 /**
  * 사용자 응답 DTO
@@ -29,19 +30,21 @@ export class UserResponseDto {
 
   @ApiProperty({
     description: '사용자 역할',
-    enum: ['MENTEE', 'MENTOR', 'ADMIN'],
-    example: 'MENTEE',
+    example: UserRole.MENTEE,
+    enum: UserRole,
+    enumName: 'UserRole',
   })
   @Expose()
-  role: string;
+  role: UserRole;
 
   @ApiProperty({
     description: '사용자 상태',
-    enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
-    example: 'ACTIVE',
+    example: UserStatus.ACTIVE,
+    enum: UserStatus,
+    enumName: 'UserStatus',
   })
   @Expose()
-  status: string;
+  status: UserStatus;
 
   @ApiProperty({
     description: '전화번호',

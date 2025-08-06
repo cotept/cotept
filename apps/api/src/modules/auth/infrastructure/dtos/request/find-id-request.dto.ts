@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsIn, IsNotEmpty, IsString, Length } from "class-validator"
+import { IsEnum, IsNotEmpty, IsString, Length } from "class-validator"
+import { AuthType } from '@/modules/auth/domain/model/auth-verification'
 
 /**
  * 아이디 찾기 요청 DTO
@@ -7,13 +8,13 @@ import { IsIn, IsNotEmpty, IsString, Length } from "class-validator"
 export class FindIdRequestDto {
   @ApiProperty({
     description: "인증 방식 ('EMAIL' 또는 'PHONE')",
-    example: "PHONE",
-    enum: ["EMAIL", "PHONE"],
+    example: AuthType.PHONE,
+    enum: AuthType,
+    enumName: 'AuthType',
   })
-  @IsString({ message: "인증 타입은 문자열이어야 합니다." })
+  @IsEnum(AuthType, { message: "인증 타입은 유효한 AuthType이어야 합니다." })
   @IsNotEmpty({ message: "인증 타입은 필수 항목입니다." })
-  @IsIn(["EMAIL", "PHONE"], { message: "인증 타입은 'EMAIL' 또는 'PHONE'이어야 합니다." })
-  authType: "EMAIL" | "PHONE"
+  authType: AuthType
 
   @ApiProperty({
     description: "인증 대상 (이메일 주소 또는 전화번호)",

@@ -67,7 +67,49 @@ export class SwaggerConfig {
           .replace(/^remove/, "delete") // remove -> delete
       },
     })
+
+    // 공통 스키마 컴포넌트 추가
+    this.addCommonSchemas(document)
+
     SwaggerModule.setup(this.config.path, app, document, this.customOptions)
     return document
+  }
+
+  private addCommonSchemas(document: any) {
+    // 공통 enum 스키마 컴포넌트 정의
+    if (!document.components) {
+      document.components = {}
+    }
+    if (!document.components.schemas) {
+      document.components.schemas = {}
+    }
+
+    // AuthType 공통 스키마
+    document.components.schemas.AuthType = {
+      type: 'string',
+      enum: ['PHONE', 'EMAIL', 'COMPANY'],
+      description: '인증 유형'
+    }
+
+    // UserRole 공통 스키마
+    document.components.schemas.UserRole = {
+      type: 'string',
+      enum: ['MENTEE', 'MENTOR', 'ADMIN'],
+      description: '사용자 역할'
+    }
+
+    // UserStatus 공통 스키마
+    document.components.schemas.UserStatus = {
+      type: 'string',
+      enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
+      description: '사용자 상태'
+    }
+
+    // MailStatus 공통 스키마
+    document.components.schemas.MailStatus = {
+      type: 'string',
+      enum: ['PENDING', 'SENT', 'FAILED'],
+      description: '메일 상태'
+    }
   }
 }

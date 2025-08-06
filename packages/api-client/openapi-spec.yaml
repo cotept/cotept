@@ -2358,6 +2358,20 @@ components:
     ApiResponseUserListResponseDto:
       type: object
       properties: {}
+    UserRole:
+      type: string
+      enum:
+        - MENTEE
+        - MENTOR
+        - ADMIN
+      description: 사용자 역할
+    UserStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+        - SUSPENDED
+      description: 사용자 상태
     UserResponseDto:
       type: object
       properties:
@@ -2374,21 +2388,15 @@ components:
           description: 사용자 이름
           example: 홍길동
         role:
-          type: string
           description: 사용자 역할
-          enum:
-            - MENTEE
-            - MENTOR
-            - ADMIN
           example: MENTEE
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
         status:
-          type: string
           description: 사용자 상태
-          enum:
-            - ACTIVE
-            - INACTIVE
-            - SUSPENDED
           example: ACTIVE
+          allOf:
+            - $ref: '#/components/schemas/UserStatus'
         phoneNumber:
           type: string
           description: 전화번호
@@ -2488,13 +2496,11 @@ components:
           description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
         role:
-          type: string
           default: MENTEE
           description: '사용자 역할 (기본값: MENTEE)'
-          enum:
-            - MENTEE
-            - MENTOR
           example: MENTEE
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
       required:
         - email
         - password
@@ -2678,17 +2684,21 @@ components:
           description: 검증할 액세스 토큰
       required:
         - token
+    AuthType:
+      type: string
+      enum:
+        - PHONE
+        - EMAIL
+        - COMPANY
+      description: 인증 유형
     SendVerificationCodeRequestDto:
       type: object
       properties:
         authType:
-          enum:
-            - PHONE
-            - EMAIL
-            - COMPANY
-          type: string
           description: 인증 유형
           example: EMAIL
+          allOf:
+            - $ref: '#/components/schemas/AuthType'
         target:
           type: string
           description: 인증 대상 (이메일 또는 전화번호)
@@ -2740,12 +2750,10 @@ components:
       type: object
       properties:
         authType:
-          type: string
-          enum:
-            - EMAIL
-            - PHONE
           description: 인증 방식 ('EMAIL' 또는 'PHONE')
           example: PHONE
+          allOf:
+            - $ref: '#/components/schemas/AuthType'
         target:
           type: string
           description: 인증 대상 (이메일 주소 또는 전화번호)
@@ -2855,6 +2863,13 @@ components:
     ApiResponseMailAuditResponseDto:
       type: object
       properties: {}
+    MailStatus:
+      type: string
+      enum:
+        - PENDING
+        - SENT
+        - FAILED
+      description: 메일 상태
     MailAuditResponseDto:
       type: object
       properties:
@@ -2881,13 +2896,10 @@ components:
           items:
             type: string
         status:
-          enum:
-            - PENDING
-            - SENT
-            - FAILED
-          type: string
           description: 메일 상태
           example: SENT
+          allOf:
+            - $ref: '#/components/schemas/MailStatus'
         sentAt:
           type: string
           nullable: true

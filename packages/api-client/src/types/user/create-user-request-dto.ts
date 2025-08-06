@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { UserRole } from './user-role';
 
 /**
  * 
@@ -46,19 +49,11 @@ export interface CreateUserRequestDto {
     'phoneNumber'?: string;
     /**
      * 사용자 역할 (기본값: MENTEE)
-     * @type {string}
+     * @type {UserRole}
      * @memberof CreateUserRequestDto
      */
-    'role'?: Role;
+    'role'?: UserRole;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum Role {
-    mentee = 'MENTEE',
-    mentor = 'MENTOR'
-}
 
 

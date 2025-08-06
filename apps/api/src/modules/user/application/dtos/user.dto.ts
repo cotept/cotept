@@ -14,6 +14,7 @@ import {
   Matches,
   Validate,
 } from "class-validator"
+import { UserRole, UserStatus } from '@/modules/user/domain/model/user'
 
 /**
  * 사용자 정보 DTO
@@ -69,21 +70,23 @@ export class UserDto {
 
   @ApiProperty({
     description: "사용자 역할",
-    enum: ["MENTEE", "MENTOR", "ADMIN"],
-    example: "MENTEE",
+    example: UserRole.MENTEE,
+    enum: UserRole,
+    enumName: 'UserRole',
   })
   @Expose()
-  @IsEnum(["MENTEE", "MENTOR", "ADMIN"], { message: "유효한 사용자 역할이 아닙니다." })
-  role: string
+  @IsEnum(UserRole, { message: "유효한 사용자 역할이 아닙니다." })
+  role: UserRole
 
   @ApiProperty({
     description: "사용자 상태",
-    enum: ["ACTIVE", "INACTIVE", "SUSPENDED"],
-    example: "ACTIVE",
+    example: UserStatus.ACTIVE,
+    enum: UserStatus,
+    enumName: 'UserStatus',
   })
   @Expose()
-  @IsEnum(["ACTIVE", "INACTIVE", "SUSPENDED"], { message: "유효한 사용자 상태가 아닙니다." })
-  status: string
+  @IsEnum(UserStatus, { message: "유효한 사용자 상태가 아닙니다." })
+  status: UserStatus
 
   @ApiProperty({
     description: "전화번호 (- 없이 숫자만)",

@@ -10,7 +10,7 @@ import { authCodeSchema, clentUrlSchema, jwtSchema } from "./token"
 
 export const validationSchema = Joi.object({
   NODE_ENV: Joi.string().valid("local", "development", "test", "production").default("development"),
-  PORT: Joi.number().default(3000),
+  PORT: Joi.number().default(3005),
   ...databaseSchema,
   ...redisSchema,
   ...nosqlSchema,

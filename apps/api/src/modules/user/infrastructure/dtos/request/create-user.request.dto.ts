@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
+import { UserRole } from '@/modules/user/domain/model/user';
 
 /**
  * 사용자 생성 요청 DTO
@@ -56,12 +57,13 @@ export class CreateUserRequestDto {
 
   @ApiProperty({
     description: '사용자 역할 (기본값: MENTEE)',
-    enum: ['MENTEE', 'MENTOR'],
-    example: 'MENTEE',
+    example: UserRole.MENTEE,
     required: false,
+    enum: UserRole,
+    enumName: 'UserRole',
   })
   @Expose()
   @IsOptional()
-  @IsEnum(['MENTEE', 'MENTOR'], { message: '유효한 사용자 역할이 아닙니다.' })
-  role?: string = 'MENTEE';
+  @IsEnum(UserRole, { message: '유효한 사용자 역할이 아닙니다.' })
+  role?: UserRole = UserRole.MENTEE;
 }

@@ -3,6 +3,7 @@ import { PickType } from "@nestjs/swagger/dist/type-helpers"
 import { Expose } from "class-transformer"
 import { IsNotEmpty } from "class-validator"
 import { UserDto } from "./user.dto"
+import { UserRole } from '@/modules/user/domain/model/user'
 
 /**
  * 사용자 생성 DTO
@@ -19,10 +20,11 @@ export class CreateUserDto extends PickType(UserDto, ["email", "password", "name
 
   @ApiProperty({
     description: "사용자 역할 (기본값: MENTEE)",
-    enum: ["MENTEE", "MENTOR"],
-    example: "MENTEE",
+    example: UserRole.MENTEE,
     required: false,
+    enum: UserRole,
+    enumName: 'UserRole',
   })
   @Expose()
-  role: string = "MENTEE"
+  role: UserRole = UserRole.MENTEE
 }

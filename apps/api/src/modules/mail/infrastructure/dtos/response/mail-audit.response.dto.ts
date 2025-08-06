@@ -2,15 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 
 import { Expose } from "class-transformer"
 import { IsArray, IsDateString, IsEnum, IsObject, IsOptional, IsString, IsUUID } from "class-validator"
-
-/**
- * 메일 상태 열거형
- */
-export enum MailStatusResponse {
-  PENDING = "PENDING",
-  SENT = "SENT",
-  FAILED = "FAILED",
-}
+import { MailStatus } from '@/modules/mail/domain/model/mail-audit'
 
 /**
  * 메일 감사 응답 DTO
@@ -52,12 +44,13 @@ export class MailAuditResponseDto {
 
   @ApiProperty({
     description: "메일 상태",
-    enum: MailStatusResponse,
-    example: MailStatusResponse.SENT,
+    example: MailStatus.SENT,
+    enum: MailStatus,
+    enumName: 'MailStatus',
   })
   @Expose()
-  @IsEnum(MailStatusResponse)
-  status: MailStatusResponse
+  @IsEnum(MailStatus)
+  status: MailStatus
 
   @ApiProperty({
     description: "발송 시간",

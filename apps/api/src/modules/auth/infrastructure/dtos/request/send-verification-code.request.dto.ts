@@ -9,8 +9,9 @@ import { AuthType } from '@/modules/auth/domain/model/auth-verification';
 export class SendVerificationCodeRequestDto {
   @ApiProperty({
     description: '인증 유형',
-    enum: AuthType,
     example: AuthType.EMAIL,
+    enum: AuthType,
+    enumName: 'AuthType',
   })
   @Expose()
   @IsEnum(AuthType, { message: '유효한 인증 유형이 아닙니다.' })

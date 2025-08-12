@@ -9,6 +9,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
+        <div id="overlay-root"></div>
       </body>
     </html>
   )

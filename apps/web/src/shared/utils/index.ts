@@ -1,6 +1,6 @@
+import { QueryClient, QueryKey } from "@tanstack/react-query"
 import { AxiosPromise } from "axios"
 import { produce } from "immer"
-import { QueryKey, QueryClient } from "@tanstack/react-query"
 
 import { handleApiError } from "@/shared/api/core/error-handler"
 
@@ -109,22 +109,21 @@ export function createApiService<T extends object>(
  * const optimisticUpdate = createOptimisticUpdate<UserResponseWrapper, UpdateUserRequestDto>(queryClient)
  * optimisticUpdate(queryKey, updateData, previousData)
  *
- * // Post 도메인에서 사용  
+ * // Post 도메인에서 사용
  * const optimisticUpdate = createOptimisticUpdate<PostResponseWrapper, UpdatePostRequestDto>(queryClient)
  * optimisticUpdate(queryKey, updateData, previousData)
  * ```
  */
-export const createOptimisticUpdate = <
-  TData extends { data?: any },
-  TUpdateData extends object
->(queryClient: QueryClient) => {
+export const createOptimisticUpdate = <TData extends { data?: any }, TUpdateData extends object>(
+  queryClient: QueryClient,
+) => {
   return (queryKey: QueryKey, updateData: TUpdateData, previousData?: TData) => {
     if (previousData?.data) {
       queryClient.setQueryData<TData | undefined>(
         queryKey,
         createImmerApiDataUpdater<TData>({
           data: { ...previousData.data, ...updateData },
-        }),
+        } as Partial<TData>),
       )
     }
   }

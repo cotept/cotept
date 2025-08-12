@@ -48,3 +48,6 @@ docker/redis/local_data/
 
 packages/api-client/src/api
 docker/nosql/local_data/
+
+.claude/
+screenshots/

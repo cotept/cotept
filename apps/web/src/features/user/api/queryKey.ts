@@ -6,7 +6,7 @@ import { User } from "@/shared/api/core/types"
 // 사용자 도메인 전용 쿼리 키 관리
 
 // 사용자 관련 쿼리 키
-export const userKeys = createQueryKeys("users", {
+export const userKeys: ReturnType<typeof createQueryKeys> = createQueryKeys("users", {
   all: null,
   lists: () => ["list"],
   list: (filters: { page?: number; limit?: number; search?: string }) => [filters],

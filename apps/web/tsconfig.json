@@ -1,11 +1,14 @@
 {
   "extends": "@repo/typescript-config/next.json",
   "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@repo/*": ["../../packages/*"]
-    }
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
     "next-env.d.ts",
@@ -13,7 +16,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next-auth.d.ts",
-    "../../packages/shared/src/components/SharedButton.stories.tsx"
+    "**/*.test.ts",
+    "**/*.stories.ts",
+    "../../packages/shared/src/**/*.tsx",
+    "vitest.config.ts"
   ],
   "exclude": ["node_modules"]
 }

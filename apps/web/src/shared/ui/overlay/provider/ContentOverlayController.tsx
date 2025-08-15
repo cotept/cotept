@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * 개별 오버레이 Controller 컴포넌트
  * overlay-kit의 생명주기 관리와 Portal 통합
@@ -20,11 +22,14 @@ export const ContentOverlayController = memo<ContentOverlayControllerProps>(
   ({ isOpen, overlayId, overlayDispatch, controller: Controller }) => {
     // 컴포넌트 마운트 시 오버레이 OPEN 상태로 변경
     useEffect(() => {
-      // requestAnimationFrame을 사용하여 다음 프레임에서 실행
-      // 이는 overlay-kit의 정확한 구현 방식
-      requestAnimationFrame(() => {
-        overlayDispatch({ type: "OPEN", overlayId })
-      })
+      // SSR 안전성: requestAnimationFrame은 브라우저 환경에서만 사용 가능
+      if (typeof window !== "undefined") {
+        // requestAnimationFrame을 사용하여 다음 프레임에서 실행
+        // 이는 overlay-kit의 정확한 구현 방식
+        requestAnimationFrame(() => {
+          overlayDispatch({ type: "OPEN", overlayId })
+        })
+      }
     }, [overlayDispatch, overlayId])
 
     // Controller 컴포넌트 렌더링

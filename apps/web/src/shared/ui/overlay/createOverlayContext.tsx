@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * 기본 Overlay 인스턴스 생성
  * 전역적으로 사용할 수 있는 overlay API와 Provider 제공

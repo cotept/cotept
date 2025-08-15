@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Overlay Provider Factory 함수
  * overlay-kit 방식의 Provider 생성과 Portal 렌더링을 결합한 하이브리드 구현
@@ -93,15 +95,21 @@ export function createOverlayProvider(): OverlayProviderResult {
     // External Events 리스너 등록
     useOverlayEvent({ open, close, unmount, closeAll, unmountAll })
 
-    // overlay-kit의 재개방 로직 구현
+    // overlay-kit의 재개방 로직 구현 (SSR 안전 버전)
     if (prevOverlayState.current !== overlayState) {
       overlayState.overlayOrderList.forEach((overlayId) => {
-        const prevOverlayData = prevOverlayState.current.overlayData
+        // 방어 코드: prevOverlayState.current가 null이거나 overlayData가 없을 수 있음
+        const prevOverlayData = prevOverlayState.current?.overlayData
         const currOverlayData = overlayState.overlayData
 
-        if (prevOverlayData[overlayId] != null && prevOverlayData[overlayId].isMounted === true) {
-          const isPrevOverlayClosed = prevOverlayData[overlayId].isOpen === false
-          const isCurrOverlayOpened = currOverlayData[overlayId].isOpen === true
+        // 방어 코드: 모든 체이닝에서 undefined 가능성 체크
+        if (
+          prevOverlayData?.[overlayId] != null &&
+          prevOverlayData[overlayId]?.isMounted === true &&
+          currOverlayData?.[overlayId] != null
+        ) {
+          const isPrevOverlayClosed = prevOverlayData[overlayId]?.isOpen === false
+          const isCurrOverlayOpened = currOverlayData[overlayId]?.isOpen === true
 
           // 닫혀있던 오버레이가 다시 열렸을 때
           if (isPrevOverlayClosed && isCurrOverlayOpened) {

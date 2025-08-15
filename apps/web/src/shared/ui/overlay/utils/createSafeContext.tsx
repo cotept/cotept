@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * 타입 안전한 React Context 생성 유틸리티
  * overlay-kit에서 사용하는 안전한 Context 패턴

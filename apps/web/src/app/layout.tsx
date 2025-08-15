@@ -1,4 +1,4 @@
-"use client"
+import { Toaster } from "@repo/shared/components/sonner"
 
 import "@repo/shared/globals.css"
 
@@ -9,6 +9,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
+        <Toaster />
         <div id="overlay-root"></div>
       </body>
     </html>

@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * External Events 시스템 핵심 구현
  * overlay-kit의 컴포넌트 외부 제어를 위한 Hook 및 Event 생성기

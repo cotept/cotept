@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+
 import { Expose } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * 인증 코드 교환 요청 DTO

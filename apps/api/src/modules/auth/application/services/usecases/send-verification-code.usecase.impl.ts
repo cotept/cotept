@@ -88,6 +88,10 @@
 //     return diffSeconds < 60 // 1분(60초) 이내
 //   }
 // }
+import { Injectable } from "@nestjs/common"
+
+import { v4 as uuid } from "uuid"
+
 import { SendVerificationCodeDto } from "@/modules/auth/application/dtos/send-verification-code.dto"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
@@ -95,8 +99,6 @@ import { NotificationPort } from "@/modules/auth/application/ports/out/notificat
 import { RateLimitExceededException, VerificationException } from "@/modules/auth/domain/model/auth-exception"
 import { AuthVerification } from "@/modules/auth/domain/model/auth-verification"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
-import { Injectable } from "@nestjs/common"
-import { v4 as uuid } from "uuid"
 
 @Injectable()
 export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseCase {

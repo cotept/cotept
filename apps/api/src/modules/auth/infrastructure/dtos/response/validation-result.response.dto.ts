@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
 

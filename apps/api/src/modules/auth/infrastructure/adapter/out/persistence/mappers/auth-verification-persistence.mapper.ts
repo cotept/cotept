@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+
 import { AuthType, AuthVerification } from '@/modules/auth/domain/model/auth-verification';
 import { AuthVerificationEntity } from '@/modules/auth/infrastructure/adapter/out/persistence/entities/auth-verification.entity';
 

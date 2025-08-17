@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 
 import { Expose } from "class-transformer"
 import { IsArray, IsDateString, IsEnum, IsObject, IsOptional, IsString, IsUUID } from "class-validator"
+
 import { MailStatus } from '@/modules/mail/domain/model/mail-audit'
 
 /**

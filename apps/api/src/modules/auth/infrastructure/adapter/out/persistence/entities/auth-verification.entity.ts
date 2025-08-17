@@ -1,6 +1,7 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("AUTH_VERIFICATIONS")
 export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {

@@ -1,4 +1,4 @@
-import { RefreshTokenPayload, TokenPayload, TokenPair } from '@/modules/auth/domain/model';
+import { RefreshTokenPayload, TokenPair,TokenPayload } from '@/modules/auth/domain/model';
 
 /**
  * 토큰 생성기 포트

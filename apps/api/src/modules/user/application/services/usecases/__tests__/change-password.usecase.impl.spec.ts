@@ -1,10 +1,11 @@
+import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common"
+
 import { ChangePasswordDto } from "@/modules/user/application/dtos/change-password.dto"
 import { PasswordServicePort } from "@/modules/user/application/ports/out/password-service.port"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { ChangePasswordUseCaseImpl } from "@/modules/user/application/services/usecases/change-password.usecase.impl"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
-import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common"
 
 describe("비밀번호 변경 유스케이스", () => {
   let changePasswordUseCase: ChangePasswordUseCaseImpl

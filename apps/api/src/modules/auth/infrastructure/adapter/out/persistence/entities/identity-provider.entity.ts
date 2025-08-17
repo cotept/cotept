@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+
 import { PhoneVerificationEntity } from './phone-verification.entity';
 
 @Entity('IDENTITY_PROVIDERS')

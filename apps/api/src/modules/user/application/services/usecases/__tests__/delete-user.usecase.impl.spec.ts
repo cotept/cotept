@@ -1,9 +1,10 @@
+import { NotFoundException } from "@nestjs/common"
+
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { DeleteUserUseCaseImpl } from "@/modules/user/application/services/usecases/delete-user.usecase.impl"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
-import { NotFoundException } from "@nestjs/common"
 
 describe("사용자 삭제 유스케이스", () => {
   let deleteUserUseCase: DeleteUserUseCaseImpl

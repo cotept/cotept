@@ -1,19 +1,12 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from "@nestjs/common"
 import {
-  ApiBadRequestResponse,
   ApiConflictResponse,
-  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiRequestTimeoutResponse,
-  ApiServiceUnavailableResponse,
   ApiTags,
-  ApiTooManyRequestsResponse,
-  ApiUnauthorizedResponse,
 } from "@nestjs/swagger"
-import { ApiStandardErrors, ApiAuthRequiredErrors, ApiExternalServiceErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services/facade/baekjoon-facade.service"
@@ -31,6 +24,7 @@ import {
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
+import { ApiAuthRequiredErrors, ApiExternalServiceErrors,ApiStandardErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 @ApiTags("Baekjoon")
 @Controller("baekjoon")

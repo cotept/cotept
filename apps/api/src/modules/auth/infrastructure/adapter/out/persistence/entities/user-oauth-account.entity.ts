@@ -1,7 +1,9 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+
+import { OAuthProviderEntity } from "./oauth-provider.entity"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
-import { OAuthProviderEntity } from "./oauth-provider.entity"
 
 @Entity("USER_OAUTH_ACCOUNTS")
 export class UserOAuthAccountEntity extends BaseEntity<UserOAuthAccountEntity> {

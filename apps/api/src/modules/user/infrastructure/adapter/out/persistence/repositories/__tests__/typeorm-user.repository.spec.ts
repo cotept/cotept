@@ -1,12 +1,14 @@
+import { Test, TestingModule } from "@nestjs/testing"
+import { getRepositoryToken } from "@nestjs/typeorm"
+
+import { Repository } from "typeorm"
+
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { Name } from "@/modules/user/domain/vo/name.vo"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { UserPersistenceMapper } from "@/modules/user/infrastructure/adapter/out/persistence/mappers/user-persistence.mapper"
 import { TypeOrmUserRepository } from "@/modules/user/infrastructure/adapter/out/persistence/repositories/typeorm-user.repository"
-import { Test, TestingModule } from "@nestjs/testing"
-import { getRepositoryToken } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
 
 describe("타입ORM 사용자 리포지토리", () => {
   let repository: TypeOrmUserRepository

@@ -1,3 +1,6 @@
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
+import { ConfigService } from "@nestjs/config"
+
 import { clentUrlConfig } from "@/configs/token"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import {
@@ -12,8 +15,6 @@ import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-sto
 import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
 import { CryptoService } from "@/shared/infrastructure/services/crypto"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
-import { ConfigService } from "@nestjs/config"
 
 /**
  * 소셜 인증 콜백 처리 유스케이스 구현체

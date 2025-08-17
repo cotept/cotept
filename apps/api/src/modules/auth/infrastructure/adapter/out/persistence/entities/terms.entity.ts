@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+
 import { TermsAgreementEntity } from './terms-agreement.entity';
 
 @Entity('TERMS')

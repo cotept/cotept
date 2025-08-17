@@ -1,3 +1,5 @@
+import { NotFoundException } from "@nestjs/common"
+
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
@@ -5,7 +7,6 @@ import { GetUserUseCaseImpl } from "@/modules/user/application/services/usecases
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { Name } from "@/modules/user/domain/vo/name.vo"
-import { NotFoundException } from "@nestjs/common"
 
 describe("사용자 조회 유스케이스", () => {
   let getUserUseCase: GetUserUseCaseImpl

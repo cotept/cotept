@@ -1,5 +1,5 @@
-import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 import { ApiProperty } from "@nestjs/swagger"
+
 import { Expose, Transform } from "class-transformer"
 import {
   IsBoolean,
@@ -14,7 +14,9 @@ import {
   Matches,
   Validate,
 } from "class-validator"
+
 import { UserRole, UserStatus } from '@/modules/user/domain/model/user'
+import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 
 /**
  * 사용자 정보 DTO

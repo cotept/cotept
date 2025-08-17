@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common"
+
 import { ErrorLoggerMiddleware, PerformanceLoggerMiddleware, RequestLoggerMiddleware } from "./logger"
 
 export const MIDDLEWARE_CONFIG = {

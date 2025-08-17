@@ -1,15 +1,15 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { GetStatisticsUseCaseImpl } from '../get-statistics.usecase.impl'
 import { BaekjoonDomainMapper } from '../../../mappers'
+import { CachePort, RateLimitPort,SolvedAcApiPort } from '../../../ports'
 import { BaekjoonProfileRepositoryPort } from '../../../ports/out/baekjoon-profile-repository.port'
 import { BaekjoonStatisticsRepositoryPort } from '../../../ports/out/baekjoon-statistics-repository.port'
-import { SolvedAcApiPort, CachePort, RateLimitPort } from '../../../ports'
+import { GetStatisticsUseCaseImpl } from '../get-statistics.usecase.impl'
 
+import { GetStatisticsInputDto, TagStatisticsOutputDto } from '@/modules/baekjoon/application/dtos'
 import { BaekjoonUser } from '@/modules/baekjoon/domain/model'
 import { TierLevel } from '@/modules/baekjoon/domain/vo'
-import { GetStatisticsInputDto, TagStatisticsOutputDto } from '@/modules/baekjoon/application/dtos'
 
 describe('GetStatisticsUseCaseImpl', () => {
   let useCase: GetStatisticsUseCaseImpl

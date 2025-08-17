@@ -1,3 +1,5 @@
+import { ConflictException, Injectable } from "@nestjs/common"
+
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
@@ -8,7 +10,6 @@ import User, { UserRole } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { Name } from "@/modules/user/domain/vo/name.vo"
 import { PhoneNumber } from "@/modules/user/domain/vo/phone-number.vo"
-import { ConflictException, Injectable } from "@nestjs/common"
 
 @Injectable()
 export class CreateUserUseCaseImpl implements CreateUserUseCase {

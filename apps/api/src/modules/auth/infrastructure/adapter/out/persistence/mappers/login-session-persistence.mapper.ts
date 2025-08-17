@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+
 import { LoginSession } from '@/modules/auth/domain/model/login-session';
 import { SessionLogEntity } from '@/modules/auth/infrastructure/adapter/out/persistence/entities/session-log.entity';
 

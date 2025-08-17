@@ -1,3 +1,5 @@
+import { HttpStatus } from "@nestjs/common"
+
 import { ChangePasswordDto } from "@/modules/user/application/dtos/change-password.dto"
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
@@ -10,7 +12,6 @@ import { GetUserUseCase } from "@/modules/user/application/ports/in/get-user.use
 import { UpdateUserUseCase } from "@/modules/user/application/ports/in/update-user.usecase"
 import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
 import { UserRequestMapper } from "@/modules/user/infrastructure/adapter/in/mappers"
-import { HttpStatus } from "@nestjs/common"
 
 describe("사용자 파사드 서비스", () => {
   let userFacadeService: UserFacadeService

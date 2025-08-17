@@ -1,7 +1,9 @@
 import * as dotenv from "dotenv"
-import "tsconfig-paths/register"
 import { DataSource } from "typeorm"
+
 import { databaseConfig } from "../database"
+
+import "tsconfig-paths/register"
 
 // CLI 실행시 환경변수 로드
 const isProd = process.env.NODE_ENV === "production"

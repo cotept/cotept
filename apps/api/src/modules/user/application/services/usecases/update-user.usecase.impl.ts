@@ -1,3 +1,5 @@
+import { Injectable, NotFoundException } from "@nestjs/common"
+
 import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
@@ -6,7 +8,6 @@ import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-re
 import { Name } from "@/modules/user/domain/vo/name.vo"
 import { PhoneNumber } from "@/modules/user/domain/vo/phone-number.vo"
 import { sanitizeInput } from "@/shared/utils"
-import { Injectable, NotFoundException } from "@nestjs/common"
 
 @Injectable()
 export class UpdateUserUseCaseImpl implements UpdateUserUseCase {

@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+
 import { UserOAuthAccountEntity } from './user-oauth-account.entity';
 
 @Entity('OAUTH_PROVIDERS')

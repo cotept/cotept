@@ -1,6 +1,8 @@
-import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+
 import { TermsEntity } from "./terms.entity"
+
+import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 
 @Entity("TERMS_AGREEMENTS")
 export class TermsAgreementEntity {

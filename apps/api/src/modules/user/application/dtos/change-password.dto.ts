@@ -1,7 +1,9 @@
-import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 import { ApiProperty } from "@nestjs/swagger"
+
 import { Expose } from "class-transformer"
 import { IsNotEmpty, IsString, Length, Matches, Validate } from "class-validator"
+
+import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 
 /**
  * 비밀번호 변경 DTO

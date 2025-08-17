@@ -6,8 +6,8 @@ import { Request, Response } from "express"
 
 import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { SocialProvider } from "@/modules/auth/domain/model"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import { ApiOkResponseEmpty } from "@/shared/infrastructure/decorators/api-response.decorator"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * Google 소셜 로그인 컨트롤러

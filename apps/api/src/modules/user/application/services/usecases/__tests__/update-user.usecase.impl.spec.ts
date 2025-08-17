@@ -1,3 +1,5 @@
+import { NotFoundException } from "@nestjs/common"
+
 import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
@@ -7,7 +9,6 @@ import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
 import { Name } from "@/modules/user/domain/vo/name.vo"
 import { PhoneNumber } from "@/modules/user/domain/vo/phone-number.vo"
-import { NotFoundException } from "@nestjs/common"
 
 describe("사용자 정보 업데이트 유스케이스", () => {
   let updateUserUseCase: UpdateUserUseCaseImpl

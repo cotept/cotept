@@ -1,14 +1,14 @@
 import { BadRequestException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { GetProfileUseCaseImpl } from '../get-profile.usecase.impl'
 import { BaekjoonDomainMapper } from '../../../mappers'
 import { BaekjoonProfileRepositoryPort } from '../../../ports/out/baekjoon-profile-repository.port'
 import { SolvedAcApiPort } from '../../../ports/out/solved-ac-api.port'
+import { GetProfileUseCaseImpl } from '../get-profile.usecase.impl'
 
+import { BaekjoonProfileOutputDto,GetProfileInputDto } from '@/modules/baekjoon/application/dtos'
 import { BaekjoonUser } from '@/modules/baekjoon/domain/model'
 import { TierLevel } from '@/modules/baekjoon/domain/vo'
-import { GetProfileInputDto, BaekjoonProfileOutputDto } from '@/modules/baekjoon/application/dtos'
 
 describe('GetProfileUseCaseImpl', () => {
   let useCase: GetProfileUseCaseImpl

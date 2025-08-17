@@ -1,7 +1,8 @@
 import { BadRequestException } from '@nestjs/common'
-import { BaekjoonUser } from '../baekjoon-user.model'
+
 import { BaekjoonHandle, Tier, TierLevel } from '../../vo'
 import { BaekjoonProfileVerificationStatus } from '../../vo/baekjoon-profile-verification-status.vo'
+import { BaekjoonUser } from '../baekjoon-user.model'
 import { VerificationSession } from '../verification-session.model'
 
 describe('BaekjoonUser', () => {

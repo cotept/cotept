@@ -1,6 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Req, Res, UseGuards } from "@nestjs/common"
-import { ApiBadRequestResponse, ApiBody, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiTooManyRequestsResponse, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger"
-import { ApiStandardErrors, ApiAuthRequiredErrors } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
+import {
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from "@nestjs/swagger"
 
 import { Request, Response } from "express"
 
@@ -18,8 +24,20 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import { LogoutResponseDto, TokenResponseDto } from "@/modules/auth/infrastructure/dtos/response"
-import { ApiOkResponseEmpty, ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
+import {
+  FindIdResponseDto,
+  LogoutResponseDto,
+  ResetPasswordResponseDto,
+  TokenResponseDto,
+  ValidationResultResponseDto,
+  VerificationCodeResponseDto,
+  VerificationResultResponseDto,
+} from "@/modules/auth/infrastructure/dtos/response"
+import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
+import {
+  ApiAuthRequiredErrors,
+  ApiStandardErrors,
+} from "@/shared/infrastructure/decorators/common-error-responses.decorator"
 
 /**
  * 인증 컨트롤러
@@ -102,10 +120,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "토큰 검증", description: "액세스 토큰의 유효성을 검증합니다." })
   @ApiBody({ type: ValidateTokenRequestDto })
-  @ApiOkResponseEmpty("토큰 검증 결과")
+  @ApiOkResponseWrapper(ValidationResultResponseDto, "토큰 검증 결과")
   @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "유효하지 않은 토큰" })
-  async validateToken(@Body() validateTokenRequestDto: ValidateTokenRequestDto) {
+  async validateToken(@Body() validateTokenRequestDto: ValidateTokenRequestDto): Promise<ValidationResultResponseDto> {
     return this.authFacadeService.validateToken(validateTokenRequestDto)
   }
 
@@ -119,14 +137,14 @@ export class AuthController {
     description: "이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.",
   })
   @ApiBody({ type: SendVerificationCodeRequestDto })
-  @ApiOkResponseEmpty("인증 코드 발송 성공")
+  @ApiOkResponseWrapper(VerificationCodeResponseDto, "인증 코드 발송 성공")
   @ApiStandardErrors()
   @ApiTooManyRequestsResponse({ description: "인증 코드 발송 제한을 초과했습니다" })
   async sendVerificationCode(
     @Body() sendVerificationCodeRequestDto: SendVerificationCodeRequestDto,
     @Req() req: Request,
     @CurrentUserId() userId?: string,
-  ) {
+  ): Promise<VerificationCodeResponseDto> {
     const ipAddress = req.ip
 
     return this.authFacadeService.sendVerificationCode(sendVerificationCodeRequestDto, userId, ipAddress)
@@ -142,10 +160,10 @@ export class AuthController {
     description: "발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.",
   })
   @ApiBody({ type: VerifyCodeRequestDto })
-  @ApiOkResponseEmpty("인증 코드 확인 성공")
+  @ApiOkResponseWrapper(VerificationResultResponseDto, "인증 코드 확인 성공")
   @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "인증 코드가 일치하지 않습니다" })
-  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto) {
+  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
   }
 
@@ -208,9 +226,9 @@ export class AuthController {
       "인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
   })
   @ApiBody({ type: FindIdRequestDto })
-  @ApiOkResponseEmpty("아이디 찾기 성공")
+  @ApiOkResponseWrapper(FindIdResponseDto, "아이디 찾기 성공")
   @ApiStandardErrors()
-  async findId(@Body() findIdRequestDto: FindIdRequestDto, @Req() req: Request) {
+  async findId(@Body() findIdRequestDto: FindIdRequestDto, @Req() req: Request): Promise<FindIdResponseDto> {
     const ipAddress = req.ip
     return await this.authFacadeService.findId(findIdRequestDto, ipAddress)
   }
@@ -226,10 +244,26 @@ export class AuthController {
       "인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.",
   })
   @ApiBody({ type: ResetPasswordRequestDto })
-  @ApiOkResponseEmpty("비밀번호 재설정 성공")
+  @ApiOkResponseWrapper(ResetPasswordResponseDto, "비밀번호 재설정 성공")
   @ApiStandardErrors()
-  async resetPassword(@Body() resetPasswordRequestDto: ResetPasswordRequestDto, @Req() req: Request) {
+  async resetPassword(
+    @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
+    @Req() req: Request,
+  ): Promise<ResetPasswordResponseDto> {
     const ipAddress = req.ip
     return await this.authFacadeService.resetPassword(resetPasswordRequestDto, ipAddress)
   }
+
+  // 추가 필요한 API들
+  // POST /auth/check-email-availability
+  // {
+  //   "email": "user@example.com"
+  // }
+  // → { "available": true }
+
+  // POST /auth/check-nickname-availability
+  // {
+  //   "nickname": "사용자닉네임"
+  // }
+  // → { "available": false, "message": "이미 사용 중인 닉네임입니다" }
 }

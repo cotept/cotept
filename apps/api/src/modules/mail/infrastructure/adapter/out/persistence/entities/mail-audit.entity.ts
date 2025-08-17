@@ -1,7 +1,9 @@
-import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
-import { LocaleType, TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
-import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+
+import { LocaleType, TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
+
+import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 /**
  * 메일 감사 엔티티

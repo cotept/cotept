@@ -1,6 +1,8 @@
-import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+
 import { IdentityProviderEntity } from "./identity-provider.entity"
+
+import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 
 @Entity("PHONE_VERIFICATIONS")
 export class PhoneVerificationEntity {

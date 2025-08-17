@@ -1,6 +1,7 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
 
 @Entity("SESSION_LOGS")
 export class SessionLogEntity extends BaseEntity<SessionLogEntity> {

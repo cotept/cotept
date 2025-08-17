@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { Expose } from 'class-transformer';
+
 import { UserRole, UserStatus } from '@/modules/user/domain/model/user';
 
 /**

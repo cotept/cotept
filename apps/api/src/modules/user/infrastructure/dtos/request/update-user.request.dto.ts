@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, Length, Matches } from 'class-validator';
+
 import { Expose, Transform } from 'class-transformer';
+import { IsOptional, IsString, Length, Matches } from 'class-validator';
 
 /**
  * 사용자 수정 요청 DTO

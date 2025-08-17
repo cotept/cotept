@@ -1,9 +1,10 @@
+import { Injectable, NotFoundException } from "@nestjs/common"
+
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { GetUserUseCase } from "@/modules/user/application/ports/in/get-user.usecase"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { Injectable, NotFoundException } from "@nestjs/common"
 
 @Injectable()
 export class GetUserUseCaseImpl implements GetUserUseCase {

@@ -1,3 +1,5 @@
+import { ConflictException } from "@nestjs/common"
+
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
@@ -6,7 +8,6 @@ import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-re
 import { CreateUserUseCaseImpl } from "@/modules/user/application/services/usecases/create-user.usecase.impl"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
-import { ConflictException } from "@nestjs/common"
 
 describe("사용자 생성 유스케이스", () => {
   let createUserUseCase: CreateUserUseCaseImpl

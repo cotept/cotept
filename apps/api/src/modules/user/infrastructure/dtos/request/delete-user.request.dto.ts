@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 import { Expose } from 'class-transformer';
+import { IsOptional, IsString } from 'class-validator';
 
 /**
  * 사용자 삭제 요청 DTO

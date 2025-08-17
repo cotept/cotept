@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+
 import { AuthType } from '@/modules/auth/domain/model/auth-verification';
 
 /**

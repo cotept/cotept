@@ -1,7 +1,8 @@
+import { Injectable, NotFoundException } from "@nestjs/common"
+
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import { DeleteUserUseCase } from "@/modules/user/application/ports/in/delete-user.usecase"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
-import { Injectable, NotFoundException } from "@nestjs/common"
 
 @Injectable()
 export class DeleteUserUseCaseImpl implements DeleteUserUseCase {

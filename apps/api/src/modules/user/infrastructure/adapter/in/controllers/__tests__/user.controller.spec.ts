@@ -1,3 +1,6 @@
+import { HttpStatus } from "@nestjs/common"
+import { Test, TestingModule } from "@nestjs/testing"
+
 import { ChangePasswordDto } from "@/modules/user/application/dtos/change-password.dto"
 import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
 import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
@@ -6,8 +9,6 @@ import { UserDto } from "@/modules/user/application/dtos/user.dto"
 import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
 import { UserController } from "@/modules/user/infrastructure/adapter/in/controllers/user.controller"
 import { ApiResponse } from "@/shared/infrastructure/dto/api-response.dto"
-import { HttpStatus } from "@nestjs/common"
-import { Test, TestingModule } from "@nestjs/testing"
 
 describe("사용자 컨트롤러", () => {
   let userController: UserController

@@ -1,9 +1,11 @@
-import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
-import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
 import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { PassportStrategy } from "@nestjs/passport"
+
 import { ExtractJwt, Strategy } from "passport-jwt"
+
+import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
+import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
 
 /**
  * JWT 인증으로 확인된 사용자 정보

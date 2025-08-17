@@ -1,5 +1,5 @@
+import { BaekjoonHandle, VerificationStatus,VerificationString } from '../../vo'
 import { VerificationSession } from '../verification-session.model'
-import { BaekjoonHandle, VerificationString, VerificationStatus } from '../../vo'
 
 describe('VerificationSession', () => {
   const validUserId = 'user123'

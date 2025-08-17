@@ -1,8 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { PickType } from "@nestjs/swagger/dist/type-helpers"
+
 import { Expose } from "class-transformer"
 import { IsNotEmpty } from "class-validator"
+
 import { UserDto } from "./user.dto"
+
 import { UserRole } from '@/modules/user/domain/model/user'
 
 /**

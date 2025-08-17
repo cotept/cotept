@@ -1,7 +1,9 @@
+import { Injectable } from "@nestjs/common"
+
+import { plainToInstance } from "class-transformer"
+
 import { SocialTokenResponseDto } from "@/modules/auth/application/dtos/social-token-response.dto"
 import { TokenPair, TokenPayload } from "@/modules/auth/domain/model"
-import { Injectable } from "@nestjs/common"
-import { plainToInstance } from "class-transformer"
 
 /**
  * 토큰 매퍼

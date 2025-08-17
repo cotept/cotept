@@ -1,5 +1,5 @@
-import { TokenPair } from '@/modules/auth/domain/model';
 import { RefreshTokenDto } from '@/modules/auth/application/dtos/refresh-token.dto';
+import { TokenPair } from '@/modules/auth/domain/model';
 
 /**
  * 토큰 갱신 유스케이스 인터페이스

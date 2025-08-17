@@ -1,5 +1,6 @@
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { DeleteUserDto } from "../../dtos"
+
+import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 
 /**
  * 사용자 저장소 인터페이스 (아웃바운드 포트)

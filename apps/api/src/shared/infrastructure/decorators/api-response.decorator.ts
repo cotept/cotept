@@ -1,7 +1,7 @@
 import { applyDecorators, Type } from "@nestjs/common"
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger"
 
-import { ApiResponse, CreateData, DeleteData, ListData, PaginatedResult, UpdateData } from "../dto/api-response.dto"
+import { CreateData, DeleteData, UpdateData } from "../dto/api-response.dto"
 
 /**
  * 제네릭 ApiResponse를 위한 Mixin 팩토리
@@ -16,16 +16,16 @@ export function createApiResponseMixin<T>(DataClass: Type<T>) {
       this.data = data
     }
   }
-  
-  Object.defineProperty(ApiResponseMixin, 'name', {
+
+  Object.defineProperty(ApiResponseMixin, "name", {
     value: `ApiResponse${DataClass.name}`,
   })
-  
+
   return ApiResponseMixin
 }
 
 /**
- * 제네릭 PaginatedResult를 위한 Mixin 팩토리  
+ * 제네릭 PaginatedResult를 위한 Mixin 팩토리
  */
 export function createPaginatedResponseMixin<T>(DataClass: Type<T>) {
   class PaginatedResponseMixin {
@@ -43,11 +43,11 @@ export function createPaginatedResponseMixin<T>(DataClass: Type<T>) {
       this.totalPageCount = Math.ceil(totalItemCount / limit)
     }
   }
-  
-  Object.defineProperty(PaginatedResponseMixin, 'name', {
+
+  Object.defineProperty(PaginatedResponseMixin, "name", {
     value: `PaginatedResult${DataClass.name}`,
   })
-  
+
   return PaginatedResponseMixin
 }
 
@@ -70,11 +70,11 @@ export function createListDataMixin<T>(DataClass: Type<T>) {
       this.totalPages = Math.ceil(total / pageSize)
     }
   }
-  
-  Object.defineProperty(ListDataMixin, 'name', {
+
+  Object.defineProperty(ListDataMixin, "name", {
     value: `ListData${DataClass.name}`,
   })
-  
+
   return ListDataMixin
 }
 
@@ -84,26 +84,26 @@ export function createListDataMixin<T>(DataClass: Type<T>) {
  */
 export const ApiOkResponseWrapper = <TModel extends Type<unknown>>(model: TModel, description?: string) => {
   const ResponseMixin = createApiResponseMixin(model)
-  
+
   // 모델명에서 Dto 접미사 제거하고 깔끔한 제목 생성
-  const cleanModelName = model.name.replace(/Dto$/, '')
-  const title = cleanModelName.endsWith('Response') ? `${cleanModelName}Wrapper` : `${cleanModelName}Response`
-  
+  const cleanModelName = model.name.replace(/Dto$/, "")
+  const title = cleanModelName.endsWith("Response") ? `${cleanModelName}Wrapper` : `${cleanModelName}Response`
+
   return applyDecorators(
     ApiExtraModels(ResponseMixin, model),
     ApiOkResponse({
       description: description || `The result of ${cleanModelName}`,
       schema: {
         title,
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 처리되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 처리되었습니다.",
           },
-          data: { $ref: getSchemaPath(model) }
-        }
+          data: { $ref: getSchemaPath(model) },
+        },
       },
     }),
   )
@@ -115,53 +115,53 @@ export const ApiOkResponseWrapper = <TModel extends Type<unknown>>(model: TModel
  */
 export const ApiOkResponsePaginated = <TModel extends Type<unknown>>(model: TModel, description?: string) => {
   const PaginatedMixin = createPaginatedResponseMixin(model)
-  
+
   // 모델명에서 Dto 접미사 제거하고 깔끔한 제목 생성
-  const cleanModelName = model.name.replace(/Dto$/, '')
-  
+  const cleanModelName = model.name.replace(/Dto$/, "")
+
   return applyDecorators(
     ApiExtraModels(PaginatedMixin, model),
     ApiOkResponse({
       description: description || `Paginated list of ${cleanModelName}`,
       schema: {
         title: `Paginated${cleanModelName}Wrapper`,
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 처리되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 처리되었습니다.",
           },
           data: {
-            type: 'object',
+            type: "object",
             properties: {
               items: {
-                type: 'array',
-                items: { $ref: getSchemaPath(model) }
+                type: "array",
+                items: { $ref: getSchemaPath(model) },
               },
               totalItemCount: {
-                type: 'number',
-                description: '총 항목 수',
-                example: 100
+                type: "number",
+                description: "총 항목 수",
+                example: 100,
               },
               currentPage: {
-                type: 'number', 
-                description: '현재 페이지',
-                example: 1
+                type: "number",
+                description: "현재 페이지",
+                example: 1,
               },
               limit: {
-                type: 'number',
-                description: '페이지당 항목 수', 
-                example: 10
+                type: "number",
+                description: "페이지당 항목 수",
+                example: 10,
               },
               totalPageCount: {
-                type: 'number',
-                description: '총 페이지 수',
-                example: 10
-              }
-            }
-          }
-        }
+                type: "number",
+                description: "총 페이지 수",
+                example: 10,
+              },
+            },
+          },
+        },
       },
     }),
   )
@@ -173,53 +173,53 @@ export const ApiOkResponsePaginated = <TModel extends Type<unknown>>(model: TMod
  */
 export const ApiOkResponseList = <TModel extends Type<unknown>>(model: TModel, description?: string) => {
   const ListMixin = createListDataMixin(model)
-  
+
   // 모델명에서 Dto 접미사 제거하고 깔끔한 제목 생성
-  const cleanModelName = model.name.replace(/Dto$/, '')
-  
+  const cleanModelName = model.name.replace(/Dto$/, "")
+
   return applyDecorators(
     ApiExtraModels(ListMixin, model),
     ApiOkResponse({
       description: description || `List of ${cleanModelName}`,
       schema: {
         title: `${cleanModelName}ListWrapper`,
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 처리되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 처리되었습니다.",
           },
           data: {
-            type: 'object',
+            type: "object",
             properties: {
               items: {
-                type: 'array',
-                items: { $ref: getSchemaPath(model) }
+                type: "array",
+                items: { $ref: getSchemaPath(model) },
               },
               total: {
-                type: 'number',
-                description: '총 항목 수',
-                example: 100
+                type: "number",
+                description: "총 항목 수",
+                example: 100,
               },
               page: {
-                type: 'number',
-                description: '현재 페이지',
-                example: 1
+                type: "number",
+                description: "현재 페이지",
+                example: 1,
               },
               totalPages: {
-                type: 'number',
-                description: '총 페이지 수',
-                example: 10
+                type: "number",
+                description: "총 페이지 수",
+                example: 10,
               },
               pageSize: {
-                type: 'number',
-                description: '페이지당 항목 수',
-                example: 10
-              }
-            }
-          }
-        }
+                type: "number",
+                description: "페이지당 항목 수",
+                example: 10,
+              },
+            },
+          },
+        },
       },
     }),
   )
@@ -236,24 +236,24 @@ export const ApiOkResponseCreate = (description?: string) => {
       description: description || "Resource created successfully",
       schema: {
         title: "CreateWrapper",
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 생성되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 생성되었습니다.",
           },
           data: {
-            type: 'object',
+            type: "object",
             properties: {
               id: {
-                type: 'string',
-                description: '생성된 리소스 ID',
-                example: '123e4567-e89b-12d3-a456-426614174000'
-              }
-            }
-          }
-        }
+                type: "string",
+                description: "생성된 리소스 ID",
+                example: "123e4567-e89b-12d3-a456-426614174000",
+              },
+            },
+          },
+        },
       },
     }),
   )
@@ -270,24 +270,24 @@ export const ApiOkResponseUpdate = (description?: string) => {
       description: description || "Resource updated successfully",
       schema: {
         title: "UpdateWrapper",
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 수정되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 수정되었습니다.",
           },
           data: {
-            type: 'object',
+            type: "object",
             properties: {
               affected: {
-                type: 'number',
-                description: '수정된 항목 수',
-                example: 1
-              }
-            }
-          }
-        }
+                type: "number",
+                description: "수정된 항목 수",
+                example: 1,
+              },
+            },
+          },
+        },
       },
     }),
   )
@@ -304,24 +304,24 @@ export const ApiOkResponseDelete = (description?: string) => {
       description: description || "Resource deleted successfully",
       schema: {
         title: "DeleteWrapper",
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 삭제되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 삭제되었습니다.",
           },
           data: {
-            type: 'object',
+            type: "object",
             properties: {
               affected: {
-                type: 'number',
-                description: '삭제된 항목 수',
-                example: 1
-              }
-            }
-          }
-        }
+                type: "number",
+                description: "삭제된 항목 수",
+                example: 1,
+              },
+            },
+          },
+        },
       },
     }),
   )
@@ -337,18 +337,18 @@ export const ApiOkResponseEmpty = (description?: string) => {
       description: description || "Operation completed successfully",
       schema: {
         title: "EmptyWrapper",
-        type: 'object',
+        type: "object",
         properties: {
           message: {
-            type: 'string',
-            description: '응답 메시지',
-            example: '성공적으로 처리되었습니다.'
+            type: "string",
+            description: "응답 메시지",
+            example: "성공적으로 처리되었습니다.",
           },
           data: {
-            type: 'null',
-            description: '응답 데이터 없음'
-          }
-        }
+            type: "null",
+            description: "응답 데이터 없음",
+          },
+        },
       },
     }),
   )

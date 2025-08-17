@@ -1,7 +1,8 @@
-import { LocaleType, TemplateContextMap, TemplateNames } from "../types/template.types"
 import { Email } from "../vo/email.vo"
 import { Locale } from "../vo/locale.vo"
 import { TemplateType } from "../vo/template-type.vo"
+
+import { LocaleType, TemplateContextMap, TemplateNames } from "../types/template.types"
 
 /**
  * 메일 도메인 모델

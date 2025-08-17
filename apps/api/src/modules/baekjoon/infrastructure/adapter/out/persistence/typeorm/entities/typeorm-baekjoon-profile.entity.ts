@@ -10,8 +10,8 @@ import {
   BaekjoonProfileVerificationStatus,
   BaekjoonProfileVerificationStatusType,
 } from "@/modules/baekjoon/domain/vo/baekjoon-profile-verification-status.vo"
-import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 import { booleanTransformer } from "@/shared/utils/database.util"
 
 // UserBaekjoonProfile 엔티티 (수정된 버전)

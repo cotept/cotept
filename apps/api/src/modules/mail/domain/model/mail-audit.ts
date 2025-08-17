@@ -1,4 +1,4 @@
-import { TemplateNames, LocaleType } from "../types/template.types"
+import { LocaleType,TemplateNames } from "../types/template.types"
 
 /**
  * 메일 상태 열거형

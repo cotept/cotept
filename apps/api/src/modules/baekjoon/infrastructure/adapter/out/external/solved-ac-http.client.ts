@@ -1,9 +1,11 @@
-import { ErrorUtils } from "@/shared/utils/error.util"
 import { HttpService } from "@nestjs/axios"
 import { Injectable, Logger } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
-import { AxiosError, AxiosResponse } from "axios"
+
+import { AxiosError } from "axios"
 import { firstValueFrom, timeout } from "rxjs"
+
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * solved.ac HTTP 클라이언트

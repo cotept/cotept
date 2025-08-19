@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { userKeys } from "./queryKey"
 
@@ -37,7 +37,7 @@ export function useUser(id: string, options?: UseQueryOptions<any, Error, any, a
 }
 
 // Prefetch 헬퍼
-export function prefetchUser(queryClient: any, id: string) {
+export function prefetchUser(queryClient: QueryClient, id: string) {
   const query = userQueries.detail(id)
   return queryClient.prefetchQuery(query)
 }

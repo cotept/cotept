@@ -26,6 +26,8 @@ types/delete-user-request-dto.ts
 types/empty-wrapper.ts
 types/exchange-auth-code-request-dto.ts
 types/find-id-request-dto.ts
+types/find-id-response-dto.ts
+types/find-id-response-wrapper.ts
 types/get-all-users400-response.ts
 types/get-all-users401-response.ts
 types/get-all-users403-response.ts
@@ -44,6 +46,8 @@ types/password-change-response-dto.ts
 types/password-change-response-wrapper.ts
 types/refresh-token-request-dto.ts
 types/reset-password-request-dto.ts
+types/reset-password-response-dto.ts
+types/reset-password-response-wrapper.ts
 types/send-email-verification429-response.ts
 types/send-email-verification503-response.ts
 types/send-verification-code-request-dto.ts
@@ -62,4 +66,10 @@ types/user-response-wrapper.ts
 types/user-role.ts
 types/user-status.ts
 types/validate-token-request-dto.ts
+types/validation-result-response-dto.ts
+types/validation-result-response-wrapper.ts
+types/verification-code-response-dto.ts
+types/verification-code-response-wrapper.ts
+types/verification-result-response-dto.ts
+types/verification-result-response-wrapper.ts
 types/verify-code-request-dto.ts

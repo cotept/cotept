@@ -57,10 +57,6 @@ export interface QueryConfig {
   gcTime?: number
 }
 
-export interface MutationConfig {
-  onSuccess?: (data: any) => void
-  onError?: (error: ApiError) => void
-}
 
 // 사용자 타입 (예시)
 export interface User extends BaseEntity {

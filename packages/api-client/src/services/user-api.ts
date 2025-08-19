@@ -50,8 +50,6 @@ import type { UserDeletionResponseWrapper } from '../types';
 // @ts-ignore
 import type { UserListResponseWrapper } from '../types';
 // @ts-ignore
-import type { UserResponseDto } from '../types';
-// @ts-ignore
 import type { UserResponseWrapper } from '../types';
 /**
  * UserApi - axios parameter creator

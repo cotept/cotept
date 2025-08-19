@@ -10,6 +10,7 @@ const basePath: string = "/auth"
 const axiosInstance: AxiosInstance = apiClient.axiosInstance
 
 const authApiFactory = AuthApiFactory(config, basePath, axiosInstance)
+// console.log({ config, basePath, axiosInstance, authApiFactory })
 /**
  * Auth API 서비스
  *

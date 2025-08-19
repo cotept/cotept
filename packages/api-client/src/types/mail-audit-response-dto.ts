@@ -73,10 +73,10 @@ export interface MailAuditResponseDto {
     'locale': string;
     /**
      * 발송 시간
-     * @type {string}
+     * @type {object}
      * @memberof MailAuditResponseDto
      */
-    'sentAt'?: string | null;
+    'sentAt'?: object;
     /**
      * 오류 메시지
      * @type {string}

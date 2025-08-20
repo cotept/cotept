@@ -16,7 +16,8 @@ export enum UserStatus {
 
 export default class User {
   // 식별자 및 기본 정보
-  id: string
+  idx?: number
+  userId: string
   email: Email // 값 객체로 변경
   passwordHash: string
   salt: string
@@ -39,7 +40,8 @@ export default class User {
   lastLoginAt?: Date
 
   constructor(params: {
-    id?: string
+    idx?: number
+    userId: string
     email: Email | string // Email 값 객체 또는 문자열 허용
     passwordHash: string
     salt: string
@@ -56,7 +58,7 @@ export default class User {
     updatedAt?: Date
     lastLoginAt?: Date
   }) {
-    this.id = params.id || crypto.randomUUID() // UUID v4 생성
+    this.idx = params.idx ?? undefined // idx가 없으면 0으로 초기화
 
     // 이메일 설정 (값 객체 또는 문자열)
     this.email = params.email instanceof Email ? params.email : Email.of(params.email)
@@ -165,6 +167,7 @@ export default class User {
    * 정적 팩토리 메서드: 기본 인증으로 새 사용자를 생성합니다.
    */
   static createWithBasicAuth(params: {
+    userId: string
     email: string | Email
     passwordHash: string
     salt: string
@@ -173,6 +176,7 @@ export default class User {
     phoneNumber?: string | PhoneNumber
   }): User {
     return new User({
+      userId: params.userId,
       email: params.email,
       passwordHash: params.passwordHash,
       salt: params.salt,
@@ -187,6 +191,7 @@ export default class User {
    * 정적 팩토리 메서드: PASS 인증으로 새 사용자를 생성합니다. (미래 확장용)
    */
   static createWithPassAuth(params: {
+    userId: string
     email: string | Email
     passwordHash: string
     salt: string
@@ -205,6 +210,7 @@ export default class User {
         : PhoneNumber.ofVerified(params.phoneNumber)
 
     return new User({
+      userId: params.userId,
       email: params.email,
       passwordHash: params.passwordHash,
       salt: params.salt,

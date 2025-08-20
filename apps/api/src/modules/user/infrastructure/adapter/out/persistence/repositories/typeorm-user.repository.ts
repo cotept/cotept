@@ -25,13 +25,26 @@ export class TypeOrmUserRepository extends BaseRepository<UserEntity> implements
   }
 
   /**
-   * ID로 사용자 조회
-   * @param id 사용자 ID
+   * IDX로 사용자 조회
+   * @param idx 사용자 IDX
    * @returns 사용자 도메인 엔티티 또는 null
    */
-  async findById(id: string): Promise<User | null> {
+  async findByIdx(idx: number): Promise<User | null> {
     try {
-      const userEntity = await this.findOne({ id })
+      const userEntity = await this.findOne({ idx })
+      return this.userMapper.toDomain(userEntity)
+    } catch {
+      return null
+    }
+  }
+  /**
+   * 사용자 ID로 조회
+   * @param userId 사용자 ID
+   * @returns 사용자 도메인 엔티티 또는 null
+   */
+  async findByUserId(userId: string): Promise<User | null> {
+    try {
+      const userEntity = await this.findOne({ userId })
       return this.userMapper.toDomain(userEntity)
     } catch {
       return null
@@ -93,16 +106,16 @@ export class TypeOrmUserRepository extends BaseRepository<UserEntity> implements
 
   /**
    * 사용자 삭제
-   * @param id 삭제할 사용자 ID
+   * @param idx 삭제할 사용자 IDX
    * @returns 삭제 성공 여부
    */
-  async delete(id: string, options: DeleteUserDto): Promise<boolean> {
+  async delete(idx: number, options: DeleteUserDto): Promise<boolean> {
     const deleteType = options?.deleteType || "SOFT"
 
     // 소프트 삭제 처리
     if (deleteType === "SOFT") {
       try {
-        await this.softDelete({ id })
+        await this.softDelete({ idx })
         return true
       } catch {
         return false
@@ -110,7 +123,7 @@ export class TypeOrmUserRepository extends BaseRepository<UserEntity> implements
     }
 
     try {
-      await this.findOneAndDelete({ id })
+      await this.findOneAndDelete({ idx })
       return true
     } catch {
       return false

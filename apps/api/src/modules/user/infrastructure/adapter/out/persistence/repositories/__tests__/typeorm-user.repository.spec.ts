@@ -1,390 +1,318 @@
 import { Test, TestingModule } from "@nestjs/testing"
 import { getRepositoryToken } from "@nestjs/typeorm"
 
-import { Repository } from "typeorm"
+import { EntityManager, Repository } from "typeorm"
 
+import { TypeOrmUserRepository } from "../typeorm-user.repository"
+
+import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { Email } from "@/modules/user/domain/vo/email.vo"
-import { Name } from "@/modules/user/domain/vo/name.vo"
-import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { UserPersistenceMapper } from "@/modules/user/infrastructure/adapter/out/persistence/mappers/user-persistence.mapper"
-import { TypeOrmUserRepository } from "@/modules/user/infrastructure/adapter/out/persistence/repositories/typeorm-user.repository"
+import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
+import { UserPersistenceMapper } from "@/modules/user/infrastructure/adapter/out/persistence/mappers"
+import { PaginatedResult } from "@/shared/infrastructure/dto/api-response.dto"
 
-describe("타입ORM 사용자 리포지토리", () => {
+// Mock data and entities
+const createMockUserEntity = (partial: Partial<UserEntity>): UserEntity => {
+  const entity = new UserEntity()
+  return Object.assign(entity, {
+    idx: 1,
+    userId: "user-id-123",
+    email: "test@example.com",
+    passwordHash: "hashed-password",
+    salt: "salt",
+    role: UserRole.MENTEE,
+    status: UserStatus.ACTIVE,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...partial,
+  })
+}
+
+const createMockUserDomain = (partial: Partial<User>): User => {
+  return new User({
+    idx: 1,
+    userId: "user-id-123",
+    email: "test@example.com",
+    passwordHash: "hashed-password",
+    salt: "salt",
+    role: UserRole.MENTEE,
+    status: UserStatus.ACTIVE,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...partial,
+  })
+}
+
+describe("TypeOrmUserRepository", () => {
   let repository: TypeOrmUserRepository
-  let mockUserRepository: jest.Mocked<Repository<UserEntity>>
-  let mockUserMapper: jest.Mocked<UserPersistenceMapper>
+  let mockTypeOrmRepo: jest.Mocked<Repository<UserEntity>>
+  let mockMapper: jest.Mocked<UserPersistenceMapper>
 
   beforeEach(async () => {
-    // 리포지토리 모킹
-    mockUserRepository = {
-      findOne: jest.fn(),
-      find: jest.fn(),
-      findAndCount: jest.fn(),
-      save: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-    } as unknown as jest.Mocked<Repository<UserEntity>>
+    const mockRepoProvider = {
+      provide: getRepositoryToken(UserEntity),
+      useValue: {
+        findOne: jest.fn(),
+        findAndCount: jest.fn(),
+        save: jest.fn(),
+        softDelete: jest.fn(),
+        delete: jest.fn(),
+        count: jest.fn(),
+        create: jest.fn((entity) => entity), // Mock create to return the passed entity
+      },
+    }
 
-    // 매퍼 모킹
-    mockUserMapper = {
-      toDomain: jest.fn(),
-      toDomainList: jest.fn(),
-      toEntity: jest.fn(),
-    } as unknown as jest.Mocked<UserPersistenceMapper>
+    const mockMapperProvider = {
+      provide: UserPersistenceMapper,
+      useValue: {
+        toDomain: jest.fn(),
+        toDomainList: jest.fn(),
+        toEntity: jest.fn(),
+      },
+    }
 
-    // 테스트 모듈 생성
+    const mockEntityManagerProvider = {
+      provide: EntityManager,
+      useValue: {
+        // Mock entity manager methods if needed
+      },
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TypeOrmUserRepository,
-        {
-          provide: getRepositoryToken(UserEntity),
-          useValue: mockUserRepository,
-        },
-        {
-          provide: UserPersistenceMapper,
-          useValue: mockUserMapper,
-        },
-      ],
+      providers: [TypeOrmUserRepository, mockRepoProvider, mockMapperProvider, mockEntityManagerProvider],
     }).compile()
 
-    // 리포지토리 인스턴스 가져오기
     repository = module.get<TypeOrmUserRepository>(TypeOrmUserRepository)
+    mockTypeOrmRepo = module.get(getRepositoryToken(UserEntity))
+    mockMapper = module.get(UserPersistenceMapper)
   })
 
-  describe("findById 메소드", () => {
-    it("ID로 사용자를 찾아 도메인 객체로 변환해야 한다", async () => {
-      // Given
-      const userId = "123e4567-e89b-12d3-a456-426614174000"
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
-      const userEntity: Partial<UserEntity> = {
-        id: userId,
-        email: "test@example.com",
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: "홍길동",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+  describe("findByIdx", () => {
+    it("should return a user domain model if found", async () => {
+      const userEntity = createMockUserEntity({ idx: 1 })
+      const userDomain = createMockUserDomain({ idx: 1 })
 
-      const domainUser = new User({
-        id: userId,
-        email: Email.of("test@example.com"),
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: Name.of("홍길동"),
-      })
+      mockTypeOrmRepo.findOne.mockResolvedValue(userEntity)
+      mockMapper.toDomain.mockReturnValue(userDomain)
 
-      // 리포지토리 응답 설정
-      mockUserRepository.findOne.mockResolvedValue(userEntity as UserEntity)
+      const result = await repository.findByIdx(1)
 
-      // 매퍼 응답 설정
-      mockUserMapper.toDomain.mockReturnValue(domainUser)
-
-      // When
-      const result = await repository.findById(userId)
-
-      // Then
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } })
-      expect(mockUserMapper.toDomain).toHaveBeenCalledWith(userEntity)
-      expect(result).toEqual(domainUser)
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { idx: 1 } })
+      expect(mockMapper.toDomain).toHaveBeenCalledWith(userEntity)
+      expect(result).toEqual(userDomain)
     })
 
-    it("ID에 해당하는 사용자가 없으면 null을 반환해야 한다", async () => {
-      // Given
-      const userId = "non-existent-id"
+    it("should return null if user is not found", async () => {
+      mockTypeOrmRepo.findOne.mockResolvedValue(null)
+      mockMapper.toDomain.mockImplementation(() => {
+        throw new Error()
+      })
 
-      // 리포지토리 응답 설정 - 사용자 없음
-      mockUserRepository.findOne.mockResolvedValue(null)
+      const result = await repository.findByIdx(999)
 
-      // When
-      const result = await repository.findById(userId)
-
-      // Then
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } })
-      expect(mockUserMapper.toDomain).not.toHaveBeenCalled()
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { idx: 999 } })
       expect(result).toBeNull()
     })
   })
 
-  describe("findByEmail 메소드", () => {
-    it("이메일로 사용자를 찾아 도메인 객체로 변환해야 한다", async () => {
-      // Given
+  describe("findByUserId", () => {
+    it("should return a user domain model if found", async () => {
+      const userId = "user-id-123"
+      const userEntity = createMockUserEntity({ userId })
+      const userDomain = createMockUserDomain({ userId })
+
+      mockTypeOrmRepo.findOne.mockResolvedValue(userEntity)
+      mockMapper.toDomain.mockReturnValue(userDomain)
+
+      const result = await repository.findByUserId(userId)
+
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { userId } })
+      expect(mockMapper.toDomain).toHaveBeenCalledWith(userEntity)
+      expect(result).toEqual(userDomain)
+    })
+
+    it("should return null if user is not found", async () => {
+      mockTypeOrmRepo.findOne.mockResolvedValue(null)
+      mockMapper.toDomain.mockImplementation(() => {
+        throw new Error()
+      })
+
+      const result = await repository.findByUserId("non-existent-id")
+
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { userId: "non-existent-id" } })
+      expect(result).toBeNull()
+    })
+  })
+
+  describe("findByEmail", () => {
+    it("should return a user domain model if found", async () => {
       const email = "test@example.com"
+      const userEntity = createMockUserEntity({ email })
+      const userDomain = createMockUserDomain({ email: Email.of(email) })
 
-      const userEntity: Partial<UserEntity> = {
-        id: "123e4567-e89b-12d3-a456-426614174000",
-        email: email,
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: "홍길동",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      mockTypeOrmRepo.findOne.mockResolvedValue(userEntity)
+      mockMapper.toDomain.mockReturnValue(userDomain)
 
-      const domainUser = new User({
-        id: "123e4567-e89b-12d3-a456-426614174000",
-        email: Email.of(email),
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: Name.of("홍길동"),
-      })
-
-      // 리포지토리 응답 설정
-      mockUserRepository.findOne.mockResolvedValue(userEntity as UserEntity)
-
-      // 매퍼 응답 설정
-      mockUserMapper.toDomain.mockReturnValue(domainUser)
-
-      // When
       const result = await repository.findByEmail(email)
 
-      // Then
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { email } })
-      expect(mockUserMapper.toDomain).toHaveBeenCalledWith(userEntity)
-      expect(result).toEqual(domainUser)
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { email } })
+      expect(mockMapper.toDomain).toHaveBeenCalledWith(userEntity)
+      expect(result).toEqual(userDomain)
     })
 
-    it("이메일에 해당하는 사용자가 없으면 null을 반환해야 한다", async () => {
-      // Given
-      const email = "non-existent@example.com"
+    it("should return null if user is not found", async () => {
+      mockTypeOrmRepo.findOne.mockResolvedValue(null)
+      mockMapper.toDomain.mockImplementation(() => {
+        throw new Error()
+      })
 
-      // 리포지토리 응답 설정 - 사용자 없음
-      mockUserRepository.findOne.mockResolvedValue(null)
+      const result = await repository.findByEmail("non-existent@example.com")
 
-      // When
-      const result = await repository.findByEmail(email)
-
-      // Then
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { email } })
-      expect(mockUserMapper.toDomain).not.toHaveBeenCalled()
+      expect(mockTypeOrmRepo.findOne).toHaveBeenCalledWith({ where: { email: "non-existent@example.com" } })
       expect(result).toBeNull()
     })
   })
 
-  describe("findAllUsers 메소드", () => {
-    it("필터링 및 페이지네이션을 적용하여 모든 사용자를 조회해야 한다", async () => {
-      // Given
-      const page = 2
-      const limit = 5
-      const role = UserRole.MENTEE
-      const status = UserStatus.ACTIVE
+  describe("findAllUsers", () => {
+    it("should return paginated users with filters", async () => {
+      const userEntities = [createMockUserEntity({})]
+      const userDomains = [createMockUserDomain({})]
+      const total = 1
+      const options = { page: 1, limit: 10, role: UserRole.MENTEE, status: UserStatus.ACTIVE }
 
-      const userEntities: Partial<UserEntity>[] = [
-        {
-          id: "123e4567-e89b-12d3-a456-426614174000",
-          email: "user1@example.com",
-          passwordHash: "hashed-password-1",
-          salt: "salt-value-1",
-          role: UserRole.MENTEE,
-          status: UserStatus.ACTIVE,
-        },
-        {
-          id: "223e4567-e89b-12d3-a456-426614174000",
-          email: "user2@example.com",
-          passwordHash: "hashed-password-2",
-          salt: "salt-value-2",
-          role: UserRole.MENTEE,
-          status: UserStatus.ACTIVE,
-        },
-      ]
+      const paginatedResult: PaginatedResult<UserEntity> = {
+        items: userEntities,
+        totalItemCount: total,
+        currentPage: options.page,
+        limit: options.limit,
+        totalPageCount: 0,
+      }
 
-      const domainUsers = [
-        new User({
-          id: "123e4567-e89b-12d3-a456-426614174000",
-          email: Email.of("user1@example.com"),
-          passwordHash: "hashed-password-1",
-          salt: "salt-value-1",
-          role: UserRole.MENTEE,
-          status: UserStatus.ACTIVE,
-        }),
-        new User({
-          id: "223e4567-e89b-12d3-a456-426614174000",
-          email: Email.of("user2@example.com"),
-          passwordHash: "hashed-password-2",
-          salt: "salt-value-2",
-          role: UserRole.MENTEE,
-          status: UserStatus.ACTIVE,
-        }),
-      ]
+      const paginateSpy = jest.spyOn(repository, "paginateWithSort").mockResolvedValue(paginatedResult)
 
-      const total = 12 // 총 12개 중 5~9번째 항목 반환
+      mockMapper.toDomainList.mockReturnValue(userDomains)
 
-      // 리포지토리 응답 설정
-      mockUserRepository.findAndCount.mockResolvedValue([userEntities as UserEntity[], total])
+      const result = await repository.findAllUsers(options)
 
-      // 매퍼 응답 설정
-      mockUserMapper.toDomainList.mockReturnValue(domainUsers)
+      expect(paginateSpy).toHaveBeenCalledWith(
+        { role: options.role, status: options.status },
+        { currentPage: options.page, limit: options.limit, sort: { field: "createdAt", order: "DESC" } },
+      )
+      expect(mockMapper.toDomainList).toHaveBeenCalledWith(userEntities)
+      expect(result).toEqual({ users: userDomains, total })
 
-      // When
-      const result = await repository.findAllUsers({ page, limit, role, status })
-
-      // Then
-      expect(mockUserRepository.findAndCount).toHaveBeenCalledWith({
-        where: { role, status },
-        skip: (page - 1) * limit, // 5
-        take: limit, // 5
-        order: { createdAt: "DESC" },
-      })
-      expect(mockUserMapper.toDomainList).toHaveBeenCalledWith(userEntities)
-      expect(result).toEqual({
-        users: domainUsers,
-        total,
-      })
-    })
-
-    it("옵션이 제공되지 않으면 기본값으로 첫 페이지를 조회해야 한다", async () => {
-      // Given
-      const userEntities: Partial<UserEntity>[] = []
-      const total = 0
-
-      // 리포지토리 응답 설정
-      mockUserRepository.findAndCount.mockResolvedValue([userEntities as UserEntity[], total])
-
-      // 매퍼 응답 설정
-      mockUserMapper.toDomainList.mockReturnValue([])
-
-      // When
-      const result = await repository.findAllUsers()
-
-      // Then
-      expect(mockUserRepository.findAndCount).toHaveBeenCalledWith({
-        where: {}, // 필터 없음
-        skip: 0, // 첫 페이지
-        take: 10, // 기본 limit
-        order: { createdAt: "DESC" },
-      })
-      expect(result).toEqual({
-        users: [],
-        total: 0,
-      })
+      paginateSpy.mockRestore()
     })
   })
 
-  describe("save 메소드", () => {
-    it("도메인 객체를 엔티티로 변환하여 저장하고 결과를 다시 도메인 객체로 변환해야 한다", async () => {
-      // Given
-      const userId = "123e4567-e89b-12d3-a456-426614174000"
-      const now = new Date()
+  describe("save", () => {
+    it("should save a user and return the domain model", async () => {
+      const userDomain = createMockUserDomain({})
+      const userEntity = createMockUserEntity({})
 
-      const domainUser = new User({
-        id: userId,
-        email: Email.of("test@example.com"),
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: Name.of("홍길동"),
-        createdAt: now,
-        updatedAt: now,
-      })
+      mockMapper.toEntity.mockReturnValue(userEntity)
+      mockTypeOrmRepo.save.mockResolvedValue(userEntity)
+      mockMapper.toDomain.mockReturnValue(userDomain)
 
-      const userEntity: Partial<UserEntity> = {
-        id: userId,
-        email: "test@example.com",
-        passwordHash: "hashed-password",
-        salt: "salt-value",
-        role: UserRole.MENTEE,
-        status: UserStatus.ACTIVE,
-        name: "홍길동",
-        createdAt: now,
-        updatedAt: now,
-      }
+      // BaseRepository.create calls repository.save(), so we can spy on it.
+      const createSpy = jest.spyOn(repository, "create").mockResolvedValue(userEntity)
 
-      const savedEntity: Partial<UserEntity> = {
-        ...userEntity,
-        updatedAt: new Date(now.getTime() + 1000), // 업데이트 시간 변경
-      }
+      const result = await repository.save(userDomain)
 
-      const savedDomainUser = new User({
-        ...domainUser,
-        updatedAt: savedEntity.updatedAt,
-      })
+      expect(mockMapper.toEntity).toHaveBeenCalledWith(userDomain)
+      expect(createSpy).toHaveBeenCalledWith(userEntity)
+      expect(mockMapper.toDomain).toHaveBeenCalledWith(userEntity)
+      expect(result).toEqual(userDomain)
 
-      // 매퍼 응답 설정
-      mockUserMapper.toEntity.mockReturnValue(userEntity as UserEntity)
-      mockUserRepository.save.mockResolvedValue(savedEntity as UserEntity)
-      mockUserMapper.toDomain.mockReturnValue(savedDomainUser)
-
-      // When
-      const result = await repository.save(domainUser)
-
-      // Then
-      expect(mockUserMapper.toEntity).toHaveBeenCalledWith(domainUser)
-      expect(mockUserRepository.save).toHaveBeenCalledWith(userEntity)
-      expect(mockUserMapper.toDomain).toHaveBeenCalledWith(savedEntity)
-      expect(result).toEqual(savedDomainUser)
+      createSpy.mockRestore()
     })
   })
 
-  describe("delete 메소드", () => {
-    it("ID로 사용자를 삭제하고 성공 여부를 반환해야 한다", async () => {
-      // Given
-      const userId = "123e4567-e89b-12d3-a456-426614174000"
+  describe("delete", () => {
+    const idx = 1
 
-      // 리포지토리 응답 설정 - 삭제 성공
-      mockUserRepository.delete.mockResolvedValue({ affected: 1 } as any)
+    it("should perform soft delete by default and return true", async () => {
+      const options: DeleteUserDto = {}
+      const softDeleteSpy = jest.spyOn(repository, "softDelete").mockResolvedValue({ affected: 1, raw: [] } as any)
 
-      // When
-      const result = await repository.delete(userId)
+      const result = await repository.delete(idx, options)
 
-      // Then
-      expect(mockUserRepository.delete).toHaveBeenCalledWith(userId)
+      expect(softDeleteSpy).toHaveBeenCalledWith({ idx })
       expect(result).toBe(true)
+
+      softDeleteSpy.mockRestore()
     })
 
-    it("존재하지 않는 ID를 삭제하려고 할 때 false를 반환해야 한다", async () => {
-      // Given
-      const userId = "non-existent-id"
+    it("should perform soft delete when specified and return true", async () => {
+      const options: DeleteUserDto = { deleteType: "SOFT" }
+      const softDeleteSpy = jest.spyOn(repository, "softDelete").mockResolvedValue({ affected: 1, raw: [] } as any)
 
-      // 리포지토리 응답 설정 - 영향 받은 행 없음
-      mockUserRepository.delete.mockResolvedValue({ affected: 0 } as any)
+      const result = await repository.delete(idx, options)
 
-      // When
-      const result = await repository.delete(userId)
+      expect(softDeleteSpy).toHaveBeenCalledWith({ idx })
+      expect(result).toBe(true)
 
-      // Then
-      expect(mockUserRepository.delete).toHaveBeenCalledWith(userId)
+      softDeleteSpy.mockRestore()
+    })
+
+    it("should return false if soft delete fails", async () => {
+      const options: DeleteUserDto = { deleteType: "SOFT" }
+      const softDeleteSpy = jest.spyOn(repository, "softDelete").mockRejectedValue(new Error("DB error"))
+
+      const result = await repository.delete(idx, options)
+
       expect(result).toBe(false)
+      softDeleteSpy.mockRestore()
+    })
+
+    it("should perform hard delete when specified and return true", async () => {
+      const options: DeleteUserDto = { deleteType: "HARD" }
+      const findOneAndDeleteSpy = jest
+        .spyOn(repository, "findOneAndDelete")
+        .mockResolvedValue({ affected: 1, raw: [] } as any)
+
+      const result = await repository.delete(idx, options)
+
+      expect(findOneAndDeleteSpy).toHaveBeenCalledWith({ idx })
+      expect(result).toBe(true)
+
+      findOneAndDeleteSpy.mockRestore()
+    })
+
+    it("should return false if hard delete fails", async () => {
+      const options: DeleteUserDto = { deleteType: "HARD" }
+      const findOneAndDeleteSpy = jest.spyOn(repository, "findOneAndDelete").mockRejectedValue(new Error("DB error"))
+
+      const result = await repository.delete(idx, options)
+
+      expect(result).toBe(false)
+      findOneAndDeleteSpy.mockRestore()
     })
   })
 
-  describe("existsByEmail 메소드", () => {
-    it("이메일이 존재하면 true를 반환해야 한다", async () => {
-      // Given
-      const email = "existing@example.com"
+  describe("existsByEmail", () => {
+    it("should return true if email exists", async () => {
+      const email = "exists@example.com"
+      mockTypeOrmRepo.count.mockResolvedValue(1)
 
-      // 리포지토리 응답 설정 - 이메일 존재
-      mockUserRepository.count.mockResolvedValue(1)
-
-      // When
       const result = await repository.existsByEmail(email)
 
-      // Then
-      expect(mockUserRepository.count).toHaveBeenCalledWith({ where: { email } })
+      expect(mockTypeOrmRepo.count).toHaveBeenCalledWith({ where: { email } })
       expect(result).toBe(true)
     })
 
-    it("이메일이 존재하지 않으면 false를 반환해야 한다", async () => {
-      // Given
+    it("should return false if email does not exist", async () => {
       const email = "non-existent@example.com"
+      mockTypeOrmRepo.count.mockResolvedValue(0)
 
-      // 리포지토리 응답 설정 - 이메일 존재하지 않음
-      mockUserRepository.count.mockResolvedValue(0)
-
-      // When
       const result = await repository.existsByEmail(email)
 
-      // Then
-      expect(mockUserRepository.count).toHaveBeenCalledWith({ where: { email } })
+      expect(mockTypeOrmRepo.count).toHaveBeenCalledWith({ where: { email } })
       expect(result).toBe(false)
     })
   })

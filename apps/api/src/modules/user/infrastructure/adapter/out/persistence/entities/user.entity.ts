@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryColumn } from "typeorm"
+import { Column, Entity, OneToOne } from "typeorm"
 
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
@@ -10,8 +10,8 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
  */
 @Entity("USERS")
 export class UserEntity extends BaseEntity<UserEntity> {
-  @PrimaryColumn({ name: "user_id", type: "varchar2", length: 36 })
-  id: string
+  @Column({ name: "userId", type: "varchar2", length: 36, primary: true })
+  userId: string
 
   @Column({ name: "email", type: "varchar2", length: 100, unique: true })
   email: string
@@ -61,7 +61,6 @@ export class UserEntity extends BaseEntity<UserEntity> {
 
   @Column({ name: "gender", type: "varchar2", length: 1, nullable: true })
   gender?: string
-
 
   @Column({ name: "last_login_at", type: "timestamp", nullable: true })
   lastLoginAt?: Date

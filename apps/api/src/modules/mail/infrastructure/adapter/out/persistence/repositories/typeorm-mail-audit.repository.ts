@@ -31,7 +31,7 @@ export class TypeOrmMailAuditRepository extends BaseRepository<MailAuditEntity> 
     return this.mailAuditMapper.toDomain(savedEntity)
   }
 
-  async findByIdx(idx: string): Promise<MailAudit | undefined> {
+  async findByIdx(idx: number): Promise<MailAudit | undefined> {
     try {
       const entity = await this.findOne({ idx })
       return this.mailAuditMapper.toDomain(entity)

@@ -10,8 +10,8 @@ export class GetMailAuditUseCaseImpl extends GetMailAuditUseCase {
     super()
   }
 
-  async getById(id: string): Promise<MailAudit | undefined> {
-    return this.mailAuditRepository.findById(id)
+  async getByIdx(idx: number): Promise<MailAudit | undefined> {
+    return this.mailAuditRepository.findByIdx(idx)
   }
 
   async getByMailId(mailId: string): Promise<MailAudit[]> {

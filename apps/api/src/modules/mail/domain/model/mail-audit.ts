@@ -1,12 +1,12 @@
-import { LocaleType,TemplateNames } from "../types/template.types"
+import { LocaleType, TemplateNames } from "../types/template.types"
 
 /**
  * 메일 상태 열거형
  */
 export enum MailStatus {
-  PENDING = 'PENDING',     // 대기 중
-  SENT = 'SENT',           // 발송 완료
-  FAILED = 'FAILED'        // 발송 실패
+  PENDING = "PENDING", // 대기 중
+  SENT = "SENT", // 발송 완료
+  FAILED = "FAILED", // 발송 실패
 }
 
 /**
@@ -14,7 +14,7 @@ export enum MailStatus {
  * 이메일 발송 내역 추적 및 감사를 위한 모델
  */
 export class MailAudit {
-  private readonly id: string
+  private readonly idx: number
   private readonly mailId: string
   private readonly template: TemplateNames
   private readonly recipients: string[]
@@ -26,7 +26,7 @@ export class MailAudit {
   private readonly locale: LocaleType
 
   private constructor(
-    id: string,
+    idx: number,
     mailId: string,
     template: TemplateNames,
     recipients: string[],
@@ -37,7 +37,7 @@ export class MailAudit {
     locale: LocaleType,
     error?: string,
   ) {
-    this.id = id
+    this.idx = idx
     this.mailId = mailId
     this.template = template
     this.recipients = recipients
@@ -53,7 +53,7 @@ export class MailAudit {
    * 새로운 메일 감사 객체를 생성합니다.
    */
   public static create(
-    id: string,
+    idx: number,
     mailId: string,
     template: TemplateNames,
     recipients: string[],
@@ -63,18 +63,7 @@ export class MailAudit {
     sentAt: Date | null = null,
     error?: string,
   ): MailAudit {
-    return new MailAudit(
-      id,
-      mailId,
-      template,
-      recipients,
-      status,
-      sentAt,
-      new Date(),
-      context,
-      locale,
-      error,
-    )
+    return new MailAudit(idx, mailId, template, recipients, status, sentAt, new Date(), context, locale, error)
   }
 
   /**
@@ -98,8 +87,8 @@ export class MailAudit {
   /**
    * ID를 반환합니다.
    */
-  public getId(): string {
-    return this.id
+  public getIdx(): number {
+    return this.idx
   }
 
   /**
@@ -169,7 +158,7 @@ export class MailAudit {
    * 메일 감사 객체의 데이터를 반환합니다.
    */
   public toData(): {
-    id: string
+    idx: number
     mailId: string
     template: TemplateNames
     recipients: string[]
@@ -181,7 +170,7 @@ export class MailAudit {
     locale: LocaleType
   } {
     return {
-      id: this.id,
+      idx: this.idx,
       mailId: this.mailId,
       template: this.template,
       recipients: this.recipients,

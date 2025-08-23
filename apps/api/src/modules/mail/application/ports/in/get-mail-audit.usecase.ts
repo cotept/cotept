@@ -6,11 +6,11 @@ import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
  */
 export abstract class GetMailAuditUseCase {
   /**
-   * ID로 메일 감사 데이터를 조회합니다.
-   * @param id 조회할 메일 감사 ID
+   * IDX로 메일 감사 데이터를 조회합니다.
+   * @param idx 조회할 메일 감사 IDX
    * @returns 찾은 메일 감사 객체 또는 undefined
    */
-  abstract getById(id: string): Promise<MailAudit | undefined>
+  abstract getByIdx(idx: number): Promise<MailAudit | undefined>
 
   /**
    * 메일 ID로 메일 감사 데이터를 조회합니다.

@@ -14,7 +14,7 @@ export class MailAuditResponseMapper {
    */
   toMailAuditResponse(mailAudit: MailAudit): MailAuditResponseDto {
     return {
-      id: mailAudit.getId(),
+      idx: mailAudit.getIdx(),
       mailId: mailAudit.getMailId(),
       template: mailAudit.getTemplate(),
       recipients: mailAudit.getRecipients(),

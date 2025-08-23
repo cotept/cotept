@@ -1,5 +1,3 @@
-import { join } from "node:path"
-
 import { Module } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { TypeOrmModule } from "@nestjs/typeorm"
@@ -7,6 +5,7 @@ import { EntityClassOrSchema } from "@nestjs/typeorm/dist/interfaces/entity-clas
 
 import { ConfigModule } from "@/configs/config.module"
 import { DatabaseConfig } from "@/configs/database/database.config"
+import { ALL_ENTITIES } from "@/shared/infrastructure/persistence/typeorm/entities.registry"
 
 @Module({
   imports: [
@@ -18,8 +17,7 @@ import { DatabaseConfig } from "@/configs/database/database.config"
           type: "oracle",
           ...configService.getOrThrow<DatabaseConfig>("database"),
           poolSize: 25,
-          // entities: ALL_ENTITIES,
-          entities: [join(__dirname, "**/*.entity{.ts,.js}")],
+          entities: ALL_ENTITIES,
         }
       },
       inject: [ConfigService],

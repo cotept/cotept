@@ -14,10 +14,10 @@ export abstract class LoginSessionRepositoryPort {
 
   /**
    * 세션 ID로 세션 찾기
-   * @param id 세션 ID
+   * @param idx 세션 ID
    * @returns 로그인 세션 또는 null
    */
-  abstract findById(id: string): Promise<LoginSession | null>
+  abstract findByIdx(idx: string): Promise<LoginSession | null>
 
   /**
    * 토큰으로 세션 찾기

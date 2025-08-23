@@ -1,5 +1,5 @@
-import { UserEntity } from "../entities/user.entity"
-import { UserPersistenceMapper } from "./user-persistence.mapper"
+import { UserEntity } from "../../entities/user.entity"
+import { UserPersistenceMapper } from "../user-persistence.mapper"
 
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { BaseMapper } from "@/shared/infrastructure/mappers/base.mapper"

@@ -1,4 +1,4 @@
-import { OmitType, PartialType } from "@nestjs/swagger/dist/type-helpers"
+import { PartialType, PickType } from "@nestjs/swagger"
 
 import { UserDto } from "./user.dto"
 
@@ -8,5 +8,16 @@ import { UserDto } from "./user.dto"
  * 나머지 필드를 선택적(Partial)으로 사용
  */
 export class UpdateUserDto extends PartialType(
-  OmitType(UserDto, ["id", "email", "createdAt", "updatedAt", "lastLoginAt", "role", "password"] as const),
+  PickType(UserDto, [
+    "userId",
+    "email",
+    "name",
+    "phoneNumber",
+    "updatedAt",
+    "lastLoginAt",
+    "role",
+    "password",
+    "status",
+    "phoneVerified",
+  ] as const),
 ) {}

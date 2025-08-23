@@ -17,7 +17,7 @@ describe("유저 매퍼", () => {
       const userId = "123e4567-e89b-12d3-a456-426614174000"
       const now = new Date()
       const user = new User({
-        id: userId,
+        userId: userId,
         email: Email.of("test@example.com"),
         passwordHash: "hashed-password",
         salt: "salt-value",
@@ -35,7 +35,7 @@ describe("유저 매퍼", () => {
 
       // Then
       expect(result).toBeDefined()
-      expect(result.id).toBe(userId)
+      expect(result.userId).toBe(userId)
       expect(result.email).toBe("test@example.com")
       expect(result.name).toBe("홍길동")
       expect(result.role).toBe(UserRole.MENTEE)
@@ -52,7 +52,7 @@ describe("유저 매퍼", () => {
       const userId = "123e4567-e89b-12d3-a456-426614174000"
       const now = new Date()
       const user = new User({
-        id: userId,
+        userId: userId,
         email: Email.of("test@example.com"),
         passwordHash: "hashed-password",
         salt: "salt-value",
@@ -67,7 +67,7 @@ describe("유저 매퍼", () => {
 
       // Then
       expect(result).toBeDefined()
-      expect(result.id).toBe(userId)
+      expect(result.userId).toBe(userId)
       expect(result.email).toBe("test@example.com")
       expect(result.name).toBeUndefined()
       expect(result.phoneNumber).toBeUndefined()
@@ -82,7 +82,7 @@ describe("유저 매퍼", () => {
       const now = new Date()
       const users = [
         new User({
-          id: "123e4567-e89b-12d3-a456-426614174000",
+          userId: "123e4567-e89b-12d3-a456-426614174000",
           email: Email.of("user1@example.com"),
           passwordHash: "hashed-password-1",
           salt: "salt-value-1",
@@ -93,7 +93,7 @@ describe("유저 매퍼", () => {
           updatedAt: now,
         }),
         new User({
-          id: "223e4567-e89b-12d3-a456-426614174000",
+          userId: "223e4567-e89b-12d3-a456-426614174000",
           email: Email.of("user2@example.com"),
           passwordHash: "hashed-password-2",
           salt: "salt-value-2",
@@ -114,14 +114,14 @@ describe("유저 매퍼", () => {
       expect(results.length).toBe(2)
 
       // 첫 번째 사용자 검증
-      expect(results[0].id).toBe("123e4567-e89b-12d3-a456-426614174000")
+      expect(results[0].userId).toBe("123e4567-e89b-12d3-a456-426614174000")
       expect(results[0].email).toBe("user1@example.com")
       expect(results[0].name).toBe("사용자a")
       expect(results[0].role).toBe(UserRole.MENTEE)
       expect(results[0].phoneNumber).toBeUndefined()
 
       // 두 번째 사용자 검증
-      expect(results[1].id).toBe("223e4567-e89b-12d3-a456-426614174000")
+      expect(results[1].userId).toBe("223e4567-e89b-12d3-a456-426614174000")
       expect(results[1].email).toBe("user2@example.com")
       expect(results[1].name).toBe("사용자b")
       expect(results[1].role).toBe(UserRole.MENTOR)

@@ -1,26 +1,24 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
 
 import { IdentityProviderEntity } from "./identity-provider.entity"
 
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 @Entity("PHONE_VERIFICATIONS")
-export class PhoneVerificationEntity {
-  @PrimaryColumn({ name: "verification_id", type: "varchar2", length: 36 })
-  id: string
-
+export class PhoneVerificationEntity extends BaseEntity<PhoneVerificationEntity> {
   @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
   userId: string | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User | null
 
   @Column({ name: "provider_id", type: "varchar2", length: 36 })
   providerId: string
 
   @ManyToOne(() => IdentityProviderEntity)
-  @JoinColumn({ name: "provider_id" })
+  @JoinColumn({ name: "provider_id", referencedColumnName: "idx" })
   provider: IdentityProviderEntity
 
   @Column({ name: "request_id", type: "varchar2", length: 255, unique: true })
@@ -52,9 +50,6 @@ export class PhoneVerificationEntity {
 
   @Column({ name: "status", type: "varchar2", length: 20, default: "PENDING" })
   status: string
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
 
   @Column({ name: "verified_at", type: "timestamp", nullable: true })
   verifiedAt: Date | null

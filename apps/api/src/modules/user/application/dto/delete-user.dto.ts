@@ -1,13 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty, PickType } from "@nestjs/swagger"
 
 import { Expose } from "class-transformer"
 import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator"
+
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 
 /**
  * 사용자 삭제 DTO
  * 사용자 삭제 시 추가 옵션을 지정하기 위한 데이터 전송 객체
  */
-export class DeleteUserDto {
+export class DeleteUserDto extends PickType(UserDto, ["userId"] as const) {
   @ApiProperty({
     description: "삭제 이유 (선택적)",
     example: "서비스 이용 중단",

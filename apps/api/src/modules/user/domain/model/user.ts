@@ -17,7 +17,7 @@ export enum UserStatus {
 export default class User {
   // 식별자 및 기본 정보
   idx?: number
-  userId: string
+  userId: string // 사용자 ID
   email: Email // 값 객체로 변경
   passwordHash: string
   salt: string

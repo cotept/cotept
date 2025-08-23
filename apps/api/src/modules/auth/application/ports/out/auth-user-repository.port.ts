@@ -18,7 +18,7 @@ export abstract class AuthUserRepositoryPort {
    * @param id 사용자 ID
    * @returns 인증용 사용자 또는 null
    */
-  abstract findById(id: string): Promise<AuthUser | null>
+  abstract findById(idx: string): Promise<AuthUser | null>
 
   /**
    * 소셜 ID로 사용자 찾기

@@ -1,4 +1,4 @@
-import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
+import { DeleteUserDto } from "@/modules/user/application/dto/delete-user.dto"
 
 /**
  * 사용자 삭제 유스케이스 인터페이스
@@ -7,9 +7,9 @@ import { DeleteUserDto } from "@/modules/user/application/dtos/delete-user.dto"
 export abstract class DeleteUserUseCase {
   /**
    * 사용자 삭제
-   * @param id 삭제할 사용자 ID
+   * @param idx 삭제할 사용자 ID
    * @param deleteUserDto 삭제 관련 추가 정보 (선택적)
    * @returns 삭제 성공 여부
    */
-  abstract execute(id: string, deleteUserDto?: DeleteUserDto): Promise<boolean>
+  abstract execute(idx: number, deleteUserDto?: DeleteUserDto): Promise<boolean>
 }

@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common"
 
 import User from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { BaseMapper } from "@/shared/infrastructure/mappers/base.mapper"
+import { EntityMapper } from "@/shared/infrastructure/mappers/entity.mapper"
 
 @Injectable()
-export class UserPersistenceMapper extends BaseMapper<User, UserEntity> {
+export class UserPersistenceMapper extends EntityMapper<User, UserEntity> {
   /**
    * Entity → Domain 변환
    * User 생성자의 자동 변환 기능을 최대한 활용
@@ -28,7 +28,7 @@ export class UserPersistenceMapper extends BaseMapper<User, UserEntity> {
 
       // ✅ User 생성자가 string → PhoneNumber 자동 변환 + 인증 상태 설정
       phoneNumber: entity.phoneNumber,
-      phoneVerified: BaseMapper.numberToBoolean(entity.phoneVerified),
+      phoneVerified: EntityMapper.numberToBoolean(entity.phoneVerified),
 
       ciHash: entity.ciHash,
       diHash: entity.diHash,
@@ -66,7 +66,7 @@ export class UserPersistenceMapper extends BaseMapper<User, UserEntity> {
     // ✅ Optional 값 객체들 안전 변환
     entity.name = domain.getNameString()
     entity.phoneNumber = domain.getPhoneNumberString()
-    entity.phoneVerified = BaseMapper.booleanToNumber(domain.isPhoneVerified())
+    entity.phoneVerified = EntityMapper.booleanToNumber(domain.isPhoneVerified())
 
     entity.ciHash = domain.ciHash
     entity.diHash = domain.diHash

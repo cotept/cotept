@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger"
 
 import { Expose } from "class-transformer"
-import { IsArray, IsDateString, IsEnum, IsObject, IsOptional, IsString, IsUUID } from "class-validator"
+import { IsArray, IsDateString, IsEnum, IsNumber, IsObject, IsOptional, IsString, IsUUID } from "class-validator"
 
-import { MailStatus } from '@/modules/mail/domain/model/mail-audit'
+import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
 
 /**
  * 메일 감사 응답 DTO
@@ -11,11 +11,11 @@ import { MailStatus } from '@/modules/mail/domain/model/mail-audit'
 export class MailAuditResponseDto {
   @ApiProperty({
     description: "메일 감사 ID",
-    example: "550e8400-e29b-41d4-a716-446655440000",
+    example: 1,
   })
   @Expose()
-  @IsUUID("4")
-  id: string
+  @IsNumber()
+  idx: number
 
   @ApiProperty({
     description: "메일 ID",
@@ -47,7 +47,7 @@ export class MailAuditResponseDto {
     description: "메일 상태",
     example: MailStatus.SENT,
     enum: MailStatus,
-    enumName: 'MailStatus',
+    enumName: "MailStatus",
   })
   @Expose()
   @IsEnum(MailStatus)

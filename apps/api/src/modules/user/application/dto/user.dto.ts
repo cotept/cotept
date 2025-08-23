@@ -6,16 +6,17 @@ import {
   IsDate,
   IsEmail,
   IsEnum,
+  IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Length,
   Matches,
   Validate,
 } from "class-validator"
 
-import { UserRole, UserStatus } from '@/modules/user/domain/model/user'
+import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 
 /**
@@ -25,12 +26,24 @@ import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-no
  */
 export class UserDto {
   @ApiProperty({
-    description: "사용자 고유 ID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: "사용자 고유 IDX (자동 증가 기본키)",
+    example: 123,
   })
   @Expose()
-  @IsUUID("4", { message: "유효한 사용자 ID 형식이 아닙니다." })
-  id: string
+  @IsNumber({}, { message: "사용자 IDX는 숫자여야 합니다." })
+  @IsInt({ message: "사용자 IDX는 정수여야 합니다." })
+  idx: number
+
+  @ApiProperty({
+    description: "사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)",
+    example: "dudtod1596",
+  })
+  @Expose()
+  @IsString({ message: "사용자 아이디는 문자열이어야 합니다." })
+  @IsNotEmpty({ message: "사용자 아이디는 필수 값입니다." })
+  @Length(4, 20, { message: "사용자 아이디는 4자 이상 20자 이하여야 합니다." })
+  @Matches(/^[a-zA-Z0-9_-]+$/, { message: "사용자 아이디는 영문, 숫자, _, - 만 사용 가능합니다." })
+  userId: string
 
   @ApiProperty({
     description: "사용자 이메일",
@@ -74,7 +87,7 @@ export class UserDto {
     description: "사용자 역할",
     example: UserRole.MENTEE,
     enum: UserRole,
-    enumName: 'UserRole',
+    enumName: "UserRole",
   })
   @Expose()
   @IsEnum(UserRole, { message: "유효한 사용자 역할이 아닙니다." })
@@ -84,7 +97,7 @@ export class UserDto {
     description: "사용자 상태",
     example: UserStatus.ACTIVE,
     enum: UserStatus,
-    enumName: 'UserStatus',
+    enumName: "UserStatus",
   })
   @Expose()
   @IsEnum(UserStatus, { message: "유효한 사용자 상태가 아닙니다." })

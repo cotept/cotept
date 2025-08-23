@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common"
 
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from "class-transformer"
 
-import { LoginSession } from '@/modules/auth/domain/model/login-session';
-import { SessionLogEntity } from '@/modules/auth/infrastructure/adapter/out/persistence/entities/session-log.entity';
+import { LoginSession } from "@/modules/auth/domain/model/login-session"
+import { SessionLogEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/session-log.entity"
 
 /**
  * 로그인 세션 영속성 매퍼
@@ -18,7 +18,7 @@ export class LoginSessionPersistenceMapper {
    */
   toEntity(loginSession: LoginSession): SessionLogEntity {
     const plainData = {
-      id: loginSession.id,
+      idx: loginSession.id,
       userId: loginSession.userId,
       token: loginSession.token,
       ipAddress: loginSession.ipAddress,
@@ -26,10 +26,10 @@ export class LoginSessionPersistenceMapper {
       expiresAt: loginSession.expiresAt,
       createdAt: loginSession.createdAt,
       endedAt: loginSession.endedAt,
-      endReason: loginSession.endReason
-    };
+      endReason: loginSession.endReason,
+    }
 
-    return plainToInstance(SessionLogEntity, plainData);
+    return plainToInstance(SessionLogEntity, plainData)
   }
 
   /**
@@ -38,19 +38,19 @@ export class LoginSessionPersistenceMapper {
    * @returns 로그인 세션 도메인 엔티티
    */
   toDomain(entity: SessionLogEntity): LoginSession {
-    const plainData = instanceToPlain(entity);
+    const plainData = instanceToPlain(entity)
 
     return new LoginSession(
-      plainData.id,
+      plainData.idx,
       plainData.userId,
       plainData.token,
-      plainData.ipAddress || '',
-      plainData.userAgent || '',
+      plainData.ipAddress || "",
+      plainData.userAgent || "",
       plainData.expiresAt,
       plainData.createdAt,
       plainData.endedAt,
-      plainData.endReason
-    );
+      plainData.endReason,
+    )
   }
 
   /**
@@ -59,7 +59,7 @@ export class LoginSessionPersistenceMapper {
    * @returns 로그인 세션 도메인 엔티티 목록
    */
   toDomainList(entities: SessionLogEntity[]): LoginSession[] {
-    return entities.map(entity => this.toDomain(entity));
+    return entities.map((entity) => this.toDomain(entity))
   }
 
   /**
@@ -68,6 +68,6 @@ export class LoginSessionPersistenceMapper {
    * @returns 세션 로그 영속성 엔티티 목록
    */
   toEntityList(loginSessions: LoginSession[]): SessionLogEntity[] {
-    return loginSessions.map(loginSession => this.toEntity(loginSession));
+    return loginSessions.map((loginSession) => this.toEntity(loginSession))
   }
 }

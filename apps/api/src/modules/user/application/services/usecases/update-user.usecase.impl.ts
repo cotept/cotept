@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
 
-import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { UpdateUserDto } from "@/modules/user/application/dto/update-user.dto"
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { UpdateUserUseCase } from "@/modules/user/application/ports/in/update-user.usecase"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
@@ -18,19 +18,20 @@ export class UpdateUserUseCaseImpl implements UpdateUserUseCase {
 
   /**
    * 사용자 정보 업데이트
-   * @param id 사용자 ID
+   * @param idx 사용자 IDx
    * @param updateUserDto 업데이트할 사용자 정보
    * @returns 업데이트된 사용자 정보 DTO
    * @throws NotFoundException 사용자가 존재하지 않는 경우
    */
-  async execute(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
+  async execute(idx: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
     // 사용자 조회
-    const user = await this.userRepository.findById(id)
+    const user = await this.userRepository.findByIdx(idx)
     if (!user) {
-      throw new NotFoundException(`ID ${id}에 해당하는 사용자를 찾을 수 없습니다.`)
+      throw new NotFoundException(`사용자를 찾을 수 없습니다.`)
     }
     // 값 객체 생성
     const nameInput = sanitizeInput(updateUserDto.name)
+    // const nameInput = sanitizeInput(updateUserDto.name)
     const phoneInput = sanitizeInput(updateUserDto.phoneNumber)
     const name = nameInput ? Name.of(nameInput) : undefined
     const phoneNumber = phoneInput ? PhoneNumber.of(phoneInput) : undefined

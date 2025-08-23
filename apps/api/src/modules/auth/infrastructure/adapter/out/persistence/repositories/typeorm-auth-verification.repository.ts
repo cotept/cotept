@@ -38,13 +38,13 @@ export class TypeOrmAuthVerificationRepository
   }
 
   /**
-   * ID로 인증 검증 찾기
-   * @param id 인증 검증 ID
+   * IDX로 인증 검증 찾기
+   * @param idx 인증 검증 ID
    * @returns 인증 검증 도메인 엔티티 또는 null
    */
-  async findById(id: string): Promise<AuthVerification | null> {
+  async findByIdx(idx: string): Promise<AuthVerification | null> {
     try {
-      const entity = await this.findOne({ id })
+      const entity = await this.findOne({ idx })
       return this.authVerificationMapper.toDomain(entity)
     } catch {
       return null

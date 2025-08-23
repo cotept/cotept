@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from "@nestjs/common"
 
-import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { CreateUserDto } from "@/modules/user/application/dto/create-user.dto"
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { CreateUserUseCase } from "@/modules/user/application/ports/in/create-user.usecase"
 import { PasswordServicePort } from "@/modules/user/application/ports/out/password-service.port"
@@ -43,6 +43,7 @@ export class CreateUserUseCaseImpl implements CreateUserUseCase {
 
     // 도메인 엔티티 생성
     const user = User.createWithBasicAuth({
+      userId: createUserDto.userId,
       email,
       passwordHash: hash,
       salt,

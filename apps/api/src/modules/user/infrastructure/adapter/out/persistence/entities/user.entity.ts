@@ -10,7 +10,7 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
  */
 @Entity("USERS")
 export class UserEntity extends BaseEntity<UserEntity> {
-  @Column({ name: "userId", type: "varchar2", length: 36, primary: true })
+  @Column({ name: "userId", type: "varchar2", length: 36, unique: true })
   userId: string
 
   @Column({ name: "email", type: "varchar2", length: 100, unique: true })

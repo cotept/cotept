@@ -13,11 +13,11 @@ export abstract class MailAuditRepositoryPort {
   abstract save(mailAudit: MailAudit): Promise<MailAudit>
 
   /**
-   * ID로 메일 감사 데이터를 조회합니다.
-   * @param id 조회할 메일 감사 ID
+   * IDx로 메일 감사 데이터를 조회합니다.
+   * @param idx 조회할 메일 감사 ID
    * @returns 찾은 메일 감사 객체 또는 undefined
    */
-  abstract findById(id: string): Promise<MailAudit | undefined>
+  abstract findByIdx(idx: string): Promise<MailAudit | undefined>
 
   /**
    * 메일 ID로 메일 감사 데이터를 조회합니다.

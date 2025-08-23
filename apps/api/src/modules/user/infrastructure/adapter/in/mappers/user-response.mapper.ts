@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common"
 
-import { UserDto } from "@/modules/user/application/dtos"
+import { UserDto } from "@/modules/user/application/dto"
 import {
   PasswordChangeResponseDto,
   UserDeletionResponseDto,
   UserListResponseDto,
-  UserResponseDto,
-} from "@/modules/user/infrastructure/dtos/response"
+} from "@/modules/user/infrastructure/adapter/in/dto/response"
 
 /**
  * 사용자 응답 매퍼
@@ -14,18 +13,19 @@ import {
  */
 @Injectable()
 export class UserResponseMapper {
-  toUserResponse(userDto: UserDto): UserResponseDto {
+  toUserResponse(userDto: UserDto): UserDto {
     return {
-      id: userDto.id,
+      idx: userDto.idx,
+      userId: userDto.userId,
       email: userDto.email,
       name: userDto.name,
       role: userDto.role,
       status: userDto.status,
       phoneNumber: userDto.phoneNumber,
       phoneVerified: userDto.phoneVerified,
-      createdAt: userDto.createdAt.toISOString(),
-      updatedAt: userDto.updatedAt.toISOString(),
-      lastLoginAt: userDto.lastLoginAt?.toISOString(),
+      createdAt: userDto.createdAt,
+      updatedAt: userDto.updatedAt,
+      lastLoginAt: userDto.lastLoginAt ? userDto.lastLoginAt : undefined,
     }
   }
 

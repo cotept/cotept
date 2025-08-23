@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity } from "typeorm"
 
 import { LocaleType, TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
 
@@ -11,9 +11,6 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
  */
 @Entity("MAIL_AUDITS")
 export class MailAuditEntity extends BaseEntity<MailAuditEntity> {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
-
   @Column({ name: "mail_id", type: "varchar2", nullable: true })
   mailId: string
 

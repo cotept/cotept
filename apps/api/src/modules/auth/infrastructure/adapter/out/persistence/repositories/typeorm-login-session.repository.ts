@@ -40,12 +40,12 @@ export class TypeOrmLoginSessionRepository
 
   /**
    * ID로 로그인 세션 찾기
-   * @param id 세션 ID
+   * @param idx 세션 ID
    * @returns 로그인 세션 도메인 엔티티 또는 null
    */
-  async findById(id: string): Promise<LoginSession | null> {
+  async findById(idx: string): Promise<LoginSession | null> {
     try {
-      const entity = await this.findOne({ id })
+      const entity = await this.findOne({ idx })
       return this.loginSessionMapper.toDomain(entity)
     } catch {
       return null

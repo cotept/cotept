@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm"
 
 import { EntityManager, Repository } from "typeorm"
 
-import { DeleteUserDto } from "@/modules/user/application/dtos"
+import { DeleteUserDto } from "@/modules/user/application/dto"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"

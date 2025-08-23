@@ -1,4 +1,4 @@
-import { DeleteUserDto } from "../../dtos"
+import { DeleteUserDto } from "../../dto"
 
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
 

@@ -1,18 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
 
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 @Entity("SESSION_LOGS")
 export class SessionLogEntity extends BaseEntity<SessionLogEntity> {
-  @PrimaryColumn({ name: "log_id", type: "varchar2", length: 36 })
-  id: string
-
   @Column({ name: "user_id", type: "varchar2", length: 36 })
   userId: string
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User
 
   @Column({ name: "token", type: "varchar2", length: 512, unique: true })

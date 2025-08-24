@@ -18,7 +18,7 @@ export class AuthVerificationPersistenceMapper {
    */
   toEntity(authVerification: AuthVerification): AuthVerificationEntity {
     const plainData = {
-      idx: authVerification.id,
+      idx: authVerification.idx,
       userId: authVerification.userId,
       authType: authVerification.authType,
       target: authVerification.target,

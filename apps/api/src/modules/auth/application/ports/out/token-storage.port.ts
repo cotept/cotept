@@ -26,7 +26,7 @@ export abstract class TokenStoragePort {
    * @param tokenId 토큰 ID
    * @param expiresIn 만료 시간(초)
    */
-  abstract saveRefreshTokenFamily(userId: string, familyId: string, tokenId: string, expiresIn: number): Promise<void>
+  abstract saveRefreshTokenFamily(userId: number, familyId: string, tokenId: string, expiresIn: number): Promise<void>
 
   /**
    * 리프레시 토큰 패밀리 확인
@@ -34,20 +34,20 @@ export abstract class TokenStoragePort {
    * @param familyId 패밀리 ID
    * @returns 유효한 패밀리인 경우 토큰 ID, 아니면 null
    */
-  abstract getRefreshTokenFamily(userId: string, familyId: string): Promise<string | null | undefined>
+  abstract getRefreshTokenFamily(userId: number, familyId: string): Promise<string | null | undefined>
 
   /**
    * 리프레시 토큰 패밀리 삭제
    * @param userId 사용자 ID
    * @param familyId 패밀리 ID
    */
-  abstract deleteRefreshTokenFamily(userId: string, familyId: string): Promise<void>
+  abstract deleteRefreshTokenFamily(userId: number, familyId: string): Promise<void>
 
   /**
    * 사용자의 모든 리프레시 토큰 패밀리 삭제
    * @param userId 사용자 ID
    */
-  abstract deleteAllRefreshTokenFamilies(userId: string): Promise<void>
+  abstract deleteAllRefreshTokenFamilies(userId: number): Promise<void>
 
   /**
    * 인증 코드 저장
@@ -55,14 +55,14 @@ export abstract class TokenStoragePort {
    * @param userId 사용자 ID
    * @param expiresIn 만료 시간(초)
    */
-  abstract saveAuthCode(code: string, userId: string, expiresIn: number): Promise<void>
+  abstract saveAuthCode(code: string, userId: number, expiresIn: number): Promise<void>
 
   /**
    * 인증 코드로 사용자 ID 찾기
    * @param code 인증 코드
    * @returns 사용자 ID 또는 null
    */
-  abstract getUserIdByAuthCode(code: string): Promise<string | undefined>
+  abstract getUserIdByAuthCode(code: string): Promise<number | undefined>
 
   /**
    * 인증 코드 삭제

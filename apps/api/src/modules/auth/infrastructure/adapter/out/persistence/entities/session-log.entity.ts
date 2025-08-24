@@ -5,11 +5,11 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
 
 @Entity("SESSION_LOGS")
 export class SessionLogEntity extends BaseEntity<SessionLogEntity> {
-  @Column({ name: "user_id", type: "varchar2", length: 36 })
-  userId: string
+  @Column({ name: "user_idx", type: "number" })
+  userIdx: number
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
+  @JoinColumn({ name: "user_idx", referencedColumnName: "idx" })
   user: User
 
   @Column({ name: "token", type: "varchar2", length: 512, unique: true })

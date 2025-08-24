@@ -5,8 +5,8 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
 
 @Entity("AUTH_VERIFICATIONS")
 export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
-  @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
-  userId: string | null
+  @Column({ name: "user_id", type: "number", nullable: true })
+  userId: number | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id", referencedColumnName: "idx" })

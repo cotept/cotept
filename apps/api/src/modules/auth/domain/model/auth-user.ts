@@ -4,7 +4,7 @@
  */
 export class AuthUser {
   constructor(
-    public readonly id: string,
+    public readonly id: number,
     public readonly email: string,
     public readonly passwordHash: string,
     public readonly salt: string,
@@ -15,7 +15,7 @@ export class AuthUser {
   /**
    * 사용자 id 반환
    */
-  getId(): string {
+  getId(): number {
     return this.id
   }
 

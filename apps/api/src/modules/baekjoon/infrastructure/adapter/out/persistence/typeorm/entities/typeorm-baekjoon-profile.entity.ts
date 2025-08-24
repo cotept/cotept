@@ -12,7 +12,7 @@ import { booleanTransformer } from "@/shared/utils/database.util"
 @Entity("BAEKJOON_PROFILE")
 export class BaekjoonProfileEntity extends BaseEntity<BaekjoonProfileEntity> {
   @OneToOne(() => UserEntity, (user) => user.baekjoonProfile)
-  @JoinColumn({ name: "user_id", referencedColumnName: "id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: UserEntity
 
   @Column({ name: "cotept_user_id", type: "varchar2", length: 36 })

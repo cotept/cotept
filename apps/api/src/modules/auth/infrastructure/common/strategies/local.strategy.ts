@@ -53,7 +53,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
       // 기본 사용자 정보만 반환
       return {
-        id: user.id,
+        id: user.id.toString(),
         email: user.email,
         role: user.role,
       }

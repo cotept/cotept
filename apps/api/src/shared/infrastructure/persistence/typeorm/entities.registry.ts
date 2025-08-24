@@ -37,6 +37,7 @@ export const MAIL_ENTITIES: EntityClassOrSchema[] = [MailAuditEntity]
  * 새로운 엔티티 추가시 해당 도메인 배열에 추가하면 됨
  */
 export const ALL_ENTITIES: EntityClassOrSchema[] = [
+  // BaseEntity,
   ...USER_ENTITIES,
   ...AUTH_ENTITIES,
   ...BAEKJOON_ENTITIES,

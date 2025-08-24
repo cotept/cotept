@@ -18,7 +18,7 @@ export class LoginSessionPersistenceMapper {
    */
   toEntity(loginSession: LoginSession): SessionLogEntity {
     const plainData = {
-      idx: loginSession.id,
+      idx: loginSession.idx,
       userId: loginSession.userId,
       token: loginSession.token,
       ipAddress: loginSession.ipAddress,

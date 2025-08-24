@@ -17,7 +17,14 @@ export abstract class LoginSessionRepositoryPort {
    * @param idx 세션 ID
    * @returns 로그인 세션 또는 null
    */
-  abstract findByIdx(idx: string): Promise<LoginSession | null>
+  abstract findByIdx(idx: number): Promise<LoginSession | null>
+
+  /**
+   * 사용자 ID로 세션 찾기
+   * @param userIdx 사용자 ID
+   * @returns 로그인 세션 또는 null
+   */
+  abstract findByUserIdx(userIdx: number): Promise<LoginSession | null>
 
   /**
    * 토큰으로 세션 찾기
@@ -31,19 +38,19 @@ export abstract class LoginSessionRepositoryPort {
    * @param userId 사용자 ID
    * @returns 활성 세션 목록
    */
-  abstract findActiveSessionsByUserId(userId: string): Promise<LoginSession[]>
+  abstract findActiveSessionsByUserIdx(userIdx: number): Promise<LoginSession[]>
 
   /**
    * 사용자의 모든 세션 찾기
    * @param userId 사용자 ID
    * @returns 전체 세션 목록
    */
-  abstract findAllByUserId(userId: string): Promise<LoginSession[]>
+  abstract findAllByUserIdx(userIdx: number): Promise<LoginSession[]>
 
   /**
    * 사용자의 모든 활성 세션 종료
    * @param userId 사용자 ID
    * @returns 성공 여부
    */
-  abstract terminateAllUserSessions(userId: string): Promise<boolean>
+  abstract terminateAllUserSessions(userIdx: number): Promise<boolean>
 }

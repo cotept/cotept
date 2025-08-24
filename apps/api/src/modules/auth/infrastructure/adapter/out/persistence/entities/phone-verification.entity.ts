@@ -7,15 +7,15 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
 
 @Entity("PHONE_VERIFICATIONS")
 export class PhoneVerificationEntity extends BaseEntity<PhoneVerificationEntity> {
-  @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
-  userId: string | null
+  @Column({ name: "user_id", type: "number", nullable: true })
+  userId: number | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User | null
 
-  @Column({ name: "provider_id", type: "varchar2", length: 36 })
-  providerId: string
+  @Column({ name: "provider_id", type: "number" })
+  providerId: number
 
   @ManyToOne(() => IdentityProviderEntity)
   @JoinColumn({ name: "provider_id", referencedColumnName: "idx" })

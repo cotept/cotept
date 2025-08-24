@@ -58,10 +58,10 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @param id 사용자 ID
    * @returns 인증용 사용자 또는 null
    */
-  async findById(userId: string): Promise<AuthUser | null> {
+  async findById(userId: number): Promise<AuthUser | null> {
     try {
       const userEntity = await this.entityRepository.findOne({
-        where: { userId },
+        where: { idx: userId },
         select: [
           "idx",
           "userId",
@@ -145,7 +145,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @returns 성공 여부
    */
   async connectSocialAccount(
-    userId: string,
+    userId: number,
     provider: SocialProvider,
     socialId: string,
     accessToken?: string,
@@ -193,7 +193,6 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 4. 새 소셜 계정 연결 정보 생성
       const newOAuthAccount = new UserOAuthAccountEntity()
-      newOAuthAccount.idx = uuidv4()
       newOAuthAccount.userId = userId
       newOAuthAccount.providerId = providerEntity.idx
       newOAuthAccount.providerUserId = socialId
@@ -265,7 +264,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 4. 새 사용자 생성
       const newUser = new UserEntity({
-        idx: uuidv4(),
+        userId: uuidv4(),
         email,
         passwordHash: "", // 소셜 로그인만 사용하는 계정
         salt: "",
@@ -278,7 +277,6 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 5. 소셜 계정 연결 정보 생성
       const newOAuthAccount = new UserOAuthAccountEntity()
-      newOAuthAccount.idx = uuidv4()
       newOAuthAccount.userId = savedUser.idx
       newOAuthAccount.providerId = providerEntity.idx
       newOAuthAccount.providerUserId = socialId
@@ -306,7 +304,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @param hashedPassword 해싱된 새 비밀번호
    * @returns 성공 여부
    */
-  async updatePassword(userId: string, hashedPassword: { hash: string; salt: string }): Promise<boolean> {
+  async updatePassword(userId: number, hashedPassword: { hash: string; salt: string }): Promise<boolean> {
     try {
       // 1. 사용자 존재 여부 확인 및 업데이트
       await this.findOneAndUpdate(
@@ -321,6 +319,26 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
       if (error instanceof NotFoundException) {
         throw error
       }
+      this.handleDBError(error, "[AuthUser]")
+    }
+  }
+
+  /**
+   * 사용자 ID로 사용자 찾기 (로그인용)
+   * @param userId 사용자 ID (문자열)
+   * @returns 인증용 사용자 또는 null
+   */
+  async findByUserId(userId: string): Promise<AuthUser | null> {
+    try {
+      const userEntity = await this.entityRepository.findOne({
+        where: { userId },
+        select: ["idx", "userId", "email", "passwordHash", "salt", "role", "status"],
+      })
+
+      if (!userEntity) return null
+
+      return this.mapToAuthUser(userEntity)
+    } catch (error) {
       this.handleDBError(error, "[AuthUser]")
     }
   }

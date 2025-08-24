@@ -8,6 +8,7 @@ import { AuthType, AuthVerification } from "@/modules/auth/domain/model/auth-ver
 import { AuthVerificationEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/auth-verification.entity"
 import { AuthVerificationPersistenceMapper } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers/auth-verification-persistence.mapper"
 import { BaseRepository } from "@/shared/infrastructure/persistence/typeorm/repositories/base/base.repository"
+import { convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 
 /**
  * TypeORM을 사용한 인증 검증 레포지토리 구현
@@ -39,12 +40,13 @@ export class TypeOrmAuthVerificationRepository
 
   /**
    * IDX로 인증 검증 찾기
-   * @param idx 인증 검증 ID
+   * @param userId 인증 검증 ID (JWT string)
    * @returns 인증 검증 도메인 엔티티 또는 null
    */
-  async findByIdx(idx: string): Promise<AuthVerification | null> {
+  async findById(userId: string): Promise<AuthVerification | null> {
     try {
-      const entity = await this.findOne({ idx })
+      const numericUserId = convertJwtUserIdToNumber(userId, "AuthVerification findById")
+      const entity = await this.findOne({ userId: numericUserId })
       return this.authVerificationMapper.toDomain(entity)
     } catch {
       return null
@@ -68,12 +70,13 @@ export class TypeOrmAuthVerificationRepository
 
   /**
    * 사용자 ID로 인증 검증 목록 찾기
-   * @param userId 사용자 ID
+   * @param userId 사용자 ID (JWT string)
    * @returns 인증 검증 도메인 엔티티 목록
    */
   async findAllByUserId(userId: string): Promise<AuthVerification[]> {
+    const numericUserId = convertJwtUserIdToNumber(userId, "AuthVerification findAllByUserId")
     const entities = await this.entityRepository.find({
-      where: { userId },
+      where: { userId: numericUserId },
       order: { createdAt: "DESC" },
     })
     return this.authVerificationMapper.toDomainList(entities)

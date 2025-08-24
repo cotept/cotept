@@ -49,7 +49,7 @@ export class RefreshTokenPayload {
    * 새 리프레시 토큰 페이로드 생성
    */
   static create(
-    userId: string,
+    userId: number,
     familyId: string,
     jti: string,
     expiresInSeconds: number
@@ -58,7 +58,7 @@ export class RefreshTokenPayload {
     const exp = now + expiresInSeconds;
 
     return new RefreshTokenPayload(
-      userId,
+      userId.toString(), // JWT sub는 string으로 저장하되, 숫자를 문자열로 변환
       familyId,
       now,
       exp,

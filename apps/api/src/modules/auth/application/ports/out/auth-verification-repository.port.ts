@@ -13,11 +13,11 @@ export abstract class AuthVerificationRepositoryPort {
   abstract save(verification: AuthVerification): Promise<AuthVerification>
 
   /**
-   * IDx로 인증 검증 찾기
-   * @param idx 인증 검증 ID
+   * userId(임시발급)로 인증 검증 찾기
+   * @param userId 인증 검증 ID
    * @returns 인증 검증 또는 null
    */
-  abstract findByIdx(idx: string): Promise<AuthVerification | null>
+  abstract findById(userId: string): Promise<AuthVerification | null>
 
   /**
    * 인증 유형과 대상으로 가장 최근 인증 검증 찾기

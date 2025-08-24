@@ -12,7 +12,7 @@ export abstract class TokenGeneratorPort {
    * @param role 사용자 역할
    * @returns 토큰 쌍
    */
-  abstract generateTokenPair(userId: string, email: string, role: string): TokenPair;
+  abstract generateTokenPair(userId: number, email: string, role: string): TokenPair;
 
   /**
    * 액세스 토큰 검증 및 페이로드 추출

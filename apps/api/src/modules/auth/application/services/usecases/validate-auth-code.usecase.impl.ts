@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common"
 
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { ValidateAuthCodeDto, ValidateAuthCodeResultDto } from "../../dtos/validate-auth-code.dto"
 import { ValidateAuthCodeUseCase } from "../../ports/in/validate-auth-code.usecase"
 import { TokenStoragePort } from "../../ports/out/token-storage.port"
@@ -42,7 +43,7 @@ export class ValidateAuthCodeUseCaseImpl implements ValidateAuthCodeUseCase {
       await this.tokenStorage.deleteAuthCode(code)
       this.logger.debug(`Validated and consumed auth code for user ${userId}`)
 
-      return new ValidateAuthCodeResultDto(userId, true)
+      return new ValidateAuthCodeResultDto(convertDomainUserIdToString(userId), true)
     } catch (error) {
       this.logger.error(
         `Failed to validate auth code: ${ErrorUtils.getErrorMessage(error)}`,

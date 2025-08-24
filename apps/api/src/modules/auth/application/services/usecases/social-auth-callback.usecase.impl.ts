@@ -1,6 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { clentUrlConfig } from "@/configs/token"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import {
@@ -69,7 +70,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
 
       if (existingAuthUser) {
         // 기존에 연결된 소셜 계정으로 로그인
-        userId = existingAuthUser.id
+        userId = convertDomainUserIdToString(existingAuthUser.id)
         this.logger.debug(`Found existing user by social ID: ${userId}`)
       } else {
         // 2. 이메일로 기존 사용자 찾기
@@ -81,7 +82,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
 
           // 임시 연결 정보 저장
           const pendingInfo: PendingLinkInfo = {
-            userId: existingUserByEmail.id,
+            userId: convertDomainUserIdToString(existingUserByEmail.id),
             provider,
             socialId: user.socialId,
             email: user.email,
@@ -119,7 +120,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
             user.profileImageUrl,
             user.profileData,
           )
-          userId = newUser.id
+          userId = convertDomainUserIdToString(newUser.id)
           this.logger.debug(`Created new user from social profile: ${userId}`)
         }
       }

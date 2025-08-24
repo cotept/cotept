@@ -1,17 +1,15 @@
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("AUTH_VERIFICATIONS")
 export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
-  @PrimaryGeneratedColumn("uuid", { name: "verification_id" })
-  id: string
-
-  @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
-  userId: string | null
+  @Column({ name: "user_id", type: "number", nullable: true })
+  userId: number | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User | null
 
   @Column({ name: "auth_type", type: "varchar2", length: 20 })
@@ -37,5 +35,4 @@ export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
 
   @Column({ name: "ip_address", type: "varchar2", length: 50, nullable: true })
   ipAddress: string | null
-
 }

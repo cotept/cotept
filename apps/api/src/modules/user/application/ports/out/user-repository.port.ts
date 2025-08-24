@@ -1,5 +1,6 @@
+import { DeleteUserDto } from "../../dto"
+
 import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { DeleteUserDto } from "../../dtos"
 
 /**
  * 사용자 저장소 인터페이스 (아웃바운드 포트)
@@ -7,11 +8,18 @@ import { DeleteUserDto } from "../../dtos"
  */
 export abstract class UserRepositoryPort {
   /**
-   * ID로 사용자 조회
-   * @param id 사용자 ID
+   * IDX로 사용자 조회
+   * @param idx 사용자 IDX
    * @returns 사용자 도메인 엔티티 또는 null
    */
-  abstract findById(id: string): Promise<User | null>
+  abstract findByIdx(idx: number): Promise<User | null>
+
+  /**
+   * userId 로 사용자 조회
+   * @param userId 사용자 ID
+   * @returns 사용자 도메인 엔티티 또는 null
+   */
+  abstract findByUserId(userId: string): Promise<User | null>
 
   /**
    * 이메일로 사용자 조회
@@ -41,10 +49,10 @@ export abstract class UserRepositoryPort {
 
   /**
    * 사용자 삭제
-   * @param id 삭제할 사용자 ID
+   * @param idx 삭제할 사용자 IDx
    * @returns 삭제 성공 여부
    */
-  abstract delete(id: string, options?: DeleteUserDto): Promise<boolean>
+  abstract delete(idx: number, options?: DeleteUserDto): Promise<boolean>
 
   /**
    * 중복 이메일 확인

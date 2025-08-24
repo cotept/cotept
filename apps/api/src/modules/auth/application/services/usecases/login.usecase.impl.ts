@@ -1,3 +1,5 @@
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
+
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
@@ -9,8 +11,6 @@ import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
-import { v4 as uuidv4 } from "uuid"
 /**
  * 로그인 유스케이스 구현체
  */
@@ -34,7 +34,7 @@ export class LoginUseCaseImpl implements LoginUseCase {
   async execute(loginDto: LoginDto): Promise<TokenPair> {
     try {
       // 1. 사용자 인증
-      const user = await this.authUserRepository.findById(loginDto.id)
+      const user = await this.authUserRepository.findByUserId(loginDto.id)
       if (!user) {
         throw new UnauthorizedException(AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS)
       }
@@ -64,7 +64,7 @@ export class LoginUseCaseImpl implements LoginUseCase {
       }
 
       // 6. 로그인 세션 생성 및 저장
-      const sessionId = uuidv4()
+      const sessionId = Date.now() // UUID 대신 timestamp 기반 number ID 사용
       const loginSession = LoginSession.create(
         sessionId,
         user.id,

@@ -111,7 +111,7 @@ export const AppApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getHello(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+        async getHello(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getHello(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AppApi.getHello']?.[localVarOperationServerIndex]?.url;
@@ -140,7 +140,7 @@ export const AppApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHello(options?: RawAxiosRequestConfig): AxiosPromise<string> {
+        getHello(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.getHello(options).then((request) => request(axios, basePath));
         },
     };
@@ -166,7 +166,7 @@ export interface AppApiInterface {
      * @throws {RequiredError}
      * @memberof AppApiInterface
      */
-    getHello(options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    getHello(options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
 }
 

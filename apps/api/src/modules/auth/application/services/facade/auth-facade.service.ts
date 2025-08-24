@@ -2,6 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 
 import { Response } from "express"
 
+import { convertJwtUserIdToNumber, convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
@@ -331,7 +332,8 @@ export class AuthFacadeService {
 
       // 사용자 정보 조회
       const userId = validationResult.userId
-      const user = await this.authUserRepository.findById(userId)
+      const numericUserId = convertJwtUserIdToNumber(userId, "ExchangeAuthCode userId 변환")
+      const user = await this.authUserRepository.findById(numericUserId)
 
       if (!user) {
         throw new UnauthorizedException("사용자를 찾을 수 없습니다.")
@@ -339,7 +341,7 @@ export class AuthFacadeService {
 
       // 토큰 생성을 위해 LoginDto 생성
       const loginDto = new LoginDto()
-      loginDto.id = user.getId() // 실제 아이디 사용
+      loginDto.id = convertDomainUserIdToString(user.getId()) // number를 string으로 변환
       loginDto.password = "" // 소셜 로그인은 비밀번호 검증을 하지 않음
       loginDto.ipAddress = ipAddress
       loginDto.userAgent = userAgent
@@ -415,7 +417,8 @@ export class AuthFacadeService {
    */
   async findUserById(id: string): Promise<AuthUser | null> {
     try {
-      return await this.authUserRepository.findById(id)
+      const numericId = convertJwtUserIdToNumber(id, "FindUserById 변환")
+      return await this.authUserRepository.findById(numericId)
     } catch (error) {
       this.logger.error(
         `ID로 사용자 찾기 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -449,8 +452,9 @@ export class AuthFacadeService {
       // 2. 사용자 결정에 따른 처리
       if (confirmSocialLinkRequestDto.approved) {
         // 기존 connectSocialAccount 메서드 활용
+        const numericUserId = convertJwtUserIdToNumber(pendingInfo.userId, "ConnectSocialAccount userId 변환")
         await this.authUserRepository.connectSocialAccount(
-          pendingInfo.userId,
+          numericUserId,
           pendingInfo.provider,
           pendingInfo.socialId,
           pendingInfo.accessToken,
@@ -466,7 +470,7 @@ export class AuthFacadeService {
 
         // 기존 login 로직 활용하여 토큰 발급
         const loginDto = new LoginDto()
-        loginDto.id = user.getId() // 이메일 대신 실제 아이디 사용
+        loginDto.id = convertDomainUserIdToString(user.getId()) // number를 string으로 변환
         loginDto.password = "" // 소셜 로그인은 비밀번호 불필요
         loginDto.ipAddress = ipAddress
         loginDto.userAgent = userAgent

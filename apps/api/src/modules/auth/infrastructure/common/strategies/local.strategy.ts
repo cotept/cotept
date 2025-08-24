@@ -1,8 +1,10 @@
-import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
+
 import { Request } from "express"
 import { Strategy } from "passport-local"
+
+import { AuthFacadeService } from "@/modules/auth/application/services/facade/auth-facade.service"
 
 /**
  * 로그인 인증 결과 타입
@@ -51,7 +53,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
       // 기본 사용자 정보만 반환
       return {
-        id: user.id,
+        id: user.id.toString(),
         email: user.email,
         role: user.role,
       }

@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
+
 import { IsEnum, IsNotEmpty, IsString, Length } from "class-validator"
+
 import { AuthType } from '@/modules/auth/domain/model/auth-verification'
 
 /**

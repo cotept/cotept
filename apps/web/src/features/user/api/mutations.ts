@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query"
+import { type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 
 import { userKeys, userQueryUtils } from "./queryKey"
 
@@ -12,31 +12,36 @@ import type {
   UpdateUserResponse,
 } from "@/shared/types/user.type"
 
-import { ApiError, MutationConfig } from "@/shared/api/core/types"
+import { ApiError } from "@/shared/api/core/types"
 import { userApiService } from "@/shared/api/services/user-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 import { createOptimisticUpdate } from "@/shared/utils"
 
 // 사용자 생성
-export function useCreateUser(config?: MutationConfig) {
+export function useCreateUser(
+  options?: Pick<UseMutationOptions<CreateUserResponse, ApiError, CreateUserParams>, "onSuccess" | "onError">,
+) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<CreateUserResponse, ApiError, CreateUserParams>({
     mutationFn: (data) => userApiService.createUser(...data),
     queryKey: userKeys.lists().queryKey,
     successMessage: "사용자가 성공적으로 생성되었습니다.",
-    onSuccess: (response) => {
+    onSuccess: (response, variables, context) => {
       userQueryUtils.invalidateLists(queryClient)
-      config?.onSuccess?.(response.data)
+      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error) => {
-      config?.onError?.(error)
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context)
     },
   })
 }
 
 // 사용자 정보 수정 (Optimistic Update)
-export function useUpdateUser(id: string, config?: MutationConfig) {
+export function useUpdateUser(
+  id: string,
+  options?: Pick<UseMutationOptions<UpdateUserResponse, ApiError, UpdateUserParams>, "onSuccess" | "onError">,
+) {
   const queryClient = useQueryClient()
   const optimisticUpdate = createOptimisticUpdate<UpdateUserResponse, UpdateUserRequestData>(queryClient)
 
@@ -51,30 +56,32 @@ export function useUpdateUser(id: string, config?: MutationConfig) {
     onSettled: () => {
       userQueryUtils.invalidateLists(queryClient)
     },
-    onSuccess: (response) => {
-      config?.onSuccess?.(response.data)
+    onSuccess: (response, variables, context) => {
+      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error) => {
-      config?.onError?.(error)
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context)
     },
   })
 }
 
 // 사용자 삭제
-export function useDeleteUser(config?: MutationConfig) {
+export function useDeleteUser(
+  options?: Pick<UseMutationOptions<DeleteUserResponse, ApiError, DeleteUserParams>, "onSuccess" | "onError">,
+) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<DeleteUserResponse, ApiError, DeleteUserParams>({
     mutationFn: (data) => userApiService.deleteUser(...data),
     queryKey: userKeys.lists().queryKey,
     successMessage: "사용자가 성공적으로 삭제되었습니다.",
-    onSuccess: (response, data) => {
+    onSuccess: (response, data, context) => {
       userQueryUtils.invalidateDetail(queryClient, data[0].id)
       userQueryUtils.invalidateLists(queryClient)
-      config?.onSuccess?.(response.data)
+      options?.onSuccess?.(response, data, context)
     },
-    onError: (error) => {
-      config?.onError?.(error)
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context)
     },
   })
 }

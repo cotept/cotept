@@ -19,7 +19,7 @@ export class MailAuditPersistenceMapper {
     const entity = new MailAuditEntity()
     const data = domainModel.toData()
 
-    entity.id = data.id
+    entity.idx = data.idx
     entity.mailId = data.mailId
     entity.template = data.template
     entity.recipients = data.recipients
@@ -39,7 +39,7 @@ export class MailAuditPersistenceMapper {
    */
   toDomain(entity: MailAuditEntity): MailAudit {
     return MailAudit.create(
-      entity.id,
+      entity.idx,
       entity.mailId,
       entity.template as any,
       entity.recipients,

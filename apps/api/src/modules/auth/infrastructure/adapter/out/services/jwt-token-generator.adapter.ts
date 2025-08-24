@@ -1,10 +1,12 @@
-import { JwtConfig } from "@/configs/token"
-import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { RefreshTokenPayload, TokenPair, TokenPayload } from "@/modules/auth/domain/model"
 import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
+
 import { v4 as uuidv4 } from "uuid"
+
+import { JwtConfig } from "@/configs/token"
+import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
+import { RefreshTokenPayload, TokenPair, TokenPayload } from "@/modules/auth/domain/model"
 
 /**
  * JWT 토큰 생성기 구현 클래스
@@ -23,14 +25,14 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
    * @param role 사용자 역할
    * @returns 토큰 쌍
    */
-  generateTokenPair(userId: string, email: string, role: string): TokenPair {
+  generateTokenPair(userId: number, email: string, role: string): TokenPair {
     // 액세스 토큰 설정
     const accessTokenExpiresIn = parseInt(
       this.configService.getOrThrow<JwtConfig>("jwt").accessExpiresIn || "1800", // 기본 30분
     )
     const accessTokenId = this.generateTokenId()
     const accessTokenPayload: Partial<TokenPayload> = {
-      sub: userId,
+      sub: userId.toString(), // number를 string으로 변환
       email,
       role,
       jti: accessTokenId,
@@ -51,7 +53,7 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
     const refreshTokenId = this.generateTokenId()
     const familyId = this.generateFamilyId()
     const refreshTokenPayload: Partial<RefreshTokenPayload> = {
-      sub: userId,
+      sub: userId.toString(), // number를 string으로 변환
       family: familyId,
       jti: refreshTokenId,
       iat: Math.floor(Date.now() / 1000),

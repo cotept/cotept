@@ -1,25 +1,24 @@
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
+
+import { OAuthProviderEntity } from "./oauth-provider.entity"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
-import { OAuthProviderEntity } from "./oauth-provider.entity"
 
 @Entity("USER_OAUTH_ACCOUNTS")
 export class UserOAuthAccountEntity extends BaseEntity<UserOAuthAccountEntity> {
-  @PrimaryColumn({ name: "oauth_id", type: "varchar2", length: 36 })
-  id: string
-
-  @Column({ name: "user_id", type: "varchar2", length: 36 })
-  userId: string
+  @Column({ name: "user_id", type: "number" })
+  userId: number
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User
 
-  @Column({ name: "provider_id", type: "varchar2", length: 36 })
-  providerId: string
+  @Column({ name: "provider_id", type: "number" })
+  providerId: number
 
   @ManyToOne(() => OAuthProviderEntity)
-  @JoinColumn({ name: "provider_id" })
+  @JoinColumn({ name: "provider_id", referencedColumnName: "idx" })
   provider: OAuthProviderEntity
 
   @Column({ name: "provider_user_id", type: "varchar2", length: 255 })

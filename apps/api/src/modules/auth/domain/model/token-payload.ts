@@ -84,7 +84,7 @@ export class TokenPayload {
    * 새 토큰 페이로드 생성
    */
   static create(
-    userId: string,
+    userId: number,
     email: string,
     role: string,
     jti: string,
@@ -95,7 +95,7 @@ export class TokenPayload {
     const exp = now + expiresInSeconds;
 
     return new TokenPayload(
-      userId,
+      userId.toString(), // JWT sub는 string으로 저장하되, 숫자를 문자열로 변환
       email,
       role,
       now,

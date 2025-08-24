@@ -1,8 +1,9 @@
+import { Injectable, Logger } from "@nestjs/common"
+
 import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
 import { CacheService } from "@/shared/infrastructure/cache/redis"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger } from "@nestjs/common"
 
 /**
  * Redis를 사용한 토큰 저장소 구현
@@ -62,7 +63,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * @param tokenId 토큰 ID
    * @param expiresIn 만료 시간(초)
    */
-  async saveRefreshTokenFamily(userId: string, familyId: string, tokenId: string, expiresIn: number): Promise<void> {
+  async saveRefreshTokenFamily(userId: number, familyId: string, tokenId: string, expiresIn: number): Promise<void> {
     try {
       const key = `${this.REFRESH_FAMILY_PREFIX}${userId}:${familyId}`
       await this.redisService.set(key, tokenId, expiresIn)
@@ -81,7 +82,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * @param familyId 패밀리 ID
    * @returns 유효한 패밀리인 경우 토큰 ID, 아니면 null
    */
-  async getRefreshTokenFamily(userId: string, familyId: string): Promise<string | null | undefined> {
+  async getRefreshTokenFamily(userId: number, familyId: string): Promise<string | null | undefined> {
     try {
       const key = `${this.REFRESH_FAMILY_PREFIX}${userId}:${familyId}`
       return this.redisService.get<string>(key)
@@ -99,7 +100,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * @param userId 사용자 ID
    * @param familyId 패밀리 ID
    */
-  async deleteRefreshTokenFamily(userId: string, familyId: string): Promise<void> {
+  async deleteRefreshTokenFamily(userId: number, familyId: string): Promise<void> {
     try {
       const key = `${this.REFRESH_FAMILY_PREFIX}${userId}:${familyId}`
       await this.redisService.delete(key)
@@ -116,7 +117,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * 사용자의 모든 리프레시 토큰 패밀리 삭제
    * @param userId 사용자 ID
    */
-  async deleteAllRefreshTokenFamilies(userId: string): Promise<void> {
+  async deleteAllRefreshTokenFamilies(userId: number): Promise<void> {
     try {
       const pattern = `${this.REFRESH_FAMILY_PREFIX}${userId}:*`
       const keys = await this.redisService.keys(pattern)
@@ -139,7 +140,7 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * @param userId 사용자 ID
    * @param expiresIn 만료 시간(초)
    */
-  async saveAuthCode(code: string, userId: string, expiresIn: number): Promise<void> {
+  async saveAuthCode(code: string, userId: number, expiresIn: number): Promise<void> {
     try {
       const key = `${this.AUTH_CODE_PREFIX}${code}`
       await this.redisService.set(key, userId, expiresIn)
@@ -158,12 +159,12 @@ export class RedisTokenStorageRepository implements TokenStoragePort {
    * @param code 인증 코드
    * @returns 사용자 ID 또는 null
    */
-  async getUserIdByAuthCode(code: string): Promise<string | undefined> {
+  async getUserIdByAuthCode(code: string): Promise<number | undefined> {
     try {
       const key = `${this.AUTH_CODE_PREFIX}${code}`
       const userId = await this.redisService.get<string>(key)
       this.logger.debug(`Auth code lookup result for ${key}: ${userId || "not found"}`)
-      return userId
+      return userId ? parseInt(userId, 10) : undefined
     } catch (error) {
       this.logger.error(
         `Failed to get user by auth code: ${ErrorUtils.getErrorMessage(error)}`,

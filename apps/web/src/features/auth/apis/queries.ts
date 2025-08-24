@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { authKeys } from "./queryKey"
 
@@ -49,12 +49,12 @@ export function useAuthProfile(options?: UseQueryOptions<any, Error, any, any>) 
 }
 
 // Prefetch 헬퍼
-export function prefetchValidateToken(queryClient: any, token: string) {
+export function prefetchValidateToken(queryClient: QueryClient, token: string) {
   const query = authQueries.validateToken(token)
   return queryClient.prefetchQuery(query)
 }
 
-export function prefetchAuthProfile(queryClient: any) {
+export function prefetchAuthProfile(queryClient: QueryClient) {
   const query = authQueries.profile()
   return queryClient.prefetchQuery(query)
 }

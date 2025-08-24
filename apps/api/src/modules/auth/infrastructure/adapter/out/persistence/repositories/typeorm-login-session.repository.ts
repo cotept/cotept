@@ -40,12 +40,25 @@ export class TypeOrmLoginSessionRepository
 
   /**
    * ID로 로그인 세션 찾기
-   * @param id 세션 ID
+   * @param idx 세션 ID
    * @returns 로그인 세션 도메인 엔티티 또는 null
    */
-  async findById(id: string): Promise<LoginSession | null> {
+  async findByIdx(idx: number): Promise<LoginSession | null> {
     try {
-      const entity = await this.findOne({ id })
+      const entity = await this.findOne({ idx })
+      return this.loginSessionMapper.toDomain(entity)
+    } catch {
+      return null
+    }
+  }
+  /**
+   * ID로 로그인 세션 찾기
+   * @param idx 세션 ID
+   * @returns 로그인 세션 도메인 엔티티 또는 null
+   */
+  async findByUserIdx(userIdx: number): Promise<LoginSession | null> {
+    try {
+      const entity = await this.findOne({ userIdx })
       return this.loginSessionMapper.toDomain(entity)
     } catch {
       return null
@@ -68,15 +81,15 @@ export class TypeOrmLoginSessionRepository
 
   /**
    * 사용자의 모든 활성 세션 찾기
-   * @param userId 사용자 ID
+   * @param userIdx 사용자 ID
    * @returns 활성 세션 목록
    */
-  async findActiveSessionsByUserId(userId: string): Promise<LoginSession[]> {
+  async findActiveSessionsByUserIdx(userIdx: number): Promise<LoginSession[]> {
     const now = new Date()
 
     const entities = await this.entityRepository.find({
       where: {
-        userId,
+        userIdx,
         endedAt: IsNull(),
         expiresAt: LessThan(now),
       },
@@ -91,8 +104,8 @@ export class TypeOrmLoginSessionRepository
    * @param userId 사용자 ID
    * @returns 전체 세션 목록
    */
-  async findAllByUserId(userId: string): Promise<LoginSession[]> {
-    const entities = await this.findAll({ userId })
+  async findAllByUserIdx(userIdx: number): Promise<LoginSession[]> {
+    const entities = await this.findAll({ userIdx })
     return this.loginSessionMapper.toDomainList(entities)
   }
 
@@ -101,14 +114,14 @@ export class TypeOrmLoginSessionRepository
    * @param userId 사용자 ID
    * @returns 성공 여부
    */
-  async terminateAllUserSessions(userId: string): Promise<boolean> {
+  async terminateAllUserSessions(userIdx: number): Promise<boolean> {
     try {
       const now = new Date()
 
       // 사용자의 모든 활성 세션 찾기
       const activeSessionEntities = await this.entityRepository.find({
         where: {
-          userId,
+          userIdx,
           endedAt: IsNull(),
           expiresAt: LessThan(now),
         },
@@ -128,7 +141,7 @@ export class TypeOrmLoginSessionRepository
 
       await Promise.all(updatePromises)
 
-      this.logger.log(`${userId} 사용자의 세션 ${updatePromises.length}개가 종료되었습니다. (사유: 비밀번호 변경)`)
+      this.logger.log(`${userIdx} 사용자의 세션 ${updatePromises.length}개가 종료되었습니다. (사유: 비밀번호 변경)`)
 
       return true
     } catch (error) {

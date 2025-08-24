@@ -88,6 +88,11 @@
 //     return diffSeconds < 60 // 1분(60초) 이내
 //   }
 // }
+import { Injectable } from "@nestjs/common"
+
+import { v4 as uuid } from "uuid"
+
+import { convertJwtUserIdToNumber, convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { SendVerificationCodeDto } from "@/modules/auth/application/dtos/send-verification-code.dto"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
@@ -95,8 +100,6 @@ import { NotificationPort } from "@/modules/auth/application/ports/out/notificat
 import { RateLimitExceededException, VerificationException } from "@/modules/auth/domain/model/auth-exception"
 import { AuthVerification } from "@/modules/auth/domain/model/auth-verification"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
-import { Injectable } from "@nestjs/common"
-import { v4 as uuid } from "uuid"
 
 @Injectable()
 export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseCase {
@@ -116,7 +119,7 @@ export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseC
     }
 
     // 기존 도메인 모델 활용
-    const verificationId = uuid()
+    const verificationId = Date.now() + Math.floor(Math.random() * 1000) // 타임스탬프 + 난수로 고유 ID 생성
     const authVerification = AuthVerification.create(
       verificationId,
       dto.userId || null,
@@ -172,7 +175,7 @@ export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseC
     }
 
     return {
-      verificationId: authVerification.id,
+      verificationId: convertDomainUserIdToString(authVerification.idx),
       expiresAt: authVerification.expiresAt,
     }
   }

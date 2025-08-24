@@ -42,7 +42,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
     try {
       const userEntity = await this.entityRepository.findOne({
         where: { email },
-        select: ["id", "email", "passwordHash", "salt", "role", "status"],
+        select: ["idx", "email", "passwordHash", "salt", "role", "status"],
       })
 
       if (!userEntity) return null
@@ -58,11 +58,22 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @param id 사용자 ID
    * @returns 인증용 사용자 또는 null
    */
-  async findById(id: string): Promise<AuthUser | null> {
+  async findById(userId: number): Promise<AuthUser | null> {
     try {
       const userEntity = await this.entityRepository.findOne({
-        where: { id },
-        select: ["id", "email", "passwordHash", "salt", "role", "status"],
+        where: { idx: userId },
+        select: [
+          "idx",
+          "userId",
+          "email",
+          "passwordHash",
+          "salt",
+          "role",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "lastLoginAt",
+        ],
       })
 
       if (!userEntity) return null
@@ -93,7 +104,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
       // 2. 사용자 OAuth 계정 정보 조회
       const oauthAccount = await this.oauthAccountRepository.findOne({
         where: {
-          providerId: providerEntity.id,
+          providerId: providerEntity.idx,
           providerUserId: socialId,
         },
         relations: ["user"],
@@ -105,8 +116,8 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 3. 연결된 사용자 엔티티 조회
       const userEntity = await this.entityRepository.findOne({
-        where: { id: oauthAccount.userId },
-        select: ["id", "email", "passwordHash", "salt", "role", "status"],
+        where: { idx: oauthAccount.userId },
+        select: ["idx", "email", "passwordHash", "salt", "role", "status"],
       })
 
       if (!userEntity) {
@@ -134,7 +145,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @returns 성공 여부
    */
   async connectSocialAccount(
-    userId: string,
+    userId: number,
     provider: SocialProvider,
     socialId: string,
     accessToken?: string,
@@ -144,7 +155,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
     try {
       // 1. 사용자 존재 여부 확인
       try {
-        await this.findOne({ id: userId })
+        await this.findOne({ idx: userId })
       } catch {
         throw new NotFoundException("사용자를 찾을 수 없습니다.")
       }
@@ -161,7 +172,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
       // 3. 이미 연결된 계정인지 확인
       const existingAccount = await this.oauthAccountRepository.findOne({
         where: {
-          providerId: providerEntity.id,
+          providerId: providerEntity.idx,
           providerUserId: socialId,
         },
       })
@@ -182,9 +193,8 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 4. 새 소셜 계정 연결 정보 생성
       const newOAuthAccount = new UserOAuthAccountEntity()
-      newOAuthAccount.id = uuidv4()
       newOAuthAccount.userId = userId
-      newOAuthAccount.providerId = providerEntity.id
+      newOAuthAccount.providerId = providerEntity.idx
       newOAuthAccount.providerUserId = socialId
       newOAuthAccount.accessToken = accessToken || null
       newOAuthAccount.refreshToken = refreshToken || null
@@ -243,7 +253,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
       // 3. 이미 연결된 소셜 계정인지 확인
       const existingAccount = await this.oauthAccountRepository.findOne({
         where: {
-          providerId: providerEntity.id,
+          providerId: providerEntity.idx,
           providerUserId: socialId,
         },
       })
@@ -254,7 +264,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 4. 새 사용자 생성
       const newUser = new UserEntity({
-        id: uuidv4(),
+        userId: uuidv4(),
         email,
         passwordHash: "", // 소셜 로그인만 사용하는 계정
         salt: "",
@@ -267,9 +277,8 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
 
       // 5. 소셜 계정 연결 정보 생성
       const newOAuthAccount = new UserOAuthAccountEntity()
-      newOAuthAccount.id = uuidv4()
-      newOAuthAccount.userId = savedUser.id
-      newOAuthAccount.providerId = providerEntity.id
+      newOAuthAccount.userId = savedUser.idx
+      newOAuthAccount.providerId = providerEntity.idx
       newOAuthAccount.providerUserId = socialId
       newOAuthAccount.accessToken = accessToken || null
       newOAuthAccount.refreshToken = refreshToken || null
@@ -295,11 +304,11 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @param hashedPassword 해싱된 새 비밀번호
    * @returns 성공 여부
    */
-  async updatePassword(userId: string, hashedPassword: { hash: string; salt: string }): Promise<boolean> {
+  async updatePassword(userId: number, hashedPassword: { hash: string; salt: string }): Promise<boolean> {
     try {
       // 1. 사용자 존재 여부 확인 및 업데이트
       await this.findOneAndUpdate(
-        { id: userId },
+        { idx: userId },
         {
           passwordHash: hashedPassword.hash,
           salt: hashedPassword.salt,
@@ -315,6 +324,26 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
   }
 
   /**
+   * 사용자 ID로 사용자 찾기 (로그인용)
+   * @param userId 사용자 ID (문자열)
+   * @returns 인증용 사용자 또는 null
+   */
+  async findByUserId(userId: string): Promise<AuthUser | null> {
+    try {
+      const userEntity = await this.entityRepository.findOne({
+        where: { userId },
+        select: ["idx", "userId", "email", "passwordHash", "salt", "role", "status"],
+      })
+
+      if (!userEntity) return null
+
+      return this.mapToAuthUser(userEntity)
+    } catch (error) {
+      this.handleDBError(error, "[AuthUser]")
+    }
+  }
+
+  /**
    * 전화번호로 사용자 찾기
    * @param phoneNumber 전화번호
    * @returns 인증용 사용자 또는 null
@@ -323,7 +352,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
     try {
       const userEntity = await this.entityRepository.findOne({
         where: { phoneNumber },
-        select: ["id", "email", "passwordHash", "salt", "role", "status"],
+        select: ["idx", "email", "passwordHash", "salt", "role", "status"],
       })
 
       if (!userEntity) return null
@@ -345,6 +374,6 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @returns AuthUser 객체
    */
   private mapToAuthUser(entity: UserEntity): AuthUser {
-    return new AuthUser(entity.id, entity.email, entity.passwordHash, entity.salt, entity.role, entity.status)
+    return new AuthUser(entity.idx, entity.email, entity.passwordHash, entity.salt, entity.role, entity.status)
   }
 }

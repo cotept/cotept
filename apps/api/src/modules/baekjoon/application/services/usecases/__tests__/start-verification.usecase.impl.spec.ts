@@ -1,14 +1,14 @@
 import { BadRequestException, ConflictException, RequestTimeoutException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { StartVerificationUseCaseImpl } from '../start-verification.usecase.impl'
 import { BaekjoonDomainMapper } from '../../../mappers'
+import { CachePort, RateLimitPort,SolvedAcApiPort } from '../../../ports'
 import { BaekjoonProfileRepositoryPort } from '../../../ports/out/baekjoon-profile-repository.port'
-import { SolvedAcApiPort, CachePort, RateLimitPort } from '../../../ports'
+import { StartVerificationUseCaseImpl } from '../start-verification.usecase.impl'
 
-import { BaekjoonUser, VerificationSession } from '@/modules/baekjoon/domain/model'
-import { TierLevel, VerificationStatus } from '@/modules/baekjoon/domain/vo'
 import { StartVerificationInputDto, StartVerificationOutputDto } from '@/modules/baekjoon/application/dtos'
+import { BaekjoonUser, VerificationSession } from '@/modules/baekjoon/domain/model'
+import { TierLevel } from '@/modules/baekjoon/domain/vo'
 
 describe('StartVerificationUseCaseImpl', () => {
   let useCase: StartVerificationUseCaseImpl

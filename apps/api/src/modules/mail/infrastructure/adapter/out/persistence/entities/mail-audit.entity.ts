@@ -1,7 +1,9 @@
-import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
+import { Column, Entity } from "typeorm"
+
 import { LocaleType, TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
+
+import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 /**
  * 메일 감사 엔티티
@@ -9,9 +11,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
  */
 @Entity("MAIL_AUDITS")
 export class MailAuditEntity extends BaseEntity<MailAuditEntity> {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
-
   @Column({ name: "mail_id", type: "varchar2", nullable: true })
   mailId: string
 

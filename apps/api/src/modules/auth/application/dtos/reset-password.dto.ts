@@ -11,20 +11,20 @@ export class ResetPasswordDto {
   @IsEmail({}, { message: "유효한 이메일 주소를 입력해주세요." })
   @IsNotEmpty({ message: "이메일은 필수 항목입니다." })
   email: string
-  
+
   /** 인증 ID (인증 코드 발송 후 받은 ID) */
   @Expose()
   @IsString({ message: "인증 ID는 문자열이어야 합니다." })
   @IsNotEmpty({ message: "인증 ID는 필수 항목입니다." })
   verificationId: string
-  
+
   /** 인증 코드 */
   @Expose()
   @IsString({ message: "인증 코드는 문자열이어야 합니다." })
   @IsNotEmpty({ message: "인증 코드는 필수 항목입니다." })
   @Length(6, 6, { message: "인증 코드는 6자리여야 합니다." })
   verificationCode: string
-  
+
   /** 새 비밀번호 */
   @Expose()
   @IsString({ message: "비밀번호는 문자열이어야 합니다." })
@@ -34,7 +34,7 @@ export class ResetPasswordDto {
     message: "비밀번호는 최소 8자 이상이며, 영문 대소문자, 숫자, 특수문자를 포함해야 합니다.",
   })
   newPassword: string
-  
+
   /** IP 주소 */
   @Expose()
   @IsOptional()

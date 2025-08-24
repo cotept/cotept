@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { SyncVerificationStatusUseCaseImpl } from '../sync-verification-status.usecase.impl'
 import { BaekjoonProfileRepositoryPort } from '../../../ports/out/baekjoon-profile-repository.port'
 import { CachePort } from '../../../ports/out/cache.port'
+import { SyncVerificationStatusUseCaseImpl } from '../sync-verification-status.usecase.impl'
 
 import { BaekjoonUser, VerificationSession } from '@/modules/baekjoon/domain/model'
-import { TierLevel, VerificationStatus, VerificationString } from '@/modules/baekjoon/domain/vo'
+import { TierLevel, VerificationString } from '@/modules/baekjoon/domain/vo'
 
 describe('SyncVerificationStatusUseCaseImpl', () => {
   let useCase: SyncVerificationStatusUseCaseImpl

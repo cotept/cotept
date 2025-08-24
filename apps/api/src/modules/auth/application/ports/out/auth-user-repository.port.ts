@@ -14,11 +14,18 @@ export abstract class AuthUserRepositoryPort {
   abstract findByEmail(email: string): Promise<AuthUser | null>
 
   /**
-   * ID로 사용자 찾기
-   * @param id 사용자 ID
+   * 내부 ID로 사용자 찾기 (Primary Key)
+   * @param idx 내부 사용자 ID (숫자)
    * @returns 인증용 사용자 또는 null
    */
-  abstract findById(id: string): Promise<AuthUser | null>
+  abstract findById(idx: number): Promise<AuthUser | null>
+
+  /**
+   * 사용자 ID로 사용자 찾기 (로그인용)
+   * @param userId 사용자 ID (문자열)
+   * @returns 인증용 사용자 또는 null
+   */
+  abstract findByUserId(userId: string): Promise<AuthUser | null>
 
   /**
    * 소셜 ID로 사용자 찾기
@@ -39,7 +46,7 @@ export abstract class AuthUserRepositoryPort {
    * @returns 성공 여부
    */
   abstract connectSocialAccount(
-    userId: string,
+    userId: number,
     provider: SocialProvider,
     socialId: string,
     accessToken?: string,
@@ -76,7 +83,7 @@ export abstract class AuthUserRepositoryPort {
    * @param hashedPassword 해싱된 새 비밀번호
    * @returns 성공 여부
    */
-  abstract updatePassword(userId: string, hashedPassword: { hash: string; salt: string }): Promise<boolean>
+  abstract updatePassword(userId: number, hashedPassword: { hash: string; salt: string }): Promise<boolean>
 
   /**
    * 전화번호로 사용자 찾기

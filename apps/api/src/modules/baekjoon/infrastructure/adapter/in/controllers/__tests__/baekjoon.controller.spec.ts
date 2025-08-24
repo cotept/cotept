@@ -1,17 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { HttpStatus } from '@nestjs/common'
 
 import { BaekjoonController } from '../baekjoon.controller'
+
 import { BaekjoonFacadeService } from '@/modules/baekjoon/application/services/facade/baekjoon-facade.service'
 import { BaekjoonRequestMapper } from '@/modules/baekjoon/infrastructure/adapter/in/mappers/baekjoon-request.mapper'
-
 import {
-  StartVerificationRequestDto,
   CompleteVerificationRequestDto,
   GetProfileRequestDto,
   GetTagStatisticsRequestDto,
+  StartVerificationRequestDto,
 } from '@/modules/baekjoon/infrastructure/dtos/request'
-
 import {
   BaekjoonProfileResponseDto,
   TagStatisticsResponseDto,

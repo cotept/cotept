@@ -1,3 +1,7 @@
+import { Injectable, Logger } from "@nestjs/common"
+
+import { SolvedAcHttpClient } from "./solved-ac-http.client"
+
 import { 
   AdditionalUserInfo, 
   BojTag, 
@@ -5,8 +9,6 @@ import {
   UserProfile 
 } from "@/modules/baekjoon/application/ports/out/solved-ac-api.port"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger } from "@nestjs/common"
-import { SolvedAcHttpClient } from "./solved-ac-http.client"
 
 /**
  * solved.ac API 어댑터

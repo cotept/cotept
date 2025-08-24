@@ -14,14 +14,14 @@ export class MailAuditController {
 
   constructor(private readonly mailAuditFacadeService: MailAuditFacadeService) {}
 
-  @Get(":id")
+  @Get(":idx")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "메일 감사 조회 (ID)" })
   @ApiOkResponseWrapper(MailAuditResponseDto, "메일 감사 조회 성공")
-  async getMailAuditById(@Param("id") id: string): Promise<MailAuditResponseDto | null> {
-    this.logger.log(`Querying mail audit by ID: ${id}`)
+  async getMailAuditById(@Param("idx") idx: number): Promise<MailAuditResponseDto | null> {
+    this.logger.log(`Querying mail audit by IDX: ${idx}`)
     const request = new GetMailAuditByIdRequestDto()
-    request.id = id
+    request.idx = idx
     return await this.mailAuditFacadeService.getMailAuditById(request)
   }
 

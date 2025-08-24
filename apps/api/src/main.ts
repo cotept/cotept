@@ -15,6 +15,21 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { bufferLogs: true, logger: winstonLogger })
 
+  // CORS 설정 (프론트엔드에서 API 호출 허용)
+  app.enableCors({
+    origin: process.env.CLIENT_REDIRECT_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  })
+
+  // API 글로벌 prefix 설정 (환경변수에서 읽어옴)
+  const apiPrefix = process.env.API_PREFIX || "api"
+  const apiVersion = process.env.API_VERSION || "v1"
+  const globalPrefix = `${apiPrefix}/${apiVersion}`
+  app.setGlobalPrefix(globalPrefix)
+  logger.log(`API Global Prefix set to: /${globalPrefix}`)
+
   // 쿠키 파서 미들웨어 추가
   app.use(cookieParser())
 
@@ -35,7 +50,7 @@ async function bootstrap() {
   const swagger = new SwaggerModule()
   swagger.setup(app)
 
-  const port = process.env.PORT ?? 3002
+  const port = process.env.PORT ?? 3005
   await app.listen(port, "0.0.0.0", () => {
     logger.log(`server is running on port ${port}`)
   })

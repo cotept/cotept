@@ -7,10 +7,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: string
       tags: &ref_0
         - App
   /health:
@@ -504,12 +500,6 @@ paths:
                     example: 성공적으로 처리되었습니다.
                   data:
                     $ref: '#/components/schemas/UserResponseDto'
-        '201':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -972,7 +962,7 @@ paths:
           content:
             application/json:
               schema:
-                title: EmptyWrapper
+                title: ValidationResultResponseWrapper
                 type: object
                 properties:
                   message:
@@ -980,8 +970,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    type: 'null'
-                    description: 응답 데이터 없음
+                    $ref: '#/components/schemas/ValidationResultResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1035,7 +1024,7 @@ paths:
           content:
             application/json:
               schema:
-                title: EmptyWrapper
+                title: VerificationCodeResponseWrapper
                 type: object
                 properties:
                   message:
@@ -1043,8 +1032,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    type: 'null'
-                    description: 응답 데이터 없음
+                    $ref: '#/components/schemas/VerificationCodeResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1098,7 +1086,7 @@ paths:
           content:
             application/json:
               schema:
-                title: EmptyWrapper
+                title: VerificationResultResponseWrapper
                 type: object
                 properties:
                   message:
@@ -1106,8 +1094,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    type: 'null'
-                    description: 응답 데이터 없음
+                    $ref: '#/components/schemas/VerificationResultResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1287,7 +1274,7 @@ paths:
           content:
             application/json:
               schema:
-                title: EmptyWrapper
+                title: FindIdResponseWrapper
                 type: object
                 properties:
                   message:
@@ -1295,8 +1282,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    type: 'null'
-                    description: 응답 데이터 없음
+                    $ref: '#/components/schemas/FindIdResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1348,7 +1334,7 @@ paths:
           content:
             application/json:
               schema:
-                title: EmptyWrapper
+                title: ResetPasswordResponseWrapper
                 type: object
                 properties:
                   message:
@@ -1356,8 +1342,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    type: 'null'
-                    description: 응답 데이터 없음
+                    $ref: '#/components/schemas/ResetPasswordResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1419,8 +1404,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '302':
-          description: ''
       summary: GitHub 로그인 시작
       tags: &ref_3
         - GithubAuth
@@ -1457,8 +1440,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '302':
-          description: ''
         '401':
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
@@ -1490,8 +1471,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '302':
-          description: ''
       summary: Google 로그인 시작
       tags: &ref_4
         - GoogleAuth
@@ -1528,8 +1507,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '302':
-          description: ''
         '401':
           description: Google 인증 실패
       summary: Google 로그인 콜백
@@ -1560,8 +1537,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1655,8 +1630,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1749,8 +1722,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1843,8 +1814,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -1907,8 +1876,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -2003,8 +1970,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -2099,8 +2064,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -2195,8 +2158,6 @@ paths:
                   data:
                     type: 'null'
                     description: 응답 데이터 없음
-        '201':
-          description: ''
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -2472,31 +2433,21 @@ components:
       properties:
         email:
           type: string
-          format: email
           description: 사용자 이메일
           example: user@example.com
         password:
           type: string
-          minLength: 8
-          maxLength: 32
-          pattern: >-
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
           description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
           example: StrongP@ss123
         name:
           type: string
-          minLength: 2
-          maxLength: 50
-          pattern: /^[가-힣a-zA-Z\s]+$/
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
         phoneNumber:
           type: string
-          pattern: /^01[0-9]{8,9}$/
           description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
         role:
-          default: MENTEE
           description: '사용자 역할 (기본값: MENTEE)'
           example: MENTEE
           allOf:
@@ -2509,14 +2460,10 @@ components:
       properties:
         name:
           type: string
-          minLength: 2
-          maxLength: 50
-          pattern: /^[가-힣a-zA-Z\s]+$/
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
         phoneNumber:
           type: string
-          pattern: /^01[0-9]{8,9}$/
           description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
     ApiResponseUserDeletionResponseDto:
@@ -2588,10 +2535,6 @@ components:
           example: CurrentP@ss123
         newPassword:
           type: string
-          minLength: 8
-          maxLength: 32
-          pattern: >-
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
           description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
           example: NewP@ss123
         confirmPassword:
@@ -2638,7 +2581,6 @@ components:
           description: 사용자 아이디
         password:
           type: string
-          minLength: 8
           example: Password123!
           description: 사용자 비밀번호
       required:
@@ -2675,6 +2617,34 @@ components:
           description: 리프레시 토큰
       required:
         - refreshToken
+    ApiResponseValidationResultResponseDto:
+      type: object
+      properties: {}
+    ValidationResultResponseDto:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+          example: true
+          description: 토큰 유효 여부
+        userId:
+          type: string
+          example: 550e8400-e29b-41d4-a716-446655440000
+          description: 사용자 ID
+        email:
+          type: string
+          example: user@example.com
+          description: 사용자 이메일
+        role:
+          type: string
+          example: MENTEE
+          description: 사용자 역할
+          enum:
+            - MENTEE
+            - MENTOR
+            - ADMIN
+      required:
+        - isValid
     ValidateTokenRequestDto:
       type: object
       properties:
@@ -2684,6 +2654,23 @@ components:
           description: 검증할 액세스 토큰
       required:
         - token
+    ApiResponseVerificationCodeResponseDto:
+      type: object
+      properties: {}
+    VerificationCodeResponseDto:
+      type: object
+      properties:
+        verificationId:
+          type: string
+          description: 검증 ID
+          example: 550e8400-e29b-41d4-a716-446655440000
+        expiresAt:
+          type: string
+          description: 인증 만료 시간 (ISO 형식)
+          example: '2023-06-15T09:00:00.000Z'
+      required:
+        - verificationId
+        - expiresAt
     AuthType:
       type: string
       enum:
@@ -2706,18 +2693,27 @@ components:
       required:
         - authType
         - target
+    ApiResponseVerificationResultResponseDto:
+      type: object
+      properties: {}
+    VerificationResultResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 인증 성공 여부
+          example: true
+      required:
+        - success
     VerifyCodeRequestDto:
       type: object
       properties:
         verificationId:
           type: string
-          format: uuid
           description: 검증 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         code:
           type: string
-          minLength: 6
-          maxLength: 6
           description: 인증 코드 (6자리)
           example: '123456'
       required:
@@ -2746,6 +2742,27 @@ components:
       required:
         - token
         - approved
+    ApiResponseFindIdResponseDto:
+      type: object
+      properties: {}
+    FindIdResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 찾기 성공 여부
+          example: true
+        maskedId:
+          type: string
+          description: 마스킹된 아이디
+          example: u***123
+        message:
+          type: string
+          description: 응답 메시지
+          example: 가입된 아이디를 찾았습니다.
+      required:
+        - success
+        - message
     FindIdRequestDto:
       type: object
       properties:
@@ -2764,8 +2781,6 @@ components:
           example: f47ac10b-58cc-4372-a567-0e02b2c3d479
         verificationCode:
           type: string
-          minLength: 6
-          maxLength: 6
           description: 인증 코드
           example: '123456'
       required:
@@ -2773,12 +2788,33 @@ components:
         - target
         - verificationId
         - verificationCode
+    ApiResponseResetPasswordResponseDto:
+      type: object
+      properties: {}
+    ResetPasswordResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 비밀번호 재설정 성공 여부
+          example: true
+        resetAt:
+          type: string
+          description: 재설정 완료 시간
+          example: '2023-01-01T00:00:00Z'
+        message:
+          type: string
+          description: 응답 메시지
+          example: 비밀번호가 성공적으로 재설정되었습니다.
+      required:
+        - success
+        - resetAt
+        - message
     ResetPasswordRequestDto:
       type: object
       properties:
         email:
           type: string
-          format: email
           description: 사용자 이메일
           example: user@example.com
         verificationId:
@@ -2787,16 +2823,10 @@ components:
           example: f47ac10b-58cc-4372-a567-0e02b2c3d479
         verificationCode:
           type: string
-          minLength: 6
-          maxLength: 6
           description: 인증 코드
           example: '123456'
         newPassword:
           type: string
-          minLength: 8
-          maxLength: 20
-          pattern: >-
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
           description: 새 비밀번호
           example: NewPassword123!
       required:
@@ -2808,7 +2838,6 @@ components:
       type: object
       properties:
         to:
-          format: email
           description: 수신자 이메일
           example: user@example.com
           oneOf:
@@ -2839,12 +2868,12 @@ components:
             authNumber: '123456'
         locale:
           type: string
-          default: ko
           description: 언어 설정
           example: ko
           enum:
             - ko
             - en
+          default: ko
         attachments:
           type: array
           description: 첨부 파일
@@ -2875,12 +2904,10 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           description: 메일 감사 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         mailId:
           type: string
-          format: uuid
           description: 메일 ID
           example: 550e8400-e29b-41d4-a716-446655440000
         template:
@@ -2901,8 +2928,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/MailStatus'
         sentAt:
-          type: string
-          nullable: true
+          type: object
           description: 발송 시간
           example: '2023-06-15T09:30:00.000Z'
         error:

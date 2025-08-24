@@ -1,15 +1,16 @@
 import { BadRequestException, ConflictException, NotFoundException, RequestTimeoutException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { EntityManager } from 'typeorm'
 
-import { CompleteVerificationUseCaseImpl } from '../complete-verification.usecase.impl'
 import { BaekjoonDomainMapper } from '../../../mappers'
+import { CachePort, RateLimitPort, SolvedAcApiPort, SyncVerificationStatusUseCase } from '../../../ports'
 import { BaekjoonProfileRepositoryPort } from '../../../ports/out/baekjoon-profile-repository.port'
-import { SolvedAcApiPort, CachePort, RateLimitPort, SyncVerificationStatusUseCase } from '../../../ports'
+import { CompleteVerificationUseCaseImpl } from '../complete-verification.usecase.impl'
 
-import { BaekjoonUser, VerificationSession } from '@/modules/baekjoon/domain/model'
-import { TierLevel, VerificationStatus, VerificationString } from '@/modules/baekjoon/domain/vo'
 import { CompleteVerificationInputDto, CompleteVerificationOutputDto } from '@/modules/baekjoon/application/dtos'
+import { BaekjoonUser, VerificationSession } from '@/modules/baekjoon/domain/model'
+import { TierLevel, VerificationString } from '@/modules/baekjoon/domain/vo'
 
 describe('CompleteVerificationUseCaseImpl', () => {
   let useCase: CompleteVerificationUseCaseImpl

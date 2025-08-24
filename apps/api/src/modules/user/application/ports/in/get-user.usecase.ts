@@ -1,4 +1,4 @@
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 
 /**
  * 사용자 조회 유스케이스 인터페이스
@@ -6,11 +6,11 @@ import { UserDto } from "@/modules/user/application/dtos/user.dto"
  */
 export abstract class GetUserUseCase {
   /**
-   * ID로 사용자 조회
-   * @param id 사용자 ID
+   * IDX로 사용자 조회
+   * @param idx 사용자 IDX
    * @returns 사용자 정보 DTO
    */
-  abstract getById(id: string): Promise<UserDto>
+  abstract getByIdx(idx: number): Promise<UserDto>
 
   /**
    * 이메일로 사용자 조회
@@ -18,6 +18,13 @@ export abstract class GetUserUseCase {
    * @returns 사용자 정보 DTO
    */
   abstract getByEmail(email: string): Promise<UserDto>
+
+  /**
+   * 사용자 ID로 사용자 조회
+   * @param userId 사용자 ID 이메일
+   * @returns 사용자 정보 DTO
+   */
+  abstract getByUserId(userId: string): Promise<UserDto>
 
   /**
    * 모든 사용자 조회

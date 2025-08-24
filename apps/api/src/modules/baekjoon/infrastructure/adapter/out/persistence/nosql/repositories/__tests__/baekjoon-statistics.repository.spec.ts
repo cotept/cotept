@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { NoSQLClient } from 'oracle-nosqldb'
 
-import { BaekjoonStatisticsRepository } from '../baekjoon-statistics.repository'
 import { BaekjoonNosqlMapper } from '../../mappers/baekjoon.mapper'
 import { BaekjoonTagDocument, BojTag } from '../../schemas/baekjoon.schema'
+import { BaekjoonStatisticsRepository } from '../baekjoon-statistics.repository'
+
 import { OCI_NOSQL_CLIENT } from '@/shared/infrastructure/persistence/nosql/client/nosql-client.provider'
 
 describe('BaekjoonStatisticsRepository', () => {

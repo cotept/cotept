@@ -1,3 +1,5 @@
+import { Injectable, NotFoundException } from "@nestjs/common"
+
 import { RefreshTokenDto } from "@/modules/auth/application/dtos/refresh-token.dto"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
@@ -11,8 +13,7 @@ import {
 } from "@/modules/auth/domain/model/auth-exception"
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
-import { Injectable, NotFoundException } from "@nestjs/common"
-import { v4 as uuidv4 } from "uuid"
+import { convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 
 /**
  * 토큰 갱신 유스케이스 구현체
@@ -44,16 +45,17 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
     }
 
     // 3. 토큰 패밀리 검증
-    const storedTokenId = await this.tokenStorage.getRefreshTokenFamily(tokenPayload.sub, tokenPayload.family)
+    const userId = convertJwtUserIdToNumber(tokenPayload.sub, "RefreshToken 사용자 ID 변환")
+    const storedTokenId = await this.tokenStorage.getRefreshTokenFamily(userId, tokenPayload.family)
 
     if (!storedTokenId || storedTokenId !== tokenPayload.jti) {
       // 토큰 재사용 감지 - 모든 토큰 패밀리 삭제 (보안 조치)
-      await this.tokenStorage.deleteAllRefreshTokenFamilies(tokenPayload.sub)
+      await this.tokenStorage.deleteAllRefreshTokenFamilies(userId)
       throw new TokenTheftSuspectedException("Token reuse detected")
     }
 
     // 4. 사용자 조회
-    const user = await this.authUserRepository.findById(tokenPayload.sub)
+    const user = await this.authUserRepository.findById(userId)
     if (!user) {
       throw new NotFoundException("User not found")
     }
@@ -64,7 +66,7 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
     }
 
     // 6. 기존 토큰 패밀리 삭제
-    await this.tokenStorage.deleteRefreshTokenFamily(tokenPayload.sub, tokenPayload.family)
+    await this.tokenStorage.deleteRefreshTokenFamily(userId, tokenPayload.family)
 
     // 7. 새 토큰 생성
     const newTokenPair = this.tokenGenerator.generateTokenPair(user.id, user.email, user.role)
@@ -80,7 +82,7 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
     }
 
     // 9. 새 로그인 세션 생성 및 저장
-    const sessionId = uuidv4()
+    const sessionId = Date.now() // UUID 대신 timestamp 기반 number ID 사용
     const loginSession = LoginSession.create(
       sessionId,
       user.id,

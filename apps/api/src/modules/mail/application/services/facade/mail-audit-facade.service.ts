@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common"
 
-import { MailAuditResponseMapper } from "@/modules/mail/application/mappers/mail-audit-response.mapper"
 import { GetMailAuditUseCase } from "@/modules/mail/application/ports/in/get-mail-audit.usecase"
 import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
 import { MailAuditRequestMapper } from "@/modules/mail/infrastructure/adapter/in/mappers/mail-audit-request.mapper"
+import { MailAuditResponseMapper } from "@/modules/mail/infrastructure/adapter/in/mappers/mail-audit-response.mapper"
 import { GetMailAuditByIdRequestDto, GetMailAuditRequestDto } from "@/modules/mail/infrastructure/dtos/request"
 import { MailAuditResponseDto } from "@/modules/mail/infrastructure/dtos/response"
 import { ErrorUtils } from "@/shared/utils/error.util"
@@ -29,7 +29,7 @@ export class MailAuditFacadeService {
     try {
       const getMailAuditByIdDto = this.mailAuditRequestMapper.toGetMailAuditByIdDto(request)
 
-      const mailAudit = await this.getMailAuditUseCase.getById(getMailAuditByIdDto.id)
+      const mailAudit = await this.getMailAuditUseCase.getByIdx(getMailAuditByIdDto.idx)
 
       if (!mailAudit) {
         return null

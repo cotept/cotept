@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { AuthType, AuthVerification } from '@/modules/auth/domain/model/auth-verification';
-import { AuthVerificationEntity } from '@/modules/auth/infrastructure/adapter/out/persistence/entities/auth-verification.entity';
+import { Injectable } from "@nestjs/common"
+
+import { instanceToPlain, plainToInstance } from "class-transformer"
+
+import { AuthType, AuthVerification } from "@/modules/auth/domain/model/auth-verification"
+import { AuthVerificationEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/auth-verification.entity"
 
 /**
  * 인증 검증 영속성 매퍼
@@ -16,7 +18,7 @@ export class AuthVerificationPersistenceMapper {
    */
   toEntity(authVerification: AuthVerification): AuthVerificationEntity {
     const plainData = {
-      id: authVerification.id,
+      idx: authVerification.idx,
       userId: authVerification.userId,
       authType: authVerification.authType,
       target: authVerification.target,
@@ -27,9 +29,9 @@ export class AuthVerificationPersistenceMapper {
       attemptCount: authVerification.attemptCount,
       ipAddress: authVerification.ipAddress,
       createdAt: authVerification.createdAt,
-    };
+    }
 
-    return plainToInstance(AuthVerificationEntity, plainData);
+    return plainToInstance(AuthVerificationEntity, plainData)
   }
 
   /**
@@ -38,10 +40,10 @@ export class AuthVerificationPersistenceMapper {
    * @returns 인증 검증 도메인 엔티티
    */
   toDomain(entity: AuthVerificationEntity): AuthVerification {
-    const plainData = instanceToPlain(entity);
+    const plainData = instanceToPlain(entity)
 
     return new AuthVerification(
-      plainData.id,
+      plainData.idx,
       plainData.userId,
       plainData.authType as AuthType,
       plainData.target,
@@ -51,8 +53,8 @@ export class AuthVerificationPersistenceMapper {
       plainData.verifiedAt,
       plainData.attemptCount,
       plainData.ipAddress,
-      plainData.createdAt
-    );
+      plainData.createdAt,
+    )
   }
 
   /**
@@ -61,7 +63,7 @@ export class AuthVerificationPersistenceMapper {
    * @returns 인증 검증 도메인 엔티티 목록
    */
   toDomainList(entities: AuthVerificationEntity[]): AuthVerification[] {
-    return entities.map(entity => this.toDomain(entity));
+    return entities.map((entity) => this.toDomain(entity))
   }
 
   /**
@@ -70,6 +72,6 @@ export class AuthVerificationPersistenceMapper {
    * @returns 인증 검증 영속성 엔티티 목록
    */
   toEntityList(authVerifications: AuthVerification[]): AuthVerificationEntity[] {
-    return authVerifications.map(authVerification => this.toEntity(authVerification));
+    return authVerifications.map((authVerification) => this.toEntity(authVerification))
   }
 }

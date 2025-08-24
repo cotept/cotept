@@ -24,11 +24,11 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { ConfirmSocialLinkRequestDto } from '../types';
 // @ts-ignore
-import type { EmptyWrapper } from '../types';
-// @ts-ignore
 import type { ExchangeAuthCodeRequestDto } from '../types';
 // @ts-ignore
 import type { FindIdRequestDto } from '../types';
+// @ts-ignore
+import type { FindIdResponseWrapper } from '../types';
 // @ts-ignore
 import type { GetAllUsers400Response } from '../types';
 // @ts-ignore
@@ -46,11 +46,19 @@ import type { RefreshTokenRequestDto } from '../types';
 // @ts-ignore
 import type { ResetPasswordRequestDto } from '../types';
 // @ts-ignore
+import type { ResetPasswordResponseWrapper } from '../types';
+// @ts-ignore
 import type { SendVerificationCodeRequestDto } from '../types';
 // @ts-ignore
 import type { TokenResponseWrapper } from '../types';
 // @ts-ignore
 import type { ValidateTokenRequestDto } from '../types';
+// @ts-ignore
+import type { ValidationResultResponseWrapper } from '../types';
+// @ts-ignore
+import type { VerificationCodeResponseWrapper } from '../types';
+// @ts-ignore
+import type { VerificationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { VerifyCodeRequestDto } from '../types';
 /**
@@ -456,7 +464,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async findId(findIdRequestDto: FindIdRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmptyWrapper>> {
+        async findId(findIdRequestDto: FindIdRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FindIdResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.findId(findIdRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.findId']?.[localVarOperationServerIndex]?.url;
@@ -507,7 +515,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async resetPassword(resetPasswordRequestDto: ResetPasswordRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmptyWrapper>> {
+        async resetPassword(resetPasswordRequestDto: ResetPasswordRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.resetPassword(resetPasswordRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.resetPassword']?.[localVarOperationServerIndex]?.url;
@@ -520,7 +528,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async sendVerificationCode(sendVerificationCodeRequestDto: SendVerificationCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmptyWrapper>> {
+        async sendVerificationCode(sendVerificationCodeRequestDto: SendVerificationCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerificationCodeResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sendVerificationCode(sendVerificationCodeRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.sendVerificationCode']?.[localVarOperationServerIndex]?.url;
@@ -533,7 +541,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async validateToken(validateTokenRequestDto: ValidateTokenRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmptyWrapper>> {
+        async validateToken(validateTokenRequestDto: ValidateTokenRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ValidationResultResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.validateToken(validateTokenRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.validateToken']?.[localVarOperationServerIndex]?.url;
@@ -546,7 +554,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmptyWrapper>> {
+        async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerificationResultResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.verifyCode(verifyCodeRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.verifyCode']?.[localVarOperationServerIndex]?.url;
@@ -589,7 +597,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findId(requestParameters: AuthApiFindIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper> {
+        findId(requestParameters: AuthApiFindIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<FindIdResponseWrapper> {
             return localVarFp.findId(requestParameters.findIdRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -628,7 +636,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper> {
+        resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResetPasswordResponseWrapper> {
             return localVarFp.resetPassword(requestParameters.resetPasswordRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -638,7 +646,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendVerificationCode(requestParameters: AuthApiSendVerificationCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper> {
+        sendVerificationCode(requestParameters: AuthApiSendVerificationCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationCodeResponseWrapper> {
             return localVarFp.sendVerificationCode(requestParameters.sendVerificationCodeRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -648,7 +656,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        validateToken(requestParameters: AuthApiValidateTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper> {
+        validateToken(requestParameters: AuthApiValidateTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<ValidationResultResponseWrapper> {
             return localVarFp.validateToken(requestParameters.validateTokenRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -658,7 +666,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper> {
+        verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper> {
             return localVarFp.verifyCode(requestParameters.verifyCodeRequestDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -698,7 +706,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-    findId(requestParameters: AuthApiFindIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper>;
+    findId(requestParameters: AuthApiFindIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<FindIdResponseWrapper>;
 
     /**
      * 이메일과 비밀번호로 로그인하고 토큰을 발급합니다.
@@ -737,7 +745,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-    resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper>;
+    resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResetPasswordResponseWrapper>;
 
     /**
      * 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
@@ -747,7 +755,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-    sendVerificationCode(requestParameters: AuthApiSendVerificationCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper>;
+    sendVerificationCode(requestParameters: AuthApiSendVerificationCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationCodeResponseWrapper>;
 
     /**
      * 액세스 토큰의 유효성을 검증합니다.
@@ -757,7 +765,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-    validateToken(requestParameters: AuthApiValidateTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper>;
+    validateToken(requestParameters: AuthApiValidateTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<ValidationResultResponseWrapper>;
 
     /**
      * 발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.
@@ -767,7 +775,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-    verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmptyWrapper>;
+    verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper>;
 
 }
 

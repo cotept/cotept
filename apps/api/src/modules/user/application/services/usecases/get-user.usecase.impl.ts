@@ -1,9 +1,10 @@
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { Injectable, NotFoundException } from "@nestjs/common"
+
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 import { UserMapper } from "@/modules/user/application/mappers/user.mapper"
 import { GetUserUseCase } from "@/modules/user/application/ports/in/get-user.usecase"
 import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { Injectable, NotFoundException } from "@nestjs/common"
 
 @Injectable()
 export class GetUserUseCaseImpl implements GetUserUseCase {
@@ -13,15 +14,30 @@ export class GetUserUseCaseImpl implements GetUserUseCase {
   ) {}
 
   /**
-   * ID로 사용자 조회
-   * @param id 사용자 ID
+   * IDX로 사용자 조회
+   * @param idx 사용자 IDX
    * @returns 사용자 정보 DTO
    * @throws NotFoundException 사용자가 존재하지 않는 경우
    */
-  async getById(id: string): Promise<UserDto> {
-    const user = await this.userRepository.findById(id)
+  async getByIdx(idx: number): Promise<UserDto> {
+    const user = await this.userRepository.findByIdx(idx)
     if (!user) {
-      throw new NotFoundException(`ID ${id}에 해당하는 사용자를 찾을 수 없습니다.`)
+      throw new NotFoundException(`ID ${idx}에 해당하는 사용자를 찾을 수 없습니다.`)
+    }
+
+    return this.userMapper.toDto(user)
+  }
+
+  /**
+   * 사용자 ID로 사용자 조회
+   * @param userId 사용자 ID
+   * @returns 사용자 정보 DTO
+   * @throws NotFoundException 사용자가 존재하지 않는 경우
+   */
+  async getByUserId(userId: string): Promise<UserDto> {
+    const user = await this.userRepository.findByUserId(userId)
+    if (!user) {
+      throw new NotFoundException(`ID ${userId}에 해당하는 사용자를 찾을 수 없습니다.`)
     }
 
     return this.userMapper.toDto(user)

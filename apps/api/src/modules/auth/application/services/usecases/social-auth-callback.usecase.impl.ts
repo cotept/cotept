@@ -1,7 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
-import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { clentUrlConfig } from "@/configs/token"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import {
@@ -10,11 +9,12 @@ import {
 } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
 import { CryptoService } from "@/shared/infrastructure/services/crypto"
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -28,7 +28,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
   private readonly CLIENT_ERROR_REDIRECT_URL = this.configService.getOrThrow<clentUrlConfig>("clientUrl").clientErrorUrl
 
   constructor(
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly configService: ConfigService,
@@ -92,7 +92,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
             profileData: user.profileData,
           }
 
-          await this.tokenStorage.savePendingLinkInfo(pendingLinkToken, pendingInfo, 300) // 5분 유효
+          await this.authCache.savePendingLinkInfo(pendingLinkToken, pendingInfo, 300) // 5분 유효
 
           this.logger.debug(`Created pending link token for existing user: ${existingUserByEmail.id}`)
 

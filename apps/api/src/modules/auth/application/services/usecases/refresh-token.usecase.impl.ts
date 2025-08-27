@@ -2,10 +2,10 @@ import { Injectable, NotFoundException } from "@nestjs/common"
 
 import { RefreshTokenDto } from "@/modules/auth/application/dtos/refresh-token.dto"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import {
   AccountDeactivatedException,
   InvalidTokenException,
@@ -24,7 +24,7 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly tokenGenerator: TokenGeneratorPort,
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
   ) {}
 
   /**
@@ -46,11 +46,11 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
 
     // 3. 토큰 패밀리 검증
     const userId = convertJwtUserIdToNumber(tokenPayload.sub, "RefreshToken 사용자 ID 변환")
-    const storedTokenId = await this.tokenStorage.getRefreshTokenFamily(userId, tokenPayload.family)
+    const storedTokenId = await this.authCache.getRefreshTokenFamily(userId, tokenPayload.family)
 
     if (!storedTokenId || storedTokenId !== tokenPayload.jti) {
       // 토큰 재사용 감지 - 모든 토큰 패밀리 삭제 (보안 조치)
-      await this.tokenStorage.deleteAllRefreshTokenFamilies(userId)
+      await this.authCache.deleteAllRefreshTokenFamilies(userId)
       throw new TokenTheftSuspectedException("Token reuse detected")
     }
 
@@ -66,14 +66,14 @@ export class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
     }
 
     // 6. 기존 토큰 패밀리 삭제
-    await this.tokenStorage.deleteRefreshTokenFamily(userId, tokenPayload.family)
+    await this.authCache.deleteRefreshTokenFamily(userId, tokenPayload.family)
 
     // 7. 새 토큰 생성
     const newTokenPair = this.tokenGenerator.generateTokenPair(user.id, user.email, user.role)
 
     // 8. 새 토큰 패밀리 저장
     if (newTokenPair.familyId) {
-      await this.tokenStorage.saveRefreshTokenFamily(
+      await this.authCache.saveRefreshTokenFamily(
         user.id,
         newTokenPair.familyId,
         newTokenPair.refreshToken,

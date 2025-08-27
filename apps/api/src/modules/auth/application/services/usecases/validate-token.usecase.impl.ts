@@ -3,8 +3,8 @@ import { Injectable } from "@nestjs/common"
 import { ValidateTokenDto } from "@/modules/auth/application/dtos/validate-token.dto"
 import { TokenMapper } from "@/modules/auth/application/mappers"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
 
 /**
@@ -14,7 +14,7 @@ import { TokenPayload } from "@/modules/auth/domain/model/token-payload"
 export class ValidateTokenUseCaseImpl implements ValidateTokenUseCase {
   constructor(
     private readonly tokenGenerator: TokenGeneratorPort,
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
     private readonly tokenMapper: TokenMapper,
   ) {}
 
@@ -37,7 +37,7 @@ export class ValidateTokenUseCaseImpl implements ValidateTokenUseCase {
 
     // 3. 토큰 블랙리스트 확인
     if (tokenPayload.jti) {
-      const isBlacklisted = await this.tokenStorage.isBlacklisted(tokenPayload.jti)
+      const isBlacklisted = await this.authCache.isBlacklisted(tokenPayload.jti)
       if (isBlacklisted) {
         return null
       }

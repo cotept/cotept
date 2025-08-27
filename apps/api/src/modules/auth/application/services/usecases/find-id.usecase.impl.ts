@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from "@nestjs/common"
 
-import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { FindIdDto } from "@/modules/auth/application/dtos/find-id.dto"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
@@ -8,6 +7,7 @@ import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports
 import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 
 @Injectable()
 export class FindIdUseCaseImpl implements FindIdUseCase {

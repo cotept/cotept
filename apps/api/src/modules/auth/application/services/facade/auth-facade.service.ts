@@ -2,7 +2,6 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 
 import { Response } from "express"
 
-import { convertJwtUserIdToNumber, convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
@@ -19,9 +18,9 @@ import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/s
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { AuthRequestMapper } from "@/modules/auth/infrastructure/adapter/in/mappers/auth-request.mapper"
 import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/services/cookie-manager.adapter"
@@ -47,6 +46,7 @@ import {
   VerificationCodeResponseDto,
   VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
+import { convertDomainUserIdToString, convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -74,7 +74,7 @@ export class AuthFacadeService {
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly passwordHasher: PasswordHasherPort,
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
   ) {}
 
   /**
@@ -215,6 +215,8 @@ export class AuthFacadeService {
    */
   async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
     try {
+      console.log("verifyCode", { verifyCodeRequestDto })
+      this.logger.log("verifyCode", { verifyCodeRequestDto })
       const verifyCodeDto = this.authRequestMapper.toVerifyCodeDto(verifyCodeRequestDto)
 
       const success = await this.verifyCodeUseCase.execute(verifyCodeDto)
@@ -444,7 +446,7 @@ export class AuthFacadeService {
   ): Promise<SocialLinkConfirmationResponseDto | TokenResponseDto> {
     try {
       // 1. 임시 토큰 검증
-      const pendingInfo = await this.tokenStorage.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
+      const pendingInfo = await this.authCache.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
       if (!pendingInfo) {
         throw new UnauthorizedException("유효하지 않거나 만료된 요청입니다.")
       }
@@ -483,7 +485,7 @@ export class AuthFacadeService {
         }
 
         // 사용된 토큰 삭제
-        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+        await this.authCache.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
         const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
@@ -493,7 +495,7 @@ export class AuthFacadeService {
         return tokenResponse
       } else {
         // 연결 거부
-        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+        await this.authCache.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
         return this.authResponseMapper.toSocialLinkConfirmationResponse(false)
       }
     } catch (error) {

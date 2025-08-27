@@ -3,12 +3,12 @@ import { ConfigService } from "@nestjs/config"
 
 import { randomBytes } from "crypto"
 
-import { convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { GenerateAuthCodeDto, GenerateAuthCodeResultDto } from "../../dtos/generate-auth-code.dto"
 import { GenerateAuthCodeUseCase } from "../../ports/in/generate-auth-code.usecase"
-import { TokenStoragePort } from "../../ports/out/token-storage.port"
+import { AuthCachePort } from "../../ports/out/auth-cache.port"
 
 import { AuthCodeConfig } from "@/configs/token"
+import { convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -23,7 +23,7 @@ export class GenerateAuthCodeUseCaseImpl implements GenerateAuthCodeUseCase {
   private readonly AUTH_CODE_EXPIRES_IN = this.configService.getOrThrow<AuthCodeConfig>("authCode").authCodeExpiresIn
 
   constructor(
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
     private readonly configService: ConfigService,
   ) {}
 
@@ -51,7 +51,7 @@ export class GenerateAuthCodeUseCaseImpl implements GenerateAuthCodeUseCase {
 
       // Redis에 인증 코드 저장
       const numericUserId = convertJwtUserIdToNumber(userId, "GenerateAuthCode userId 변환")
-      await this.tokenStorage.saveAuthCode(authCode, numericUserId, this.AUTH_CODE_EXPIRES_IN)
+      await this.authCache.saveAuthCode(authCode, numericUserId, this.AUTH_CODE_EXPIRES_IN)
 
       this.logger.debug(`Generated auth code for user ${userId} (expires at ${expiresAt.toISOString()})`)
       return new GenerateAuthCodeResultDto(authCode, expiresAt)

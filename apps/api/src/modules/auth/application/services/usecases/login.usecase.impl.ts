@@ -2,11 +2,11 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
@@ -23,7 +23,7 @@ export class LoginUseCaseImpl implements LoginUseCase {
     private readonly passwordHasher: PasswordHasherPort,
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly tokenGenerator: TokenGeneratorPort,
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
   ) {}
 
   /**
@@ -55,7 +55,7 @@ export class LoginUseCaseImpl implements LoginUseCase {
 
       // 5. 리프레시 토큰 패밀리 저장
       if (tokenPair.familyId) {
-        await this.tokenStorage.saveRefreshTokenFamily(
+        await this.authCache.saveRefreshTokenFamily(
           user.id,
           tokenPair.familyId,
           tokenPair.refreshToken,

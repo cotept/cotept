@@ -1,10 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common"
 
-import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { ValidateAuthCodeDto, ValidateAuthCodeResultDto } from "../../dtos/validate-auth-code.dto"
 import { ValidateAuthCodeUseCase } from "../../ports/in/validate-auth-code.usecase"
-import { TokenStoragePort } from "../../ports/out/token-storage.port"
+import { AuthCachePort } from "../../ports/out/auth-cache.port"
 
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -14,7 +14,7 @@ import { ErrorUtils } from "@/shared/utils/error.util"
 export class ValidateAuthCodeUseCaseImpl implements ValidateAuthCodeUseCase {
   private readonly logger = new Logger(ValidateAuthCodeUseCaseImpl.name)
 
-  constructor(private readonly tokenStorage: TokenStoragePort) {}
+  constructor(private readonly authCache: AuthCachePort) {}
 
   /**
    * 인증 코드 검증 및 사용자 ID 반환
@@ -32,7 +32,7 @@ export class ValidateAuthCodeUseCaseImpl implements ValidateAuthCodeUseCase {
       const { code } = dto
 
       // Redis에서 인증 코드로 사용자 ID 조회
-      const userId = await this.tokenStorage.getUserIdByAuthCode(code)
+      const userId = await this.authCache.getUserIdByAuthCode(code)
 
       if (!userId) {
         this.logger.warn(`Auth code not found or expired: ${code}`)
@@ -40,7 +40,7 @@ export class ValidateAuthCodeUseCaseImpl implements ValidateAuthCodeUseCase {
       }
 
       // 사용된 인증 코드 삭제 (일회용)
-      await this.tokenStorage.deleteAuthCode(code)
+      await this.authCache.deleteAuthCode(code)
       this.logger.debug(`Validated and consumed auth code for user ${userId}`)
 
       return new ValidateAuthCodeResultDto(convertDomainUserIdToString(userId), true)

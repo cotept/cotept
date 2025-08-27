@@ -22,13 +22,13 @@ import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/s
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 // 포트 (인터페이스)
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 // 파사드 서비스
 import { AuthFacadeService } from "@/modules/auth/application/services/facade"
 // 유스케이스
@@ -69,7 +69,7 @@ import {
 } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers"
 // 레포지토리
 import {
-  RedisTokenStorageRepository,
+  RedisAuthCacheRepository,
   TypeOrmAuthUserRepository,
   TypeOrmAuthVerificationRepository,
   TypeOrmLoginSessionRepository,
@@ -145,8 +145,8 @@ import { CryptoService } from "@/shared/infrastructure/services"
       useClass: TypeOrmLoginSessionRepository,
     },
     {
-      provide: TokenStoragePort,
-      useClass: RedisTokenStorageRepository,
+      provide: AuthCachePort,
+      useClass: RedisAuthCacheRepository,
     },
 
     // 유스케이스 구현체

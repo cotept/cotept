@@ -23,67 +23,79 @@ import type { UserStatus } from './user-status';
 /**
  * 
  * @export
- * @interface UserResponseDto
+ * @interface UserDto
  */
-export interface UserResponseDto {
+export interface UserDto {
     /**
-     * 사용자 고유 ID
-     * @type {string}
-     * @memberof UserResponseDto
+     * 사용자 고유 IDX (자동 증가 기본키)
+     * @type {number}
+     * @memberof UserDto
      */
-    'id': string;
+    'idx': number;
+    /**
+     * 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+     * @type {string}
+     * @memberof UserDto
+     */
+    'userId': string;
     /**
      * 사용자 이메일
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'email': string;
     /**
      * 사용자 역할
      * @type {UserRole}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'role': UserRole;
     /**
      * 사용자 상태
      * @type {UserStatus}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'status': UserStatus;
     /**
      * 사용자 생성일
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'createdAt': string;
     /**
      * 사용자 정보 수정일
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'updatedAt': string;
     /**
-     * 사용자 이름
+     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
+     */
+    'password'?: string;
+    /**
+     * 사용자 이름 (2~50자, 한글/영문만 허용)
+     * @type {string}
+     * @memberof UserDto
      */
     'name'?: string;
     /**
-     * 전화번호
+     * 전화번호 (- 없이 숫자만)
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'phoneNumber'?: string;
     /**
      * 전화번호 인증 여부
      * @type {boolean}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'phoneVerified'?: boolean;
     /**
      * 마지막 로그인 일시
      * @type {string}
-     * @memberof UserResponseDto
+     * @memberof UserDto
      */
     'lastLoginAt'?: string;
 }

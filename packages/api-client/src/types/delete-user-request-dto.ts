@@ -21,6 +21,12 @@
  */
 export interface DeleteUserRequestDto {
     /**
+     * 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+     * @type {string}
+     * @memberof DeleteUserRequestDto
+     */
+    'userId': string;
+    /**
      * 삭제 사유
      * @type {string}
      * @memberof DeleteUserRequestDto

@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { UserResponseDto } from './user-response-dto';
+import type { UserDto } from './user-dto';
 
 /**
  * 
@@ -25,10 +25,10 @@ import type { UserResponseDto } from './user-response-dto';
 export interface UserListResponseDto {
     /**
      * 사용자 목록
-     * @type {Array<UserResponseDto>}
+     * @type {Array<UserDto>}
      * @memberof UserListResponseDto
      */
-    'users': Array<UserResponseDto>;
+    'users': Array<UserDto>;
     /**
      * 총 사용자 수
      * @type {number}

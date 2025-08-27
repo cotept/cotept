@@ -53,7 +53,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendEmailVerification: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendEmailVerification', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/email-verification`;
+            const localVarPath = `/api/v1/mail/email-verification`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -89,7 +89,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendMailVerificationCode: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendMailVerificationCode', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/verification-code`;
+            const localVarPath = `/api/v1/mail/verification-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -125,7 +125,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendPasswordRecovery: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendPasswordRecovery', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/password-recovery`;
+            const localVarPath = `/api/v1/mail/password-recovery`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -161,7 +161,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendReservationCancel: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendReservationCancel', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/reservation-cancel`;
+            const localVarPath = `/api/v1/mail/reservation-cancel`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -197,7 +197,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendReservationChange: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendReservationChange', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/reservation-change`;
+            const localVarPath = `/api/v1/mail/reservation-change`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -233,7 +233,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendReservationCreate: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendReservationCreate', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/reservation-create`;
+            const localVarPath = `/api/v1/mail/reservation-create`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -269,7 +269,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendReservationFix: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendReservationFix', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/reservation-fix`;
+            const localVarPath = `/api/v1/mail/reservation-fix`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -305,7 +305,7 @@ export const MailApiAxiosParamCreator = function (configuration?: Configuration)
         sendReservationPrenotice: async (mailRequestDto: MailRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mailRequestDto' is not null or undefined
             assertParamExists('sendReservationPrenotice', 'mailRequestDto', mailRequestDto)
-            const localVarPath = `/mail/reservation-prenotice`;
+            const localVarPath = `/api/v1/mail/reservation-prenotice`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

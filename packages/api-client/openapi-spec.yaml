@@ -1,6 +1,6 @@
 openapi: 3.0.0
 paths:
-  /:
+  /api/v1:
     get:
       operationId: getHello
       parameters: []
@@ -9,7 +9,7 @@ paths:
           description: ''
       tags: &ref_0
         - App
-  /health:
+  /api/v1/health:
     get:
       operationId: checkHealth
       parameters: []
@@ -17,7 +17,7 @@ paths:
         '200':
           description: ''
       tags: *ref_0
-  /users/userlist:
+  /api/v1/users/userlist:
     get:
       description: 등록된 모든 사용자 목록을 조회합니다.
       operationId: getAllUsers
@@ -136,24 +136,24 @@ paths:
       summary: 사용자 목록 조회
       tags: &ref_1
         - User
-  /users/{id}:
+  /api/v1/users/{idx}:
     get:
-      description: ID로 사용자 정보를 조회합니다.
+      description: IDX로 사용자 정보를 조회합니다.
       operationId: getUserById
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 인덱스
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: 성공적으로 사용자를 조회함
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -161,7 +161,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -234,12 +234,12 @@ paths:
       description: 사용자 정보를 수정합니다.
       operationId: updateUser
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 인덱스
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -252,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -260,7 +260,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -379,12 +379,12 @@ paths:
       description: 사용자를 삭제합니다.
       operationId: deleteUser
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
           description: 사용자 ID
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -474,7 +474,101 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 삭제
       tags: *ref_1
-  /users/register:
+  /api/v1/users/{userId}:
+    get:
+      description: ID로 사용자 정보를 조회합니다.
+      operationId: getUserByUserId
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 사용자를 조회함
+          content:
+            application/json:
+              schema:
+                title: UserResponse
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 요청하신 사용자를 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 상세 조회
+      tags: *ref_1
+  /api/v1/users/register:
     post:
       description: 새로운 사용자를 생성합니다.
       operationId: createUser
@@ -491,7 +585,7 @@ paths:
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -499,7 +593,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -582,17 +676,17 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 생성
       tags: *ref_1
-  /users/{id}/password:
+  /api/v1/users/{idx}/password:
     patch:
       description: 사용자 비밀번호를 변경합니다.
       operationId: changePassword
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 IDX
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -728,7 +822,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 변경
       tags: *ref_1
-  /auth/login:
+  /api/v1/auth/login:
     post:
       description: 이메일과 비밀번호로 로그인하고 토큰을 발급합니다.
       operationId: login
@@ -795,7 +889,7 @@ paths:
       summary: 로그인
       tags: &ref_2
         - Auth
-  /auth/logout:
+  /api/v1/auth/logout:
     post:
       description: 사용자를 로그아웃하고 토큰을 무효화합니다.
       operationId: logout
@@ -881,7 +975,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 로그아웃
       tags: *ref_2
-  /auth/silent-refresh:
+  /api/v1/auth/silent-refresh:
     post:
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
       operationId: refreshToken
@@ -945,7 +1039,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 갱신
       tags: *ref_2
-  /auth/validate-token:
+  /api/v1/auth/validate-token:
     post:
       description: 액세스 토큰의 유효성을 검증합니다.
       operationId: validateToken
@@ -1007,7 +1101,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 검증
       tags: *ref_2
-  /auth/send-verification-code:
+  /api/v1/auth/send-verification-code:
     post:
       description: 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
       operationId: sendVerificationCode
@@ -1069,7 +1163,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 발송
       tags: *ref_2
-  /auth/verify-code:
+  /api/v1/auth/verify-code:
     post:
       description: 발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.
       operationId: verifyCode
@@ -1131,7 +1225,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 확인
       tags: *ref_2
-  /auth/exchange-code:
+  /api/v1/auth/exchange-code:
     post:
       description: 소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.
       operationId: exchangeAuthCode
@@ -1193,7 +1287,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 임시 인증 코드를 실제 토큰으로 교환
       tags: *ref_2
-  /auth/confirm-social-link:
+  /api/v1/auth/confirm-social-link:
     post:
       description: 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
       operationId: confirmSocialLink
@@ -1255,7 +1349,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 소셜 계정 연결 확인
       tags: *ref_2
-  /auth/find-id:
+  /api/v1/auth/find-id:
     post:
       description: >-
         인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후
@@ -1317,7 +1411,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 아이디 찾기
       tags: *ref_2
-  /auth/reset-password:
+  /api/v1/auth/reset-password:
     post:
       description: 인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.
       operationId: resetPassword
@@ -1377,7 +1471,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 재설정
       tags: *ref_2
-  /auth/github:
+  /api/v1/auth/github:
     get:
       description: GitHub OAuth 인증을 시작합니다.
       operationId: githubLogin
@@ -1407,7 +1501,7 @@ paths:
       summary: GitHub 로그인 시작
       tags: &ref_3
         - GithubAuth
-  /auth/github/callback:
+  /api/v1/auth/github/callback:
     get:
       description: GitHub 인증 후 리다이렉트되는 엔드포인트입니다.
       operationId: githubCallback
@@ -1444,7 +1538,7 @@ paths:
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
       tags: *ref_3
-  /auth/google:
+  /api/v1/auth/google:
     get:
       description: Google OAuth 인증을 시작합니다.
       operationId: googleLogin
@@ -1474,7 +1568,7 @@ paths:
       summary: Google 로그인 시작
       tags: &ref_4
         - GoogleAuth
-  /auth/google/callback:
+  /api/v1/auth/google/callback:
     get:
       description: Google 인증 후 리다이렉트되는 엔드포인트입니다.
       operationId: googleCallback
@@ -1511,7 +1605,7 @@ paths:
           description: Google 인증 실패
       summary: Google 로그인 콜백
       tags: *ref_4
-  /mail/email-verification:
+  /api/v1/mail/email-verification:
     post:
       operationId: sendEmailVerification
       parameters: []
@@ -1604,7 +1698,7 @@ paths:
       summary: 이메일 본인확인
       tags: &ref_5
         - Mail
-  /mail/password-recovery:
+  /api/v1/mail/password-recovery:
     post:
       operationId: sendPasswordRecovery
       parameters: []
@@ -1696,7 +1790,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 찾기
       tags: *ref_5
-  /mail/verification-code:
+  /api/v1/mail/verification-code:
     post:
       operationId: sendMailVerificationCode
       parameters: []
@@ -1788,7 +1882,7 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증번호 발송
       tags: *ref_5
-  /mail/reservation-create:
+  /api/v1/mail/reservation-create:
     post:
       operationId: sendReservationCreate
       parameters: []
@@ -1850,7 +1944,7 @@ paths:
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 신청
       tags: *ref_5
-  /mail/reservation-fix:
+  /api/v1/mail/reservation-fix:
     post:
       operationId: sendReservationFix
       parameters: []
@@ -1944,7 +2038,7 @@ paths:
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 확정
       tags: *ref_5
-  /mail/reservation-cancel:
+  /api/v1/mail/reservation-cancel:
     post:
       operationId: sendReservationCancel
       parameters: []
@@ -2038,7 +2132,7 @@ paths:
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 취소
       tags: *ref_5
-  /mail/reservation-change:
+  /api/v1/mail/reservation-change:
     post:
       operationId: sendReservationChange
       parameters: []
@@ -2132,7 +2226,7 @@ paths:
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 변경
       tags: *ref_5
-  /mail/reservation-prenotice:
+  /api/v1/mail/reservation-prenotice:
     post:
       operationId: sendReservationPrenotice
       parameters: []
@@ -2226,15 +2320,15 @@ paths:
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 사전안내
       tags: *ref_5
-  /mail-audit/{id}:
+  /api/v1/mail-audit/{idx}:
     get:
       operationId: getMailAuditById
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: 메일 감사 조회 성공
@@ -2253,7 +2347,7 @@ paths:
       summary: 메일 감사 조회 (ID)
       tags: &ref_6
         - MailAudit
-  /mail-audit:
+  /api/v1/mail-audit:
     get:
       operationId: searchMailAudit
       parameters:
@@ -2333,20 +2427,28 @@ components:
         - INACTIVE
         - SUSPENDED
       description: 사용자 상태
-    UserResponseDto:
+    UserDto:
       type: object
       properties:
-        id:
+        idx:
+          type: number
+          description: 사용자 고유 IDX (자동 증가 기본키)
+          example: 123
+        userId:
           type: string
-          description: 사용자 고유 ID
-          example: 123e4567-e89b-12d3-a456-426614174000
+          description: 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         email:
           type: string
           description: 사용자 이메일
           example: user@example.com
+        password:
+          type: string
+          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          example: StrongP@ss123
         name:
           type: string
-          description: 사용자 이름
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
         role:
           description: 사용자 역할
@@ -2360,26 +2462,30 @@ components:
             - $ref: '#/components/schemas/UserStatus'
         phoneNumber:
           type: string
-          description: 전화번호
+          description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
         phoneVerified:
           type: boolean
           description: 전화번호 인증 여부
           example: false
         createdAt:
+          format: date-time
           type: string
           description: 사용자 생성일
           example: '2023-01-01T00:00:00Z'
         updatedAt:
+          format: date-time
           type: string
           description: 사용자 정보 수정일
           example: '2023-01-01T00:00:00Z'
         lastLoginAt:
+          format: date-time
           type: string
           description: 마지막 로그인 일시
           example: '2023-01-01T00:00:00Z'
       required:
-        - id
+        - idx
+        - userId
         - email
         - role
         - status
@@ -2392,7 +2498,7 @@ components:
           description: 사용자 목록
           type: array
           items:
-            $ref: '#/components/schemas/UserResponseDto'
+            $ref: '#/components/schemas/UserDto'
         totalCount:
           type: number
           description: 총 사용자 수
@@ -2425,39 +2531,51 @@ components:
         - totalPages
         - hasNext
         - hasPrevious
-    ApiResponseUserResponseDto:
+    ApiResponseUserDto:
       type: object
       properties: {}
     CreateUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         email:
           type: string
           description: 사용자 이메일
           example: user@example.com
         password:
           type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함) - 필수
           example: StrongP@ss123
         name:
           type: string
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
-        phoneNumber:
-          type: string
-          description: 전화번호 (- 없이 숫자만)
-          example: '01012345678'
         role:
           description: '사용자 역할 (기본값: MENTEE)'
           example: MENTEE
           allOf:
             - $ref: '#/components/schemas/UserRole'
+        phoneNumber:
+          type: string
+          description: 전화번호 (- 없이 숫자만)
+          example: '01012345678'
       required:
+        - userId
         - email
-        - password
     UpdateUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+          example: dudtod1596
+        email:
+          type: string
+          description: 사용자 이메일
+          example: user@example.com
         name:
           type: string
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
@@ -2479,7 +2597,7 @@ components:
         deletedUserId:
           type: string
           description: 삭제된 사용자 ID
-          example: 123e4567-e89b-12d3-a456-426614174000
+          example: dudtod1596
         deletedAt:
           type: string
           description: 삭제 완료 시간
@@ -2496,6 +2614,10 @@ components:
     DeleteUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         reason:
           type: string
           description: 삭제 사유
@@ -2504,6 +2626,8 @@ components:
           type: string
           description: 삭제 확인을 위한 비밀번호
           example: UserP@ss123
+      required:
+        - userId
     ApiResponsePasswordChangeResponseDto:
       type: object
       properties: {}
@@ -2536,11 +2660,11 @@ components:
         newPassword:
           type: string
           description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: NewP@ss123
+          example: NewStrongP@ss123
         confirmPassword:
           type: string
-          description: 새 비밀번호 확인
-          example: NewP@ss123
+          description: 새 비밀번호
+          example: NewStrongP@ss123
       required:
         - currentPassword
         - newPassword
@@ -2902,10 +3026,10 @@ components:
     MailAuditResponseDto:
       type: object
       properties:
-        id:
-          type: string
+        idx:
+          type: number
           description: 메일 감사 ID
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: 1
         mailId:
           type: string
           description: 메일 ID
@@ -2950,7 +3074,7 @@ components:
           description: 언어 설정
           example: ko
       required:
-        - id
+        - idx
         - mailId
         - template
         - recipients

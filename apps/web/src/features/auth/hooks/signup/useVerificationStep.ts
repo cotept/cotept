@@ -44,7 +44,7 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
       // 실제 API 응답에서 verificationId 추출
       if (response.data?.verificationId) {
         setVerificationId(response.data?.verificationId || "")
-        setCooldownTime(60) // 60초 쿨타임 시작
+        setCooldownTime(180) // 60초 쿨타임 시작
       } else {
         form.setError("verificationCode", {
           message: response.message || "인증 코드 전송을 실패 했습니다. 다시 시도해주세요.",

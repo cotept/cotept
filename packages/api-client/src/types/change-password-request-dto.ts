@@ -33,7 +33,7 @@ export interface ChangePasswordRequestDto {
      */
     'newPassword': string;
     /**
-     * 새 비밀번호 확인
+     * 새 비밀번호
      * @type {string}
      * @memberof ChangePasswordRequestDto
      */

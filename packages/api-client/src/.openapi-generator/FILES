@@ -59,10 +59,10 @@ types/update-user409-response.ts
 types/update-user422-response.ts
 types/user-deletion-response-dto.ts
 types/user-deletion-response-wrapper.ts
+types/user-dto.ts
 types/user-list-response-dto.ts
 types/user-list-response-wrapper.ts
-types/user-response-dto.ts
-types/user-response-wrapper.ts
+types/user-response.ts
 types/user-role.ts
 types/user-status.ts
 types/validate-token-request-dto.ts

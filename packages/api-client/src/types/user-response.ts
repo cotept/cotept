@@ -15,25 +15,25 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { UserResponseDto } from './user-response-dto';
+import type { UserDto } from './user-dto';
 
 /**
  * 
  * @export
- * @interface UserResponseWrapper
+ * @interface UserResponse
  */
-export interface UserResponseWrapper {
+export interface UserResponse {
     /**
      * 응답 메시지
      * @type {string}
-     * @memberof UserResponseWrapper
+     * @memberof UserResponse
      */
     'message'?: string;
     /**
      * 
-     * @type {UserResponseDto}
-     * @memberof UserResponseWrapper
+     * @type {UserDto}
+     * @memberof UserResponse
      */
-    'data'?: UserResponseDto;
+    'data'?: UserDto;
 }
 

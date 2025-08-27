@@ -38,7 +38,7 @@ export const GithubAuthApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         githubCallback: async (redirectUrl?: string, code?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/github/callback`;
+            const localVarPath = `/api/v1/auth/github/callback`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -77,7 +77,7 @@ export const GithubAuthApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         githubLogin: async (redirectUrl?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/github`;
+            const localVarPath = `/api/v1/auth/github`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

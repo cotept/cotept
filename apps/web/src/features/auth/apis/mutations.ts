@@ -1,4 +1,4 @@
-import { type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
+import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 
 import { authKeys, authQueryUtils } from "./queryKey"
 
@@ -205,10 +205,10 @@ export function useVerifyCode(
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<VerifyCodeResponse, ApiError, VerifyCodeParams>({
+  return useMutation<VerifyCodeResponse, ApiError, VerifyCodeParams>({
     mutationFn: (data) => authApiService.verifyCode(...data),
-    queryKey: authKeys.verifications().queryKey,
-    successMessage: "인증이 완료되었습니다.",
+    // queryKey: authKeys.verifications().queryKey,
+    // successMessage: "인증이 완료되었습니다.",
     onSuccess: (response, variables, context) => {
       authQueryUtils.invalidateVerifications(queryClient)
       options?.onSuccess?.(response, variables, context)

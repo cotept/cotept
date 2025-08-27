@@ -19,7 +19,7 @@ export class AuthVerificationPersistenceMapper {
   toEntity(authVerification: AuthVerification): AuthVerificationEntity {
     const plainData = {
       idx: authVerification.idx,
-      userId: authVerification.userId,
+      userIdx: authVerification.userIdx,
       authType: authVerification.authType,
       target: authVerification.target,
       verificationCode: authVerification.verificationCode,
@@ -44,7 +44,7 @@ export class AuthVerificationPersistenceMapper {
 
     return new AuthVerification(
       plainData.idx,
-      plainData.userId,
+      plainData.userIdx,
       plainData.authType as AuthType,
       plainData.target,
       plainData.verificationCode,

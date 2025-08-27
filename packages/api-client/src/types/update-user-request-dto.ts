@@ -21,6 +21,18 @@
  */
 export interface UpdateUserRequestDto {
     /**
+     * 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+     * @type {string}
+     * @memberof UpdateUserRequestDto
+     */
+    'userId'?: string;
+    /**
+     * 사용자 이메일
+     * @type {string}
+     * @memberof UpdateUserRequestDto
+     */
+    'email'?: string;
+    /**
      * 사용자 이름 (2~50자, 한글/영문만 허용)
      * @type {string}
      * @memberof UpdateUserRequestDto

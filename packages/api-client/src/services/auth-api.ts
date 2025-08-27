@@ -77,7 +77,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         confirmSocialLink: async (confirmSocialLinkRequestDto: ConfirmSocialLinkRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'confirmSocialLinkRequestDto' is not null or undefined
             assertParamExists('confirmSocialLink', 'confirmSocialLinkRequestDto', confirmSocialLinkRequestDto)
-            const localVarPath = `/auth/confirm-social-link`;
+            const localVarPath = `/api/v1/auth/confirm-social-link`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -113,7 +113,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         exchangeAuthCode: async (exchangeAuthCodeRequestDto: ExchangeAuthCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'exchangeAuthCodeRequestDto' is not null or undefined
             assertParamExists('exchangeAuthCode', 'exchangeAuthCodeRequestDto', exchangeAuthCodeRequestDto)
-            const localVarPath = `/auth/exchange-code`;
+            const localVarPath = `/api/v1/auth/exchange-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -149,7 +149,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         findId: async (findIdRequestDto: FindIdRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'findIdRequestDto' is not null or undefined
             assertParamExists('findId', 'findIdRequestDto', findIdRequestDto)
-            const localVarPath = `/auth/find-id`;
+            const localVarPath = `/api/v1/auth/find-id`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -185,7 +185,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         login: async (loginRequestDto: LoginRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequestDto' is not null or undefined
             assertParamExists('login', 'loginRequestDto', loginRequestDto)
-            const localVarPath = `/auth/login`;
+            const localVarPath = `/api/v1/auth/login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -218,7 +218,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
          * @throws {RequiredError}
          */
         logout: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/logout`;
+            const localVarPath = `/api/v1/auth/logout`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -251,7 +251,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         refreshToken: async (refreshTokenRequestDto: RefreshTokenRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'refreshTokenRequestDto' is not null or undefined
             assertParamExists('refreshToken', 'refreshTokenRequestDto', refreshTokenRequestDto)
-            const localVarPath = `/auth/silent-refresh`;
+            const localVarPath = `/api/v1/auth/silent-refresh`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -287,7 +287,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         resetPassword: async (resetPasswordRequestDto: ResetPasswordRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'resetPasswordRequestDto' is not null or undefined
             assertParamExists('resetPassword', 'resetPasswordRequestDto', resetPasswordRequestDto)
-            const localVarPath = `/auth/reset-password`;
+            const localVarPath = `/api/v1/auth/reset-password`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -323,7 +323,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         sendVerificationCode: async (sendVerificationCodeRequestDto: SendVerificationCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sendVerificationCodeRequestDto' is not null or undefined
             assertParamExists('sendVerificationCode', 'sendVerificationCodeRequestDto', sendVerificationCodeRequestDto)
-            const localVarPath = `/auth/send-verification-code`;
+            const localVarPath = `/api/v1/auth/send-verification-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -359,7 +359,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         validateToken: async (validateTokenRequestDto: ValidateTokenRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'validateTokenRequestDto' is not null or undefined
             assertParamExists('validateToken', 'validateTokenRequestDto', validateTokenRequestDto)
-            const localVarPath = `/auth/validate-token`;
+            const localVarPath = `/api/v1/auth/validate-token`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -395,7 +395,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         verifyCode: async (verifyCodeRequestDto: VerifyCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'verifyCodeRequestDto' is not null or undefined
             assertParamExists('verifyCode', 'verifyCodeRequestDto', verifyCodeRequestDto)
-            const localVarPath = `/auth/verify-code`;
+            const localVarPath = `/api/v1/auth/verify-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

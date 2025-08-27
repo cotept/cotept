@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString, Length } from 'class-validator';
 
 /**
  * 인증 코드 확인 요청 DTO
@@ -9,10 +9,10 @@ import { IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 export class VerifyCodeRequestDto {
   @ApiProperty({
     description: '검증 ID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: '1703123456789',
   })
   @Expose()
-  @IsUUID('4', { message: '유효한 검증 ID 형식이 아닙니다.' })
+  @IsNumberString({}, { message: '유효한 검증 ID 형식이 아닙니다.' })
   @IsNotEmpty({ message: '검증 ID는 필수 입력 항목입니다.' })
   verificationId: string;
 

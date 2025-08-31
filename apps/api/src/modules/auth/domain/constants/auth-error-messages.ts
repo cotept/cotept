@@ -30,6 +30,11 @@ export const AUTH_ERROR_MESSAGES = {
   USER_NOT_FOUND: "해당 이메일을 가진 사용자를 찾을 수 없습니다.",
   USER_NOT_FOUND_BY_ID: "해당 ID의 사용자를 찾을 수 없습니다.",
   
+  // 중복 확인 관련
+  EMAIL_ALREADY_EXISTS: "이미 사용 중인 이메일입니다.",
+  USERID_ALREADY_EXISTS: "이미 사용 중인 아이디입니다.",
+  NICKNAME_ALREADY_EXISTS: "이미 사용 중인 닉네임입니다.",
+  
   // 요청 제한 관련
   RATE_LIMIT_EXCEEDED: "요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.",
   TOO_MANY_LOGIN_ATTEMPTS: "로그인 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.",

@@ -19,7 +19,7 @@ export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseC
   async execute(dto: SendVerificationCodeDto): Promise<{ verificationId: string; expiresAt: Date }> {
     // 기존 도메인 모델 활용
     const verificationId = Date.now() + Math.floor(Math.random() * 1000) // 타임스탬프 + 난수로 고유 ID 생성
-    const expiresInMinutes = 5 // 도메인 비즈니스 규칙: 5분 만료
+    const expiresInMinutes = 3 // 도메인 비즈니스 규칙: 3분 만료
     const authVerification = AuthVerification.create(
       verificationId,
       dto.userId || null,
@@ -42,8 +42,8 @@ export class SendVerificationCodeUseCaseImpl implements SendVerificationCodeUseC
       verified: false,
       expiresAt: authVerification.expiresAt.toISOString(),
     }
-    // 도메인에서 정의한 만료시간 사용 (5분 = 300초 = 300000밀리초)
-    await this.authCache.saveVerificationData(verificationId.toString(), verificationData, 300000) // 5분
+    // 도메인에서 정의한 만료시간 사용 (3분 = 180초 = 180000밀리초)
+    await this.authCache.saveVerificationData(verificationId.toString(), verificationData, 180000) // 3분
 
     // 이메일/SMS 발송
     let sendSuccess = false

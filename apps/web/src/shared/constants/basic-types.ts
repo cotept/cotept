@@ -1,9 +1,9 @@
 // 코드에서도 의미가 명확해짐
 export const SIGNUP_STEPS = {
   ENTER_EMAIL: "enter-email",
+  VERIFY_EMAIL: "verify-email",
   SET_PASSWORD: "set-password",
   TERMS_AGREEMENT: "terms-agreement",
-  VERIFY_EMAIL: "verify-email",
   PROFILE_SETUP: "profile-setup",
 } as const
 

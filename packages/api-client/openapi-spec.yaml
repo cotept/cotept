@@ -1471,6 +1471,126 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 재설정
       tags: *ref_2
+  /api/v1/auth/check-email-availability:
+    post:
+      description: 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+      operationId: checkEmailAvailability
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckEmailAvailabilityRequestDto'
+      responses:
+        '200':
+          description: 이메일 중복 확인 결과
+          content:
+            application/json:
+              schema:
+                title: AvailabilityResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/AvailabilityResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 이메일 중복 확인
+      tags: *ref_2
+  /api/v1/auth/check-userid-availability:
+    post:
+      description: 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+      operationId: checkUserIdAvailability
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckUserIdAvailabilityRequestDto'
+      responses:
+        '200':
+          description: 사용자 ID 중복 확인 결과
+          content:
+            application/json:
+              schema:
+                title: AvailabilityResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/AvailabilityResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 ID 중복 확인
+      tags: *ref_2
   /api/v1/auth/github:
     get:
       description: GitHub OAuth 인증을 시작합니다.
@@ -2835,7 +2955,7 @@ components:
         verificationId:
           type: string
           description: 검증 ID
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: '1703123456789'
         code:
           type: string
           description: 인증 코드 (6자리)
@@ -2958,6 +3078,43 @@ components:
         - verificationId
         - verificationCode
         - newPassword
+    ApiResponseAvailabilityResponseDto:
+      type: object
+      properties: {}
+    AvailabilityResponseDto:
+      type: object
+      properties:
+        available:
+          type: boolean
+          description: 사용 가능 여부
+          example: true
+        message:
+          type: string
+          description: 메시지 (중복 시에만 표시)
+          example: 이미 사용 중인 이메일입니다
+      required:
+        - available
+    CheckEmailAvailabilityRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 확인할 이메일 주소
+          example: user@example.com
+          format: email
+      required:
+        - email
+    CheckUserIdAvailabilityRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 확인할 사용자 ID
+          example: user123
+          minLength: 4
+          maxLength: 20
+      required:
+        - userId
     MailRequestDto:
       type: object
       properties:

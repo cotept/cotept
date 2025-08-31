@@ -10,6 +10,8 @@ export const authKeys = createQueryKeys("auth", {
   verification: (type: string, target: string) => ["verification", type, target],
   socialAuth: () => ["social"],
   socialAuthCode: (code: string) => ["social", "code", code],
+  checkEmailAvailability: (email: string) => ["check", "email", email],
+  checkUserIdAvailability: (id: string) => ["check", "user", id],
 })
 
 // 인증 도메인 쿼리 유틸리티

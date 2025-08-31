@@ -19,7 +19,11 @@ services/user-api.ts
 tsconfig.esm.json
 tsconfig.json
 types/auth-type.ts
+types/availability-response-dto.ts
+types/availability-response-wrapper.ts
 types/change-password-request-dto.ts
+types/check-email-availability-request-dto.ts
+types/check-user-id-availability-request-dto.ts
 types/confirm-social-link-request-dto.ts
 types/create-user-request-dto.ts
 types/delete-user-request-dto.ts

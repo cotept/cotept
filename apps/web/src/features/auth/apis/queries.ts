@@ -2,7 +2,13 @@ import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { authKeys } from "./queryKey"
 
-import type { ValidateTokenResponse } from "@/shared/types/auth.type"
+import type {
+  CheckEmailAvailabilityRequestData,
+  CheckEmailAvailabilityResponse,
+  CheckUserIdAvailabilityRequestData,
+  CheckUserIdAvailabilityResponse,
+  ValidateTokenResponse,
+} from "@/shared/types/auth.type"
 
 import { authApiService } from "@/shared/api/services/auth-api-service"
 
@@ -27,6 +33,20 @@ export const authQueries = {
     },
     staleTime: 5 * 60 * 1000, // 5분
   }),
+
+  checkEmailAvailability: (email: string) => ({
+    queryKey: authKeys.checkEmailAvailability(email).queryKey,
+    queryFn: () => authApiService.checkEmailAvailability({ checkEmailAvailabilityRequestDto: { email } }),
+    staleTime: 2 * 60 * 1000, // 2분
+    gcTime: 2 * 60 * 1000, // 2분
+  }),
+
+  checkUserIdAvailability: (userId: string) => ({
+    queryKey: authKeys.checkUserIdAvailability(userId).queryKey,
+    queryFn: () => authApiService.checkUserIdAvailability({ checkUserIdAvailabilityRequestDto: { userId } }),
+    staleTime: 2 * 60 * 1000, // 2분
+    gcTime: 2 * 60 * 1000, // 2분
+  }),
 } as const
 
 // 토큰 검증 훅
@@ -38,6 +58,32 @@ export function useValidateToken(
   return useQuery({
     ...query,
     enabled: !!token && (options?.enabled ?? true),
+    ...options,
+  })
+}
+
+// 이메일 중복 확인 훅
+export function useCheckEmailAvailability(
+  email: string,
+  options?: UseQueryOptions<CheckEmailAvailabilityResponse, Error, CheckEmailAvailabilityRequestData>,
+) {
+  const query = authQueries.checkEmailAvailability(email)
+  return useQuery({
+    ...query,
+    enabled: !!email && (options?.enabled ?? true),
+    ...options,
+  })
+}
+
+// 아이디 중복 확인 훅
+export function useCheckUserIdAvailability(
+  userId: string,
+  options?: UseQueryOptions<CheckUserIdAvailabilityResponse, Error, CheckUserIdAvailabilityRequestData>,
+) {
+  const query = authQueries.checkUserIdAvailability(userId)
+  return useQuery({
+    ...query,
+    enabled: !!userId && (options?.enabled ?? true),
     ...options,
   })
 }

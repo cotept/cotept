@@ -128,3 +128,10 @@ export const createOptimisticUpdate = <TData extends { data?: any }, TUpdateData
     }
   }
 }
+
+// 시간 포맷팅 함수 (MM:SS)
+export const formatTimeMMSS = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+}

@@ -1,3 +1,4 @@
+export * from './availability.response.dto';
 export * from './find-id.response.dto';
 export * from './logout.response.dto';
 export * from './reset-password.response.dto';

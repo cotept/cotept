@@ -1,3 +1,5 @@
+export * from "./check-email-availability.request.dto"
+export * from "./check-userid-availability.request.dto"
 export * from "./confirm-social-link.request.dto"
 export * from "./exchange-auth-code.request.dto"
 export * from "./find-id-request.dto"

@@ -3,6 +3,8 @@ import { Injectable } from "@nestjs/common"
 import { plainToInstance } from "class-transformer"
 
 import {
+  CheckEmailAvailabilityDto,
+  CheckUserIdAvailabilityDto,
   FindIdDto,
   LoginDto,
   LogoutDto,
@@ -13,6 +15,8 @@ import {
   VerifyCodeDto,
 } from "@/modules/auth/application/dtos"
 import {
+  CheckEmailAvailabilityRequestDto,
+  CheckUserIdAvailabilityRequestDto,
   FindIdRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
@@ -157,5 +161,23 @@ export class AuthRequestMapper {
     )
 
     return dto
+  }
+
+  /**
+   * 이메일 중복 확인 요청 DTO를 내부 DTO로 변환
+   */
+  toCheckEmailAvailabilityDto(request: CheckEmailAvailabilityRequestDto): CheckEmailAvailabilityDto {
+    return plainToInstance(CheckEmailAvailabilityDto, request, {
+      excludeExtraneousValues: true,
+    })
+  }
+
+  /**
+   * 사용자 ID 중복 확인 요청 DTO를 내부 DTO로 변환
+   */
+  toCheckUserIdAvailabilityDto(request: CheckUserIdAvailabilityRequestDto): CheckUserIdAvailabilityDto {
+    return plainToInstance(CheckUserIdAvailabilityDto, request, {
+      excludeExtraneousValues: true,
+    })
   }
 }

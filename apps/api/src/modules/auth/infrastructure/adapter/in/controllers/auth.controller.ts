@@ -14,6 +14,8 @@ import { AuthFacadeService } from "@/modules/auth/application/services/facade/au
 import { CurrentUserId } from "@/modules/auth/infrastructure/common/decorators"
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
 import {
+  CheckEmailAvailabilityRequestDto,
+  CheckUserIdAvailabilityRequestDto,
   ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
   FindIdRequestDto,
@@ -25,6 +27,7 @@ import {
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
+  AvailabilityResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
@@ -164,6 +167,7 @@ export class AuthController {
   @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "인증 코드가 일치하지 않습니다" })
   async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
+    this.logger.debug(verifyCodeRequestDto)
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
   }
 
@@ -254,16 +258,39 @@ export class AuthController {
     return await this.authFacadeService.resetPassword(resetPasswordRequestDto, ipAddress)
   }
 
-  // 추가 필요한 API들
-  // POST /auth/check-email-availability
-  // {
-  //   "email": "user@example.com"
-  // }
-  // → { "available": true }
+  /**
+   * 이메일 중복 확인
+   */
+  @Post("check-email-availability")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "이메일 중복 확인",
+    description: "회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.",
+  })
+  @ApiBody({ type: CheckEmailAvailabilityRequestDto })
+  @ApiOkResponseWrapper(AvailabilityResponseDto, "이메일 중복 확인 결과")
+  @ApiStandardErrors()
+  async checkEmailAvailability(
+    @Body() checkEmailAvailabilityRequestDto: CheckEmailAvailabilityRequestDto,
+  ): Promise<AvailabilityResponseDto> {
+    return this.authFacadeService.checkEmailAvailability(checkEmailAvailabilityRequestDto)
+  }
 
-  // POST /auth/check-nickname-availability
-  // {
-  //   "nickname": "사용자닉네임"
-  // }
-  // → { "available": false, "message": "이미 사용 중인 닉네임입니다" }
+  /**
+   * 사용자 ID 중복 확인
+   */
+  @Post("check-userid-availability")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "사용자 ID 중복 확인",
+    description: "회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.",
+  })
+  @ApiBody({ type: CheckUserIdAvailabilityRequestDto })
+  @ApiOkResponseWrapper(AvailabilityResponseDto, "사용자 ID 중복 확인 결과")
+  @ApiStandardErrors()
+  async checkUserIdAvailability(
+    @Body() checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto,
+  ): Promise<AvailabilityResponseDto> {
+    return this.authFacadeService.checkUserIdAvailability(checkUserIdAvailabilityRequestDto)
+  }
 }

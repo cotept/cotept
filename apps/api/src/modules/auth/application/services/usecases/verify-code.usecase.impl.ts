@@ -7,9 +7,7 @@ import { VerificationException } from "@/modules/auth/domain/model/auth-exceptio
 
 @Injectable()
 export class VerifyCodeUseCaseImpl implements VerifyCodeUseCase {
-  constructor(
-    private readonly authCache: AuthCachePort,
-  ) {}
+  constructor(private readonly authCache: AuthCachePort) {}
 
   async execute(dto: VerifyCodeDto): Promise<boolean> {
     try {
@@ -47,23 +45,24 @@ export class VerifyCodeUseCaseImpl implements VerifyCodeUseCase {
 
       // 인증 코드 비교
       if (cachedData.code !== dto.code) {
-        // 시도 횟수 증가
+        // 시도 횟수 증가 - 원래 만료시간 유지
+        const remainingTtl = Math.max(0, new Date(cachedData.expiresAt).getTime() - Date.now())
         cachedData.attempts++
-        await this.authCache.saveVerificationData(dto.verificationId, cachedData, 300) // TTL 유지
-        
+        await this.authCache.saveVerificationData(dto.verificationId, cachedData, remainingTtl)
+
         throw new VerificationException("유효하지 않은 인증 정보입니다.")
       }
 
-      // 인증 성공
+      // 인증 성공 - 10초 TTL로 중복 요청 방지
       cachedData.verified = true
-      await this.authCache.saveVerificationData(dto.verificationId, cachedData, 300) // TTL 유지
+      await this.authCache.saveVerificationData(dto.verificationId, cachedData, 10000) // 10초 TTL
 
       return true
     } catch (error) {
       if (error instanceof VerificationException) {
         throw error
       }
-      
+
       // 기타 오류는 유효하지 않은 인증 정보로 처리
       throw new VerificationException("유효하지 않은 인증 정보입니다.")
     }

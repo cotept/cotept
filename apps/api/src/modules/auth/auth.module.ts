@@ -11,6 +11,8 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
 import { JwtConfig } from "@/configs/token"
 // 매퍼
 import { AuthResponseMapper, TokenMapper } from "@/modules/auth/application/mappers"
+import { CheckEmailAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-email-availability.usecase"
+import { CheckUserIdAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-userid-availability.usecase"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
@@ -33,6 +35,8 @@ import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-g
 import { AuthFacadeService } from "@/modules/auth/application/services/facade"
 // 유스케이스
 import {
+  CheckEmailAvailabilityUseCaseImpl,
+  CheckUserIdAvailabilityUseCaseImpl,
   FindIdUseCaseImpl,
   GenerateAuthCodeUseCaseImpl,
   LoginUseCaseImpl,
@@ -195,6 +199,14 @@ import { CryptoService } from "@/shared/infrastructure/services"
       provide: ResetPasswordUseCase,
       useClass: ResetPasswordUseCaseImpl,
     },
+    {
+      provide: CheckEmailAvailabilityUseCase,
+      useClass: CheckEmailAvailabilityUseCaseImpl,
+    },
+    {
+      provide: CheckUserIdAvailabilityUseCase,
+      useClass: CheckUserIdAvailabilityUseCaseImpl,
+    },
 
     // 가드
     JwtAuthGuard,
@@ -242,6 +254,8 @@ import { CryptoService } from "@/shared/infrastructure/services"
     ValidateAuthCodeUseCase,
     FindIdUseCase, // 내보내기 추가
     ResetPasswordUseCase, // 내보내기 추가
+    CheckEmailAvailabilityUseCase, // 내보내기 추가
+    CheckUserIdAvailabilityUseCase, // 내보내기 추가
     TokenGeneratorPort,
     JwtAuthGuard,
     AuthFacadeService, // AuthFacadeService를 내보내도록 추가

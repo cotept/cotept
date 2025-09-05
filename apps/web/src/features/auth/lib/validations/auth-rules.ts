@@ -45,9 +45,15 @@ export const TermsStepRules = z.object({
 export const VerificationStepRules = z.object({
   verificationCode: FieldRules.verificationCode(),
 })
+/**
+ * 회원가입 5단계: 사용자 ID 설정
+ */
+export const SetUserIdRules = z.object({
+  userId: FieldRules.userId(),
+})
 
 /**
- * 회원가입 5단계: 프로필 설정 (현재는 닉네임만)
+ * 회원가입 6단계: 프로필 설정 (현재는 닉네임만)
  */
 export const ProfileStepRules = z.object({
   nickname: FieldRules.nickname(),
@@ -64,6 +70,7 @@ export const LoginRules = z.object({
 export type EmailStepData = z.infer<typeof EmailStepRules>
 export type PasswordStepData = z.infer<typeof PasswordStepRules>
 export type TermsStepData = z.input<typeof TermsStepRules>
+export type SetUserIdData = z.input<typeof SetUserIdRules>
 export type VerificationStepData = z.infer<typeof VerificationStepRules>
 export type ProfileStepData = z.infer<typeof ProfileStepRules>
 export type LoginData = z.infer<typeof LoginRules>

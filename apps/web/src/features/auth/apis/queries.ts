@@ -3,9 +3,7 @@ import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { authKeys } from "./queryKey"
 
 import type {
-  CheckEmailAvailabilityRequestData,
   CheckEmailAvailabilityResponse,
-  CheckUserIdAvailabilityRequestData,
   CheckUserIdAvailabilityResponse,
   ValidateTokenResponse,
 } from "@/shared/types/auth.type"
@@ -65,7 +63,15 @@ export function useValidateToken(
 // 이메일 중복 확인 훅
 export function useCheckEmailAvailability(
   email: string,
-  options?: UseQueryOptions<CheckEmailAvailabilityResponse, Error, CheckEmailAvailabilityRequestData>,
+  options?: Omit<
+    UseQueryOptions<
+      CheckEmailAvailabilityResponse,
+      Error,
+      CheckEmailAvailabilityResponse,
+      ReturnType<typeof authQueries.checkEmailAvailability>["queryKey"]
+    >,
+    "queryKey" | "queryFn"
+  >,
 ) {
   const query = authQueries.checkEmailAvailability(email)
   return useQuery({
@@ -78,7 +84,15 @@ export function useCheckEmailAvailability(
 // 아이디 중복 확인 훅
 export function useCheckUserIdAvailability(
   userId: string,
-  options?: UseQueryOptions<CheckUserIdAvailabilityResponse, Error, CheckUserIdAvailabilityRequestData>,
+  options?: Omit<
+    UseQueryOptions<
+      CheckUserIdAvailabilityResponse,
+      Error,
+      CheckUserIdAvailabilityResponse,
+      ReturnType<typeof authQueries.checkUserIdAvailability>["queryKey"]
+    >,
+    "queryKey" | "queryFn"
+  >,
 ) {
   const query = authQueries.checkUserIdAvailability(userId)
   return useQuery({

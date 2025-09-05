@@ -3088,10 +3088,6 @@ components:
           type: boolean
           description: 사용 가능 여부
           example: true
-        message:
-          type: string
-          description: 메시지 (중복 시에만 표시)
-          example: 이미 사용 중인 이메일입니다
       required:
         - available
     CheckEmailAvailabilityRequestDto:

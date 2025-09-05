@@ -24,6 +24,20 @@ export const FieldRules = {
       .transform((email) => email.toLowerCase().trim()),
 
   /**
+   * userId 검증 (6-20자, 영문+숫자, 특수문자 불가)
+   */
+  userId: () =>
+    z
+      .string({
+        required_error: "사용자 ID를 입력해주세요",
+        invalid_type_error: "사용자 ID는 문자열이어야 합니다",
+      })
+      .min(6, "사용자 ID는 6자 이상이어야 합니다")
+      .max(20, "사용자 ID는 20자 이하여야 합니다")
+      .regex(/^[A-Za-z0-9]+$/, "영문과 숫자만 사용할 수 있습니다")
+      .regex(/^(?=.*[A-Za-z])(?=.*\d)/, "영문과 숫자를 모두 포함해야 합니다"),
+
+  /**
    * 비밀번호 검증 (8자 이상, 영문+숫자+특수문자)
    */
   password: () =>
@@ -40,7 +54,7 @@ export const FieldRules = {
       ),
 
   /**
-   * 닉네임 검증 (2-20자, 한글/영문/숫자)
+   * 닉네임 검증 (2-20자, 한글/영문만)
    */
   nickname: () =>
     z
@@ -48,10 +62,10 @@ export const FieldRules = {
         required_error: "닉네임을 입력해주세요",
         invalid_type_error: "닉네임은 문자열이어야 합니다",
       })
+      .trim()
       .min(2, "닉네임은 2자 이상이어야 합니다")
-      .max(15, "닉네임은 15자 이하여야 합니다")
-      .regex(/^[가-힣a-zA-Z0-9]+$/, "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다")
-      .trim(),
+      .max(20, "닉네임은 20자 이하여야 합니다")
+      .regex(/^[가-힣a-zA-Z]+$/, "닉네임은 한글과 영문만 사용할 수 있습니다"),
 
   /**
    * 인증 코드 검증 (6자리 숫자)
@@ -88,11 +102,11 @@ export const FieldRules = {
       .instanceof(File)
       .refine(
         (file) => file.size <= 5 * 1024 * 1024, // 5MB
-        "이미지 크기는 5MB 이하여야 합니다"
+        "이미지 크기는 5MB 이하여야 합니다",
       )
       .refine(
-        (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
-        "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다"
+        (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
       )
       .optional(),
 } as const

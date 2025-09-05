@@ -41,6 +41,10 @@ export class UserEntity extends BaseEntity<UserEntity> {
   @OneToOne(() => BaekjoonProfileEntity, (profile) => profile.user)
   baekjoonProfile?: BaekjoonProfileEntity
 
+  // UserProfile과의 1:1 관계 (추후 구현될 예정)
+  // @OneToOne(() => UserProfileEntity, (profile) => profile.user)
+  // userProfile?: UserProfileEntity
+
   @Column({ name: "phone_number", type: "varchar2", length: 20, nullable: true })
   phoneNumber?: string
 

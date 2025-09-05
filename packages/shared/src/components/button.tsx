@@ -14,13 +14,20 @@ const buttonVariants = cva(
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 ",
         link: "text-primary underline-offset-4 hover:underline",
+        "auth-primary":
+          "bg-purple-600 text-white shadow-xs hover:bg-purple-700 focus-visible:ring-purple-600/20 disabled:bg-zinc-800 disabled:text-zinc-500",
+        "auth-secondary":
+          "bg-zinc-700 text-white shadow-xs hover:bg-zinc-600 focus-visible:ring-zinc-600/20 disabled:bg-zinc-800 disabled:text-zinc-500",
+        "auth-special":
+          "bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xs hover:from-purple-700 hover:to-pink-700 focus-visible:ring-purple-600/20 disabled:from-zinc-800 disabled:to-zinc-800 disabled:text-zinc-500",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        xl: "h-12 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
       },
     },

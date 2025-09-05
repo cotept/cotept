@@ -4,6 +4,7 @@ export const SIGNUP_STEPS = {
   VERIFY_EMAIL: "verify-email",
   SET_PASSWORD: "set-password",
   TERMS_AGREEMENT: "terms-agreement",
+  SET_USERID: "set-userid",
   PROFILE_SETUP: "profile-setup",
 } as const
 

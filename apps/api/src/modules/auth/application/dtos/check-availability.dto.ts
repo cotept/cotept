@@ -39,7 +39,4 @@ export class CheckNicknameAvailabilityDto {
 export class AvailabilityResultDto {
   @Expose()
   available: boolean
-  
-  @Expose()
-  message?: string
 }

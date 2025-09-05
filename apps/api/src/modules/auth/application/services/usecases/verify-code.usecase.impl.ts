@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 
 import { VerifyCodeDto } from "@/modules/auth/application/dtos/verify-code.dto"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
@@ -8,6 +8,7 @@ import { VerificationException } from "@/modules/auth/domain/model/auth-exceptio
 @Injectable()
 export class VerifyCodeUseCaseImpl implements VerifyCodeUseCase {
   constructor(private readonly authCache: AuthCachePort) {}
+  private readonly logger = new Logger(VerifyCodeUseCaseImpl.name)
 
   async execute(dto: VerifyCodeDto): Promise<boolean> {
     try {
@@ -47,15 +48,22 @@ export class VerifyCodeUseCaseImpl implements VerifyCodeUseCase {
       if (cachedData.code !== dto.code) {
         // 시도 횟수 증가 - 원래 만료시간 유지
         const remainingTtl = Math.max(0, new Date(cachedData.expiresAt).getTime() - Date.now())
+        const expiresAtMs = new Date(cachedData.expiresAt).getTime()
+        const nowMs = Date.now()
+        const remainingTtlMs = Math.max(0, expiresAtMs - nowMs)
+        // 디버깅 로그
+        this.logger.debug(
+          `TTL Debug - expiresAt: ${cachedData.expiresAt}, expiresAtMs: ${expiresAtMs}, nowMs: ${nowMs}, remainingTtlMs: ${remainingTtlMs}, remainingTtlSeconds: ${Math.floor(remainingTtlMs / 1000)}`,
+        )
         cachedData.attempts++
         await this.authCache.saveVerificationData(dto.verificationId, cachedData, remainingTtl)
 
         throw new VerificationException("유효하지 않은 인증 정보입니다.")
       }
 
-      // 인증 성공 - 10초 TTL로 중복 요청 방지
+      // 인증 성공 - 1초 TTL로 중복 요청 방지
       cachedData.verified = true
-      await this.authCache.saveVerificationData(dto.verificationId, cachedData, 10000) // 10초 TTL
+      await this.authCache.saveVerificationData(dto.verificationId, cachedData, 1000) // 1초 TTL
 
       return true
     } catch (error) {

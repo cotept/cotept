@@ -106,7 +106,6 @@ export class AuthResponseMapper {
   toAvailabilityResponse(result: AvailabilityResultDto): AvailabilityResponseDto {
     return {
       available: result.available,
-      message: result.message,
     }
   }
 }

@@ -26,11 +26,5 @@ export interface AvailabilityResponseDto {
      * @memberof AvailabilityResponseDto
      */
     'available': boolean;
-    /**
-     * 메시지 (중복 시에만 표시)
-     * @type {string}
-     * @memberof AvailabilityResponseDto
-     */
-    'message'?: string;
 }
 

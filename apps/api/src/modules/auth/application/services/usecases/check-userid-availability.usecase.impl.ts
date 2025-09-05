@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common"
+import { ConflictException, Injectable, Logger } from "@nestjs/common"
 
 import { AvailabilityResultDto, CheckUserIdAvailabilityDto } from "@/modules/auth/application/dtos"
 import { CheckUserIdAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-userid-availability.usecase"
@@ -24,14 +24,14 @@ export class CheckUserIdAvailabilityUseCaseImpl implements CheckUserIdAvailabili
       this.logger.debug(`사용자 ID 중복 확인 시작: ${dto.userId}`)
 
       const existingUser = await this.authUserRepository.findByUserId(dto.userId)
-      const available = !existingUser
-      
-      this.logger.debug(`사용자 ID 중복 확인 결과: available=${available}`)
 
-      return {
-        available,
-        message: available ? undefined : AUTH_ERROR_MESSAGES.USERID_ALREADY_EXISTS,
+      if (existingUser) {
+        this.logger.debug(`사용자 ID 중복 확인 결과: 이미 사용 중인 ID`)
+        throw new ConflictException(AUTH_ERROR_MESSAGES.USERID_ALREADY_EXISTS)
       }
+
+      this.logger.debug(`사용자 ID 중복 확인 결과: 사용 가능한 ID`)
+      return { available: true }
     } catch (error) {
       this.logger.error(`사용자 ID 중복 확인 실패: ${dto.userId}`, error)
       throw error

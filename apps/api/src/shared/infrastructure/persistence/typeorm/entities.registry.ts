@@ -13,12 +13,12 @@ import { TermsAgreementEntity } from "@/modules/auth/infrastructure/adapter/out/
 // 모든 엔티티 import
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { MailAuditEntity } from "@/modules/mail/infrastructure/adapter/out/persistence/entities/mail-audit.entity"
-import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
+import { UserEntity, UserProfileEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
 
 /**
  * 도메인별 엔티티 그룹
  */
-export const USER_ENTITIES: EntityClassOrSchema[] = [UserEntity]
+export const USER_ENTITIES: EntityClassOrSchema[] = [UserEntity, UserProfileEntity]
 export const AUTH_ENTITIES: EntityClassOrSchema[] = [
   AuthVerificationEntity,
   SessionLogEntity,

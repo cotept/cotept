@@ -32,7 +32,7 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ onComplete }) => {
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="8-20자 사이의 닉네임을 입력하세요"
+                    placeholder="2-20자 사이의 닉네임을 입력하세요"
                     className="border-zinc-600 bg-zinc-700/50 text-sm text-white placeholder:text-zinc-400 focus:border-purple-400"
                   />
                 </FormControl>

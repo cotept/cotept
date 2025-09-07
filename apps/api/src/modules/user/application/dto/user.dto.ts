@@ -35,13 +35,13 @@ export class UserDto {
   idx: number
 
   @ApiProperty({
-    description: "사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)",
+    description: "사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)",
     example: "dudtod1596",
   })
   @Expose()
   @IsString({ message: "사용자 아이디는 문자열이어야 합니다." })
   @IsNotEmpty({ message: "사용자 아이디는 필수 값입니다." })
-  @Length(4, 20, { message: "사용자 아이디는 4자 이상 20자 이하여야 합니다." })
+  @Length(6, 20, { message: "사용자 아이디는 6자 이상 20자 이하여야 합니다." })
   @Matches(/^[a-zA-Z0-9_-]+$/, { message: "사용자 아이디는 영문, 숫자, _, - 만 사용 가능합니다." })
   userId: string
 

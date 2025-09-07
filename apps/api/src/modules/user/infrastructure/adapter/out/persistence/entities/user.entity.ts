@@ -2,6 +2,7 @@ import { Column, Entity, OneToOne } from "typeorm"
 
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
+import { UserProfileEntity } from "@/modules/user-profile/infrastructure/adapter/out/persistence/entities/user-profile.entity"
 import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 /**
@@ -41,9 +42,13 @@ export class UserEntity extends BaseEntity<UserEntity> {
   @OneToOne(() => BaekjoonProfileEntity, (profile) => profile.user)
   baekjoonProfile?: BaekjoonProfileEntity
 
-  // UserProfile과의 1:1 관계 (추후 구현될 예정)
-  // @OneToOne(() => UserProfileEntity, (profile) => profile.user)
-  // userProfile?: UserProfileEntity
+  // UserProfile과의 1:1 관계
+  @OneToOne(() => UserProfileEntity, (profile) => profile.user, {
+    cascade: true,
+    eager: true,
+    onDelete: "CASCADE",
+  })
+  userProfile?: UserProfileEntity
 
   @Column({ name: "phone_number", type: "varchar2", length: 20, nullable: true })
   phoneNumber?: string

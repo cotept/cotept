@@ -1,4 +1,4 @@
-import { CheckEmailAvailabilityDto, AvailabilityResultDto } from '@/modules/auth/application/dtos'
+import { AvailabilityResultDto,CheckEmailAvailabilityDto } from '@/modules/auth/application/dtos'
 
 /**
  * 이메일 중복 확인 유스케이스 인터페이스

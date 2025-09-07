@@ -1,4 +1,4 @@
-import { CheckUserIdAvailabilityDto, AvailabilityResultDto } from '@/modules/auth/application/dtos'
+import { AvailabilityResultDto,CheckUserIdAvailabilityDto } from '@/modules/auth/application/dtos'
 
 /**
  * 사용자 ID 중복 확인 유스케이스 인터페이스

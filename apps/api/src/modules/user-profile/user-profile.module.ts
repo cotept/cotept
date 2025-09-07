@@ -17,6 +17,10 @@ import {
   GetUserProfileUseCaseImpl,
   UpdateUserProfileUseCaseImpl,
 } from "./application/services/usecases"
+// 컨트롤러 (인바운드 어댑터)
+import { UserProfileController } from "./infrastructure/adapter/in/controllers/user-profile.controller"
+// 매퍼 (Infrastructure → Application)
+import { UserProfileRequestMapper } from "./infrastructure/adapter/in/mappers/user-profile-request.mapper"
 // 엔티티 (Repository 주입을 위해 필요)
 import { UserProfileEntity } from "./infrastructure/adapter/out/persistence/entities"
 import { UserProfilePersistenceMapper } from "./infrastructure/adapter/out/persistence/mappers"
@@ -32,11 +36,12 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
     DatabaseModule.forFeature([UserProfileEntity]), // Repository 주입을 위해 필요
     UserModule, // User 존재 여부 확인을 위한 의존성
   ],
-  controllers: [],
+  controllers: [UserProfileController],
   providers: [
     // 매퍼
     UserProfileMapper,
     UserProfilePersistenceMapper,
+    UserProfileRequestMapper,
 
     // 파사드 서비스
     UserProfileFacadeService,

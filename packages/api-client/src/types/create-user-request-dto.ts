@@ -24,7 +24,7 @@ import type { UserRole } from './user-role';
  */
 export interface CreateUserRequestDto {
     /**
-     * 사용자 로그인 아이디 (4~20자, 영문/숫자/특수문자)
+     * 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
      * @type {string}
      * @memberof CreateUserRequestDto
      */

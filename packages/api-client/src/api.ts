@@ -21,4 +21,5 @@ export * from './services/google-auth-api';
 export * from './services/mail-api';
 export * from './services/mail-audit-api';
 export * from './services/user-api';
+export * from './services/user-profile-api';
 

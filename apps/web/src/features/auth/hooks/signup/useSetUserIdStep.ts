@@ -46,7 +46,7 @@ const getCheckButtonText = (phase: userIdCheckPhase): string => {
   }
   return "중복 확인"
 }
-export function useSetUserId({ onComplete }: UseSetUserIdStepProps) {
+export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
   const [phase, setPhase] = useState<userIdCheckPhase>("initial")
 
   const form = useForm<SetUserIdData>({
@@ -119,13 +119,13 @@ export function useSetUserId({ onComplete }: UseSetUserIdStepProps) {
 
   // RHF의 isDirty 상태 가져오기
   const { isDirty } = form.formState
-  
+
   // 인디케이터 표시 조건 (비즈니스 로직)
   // 검증 완료(verified) 상태에서는 숨기고, 그 외에는 항상 표시 (색상은 isDirty로 제어)
   const shouldShowValidationIndicator = useMemo(() => {
     return phase !== "verified"
   }, [phase])
-  console.log({ shouldShowValidationIndicator })
+
   const { isLoading, refetch: checkUserIdAvailability } = useCheckUserIdAvailability(userId, {
     enabled: false, // 수동 실행만
     retry: false,

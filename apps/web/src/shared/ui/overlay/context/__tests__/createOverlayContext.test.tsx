@@ -9,12 +9,13 @@
  */
 
 import React from "react"
-import { act, render, renderHook, screen, waitFor } from "@testing-library/react"
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest"
 
+import { render, screen } from "@testing-library/react"
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest"
+
+import { DefaultOverlayProvider, overlay, useCurrentOverlay, useOverlayData } from "../../createOverlayContext"
 import { createOverlayProvider } from "../../provider/createOverlayProvider"
 import { createOverlaySafeContext } from "../../utils/createSafeContext"
-import { overlay, DefaultOverlayProvider, useCurrentOverlay, useOverlayData } from "../../createOverlayContext"
 
 // Mock Portal element 설정
 const mockPortalRoot = document.createElement("div")

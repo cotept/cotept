@@ -37,7 +37,7 @@ export function createUseExternalEvents<T extends Record<string, (...args: any[]
   namespace: string,
 ): [UseExternalEvents<T>, <K extends keyof T>(eventName: K) => CreateEventFunction<T, K>] {
   // namespace별로 emitter 인스턴스 생성
-  const emitterInstance: EventEmitter<T> = createEmitter<T>(namespace)
+  const emitterInstance: EventEmitter<T> = getEmitterInstance<T>(namespace)
 
   /**
    * React Hook: 컴포넌트 내에서 외부 이벤트 수신

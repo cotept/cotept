@@ -1,3 +1,4 @@
+"use client"
 /**
  * SystemConfirm - Overlay 시스템용 Confirm Dialog 컴포넌트
  *

@@ -41,6 +41,7 @@ import type {
  * ```
  */
 export function createOverlay(overlayId: string): OverlayAPI {
+  console.log(`[Overlay Debug] createOverlay called for instance: ${overlayId}`)
   // External Events 시스템 초기화
   const [useOverlayEvent, createEvent] = createUseExternalEvents<OverlayEvent>(`${overlayId}/overlay-kit`)
 
@@ -49,6 +50,7 @@ export function createOverlay(overlayId: string): OverlayAPI {
    */
   const open = (controller: OverlayControllerComponent, options?: OpenOverlayOptions): string => {
     const targetOverlayId = options?.overlayId ?? randomId()
+    console.log(`[Overlay Debug] open: Firing 'open' event for overlayId: ${targetOverlayId}`)
     const componentKey = randomId()
     const dispatchOpenEvent = createEvent("open")
 
@@ -70,6 +72,7 @@ export function createOverlay(overlayId: string): OverlayAPI {
     controller: OverlayAsyncControllerComponent<T>,
     options?: OpenOverlayOptions,
   ): Promise<T> => {
+    console.log(`[Overlay Debug] openAsync: Creating promise-wrapped overlay.`)
     return new Promise<T>((resolve) => {
       // 비동기 Controller를 일반 Controller로 래핑
       const wrappedController: OverlayControllerComponent = (overlayProps) => {
@@ -77,6 +80,7 @@ export function createOverlay(overlayId: string): OverlayAPI {
          * 결과값과 함께 오버레이 닫기
          */
         const close = (param: T) => {
+          console.log(`[Overlay Debug] openAsync: Promise resolved for overlayId: ${overlayProps.overlayId}`)
           resolve(param)
           overlayProps.close()
         }

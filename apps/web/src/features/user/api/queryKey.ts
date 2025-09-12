@@ -1,3 +1,5 @@
+import { UserDto } from "@repo/api-client/src/types/user-dto"
+
 import { createQueryKeys } from "@lukemorales/query-key-factory"
 import { QueryClient } from "@tanstack/react-query"
 
@@ -11,8 +13,8 @@ export const userKeys: ReturnType<typeof createQueryKeys> = createQueryKeys("use
   lists: () => ["list"],
   list: (filters: { page?: number; limit?: number; search?: string }) => [filters],
   details: () => ["detail"],
-  detail: (id: string) => [id],
-  profile: (id: string) => ["profile", id],
+  detail: (id: number) => [id],
+  profile: (id: number) => ["profile", id],
 })
 
 // 사용자 도메인 쿼리 유틸리티
@@ -30,29 +32,29 @@ export const userQueryUtils = {
   },
 
   // 특정 사용자 상세 쿼리 무효화
-  invalidateDetail: (queryClient: QueryClient, id: string) => {
+  invalidateDetail: (queryClient: QueryClient, id: number) => {
     return queryClient.invalidateQueries({ queryKey: userKeys.detail(id).queryKey })
   },
 
   // 특정 사용자의 캐시 데이터 설정
-  setUserData: (queryClient: QueryClient, id: string, data: User) => {
+  setUserData: (queryClient: QueryClient, id: number, data: User) => {
     queryClient.setQueryData(userKeys.detail(id).queryKey, { data, success: true })
   },
 
   // 사용자 목록에서 특정 사용자 업데이트
-  updateUserInList: (queryClient: QueryClient, id: string, updater: (user: User) => User) => {
+  updateUserInList: (queryClient: QueryClient, id: number, updater: (user: UserDto) => User) => {
     queryClient.setQueriesData({ queryKey: userKeys.lists().queryKey }, (oldData: any) => {
       if (!oldData?.data) return oldData
 
       return {
         ...oldData,
-        data: oldData.data.map((user: User) => (user.id === id ? updater(user) : user)),
+        data: oldData.data.map((user: UserDto) => (user.idx === id ? updater(user) : user)),
       }
     })
   },
 
   // 도메인간 협업을 위한 사용자 관련 무효화
-  invalidateUserRelated: (queryClient: QueryClient, userId?: string) => {
+  invalidateUserRelated: (queryClient: QueryClient, userId?: number) => {
     if (userId) {
       userQueryUtils.invalidateDetail(queryClient, userId)
     }

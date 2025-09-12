@@ -1,4 +1,4 @@
-import { type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
+import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 
 import { userKeys, userQueryUtils } from "./queryKey"
 
@@ -17,7 +17,22 @@ import { userApiService } from "@/shared/api/services/user-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 import { createOptimisticUpdate } from "@/shared/utils"
 
-// 사용자 생성
+// 회원가입 (기본 useMutation 사용)
+export function useSignupUser(
+  options?: Pick<UseMutationOptions<CreateUserResponse, ApiError, CreateUserParams>, "onSuccess" | "onError">,
+) {
+  return useMutation<CreateUserResponse, ApiError, CreateUserParams>({
+    mutationFn: (data) => userApiService.createUser(...data),
+    onSuccess: (response, variables, context) => {
+      options?.onSuccess?.(response, variables, context)
+    },
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context)
+    },
+  })
+}
+
+// 사용자 생성 (관리자용 - useBaseMutation 사용)
 export function useCreateUser(
   options?: Pick<UseMutationOptions<CreateUserResponse, ApiError, CreateUserParams>, "onSuccess" | "onError">,
 ) {
@@ -76,7 +91,7 @@ export function useDeleteUser(
     queryKey: userKeys.lists().queryKey,
     successMessage: "사용자가 성공적으로 삭제되었습니다.",
     onSuccess: (response, data, context) => {
-      userQueryUtils.invalidateDetail(queryClient, data[0].id)
+      userQueryUtils.invalidateDetail(queryClient, data[0].idx)
       userQueryUtils.invalidateLists(queryClient)
       options?.onSuccess?.(response, data, context)
     },

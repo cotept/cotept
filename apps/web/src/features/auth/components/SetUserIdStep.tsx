@@ -8,7 +8,7 @@ import { Input } from "@repo/shared/src/components/input"
 import { StatusMessage } from "@repo/shared/src/components/status-message"
 import { ValidationIndicator } from "@repo/shared/src/components/validation-indicator"
 
-import { useSetUserId } from "@/features/auth/hooks/signup/useSetUserId"
+import { useSetUserIdStep } from "@/features/auth/hooks/signup/useSetUserIdStep"
 import { SetUserIdData } from "@/features/auth/lib/validations/auth-rules"
 
 interface SetUserIdStepProps {
@@ -37,7 +37,7 @@ const SetUserIdStep = ({ onComplete }: SetUserIdStepProps) => {
 
     // 버튼 텍스트 헬퍼
     checkButtonText,
-  } = useSetUserId({
+  } = useSetUserIdStep({
     onComplete,
   })
 

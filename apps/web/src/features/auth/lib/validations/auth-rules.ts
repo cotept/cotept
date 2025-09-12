@@ -52,14 +52,6 @@ export const SetUserIdRules = z.object({
   userId: FieldRules.userId(),
 })
 
-/**
- * 회원가입 6단계: 프로필 설정 (현재는 닉네임만)
- */
-export const ProfileStepRules = z.object({
-  nickname: FieldRules.nickname(),
-  // TODO: 추후 bio, interests, avatar 등 추가 예정
-})
-
 // 기존 로그인 규칙 (참고용)
 export const LoginRules = z.object({
   email: FieldRules.email(),
@@ -72,5 +64,12 @@ export type PasswordStepData = z.infer<typeof PasswordStepRules>
 export type TermsStepData = z.input<typeof TermsStepRules>
 export type SetUserIdData = z.input<typeof SetUserIdRules>
 export type VerificationStepData = z.infer<typeof VerificationStepRules>
-export type ProfileStepData = z.infer<typeof ProfileStepRules>
 export type LoginData = z.infer<typeof LoginRules>
+
+export interface SignupData {
+  terms?: TermsStepData
+  email?: EmailStepData
+  verification?: VerificationStepData
+  userId?: SetUserIdData
+  password?: PasswordStepData
+}

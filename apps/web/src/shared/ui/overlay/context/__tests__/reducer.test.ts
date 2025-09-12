@@ -1,5 +1,6 @@
-import { OverlayError, OVERLAY_ERROR_CODES } from "../../types/overlay.types"
-import { overlayReducer, determineCurrentOverlayId } from "../reducer"
+import { OVERLAY_ERROR_CODES,OverlayError } from "../../types/overlay.types"
+import { determineCurrentOverlayId,overlayReducer } from "../reducer"
+
 import type { OverlayData, OverlayItem, OverlayReducerAction } from "../../types/overlay.types"
 
 // 테스트용 오버레이 아이템 생성 헬퍼
@@ -181,7 +182,7 @@ describe("overlayReducer", () => {
 
     it("동일 ID로 열린 오버레이가 있으면 OverlayError를 던진다", () => {
       const overlay = createOverlayItem("overlay1")
-      let state = overlayReducer(initialState, { type: "ADD", overlay })
+      const state = overlayReducer(initialState, { type: "ADD", overlay })
 
       try {
         overlayReducer(state, { type: "ADD", overlay })

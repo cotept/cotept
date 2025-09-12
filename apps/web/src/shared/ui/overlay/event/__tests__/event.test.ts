@@ -9,12 +9,13 @@
  */
 
 import React from "react"
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest"
 
-import { createOverlay } from "../event"
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest"
+
 import { cleanupEmitter } from "../../utils/createUseExternalEvents"
+import { createOverlay } from "../event"
 
-import type { OverlayAPI, OverlayControllerComponent, OverlayAsyncControllerComponent } from "../../types/overlay.types"
+import type { OverlayAPI, OverlayAsyncControllerComponent,OverlayControllerComponent } from "../../types/overlay.types"
 
 // 테스트용 컴포넌트들
 const TestComponent: React.FC<{ message?: string }> = ({ message = "Test" }) => {

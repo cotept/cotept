@@ -63,7 +63,7 @@ export const SystemAlert = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 max-w-md">
+    <div className="fixed right-4 top-4 z-50 max-w-md">
       <Alert
         variant={variant === "success" || variant === "info" ? "default" : variant}
         className={`${className} ${variant === "success" ? "border-green-500 text-green-700 dark:text-green-400" : ""} ${variant === "info" ? "border-blue-500 text-blue-700 dark:text-blue-400" : ""}`}>

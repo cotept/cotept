@@ -58,6 +58,7 @@ export function OverlayRenderer({ overlayState, dispatch }: OverlayRendererProps
 
         // 방어 코드: 오버레이 데이터가 없거나 필수 프로퍼티가 없으면 스킵
         if (!overlay || !overlay.controller || !overlay.componentKey) {
+          console.warn(`[Overlay Debug] OverlayRenderer: Skipping render for invalid overlay data for id: ${overlayId}`)
           return null
         }
 

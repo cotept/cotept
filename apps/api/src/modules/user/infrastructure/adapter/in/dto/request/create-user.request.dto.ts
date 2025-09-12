@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from "@nestjs/swagger"
 
 import { Expose } from "class-transformer"
-import { IsNotEmpty } from "class-validator"
+import { IsOptional, IsString, Length, Matches } from "class-validator"
 
 import { UserDto } from "@/modules/user/application/dto/user.dto"
 import { UserRole } from "@/modules/user/domain/model/user"
@@ -13,18 +13,17 @@ import { UserRole } from "@/modules/user/domain/model/user"
 export class CreateUserRequestDto extends PickType(UserDto, [
   "userId",
   "email",
-  "password",
   "name",
   "phoneNumber",
   "role",
 ] as const) {
-  @ApiProperty({
-    description: "비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함) - 필수",
-    example: "StrongP@ss123",
+  @IsString({ message: "비밀번호는 문자열이어야 합니다." })
+  @IsOptional()
+  @Length(8, 32, { message: "비밀번호는 8자 이상 32자 이하여야 합니다." })
+  @Matches(/^(?=.*[a-z[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/, {
+    message: "비밀번호는 최소 하나의 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",
   })
-  @Expose()
-  @IsNotEmpty({ message: "비밀번호는 필수 값입니다." })
-  password!: string
+  password: string
 
   @ApiProperty({
     description: "사용자 역할 (기본값: MENTEE)",

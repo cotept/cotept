@@ -59,6 +59,7 @@ export default class User {
     lastLoginAt?: Date
   }) {
     this.idx = params.idx ?? undefined // idx가 없으면 0으로 초기화
+    this.userId = params.userId
 
     // 이메일 설정 (값 객체 또는 문자열)
     this.email = params.email instanceof Email ? params.email : Email.of(params.email)

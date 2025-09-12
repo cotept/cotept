@@ -16,7 +16,6 @@ export class UpdateUserDto extends PartialType(
     "updatedAt",
     "lastLoginAt",
     "role",
-    "password",
     "status",
     "phoneVerified",
   ] as const),

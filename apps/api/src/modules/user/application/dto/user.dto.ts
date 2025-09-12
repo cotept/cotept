@@ -13,11 +13,9 @@ import {
   IsString,
   Length,
   Matches,
-  Validate,
 } from "class-validator"
 
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { IsNotSequential } from "@/shared/infrastructure/common/validators/is-not-sequential.validator"
 
 /**
  * 사용자 정보 DTO
@@ -60,16 +58,6 @@ export class UserDto {
     example: "StrongP@ss123",
     required: false,
   })
-  @Expose()
-  @IsString({ message: "비밀번호는 문자열이어야 합니다." })
-  @IsOptional()
-  @Length(8, 32, { message: "비밀번호는 8자 이상 32자 이하여야 합니다." })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/, {
-    message: "비밀번호는 최소 하나의 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",
-  })
-  @Validate(IsNotSequential, { message: "비밀번호에 연속된 문자나 숫자(123, abc 등)를 사용할 수 없습니다." })
-  password?: string
-
   @ApiProperty({
     description: "사용자 이름 (2~50자, 한글/영문만 허용)",
     example: "홍길동",

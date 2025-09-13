@@ -20,12 +20,12 @@ import type {
 } from "@/features/auth/lib/validations/auth-rules"
 
 // Step 컴포넌트들 import
-import EmailStep from "@/features/auth/components/EmailStep"
-import PasswordStep from "@/features/auth/components/PasswordStep"
-import SetUserIdStep from "@/features/auth/components/SetUserIdStep"
-import SignupCompleteStep from "@/features/auth/components/SignupCompleteStep"
-import TermsStep from "@/features/auth/components/TermsStep"
-import VerificationStep from "@/features/auth/components/VerificationStep"
+import EmailStep from "@/features/auth/components/signup/EmailStep"
+import PasswordStep from "@/features/auth/components/signup/PasswordStep"
+import SetUserIdStep from "@/features/auth/components/signup/SetUserIdStep"
+import SignupCompleteStep from "@/features/auth/components/signup/SignupCompleteStep"
+import TermsStep from "@/features/auth/components/signup/TermsStep"
+import VerificationStep from "@/features/auth/components/signup/VerificationStep"
 import { SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
 
 // 단계별 설정 타입

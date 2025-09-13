@@ -72,6 +72,15 @@ export class ApiErrorHandler {
           retryable: false,
         }
 
+      case statusCode === 409:
+        return {
+          type: ErrorType.VALIDATION_ERROR,
+          message: error.message || "충돌 오류가 발생했습니다.",
+          originalError: error,
+          statusCode,
+          retryable: false,
+        }
+
       case statusCode >= 400 && statusCode < 500:
         return {
           type: ErrorType.VALIDATION_ERROR,

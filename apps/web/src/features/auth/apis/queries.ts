@@ -2,11 +2,7 @@ import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { authKeys } from "./queryKey"
 
-import type {
-  CheckEmailAvailabilityResponse,
-  CheckUserIdAvailabilityResponse,
-  ValidateTokenResponse,
-} from "@/shared/types/auth.type"
+import type { ValidateTokenResponse } from "@/shared/types/auth.type"
 
 import { authApiService } from "@/shared/api/services/auth-api-service"
 
@@ -56,48 +52,6 @@ export function useValidateToken(
   return useQuery({
     ...query,
     enabled: !!token && (options?.enabled ?? true),
-    ...options,
-  })
-}
-
-// 이메일 중복 확인 훅
-export function useCheckEmailAvailability(
-  email: string,
-  options?: Omit<
-    UseQueryOptions<
-      CheckEmailAvailabilityResponse,
-      Error,
-      CheckEmailAvailabilityResponse,
-      ReturnType<typeof authQueries.checkEmailAvailability>["queryKey"]
-    >,
-    "queryKey" | "queryFn"
-  >,
-) {
-  const query = authQueries.checkEmailAvailability(email)
-  return useQuery({
-    ...query,
-    enabled: !!email && (options?.enabled ?? true),
-    ...options,
-  })
-}
-
-// 아이디 중복 확인 훅
-export function useCheckUserIdAvailability(
-  userId: string,
-  options?: Omit<
-    UseQueryOptions<
-      CheckUserIdAvailabilityResponse,
-      Error,
-      CheckUserIdAvailabilityResponse,
-      ReturnType<typeof authQueries.checkUserIdAvailability>["queryKey"]
-    >,
-    "queryKey" | "queryFn"
-  >,
-) {
-  const query = authQueries.checkUserIdAvailability(userId)
-  return useQuery({
-    ...query,
-    enabled: !!userId && (options?.enabled ?? true),
     ...options,
   })
 }

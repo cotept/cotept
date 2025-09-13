@@ -1,8 +1,11 @@
 import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 import { authKeys, authQueryUtils } from "./queryKey"
 
 import type {
+  CheckEmailAvailabilityResponse,
+  CheckUserIdAvailabilityResponse,
   ConfirmSocialLinkParams,
   ConfirmSocialLinkResponse,
   ExchangeAuthCodeParams,
@@ -249,6 +252,37 @@ export function useResetPassword(
     },
     onError: (error, variables, context) => {
       options?.onError?.(error, variables, context)
+    },
+  })
+}
+
+// 이메일 중복 확인
+export function useCheckEmailAvailabilityMutation() {
+  return useMutation<
+    CheckEmailAvailabilityResponse, // TData: API 응답 타입
+    ApiError, // TError: 에러 타입
+    string // TVariables: 입력 파라미터 타입 (email: string)
+  >({
+    mutationFn: (email: string) =>
+      authApiService.checkEmailAvailability({ checkEmailAvailabilityRequestDto: { email } }),
+    onError: (error: ApiError) => {
+      toast.error(error?.message || "중복 확인 중 오류가 발생했습니다")
+    },
+  })
+}
+
+// 사용자 ID 중복 확인
+export function useCheckUserIdAvailabilityMutation() {
+  return useMutation<
+    CheckUserIdAvailabilityResponse, // TData: API 응답 타입
+    ApiError, // TError: 에러 타입
+    string // TVariables: 입력 파라미터 타입 (userId: string)
+  >({
+    mutationFn: (userId: string) =>
+      authApiService.checkUserIdAvailability({ checkUserIdAvailabilityRequestDto: { userId } }),
+    onError: (error: ApiError) => {
+      console.log("🚨 [UserId Check] Error:", error)
+      toast.error(error?.message || "중복 확인 중 오류가 발생했습니다")
     },
   })
 }

@@ -5,7 +5,7 @@ import { type ValidationCheck } from "@repo/shared/src/components/validation-ind
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { useCheckUserIdAvailability } from "@/features/auth/apis/queries"
+import { useCheckUserIdAvailabilityMutation } from "@/features/auth/apis/mutations"
 import { SetUserIdData, SetUserIdRules } from "@/features/auth/lib/validations/auth-rules"
 
 interface UseSetUserIdStepProps {
@@ -126,30 +126,27 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
     return phase !== "verified"
   }, [phase])
 
-  const { isLoading, refetch: checkUserIdAvailability } = useCheckUserIdAvailability(userId, {
-    enabled: false, // 수동 실행만
-    retry: false,
-    staleTime: 0,
-  })
+  const checkUserIdMutation = useCheckUserIdAvailabilityMutation()
 
   const handleCheckUserId = useCallback(async () => {
     if (!isAllBasicChecksValid) return
+
     setPhase("checking")
     form.clearErrors("userId")
+
     try {
-      const response = await checkUserIdAvailability()
-      const availabilityData = response.data?.data
-      if (availabilityData) {
+      const result = await checkUserIdMutation.mutateAsync(userId)
+      if (result.data?.available) {
         setPhase("verified")
+      } else {
+        setPhase("error")
+        form.setError("userId", { message: "이미 사용 중인 사용자 ID입니다" })
       }
-    } catch (error: any) {
+    } catch {
       setPhase("error")
-      const errorMessage = error?.response?.data?.message || "중복 확인 중 오류가 발생했습니다"
-      form.setError("userId", {
-        message: errorMessage,
-      })
+      // 에러는 mutation의 onError에서 이미 처리됨
     }
-  }, [isAllBasicChecksValid, checkUserIdAvailability, form])
+  }, [isAllBasicChecksValid, checkUserIdMutation, form, userId])
 
   const handleSubmit = form.handleSubmit((data) => {
     if (phase === "verified") {
@@ -178,7 +175,7 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
 
     // 상태
     phase,
-    isLoading,
+    isLoading: checkUserIdMutation.isPending,
     userId,
     isUserIdValid,
     isUserIdVerified: phase === "verified",
@@ -194,9 +191,9 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
     isDirty,
 
     // UI 상태 헬퍼
-    canCheckUserId: canCheckUserId(isAllBasicChecksValid, phase, isLoading),
+    canCheckUserId: canCheckUserId(isAllBasicChecksValid, phase, checkUserIdMutation.isPending),
     canProceedNext: canProceedNext(phase),
-    showCheckingSpinner: shouldShowCheckingSpinner(phase, isLoading),
+    showCheckingSpinner: shouldShowCheckingSpinner(phase, checkUserIdMutation.isPending),
 
     // 버튼 텍스트 헬퍼
     checkButtonText: getCheckButtonText(phase),

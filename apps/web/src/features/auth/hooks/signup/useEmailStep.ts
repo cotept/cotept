@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form"
 
 import { type EmailStepData, EmailStepRules } from "../../lib/validations/auth-rules"
 
-import { useCheckEmailAvailability } from "@/features/auth/apis/queries"
+import { useCheckEmailAvailabilityMutation } from "@/features/auth/apis/mutations"
 
 // ===== 1부: 타입 & 상수 정의 =====
 
@@ -81,12 +81,7 @@ export function useEmailStep({ onComplete }: UseEmailStepProps) {
   const email = form.watch("email")
   const isEmailValid = isValidEmail(email)
 
-  const { isLoading, refetch: checkEmailAvailability } = useCheckEmailAvailability(email, {
-    enabled: false, // 수동 실행만
-    retry: false,
-    staleTime: 0,
-  })
-
+  const checkEmailMutation = useCheckEmailAvailabilityMutation()
   // 1단계: 이메일 중복 확인
   const handleCheckEmail = useCallback(async () => {
     if (!isEmailValid) return
@@ -95,20 +90,18 @@ export function useEmailStep({ onComplete }: UseEmailStepProps) {
     form.clearErrors("email")
 
     try {
-      const response = await checkEmailAvailability()
-      const availabilityData = response.data?.data
-
-      if (availabilityData?.available) {
+      const result = await checkEmailMutation.mutateAsync(email)
+      if (result.data?.available) {
         setPhase("verified")
+      } else {
+        setPhase("error")
+        form.setError("email", { message: "이미 사용 중인 이메일입니다" })
       }
-    } catch (error: any) {
+    } catch {
+      // 에러는 mutation의 onError에서 이미 처리됨
       setPhase("error")
-      const errorMessage = error?.response?.data?.message || "중복 확인 중 오류가 발생했습니다"
-      form.setError("email", {
-        message: errorMessage,
-      })
     }
-  }, [isEmailValid, checkEmailAvailability, form])
+  }, [isEmailValid, checkEmailMutation, form, email])
 
   // 폼 제출 핸들러 (중복 확인 완료 후에만 실행)
   const handleSubmit = form.handleSubmit((data) => {
@@ -140,16 +133,16 @@ export function useEmailStep({ onComplete }: UseEmailStepProps) {
 
     // 상태
     phase,
-    isLoading,
+    isLoading: checkEmailMutation.isPending,
     email,
     isEmailValid,
     isEmailVerified: phase === "verified",
     hasError: phase === "error",
 
     // UI 상태 헬퍼
-    canCheckEmail: canCheckEmail(isEmailValid, phase, isLoading),
+    canCheckEmail: canCheckEmail(isEmailValid, phase, checkEmailMutation.isPending),
     canProceedNext: canProceedNext(phase),
-    showCheckingSpinner: shouldShowCheckingSpinner(phase, isLoading),
+    showCheckingSpinner: shouldShowCheckingSpinner(phase, checkEmailMutation.isPending),
 
     // 버튼 텍스트 헬퍼
     checkButtonText: getCheckButtonText(phase),

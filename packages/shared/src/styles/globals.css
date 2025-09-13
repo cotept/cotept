@@ -7,6 +7,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* === CotePT Tailwind v4 Design Tokens === */
+@theme {
+  /* === Brand Colors (기존 OKLCH 유지) === */
+  --color-brand-purple: oklch(0.646 0.222 41.116);
+  --color-brand-pink: oklch(0.769 0.188 70.08);
+  --color-brand-blue: oklch(0.398 0.07 227.392);
+
+  /* === CotePT Auth Palette === */
+  --color-auth-surface: rgb(39 39 42 / 0.5);      /* bg-zinc-800/50 */
+  --color-auth-border: rgb(63 63 70 / 0.5);       /* border-zinc-700/50 */
+  --color-auth-input: rgb(55 65 81 / 0.5);        /* bg-zinc-700/50 */
+
+  /* === Component Sizing === */
+  --size-auth-input: 2.75rem;                     /* h-11 */
+  --size-auth-button: 3rem;                       /* h-12 */
+  --size-auth-card: 28rem;                        /* max-w-md */
+
+  /* === Spacing === */
+  --spacing-auth-gap: 1rem;                       /* space-y-4 */
+  --spacing-auth-container: 1.5rem;               /* space-y-6 */
+  --spacing-auth-padding: 1.75rem;                /* p-7 */
+
+  /* === Typography === */
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

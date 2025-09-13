@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 
 // UI 컴포넌트 import
@@ -167,7 +168,7 @@ export default function SignupContainer() {
         </div>
         <div className="mx-auto w-full max-w-md">
           {/* 메인 카드 */}
-          <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8">
+          <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-7">
             {/* FormStep 래퍼로 현재 단계 컴포넌트 감싸기 */}
             <FormStep
               title={STEP_CONFIGS[currentStep].title}
@@ -178,6 +179,18 @@ export default function SignupContainer() {
               {renderCurrentStep()}
             </FormStep>
           </div>
+          {/* 하단 로그인 링크 */}
+
+          {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
+            <div className="pt-4 text-center">
+              <p className="space-x-1 text-sm text-zinc-400">
+                <span className="">이미 코테피티의 회원이신가요?</span>
+                <Link href="/auth/login" className="text-purple-400 underline hover:text-purple-300">
+                  로그인 하러가기
+                </Link>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

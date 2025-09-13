@@ -2,8 +2,6 @@
 
 import React from "react"
 
-import Link from "next/link"
-
 import { Button } from "@repo/shared/src/components/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@repo/shared/src/components/form"
 import { Input } from "@repo/shared/src/components/input"
@@ -95,16 +93,6 @@ const EmailStep: React.FC<EmailStepProps> = ({ onComplete }) => {
           {shouldShowErrorState() && <StatusMessage variant="error" message="이미 사용 중인 이메일입니다." />}
         </form>
       </Form>
-
-      {/* 하단 로그인 링크 */}
-      <div className="border-t border-zinc-700 pt-4 text-center">
-        <p className="space-x-1 text-sm text-zinc-400">
-          <span className="">이미 코테피티의 회원이신가요?</span>
-          <Link href="/auth/login" className="text-purple-400 underline hover:text-purple-300">
-            로그인 하러가기
-          </Link>
-        </p>
-      </div>
     </>
   )
 }

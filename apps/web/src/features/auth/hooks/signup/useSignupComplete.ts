@@ -4,8 +4,7 @@ import { useRouter } from "next/navigation"
 
 import { UserRole } from "@repo/api-client/src/types/user-role"
 
-import { SignupData } from "@/features/auth/lib/validations/auth-rules"
-import { validateFinalCompletion } from "@/features/auth/lib/validations/signup-comprehensive-validation"
+import { SignupData, validateFinalCompletion } from "@/features/auth/lib/validations/auth-rules"
 import { useSignupUser } from "@/features/user/api/mutations"
 import { CreateUserParams } from "@/shared/types/user.type"
 

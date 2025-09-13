@@ -22,6 +22,12 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
+import type { AvailabilityResponseWrapper } from '../types';
+// @ts-ignore
+import type { CheckEmailAvailabilityRequestDto } from '../types';
+// @ts-ignore
+import type { CheckUserIdAvailabilityRequestDto } from '../types';
+// @ts-ignore
 import type { ConfirmSocialLinkRequestDto } from '../types';
 // @ts-ignore
 import type { ExchangeAuthCodeRequestDto } from '../types';
@@ -68,6 +74,78 @@ import type { VerifyCodeRequestDto } from '../types';
 export const AuthApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+         * @summary 이메일 중복 확인
+         * @param {CheckEmailAvailabilityRequestDto} checkEmailAvailabilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkEmailAvailability: async (checkEmailAvailabilityRequestDto: CheckEmailAvailabilityRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'checkEmailAvailabilityRequestDto' is not null or undefined
+            assertParamExists('checkEmailAvailability', 'checkEmailAvailabilityRequestDto', checkEmailAvailabilityRequestDto)
+            const localVarPath = `/api/v1/auth/check-email-availability`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(checkEmailAvailabilityRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+         * @summary 사용자 ID 중복 확인
+         * @param {CheckUserIdAvailabilityRequestDto} checkUserIdAvailabilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkUserIdAvailability: async (checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'checkUserIdAvailabilityRequestDto' is not null or undefined
+            assertParamExists('checkUserIdAvailability', 'checkUserIdAvailabilityRequestDto', checkUserIdAvailabilityRequestDto)
+            const localVarPath = `/api/v1/auth/check-userid-availability`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(checkUserIdAvailabilityRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
          * @summary 소셜 계정 연결 확인
          * @param {ConfirmSocialLinkRequestDto} confirmSocialLinkRequestDto 
@@ -77,7 +155,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         confirmSocialLink: async (confirmSocialLinkRequestDto: ConfirmSocialLinkRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'confirmSocialLinkRequestDto' is not null or undefined
             assertParamExists('confirmSocialLink', 'confirmSocialLinkRequestDto', confirmSocialLinkRequestDto)
-            const localVarPath = `/auth/confirm-social-link`;
+            const localVarPath = `/api/v1/auth/confirm-social-link`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -113,7 +191,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         exchangeAuthCode: async (exchangeAuthCodeRequestDto: ExchangeAuthCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'exchangeAuthCodeRequestDto' is not null or undefined
             assertParamExists('exchangeAuthCode', 'exchangeAuthCodeRequestDto', exchangeAuthCodeRequestDto)
-            const localVarPath = `/auth/exchange-code`;
+            const localVarPath = `/api/v1/auth/exchange-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -149,7 +227,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         findId: async (findIdRequestDto: FindIdRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'findIdRequestDto' is not null or undefined
             assertParamExists('findId', 'findIdRequestDto', findIdRequestDto)
-            const localVarPath = `/auth/find-id`;
+            const localVarPath = `/api/v1/auth/find-id`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -185,7 +263,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         login: async (loginRequestDto: LoginRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequestDto' is not null or undefined
             assertParamExists('login', 'loginRequestDto', loginRequestDto)
-            const localVarPath = `/auth/login`;
+            const localVarPath = `/api/v1/auth/login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -218,7 +296,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
          * @throws {RequiredError}
          */
         logout: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/logout`;
+            const localVarPath = `/api/v1/auth/logout`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -251,7 +329,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         refreshToken: async (refreshTokenRequestDto: RefreshTokenRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'refreshTokenRequestDto' is not null or undefined
             assertParamExists('refreshToken', 'refreshTokenRequestDto', refreshTokenRequestDto)
-            const localVarPath = `/auth/silent-refresh`;
+            const localVarPath = `/api/v1/auth/silent-refresh`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -287,7 +365,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         resetPassword: async (resetPasswordRequestDto: ResetPasswordRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'resetPasswordRequestDto' is not null or undefined
             assertParamExists('resetPassword', 'resetPasswordRequestDto', resetPasswordRequestDto)
-            const localVarPath = `/auth/reset-password`;
+            const localVarPath = `/api/v1/auth/reset-password`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -323,7 +401,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         sendVerificationCode: async (sendVerificationCodeRequestDto: SendVerificationCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sendVerificationCodeRequestDto' is not null or undefined
             assertParamExists('sendVerificationCode', 'sendVerificationCodeRequestDto', sendVerificationCodeRequestDto)
-            const localVarPath = `/auth/send-verification-code`;
+            const localVarPath = `/api/v1/auth/send-verification-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -359,7 +437,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         validateToken: async (validateTokenRequestDto: ValidateTokenRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'validateTokenRequestDto' is not null or undefined
             assertParamExists('validateToken', 'validateTokenRequestDto', validateTokenRequestDto)
-            const localVarPath = `/auth/validate-token`;
+            const localVarPath = `/api/v1/auth/validate-token`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -395,7 +473,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         verifyCode: async (verifyCodeRequestDto: VerifyCodeRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'verifyCodeRequestDto' is not null or undefined
             assertParamExists('verifyCode', 'verifyCodeRequestDto', verifyCodeRequestDto)
-            const localVarPath = `/auth/verify-code`;
+            const localVarPath = `/api/v1/auth/verify-code`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -431,6 +509,32 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
 export const AuthApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AuthApiAxiosParamCreator(configuration)
     return {
+        /**
+         * 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+         * @summary 이메일 중복 확인
+         * @param {CheckEmailAvailabilityRequestDto} checkEmailAvailabilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkEmailAvailability(checkEmailAvailabilityRequestDto: CheckEmailAvailabilityRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AvailabilityResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkEmailAvailability(checkEmailAvailabilityRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.checkEmailAvailability']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+         * @summary 사용자 ID 중복 확인
+         * @param {CheckUserIdAvailabilityRequestDto} checkUserIdAvailabilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkUserIdAvailability(checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AvailabilityResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkUserIdAvailability(checkUserIdAvailabilityRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.checkUserIdAvailability']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
          * @summary 소셜 계정 연결 확인
@@ -571,6 +675,26 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
     const localVarFp = AuthApiFp(configuration)
     return {
         /**
+         * 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+         * @summary 이메일 중복 확인
+         * @param {AuthApiCheckEmailAvailabilityRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkEmailAvailability(requestParameters: AuthApiCheckEmailAvailabilityRequest, options?: RawAxiosRequestConfig): AxiosPromise<AvailabilityResponseWrapper> {
+            return localVarFp.checkEmailAvailability(requestParameters.checkEmailAvailabilityRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+         * @summary 사용자 ID 중복 확인
+         * @param {AuthApiCheckUserIdAvailabilityRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkUserIdAvailability(requestParameters: AuthApiCheckUserIdAvailabilityRequest, options?: RawAxiosRequestConfig): AxiosPromise<AvailabilityResponseWrapper> {
+            return localVarFp.checkUserIdAvailability(requestParameters.checkUserIdAvailabilityRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
          * @summary 소셜 계정 연결 확인
          * @param {AuthApiConfirmSocialLinkRequest} requestParameters Request parameters.
@@ -679,6 +803,26 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
  */
 export interface AuthApiInterface {
     /**
+     * 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+     * @summary 이메일 중복 확인
+     * @param {AuthApiCheckEmailAvailabilityRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApiInterface
+     */
+    checkEmailAvailability(requestParameters: AuthApiCheckEmailAvailabilityRequest, options?: RawAxiosRequestConfig): AxiosPromise<AvailabilityResponseWrapper>;
+
+    /**
+     * 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+     * @summary 사용자 ID 중복 확인
+     * @param {AuthApiCheckUserIdAvailabilityRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApiInterface
+     */
+    checkUserIdAvailability(requestParameters: AuthApiCheckUserIdAvailabilityRequest, options?: RawAxiosRequestConfig): AxiosPromise<AvailabilityResponseWrapper>;
+
+    /**
      * 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
      * @summary 소셜 계정 연결 확인
      * @param {AuthApiConfirmSocialLinkRequest} requestParameters Request parameters.
@@ -777,6 +921,34 @@ export interface AuthApiInterface {
      */
     verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper>;
 
+}
+
+/**
+ * Request parameters for checkEmailAvailability operation in AuthApi.
+ * @export
+ * @interface AuthApiCheckEmailAvailabilityRequest
+ */
+export interface AuthApiCheckEmailAvailabilityRequest {
+    /**
+     * 
+     * @type {CheckEmailAvailabilityRequestDto}
+     * @memberof AuthApiCheckEmailAvailability
+     */
+    readonly checkEmailAvailabilityRequestDto: CheckEmailAvailabilityRequestDto
+}
+
+/**
+ * Request parameters for checkUserIdAvailability operation in AuthApi.
+ * @export
+ * @interface AuthApiCheckUserIdAvailabilityRequest
+ */
+export interface AuthApiCheckUserIdAvailabilityRequest {
+    /**
+     * 
+     * @type {CheckUserIdAvailabilityRequestDto}
+     * @memberof AuthApiCheckUserIdAvailability
+     */
+    readonly checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto
 }
 
 /**
@@ -912,6 +1084,30 @@ export interface AuthApiVerifyCodeRequest {
  * @extends {BaseAPI}
  */
 export class AuthApi extends BaseAPI implements AuthApiInterface {
+    /**
+     * 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+     * @summary 이메일 중복 확인
+     * @param {AuthApiCheckEmailAvailabilityRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public checkEmailAvailability(requestParameters: AuthApiCheckEmailAvailabilityRequest, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).checkEmailAvailability(requestParameters.checkEmailAvailabilityRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+     * @summary 사용자 ID 중복 확인
+     * @param {AuthApiCheckUserIdAvailabilityRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public checkUserIdAvailability(requestParameters: AuthApiCheckUserIdAvailabilityRequest, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).checkUserIdAvailability(requestParameters.checkUserIdAvailabilityRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
      * @summary 소셜 계정 연결 확인

@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumberString, IsString, Length } from 'class-validator';
 
 /**
  * 인증 코드 검증 DTO
@@ -21,7 +21,7 @@ export class ValidateAuthCodeDto {
  */
 export class ValidateAuthCodeResultDto {
   @Expose()
-  @IsUUID('4', { message: '유효한 사용자 ID 형식이 아닙니다.' })
+  @IsNumberString({}, { message: '유효한 사용자 ID 형식이 아닙니다.' })
   @IsNotEmpty({ message: '사용자 ID는 필수 입력 항목입니다.' })
   userId: string;
   

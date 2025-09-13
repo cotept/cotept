@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@repo/shared/src/components/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@repo/shared/src/components/form"
 import { Input } from "@repo/shared/src/components/input"
+import { StatusMessage } from "@repo/shared/src/components/status-message"
 
 import { useEmailStep } from "@/features/auth/hooks/signup/useEmailStep"
 import { EmailStepData } from "@/features/auth/lib/validations/auth-rules"
@@ -16,67 +17,95 @@ interface EmailStepProps {
 }
 
 const EmailStep: React.FC<EmailStepProps> = ({ onComplete }) => {
-  const { form, handleSubmit, isLoading, isEmailValid } = useEmailStep({ onComplete })
+  const {
+    form,
+    handleCheckEmail,
+    handleSubmit,
+
+    // 상태
+    phase,
+    isEmailVerified,
+    hasError,
+
+    // UI 상태 헬퍼
+    canCheckEmail,
+    showCheckingSpinner,
+
+    // 버튼 텍스트 헬퍼
+    checkButtonText,
+  } = useEmailStep({ onComplete })
+
+  // 상태 체크 함수들
+  const shouldShowCheckButton = () => phase === "initial" || phase === "error"
+  const shouldShowErrorState = () => hasError
+  const shouldShowSuccessState = () => isEmailVerified
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* 상단 로고 영역 */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-6">
-          COTEPT
-        </h1>
-      </div>
+    <>
+      {/* 폼 */}
+      <Form {...form}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-zinc-300">이메일</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="이메일을 입력하세요"
+                    disabled={isEmailVerified}
+                    className="border-zinc-600 bg-zinc-700/50 text-white placeholder:text-base placeholder:text-zinc-400 focus:border-purple-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      {/* 메인 카드 */}
-      <div className="bg-zinc-800/50 rounded-xl p-8 space-y-6 border border-zinc-700/50">
-        {/* 제목 */}
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-white">이메일로 시작</h2>
-        </div>
-
-        {/* 폼 */}
-        <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-300">이메일</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="이메일을 입력하세요"
-                      className="bg-zinc-700/50 border-zinc-600 text-white placeholder:text-zinc-400 focus:border-purple-400"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* 제출 버튼 */}
+          {/* 중복 확인 버튼 */}
+          {shouldShowCheckButton() && (
             <Button
-              type="submit"
-              disabled={!isEmailValid || isLoading}
-              className="w-full bg-zinc-700 hover:bg-zinc-600 text-white disabled:bg-zinc-800 disabled:text-zinc-500 h-12">
-              {isLoading ? "확인 중..." : "다음"}
+              type="button"
+              variant={canCheckEmail ? "auth-secondary" : "ghost"}
+              size="xl"
+              onClick={handleCheckEmail}
+              disabled={!canCheckEmail}
+              className="w-full">
+              {showCheckingSpinner && (
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              )}
+              {checkButtonText}
             </Button>
-          </form>
-        </Form>
+          )}
 
-        {/* 하단 로그인 링크 */}
-        <div className="text-center pt-4 border-t border-zinc-700">
-          <p className="text-sm text-zinc-400">
-            로그인은 여기를 눌러 계속하고 계신가요?{" "}
-            <Link href="/auth/login" className="text-purple-400 hover:text-purple-300 underline">
-              로그인
-            </Link>
-          </p>
-        </div>
+          {/* 성공 메시지 및 다음 버튼 */}
+          {shouldShowSuccessState() && (
+            <div className="space-y-4">
+              <StatusMessage variant="success" message="사용 가능한 이메일입니다!" />
+              <Button type="submit" variant="auth-primary" size="xl" onClick={handleSubmit} className="w-full">
+                다음
+              </Button>
+            </div>
+          )}
+
+          {/* 에러 상태 표시 */}
+          {shouldShowErrorState() && <StatusMessage variant="error" message="이미 사용 중인 이메일입니다." />}
+        </form>
+      </Form>
+
+      {/* 하단 로그인 링크 */}
+      <div className="border-t border-zinc-700 pt-4 text-center">
+        <p className="space-x-1 text-sm text-zinc-400">
+          <span className="">이미 코테피티의 회원이신가요?</span>
+          <Link href="/auth/login" className="text-purple-400 underline hover:text-purple-300">
+            로그인 하러가기
+          </Link>
+        </p>
       </div>
-    </div>
+    </>
   )
 }
 

@@ -5,11 +5,11 @@ import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity
 
 @Entity("AUTH_VERIFICATIONS")
 export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
-  @Column({ name: "user_id", type: "number", nullable: true })
+  @Column({ name: "user_idx", type: "number", nullable: true })
   userId: number | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
+  @JoinColumn({ name: "user_idx", referencedColumnName: "idx" })
   user: User | null
 
   @Column({ name: "auth_type", type: "varchar2", length: 20 })
@@ -18,7 +18,7 @@ export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
   @Column({ name: "target", type: "varchar2", length: 100 })
   target: string
 
-  @Column({ name: "verification_code", type: "varchar2", length: 10 })
+  @Column({ name: "verification_code", type: "varchar2", length: 6 })
   verificationCode: string
 
   @Column({ name: "expires_at", type: "timestamp" })

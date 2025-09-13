@@ -2,12 +2,13 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
 
 import { Response } from "express"
 
-import { convertJwtUserIdToNumber, convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import { LoginDto } from "@/modules/auth/application/dtos/login.dto"
 import { SocialAuthCallbackDto } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { ValidateAuthCodeDto } from "@/modules/auth/application/dtos/validate-auth-code.dto"
 import { AuthResponseMapper } from "@/modules/auth/application/mappers/auth-response.mapper"
+import { CheckEmailAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-email-availability.usecase"
+import { CheckUserIdAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-userid-availability.usecase"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
@@ -19,13 +20,15 @@ import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/s
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { AuthRequestMapper } from "@/modules/auth/infrastructure/adapter/in/mappers/auth-request.mapper"
 import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/services/cookie-manager.adapter"
 import {
+  CheckEmailAvailabilityRequestDto,
+  CheckUserIdAvailabilityRequestDto,
   ConfirmSocialLinkRequestDto,
   ExchangeAuthCodeRequestDto,
   FindIdRequestDto,
@@ -37,6 +40,7 @@ import {
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
+  AvailabilityResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
@@ -47,6 +51,7 @@ import {
   VerificationCodeResponseDto,
   VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
+import { convertDomainUserIdToString, convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -69,12 +74,14 @@ export class AuthFacadeService {
     private readonly validateAuthCodeUseCase: ValidateAuthCodeUseCase,
     private readonly findIdUseCase: FindIdUseCase, // 추가
     private readonly resetPasswordUseCase: ResetPasswordUseCase, // 추가
+    private readonly checkEmailAvailabilityUseCase: CheckEmailAvailabilityUseCase,
+    private readonly checkUserIdAvailabilityUseCase: CheckUserIdAvailabilityUseCase,
     private readonly authRequestMapper: AuthRequestMapper,
     private readonly authResponseMapper: AuthResponseMapper,
     private readonly cookieManager: CookieManagerAdapter,
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly passwordHasher: PasswordHasherPort,
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
   ) {}
 
   /**
@@ -215,9 +222,13 @@ export class AuthFacadeService {
    */
   async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
     try {
+      console.log("verifyCode", { verifyCodeRequestDto })
+      this.logger.log("verifyCode 1")
       const verifyCodeDto = this.authRequestMapper.toVerifyCodeDto(verifyCodeRequestDto)
+      this.logger.log("verifyCode 2")
 
       const success = await this.verifyCodeUseCase.execute(verifyCodeDto)
+      this.logger.log("verifyCode 3", success)
 
       return this.authResponseMapper.toVerificationResultResponse(success)
     } catch (error) {
@@ -444,7 +455,7 @@ export class AuthFacadeService {
   ): Promise<SocialLinkConfirmationResponseDto | TokenResponseDto> {
     try {
       // 1. 임시 토큰 검증
-      const pendingInfo = await this.tokenStorage.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
+      const pendingInfo = await this.authCache.getPendingLinkInfo(confirmSocialLinkRequestDto.token)
       if (!pendingInfo) {
         throw new UnauthorizedException("유효하지 않거나 만료된 요청입니다.")
       }
@@ -483,7 +494,7 @@ export class AuthFacadeService {
         }
 
         // 사용된 토큰 삭제
-        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+        await this.authCache.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
         const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
@@ -493,12 +504,58 @@ export class AuthFacadeService {
         return tokenResponse
       } else {
         // 연결 거부
-        await this.tokenStorage.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
+        await this.authCache.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
         return this.authResponseMapper.toSocialLinkConfirmationResponse(false)
       }
     } catch (error) {
       this.logger.error(
         `소셜 계정 연결 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 이메일 중복 확인
+   */
+  async checkEmailAvailability(
+    checkEmailAvailabilityRequestDto: CheckEmailAvailabilityRequestDto,
+  ): Promise<AvailabilityResponseDto> {
+    try {
+      const checkEmailAvailabilityDto = this.authRequestMapper.toCheckEmailAvailabilityDto(
+        checkEmailAvailabilityRequestDto,
+      )
+
+      const result = await this.checkEmailAvailabilityUseCase.execute(checkEmailAvailabilityDto)
+
+      return this.authResponseMapper.toAvailabilityResponse(result)
+    } catch (error) {
+      this.logger.error(
+        `이메일 중복 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 사용자 ID 중복 확인
+   */
+  async checkUserIdAvailability(
+    checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto,
+  ): Promise<AvailabilityResponseDto> {
+    try {
+      const checkUserIdAvailabilityDto = this.authRequestMapper.toCheckUserIdAvailabilityDto(
+        checkUserIdAvailabilityRequestDto,
+      )
+
+      const result = await this.checkUserIdAvailabilityUseCase.execute(checkUserIdAvailabilityDto)
+
+      return this.authResponseMapper.toAvailabilityResponse(result)
+    } catch (error) {
+      this.logger.error(
+        `사용자 ID 중복 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
         ErrorUtils.getErrorStack(error),
       )
       throw error

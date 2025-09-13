@@ -25,10 +25,10 @@ import type { MailStatus } from './mail-status';
 export interface MailAuditResponseDto {
     /**
      * 메일 감사 ID
-     * @type {string}
+     * @type {number}
      * @memberof MailAuditResponseDto
      */
-    'id': string;
+    'idx': number;
     /**
      * 메일 ID
      * @type {string}

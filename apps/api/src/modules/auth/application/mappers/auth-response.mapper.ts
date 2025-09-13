@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common"
 
+import { AvailabilityResultDto } from "@/modules/auth/application/dtos"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
 import {
+  AvailabilityResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
@@ -95,6 +97,15 @@ export class AuthResponseMapper {
             ? "소셜 로그인 처리 중 오류가 발생했습니다."
             : "소셜 로그인을 처리하고 있습니다.",
       processedAt: new Date().toISOString(),
+    }
+  }
+
+  /**
+   * 중복 확인 결과를 응답 DTO로 변환
+   */
+  toAvailabilityResponse(result: AvailabilityResultDto): AvailabilityResponseDto {
+    return {
+      available: result.available,
     }
   }
 }

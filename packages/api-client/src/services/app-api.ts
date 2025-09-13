@@ -33,7 +33,7 @@ export const AppApiAxiosParamCreator = function (configuration?: Configuration) 
          * @throws {RequiredError}
          */
         checkHealth: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/health`;
+            const localVarPath = `/api/v1/health`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -62,7 +62,7 @@ export const AppApiAxiosParamCreator = function (configuration?: Configuration) 
          * @throws {RequiredError}
          */
         getHello: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/`;
+            const localVarPath = `/api/v1`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

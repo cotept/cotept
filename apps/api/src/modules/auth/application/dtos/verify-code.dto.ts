@@ -1,12 +1,12 @@
 import { Expose } from "class-transformer"
-import { IsNotEmpty, IsString, IsUUID, Length } from "class-validator"
+import { IsNotEmpty, IsNumberString, IsString, Length } from "class-validator"
 
 /**
  * 인증 코드 확인 DTO
  */
 export class VerifyCodeDto {
   @Expose()
-  @IsUUID("4", { message: "유효한 검증 ID 형식이 아닙니다." })
+  @IsNumberString({}, { message: "유효한 검증 ID 형식이 아닙니다." })
   @IsNotEmpty({ message: "검증 ID는 필수 입력 항목입니다." })
   verificationId: string
 

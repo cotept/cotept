@@ -5,7 +5,7 @@
  * overlay-kit 방식의 Provider 생성과 Portal 렌더링을 결합한 하이브리드 구현
  */
 
-import React, { useCallback, useEffect, useReducer, useRef } from "react"
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
 
 import { overlayReducer } from "../context/reducer"
 import { createOverlay } from "../event/event"
@@ -16,6 +16,26 @@ import { randomId } from "../utils/randomId"
 import { OverlayRenderer } from "./OverlayRenderer"
 
 import type { OverlayEvent, OverlayProviderResult } from "../types/overlay.types"
+
+// HMR (Hot Module Replacement) 환경에서 싱글턴 인스턴스를 유지하기 위한 전역 캐시
+const DEV_GLOBAL_KEY = "__cotept_overlay_provider__"
+
+interface GlobalWithOverlay {
+  [DEV_GLOBAL_KEY]?: OverlayProviderResult
+}
+
+function getDevSafeInstance(): OverlayProviderResult | undefined {
+  if (process.env.NODE_ENV === "development") {
+    return (global as GlobalWithOverlay)[DEV_GLOBAL_KEY]
+  }
+  return undefined
+}
+
+function setDevSafeInstance(instance: OverlayProviderResult) {
+  if (process.env.NODE_ENV === "development") {
+    ;(global as GlobalWithOverlay)[DEV_GLOBAL_KEY] = instance
+  }
+}
 
 /**
  * createOverlayProvider
@@ -37,6 +57,11 @@ import type { OverlayEvent, OverlayProviderResult } from "../types/overlay.types
  * ```
  */
 export function createOverlayProvider(): OverlayProviderResult {
+  const existingInstance = getDevSafeInstance()
+  if (existingInstance) {
+    return existingInstance
+  }
+
   // 고유한 overlay 인스턴스 ID 생성
   const overlayId = randomId()
 
@@ -92,8 +117,16 @@ export function createOverlayProvider(): OverlayProviderResult {
       overlayDispatch({ type: "REMOVE_ALL" })
     }, [])
 
+    const events = useMemo(
+      () => ({ open, close, unmount, closeAll, unmountAll }),
+      [close, closeAll, open, unmount, unmountAll],
+    )
+
     // External Events 리스너 등록
-    useOverlayEvent({ open, close, unmount, closeAll, unmountAll })
+    useOverlayEvent(events)
+
+    // External Events 리스너 등록
+    // useOverlayEvent({ open, close, unmount, closeAll, unmountAll })
 
     // overlay-kit의 재개방 로직 구현 (SSR 안전 버전)
     if (prevOverlayState.current !== overlayState) {
@@ -140,10 +173,14 @@ export function createOverlayProvider(): OverlayProviderResult {
     )
   }
 
-  return {
+  const instance: OverlayProviderResult = {
     overlay: overlayAPI,
     OverlayProvider,
     useCurrentOverlay,
     useOverlayData,
   }
+
+  setDevSafeInstance(instance)
+
+  return instance
 }

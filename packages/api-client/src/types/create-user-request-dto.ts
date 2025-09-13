@@ -24,17 +24,23 @@ import type { UserRole } from './user-role';
  */
 export interface CreateUserRequestDto {
     /**
+     * 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+     * @type {string}
+     * @memberof CreateUserRequestDto
+     */
+    'userId': string;
+    /**
      * 사용자 이메일
      * @type {string}
      * @memberof CreateUserRequestDto
      */
     'email': string;
     /**
-     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함) - 필수
      * @type {string}
      * @memberof CreateUserRequestDto
      */
-    'password': string;
+    'password'?: string;
     /**
      * 사용자 이름 (2~50자, 한글/영문만 허용)
      * @type {string}
@@ -42,17 +48,17 @@ export interface CreateUserRequestDto {
      */
     'name'?: string;
     /**
-     * 전화번호 (- 없이 숫자만)
-     * @type {string}
-     * @memberof CreateUserRequestDto
-     */
-    'phoneNumber'?: string;
-    /**
      * 사용자 역할 (기본값: MENTEE)
      * @type {UserRole}
      * @memberof CreateUserRequestDto
      */
     'role'?: UserRole;
+    /**
+     * 전화번호 (- 없이 숫자만)
+     * @type {string}
+     * @memberof CreateUserRequestDto
+     */
+    'phoneNumber'?: string;
 }
 
 

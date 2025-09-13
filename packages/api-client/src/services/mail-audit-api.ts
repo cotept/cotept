@@ -32,15 +32,15 @@ export const MailAuditApiAxiosParamCreator = function (configuration?: Configura
         /**
          * 
          * @summary 메일 감사 조회 (ID)
-         * @param {string} id 
+         * @param {number} idx 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMailAuditById: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getMailAuditById', 'id', id)
-            const localVarPath = `/mail-audit/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        getMailAuditById: async (idx: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'idx' is not null or undefined
+            assertParamExists('getMailAuditById', 'idx', idx)
+            const localVarPath = `/api/v1/mail-audit/{idx}`
+                .replace(`{${"idx"}}`, encodeURIComponent(String(idx)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -79,7 +79,7 @@ export const MailAuditApiAxiosParamCreator = function (configuration?: Configura
             assertParamExists('searchMailAudit', 'recipient', recipient)
             // verify required parameter 'template' is not null or undefined
             assertParamExists('searchMailAudit', 'template', template)
-            const localVarPath = `/mail-audit`;
+            const localVarPath = `/api/v1/mail-audit`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -127,12 +127,12 @@ export const MailAuditApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 메일 감사 조회 (ID)
-         * @param {string} id 
+         * @param {number} idx 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMailAuditById(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MailAuditResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getMailAuditById(id, options);
+        async getMailAuditById(idx: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MailAuditResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMailAuditById(idx, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['MailAuditApi.getMailAuditById']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -170,7 +170,7 @@ export const MailAuditApiFactory = function (configuration?: Configuration, base
          * @throws {RequiredError}
          */
         getMailAuditById(requestParameters: MailAuditApiGetMailAuditByIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<MailAuditResponseWrapper> {
-            return localVarFp.getMailAuditById(requestParameters.id, options).then((request) => request(axios, basePath));
+            return localVarFp.getMailAuditById(requestParameters.idx, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -221,10 +221,10 @@ export interface MailAuditApiInterface {
 export interface MailAuditApiGetMailAuditByIdRequest {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof MailAuditApiGetMailAuditById
      */
-    readonly id: string
+    readonly idx: number
 }
 
 /**
@@ -271,7 +271,7 @@ export class MailAuditApi extends BaseAPI implements MailAuditApiInterface {
      * @memberof MailAuditApi
      */
     public getMailAuditById(requestParameters: MailAuditApiGetMailAuditByIdRequest, options?: RawAxiosRequestConfig) {
-        return MailAuditApiFp(this.configuration).getMailAuditById(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+        return MailAuditApiFp(this.configuration).getMailAuditById(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

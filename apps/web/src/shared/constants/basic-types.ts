@@ -1,10 +1,11 @@
-// 코드에서도 의미가 명확해짐
+// 표준 회원가입 플로우 순서: 약관 → 이메일 → 인증 → ID → 비밀번호 → 완료
 export const SIGNUP_STEPS = {
-  ENTER_EMAIL: "enter-email",
-  SET_PASSWORD: "set-password",
   TERMS_AGREEMENT: "terms-agreement",
-  VERIFY_EMAIL: "verify-email",
-  PROFILE_SETUP: "profile-setup",
+  ENTER_EMAIL: "enter-email",
+  VERIFY_EMAIL: "verify-email", 
+  SET_USERID: "set-userid",
+  SET_PASSWORD: "set-password",
+  SIGNUP_COMPLETE: "signup-complete",
 } as const
 
 // 타입 안전성도 확보

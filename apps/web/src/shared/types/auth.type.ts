@@ -52,3 +52,13 @@ export type FindIdRequestData = FindIdParams[0]["findIdRequestDto"]
 export type ResetPasswordResponse = AuthApiServiceMethodReturnType<"resetPassword">
 export type ResetPasswordParams = AuthApiServiceMethodParameters<"resetPassword">
 export type ResetPasswordRequestData = ResetPasswordParams[0]["resetPasswordRequestDto"]
+
+// 이메일 중복 확인 관련 타입
+export type CheckEmailAvailabilityResponse = AuthApiServiceMethodReturnType<"checkEmailAvailability">
+export type CheckEmailAvailabilityParams = AuthApiServiceMethodParameters<"checkEmailAvailability">
+export type CheckEmailAvailabilityRequestData = CheckEmailAvailabilityParams[0]["checkEmailAvailabilityRequestDto"]
+
+// 아이디 중복 확인 관련 타입
+export type CheckUserIdAvailabilityResponse = AuthApiServiceMethodReturnType<"checkUserIdAvailability">
+export type CheckUserIdAvailabilityParams = AuthApiServiceMethodParameters<"checkUserIdAvailability">
+export type CheckUserIdAvailabilityRequestData = CheckUserIdAvailabilityParams[0]["checkUserIdAvailabilityRequestDto"]

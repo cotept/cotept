@@ -11,6 +11,8 @@ import { NotificationService } from "./infrastructure/adapter/out/services/notif
 import { JwtConfig } from "@/configs/token"
 // 매퍼
 import { AuthResponseMapper, TokenMapper } from "@/modules/auth/application/mappers"
+import { CheckEmailAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-email-availability.usecase"
+import { CheckUserIdAvailabilityUseCase } from "@/modules/auth/application/ports/in/check-userid-availability.usecase"
 import { FindIdUseCase } from "@/modules/auth/application/ports/in/find-id.usecase"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
@@ -22,17 +24,19 @@ import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/s
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
 import { ValidateTokenUseCase } from "@/modules/auth/application/ports/in/validate-token.usecase"
 import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-code.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 // 포트 (인터페이스)
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports/out/auth-verification-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 // 파사드 서비스
 import { AuthFacadeService } from "@/modules/auth/application/services/facade"
 // 유스케이스
 import {
+  CheckEmailAvailabilityUseCaseImpl,
+  CheckUserIdAvailabilityUseCaseImpl,
   FindIdUseCaseImpl,
   GenerateAuthCodeUseCaseImpl,
   LoginUseCaseImpl,
@@ -69,7 +73,7 @@ import {
 } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers"
 // 레포지토리
 import {
-  RedisTokenStorageRepository,
+  RedisAuthCacheRepository,
   TypeOrmAuthUserRepository,
   TypeOrmAuthVerificationRepository,
   TypeOrmLoginSessionRepository,
@@ -145,8 +149,8 @@ import { CryptoService } from "@/shared/infrastructure/services"
       useClass: TypeOrmLoginSessionRepository,
     },
     {
-      provide: TokenStoragePort,
-      useClass: RedisTokenStorageRepository,
+      provide: AuthCachePort,
+      useClass: RedisAuthCacheRepository,
     },
 
     // 유스케이스 구현체
@@ -195,6 +199,14 @@ import { CryptoService } from "@/shared/infrastructure/services"
       provide: ResetPasswordUseCase,
       useClass: ResetPasswordUseCaseImpl,
     },
+    {
+      provide: CheckEmailAvailabilityUseCase,
+      useClass: CheckEmailAvailabilityUseCaseImpl,
+    },
+    {
+      provide: CheckUserIdAvailabilityUseCase,
+      useClass: CheckUserIdAvailabilityUseCaseImpl,
+    },
 
     // 가드
     JwtAuthGuard,
@@ -242,6 +254,8 @@ import { CryptoService } from "@/shared/infrastructure/services"
     ValidateAuthCodeUseCase,
     FindIdUseCase, // 내보내기 추가
     ResetPasswordUseCase, // 내보내기 추가
+    CheckEmailAvailabilityUseCase, // 내보내기 추가
+    CheckUserIdAvailabilityUseCase, // 내보내기 추가
     TokenGeneratorPort,
     JwtAuthGuard,
     AuthFacadeService, // AuthFacadeService를 내보내도록 추가

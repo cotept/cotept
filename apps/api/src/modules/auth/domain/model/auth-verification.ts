@@ -13,7 +13,7 @@ export enum AuthType {
 export class AuthVerification {
   constructor(
     public readonly idx: number,
-    public readonly userId: number | null,
+    public readonly userIdx: number | null,
     public readonly authType: AuthType,
     public readonly target: string,
     private readonly _verificationCode: string,
@@ -108,7 +108,7 @@ export class AuthVerification {
 
   /**
    * 인증 검증 객체 생성
-   * @param userId 사용자 ID (선택)
+   * @param userIdx 사용자 IDx (선택)
    * @param authType 인증 유형
    * @param target 인증 대상 (이메일, 전화번호 등)
    * @param ipAddress IP 주소 (선택)
@@ -117,7 +117,7 @@ export class AuthVerification {
    */
   static create(
     id: number,
-    userId: number | null,
+    userIdx: number | null,
     authType: AuthType,
     target: string,
     ipAddress: string | null = null,
@@ -131,6 +131,6 @@ export class AuthVerification {
     expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes)
 
     // 인증 검증 객체 생성
-    return new AuthVerification(id, userId, authType, target, verificationCode, expiresAt, false, null, 0, ipAddress)
+    return new AuthVerification(id, userIdx, authType, target, verificationCode, expiresAt, false, null, 0, ipAddress)
   }
 }

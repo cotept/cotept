@@ -1,6 +1,6 @@
 openapi: 3.0.0
 paths:
-  /:
+  /api/v1:
     get:
       operationId: getHello
       parameters: []
@@ -9,7 +9,7 @@ paths:
           description: ''
       tags: &ref_0
         - App
-  /health:
+  /api/v1/health:
     get:
       operationId: checkHealth
       parameters: []
@@ -17,7 +17,7 @@ paths:
         '200':
           description: ''
       tags: *ref_0
-  /users/userlist:
+  /api/v1/users/userlist:
     get:
       description: 등록된 모든 사용자 목록을 조회합니다.
       operationId: getAllUsers
@@ -136,24 +136,24 @@ paths:
       summary: 사용자 목록 조회
       tags: &ref_1
         - User
-  /users/{id}:
+  /api/v1/users/{idx}:
     get:
-      description: ID로 사용자 정보를 조회합니다.
+      description: IDX로 사용자 정보를 조회합니다.
       operationId: getUserById
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 인덱스
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: 성공적으로 사용자를 조회함
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -161,7 +161,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -234,12 +234,12 @@ paths:
       description: 사용자 정보를 수정합니다.
       operationId: updateUser
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 인덱스
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -252,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -260,7 +260,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -379,12 +379,12 @@ paths:
       description: 사용자를 삭제합니다.
       operationId: deleteUser
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
           description: 사용자 ID
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -474,7 +474,101 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 삭제
       tags: *ref_1
-  /users/register:
+  /api/v1/users/{userId}:
+    get:
+      description: ID로 사용자 정보를 조회합니다.
+      operationId: getUserByUserId
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 사용자를 조회함
+          content:
+            application/json:
+              schema:
+                title: UserResponse
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 요청하신 사용자를 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 상세 조회
+      tags: *ref_1
+  /api/v1/users/register:
     post:
       description: 새로운 사용자를 생성합니다.
       operationId: createUser
@@ -491,7 +585,7 @@ paths:
           content:
             application/json:
               schema:
-                title: UserResponseWrapper
+                title: UserResponse
                 type: object
                 properties:
                   message:
@@ -499,7 +593,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/UserResponseDto'
+                    $ref: '#/components/schemas/UserDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -582,17 +676,17 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 생성
       tags: *ref_1
-  /users/{id}/password:
+  /api/v1/users/{idx}/password:
     patch:
       description: 사용자 비밀번호를 변경합니다.
       operationId: changePassword
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
-          description: 사용자 ID
+          description: 사용자 IDX
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -728,7 +822,776 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 변경
       tags: *ref_1
-  /auth/login:
+  /api/v1/user-profiles/{userId}:
+    get:
+      description: 사용자 ID로 프로필 정보를 조회합니다.
+      operationId: getUserProfile
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 사용자 프로필을 조회함
+          content:
+            application/json:
+              schema:
+                title: UserProfileResponse
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 요청하신 사용자 프로필을 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 프로필 조회
+      tags: &ref_2
+        - UserProfile
+    put:
+      description: 사용자 프로필 정보를 수정합니다.
+      operationId: updateUserProfile
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequestDto'
+      responses:
+        '200':
+          description: 성공적으로 사용자 프로필을 수정함
+          content:
+            application/json:
+              schema:
+                title: UserProfileUpdateResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileUpdateResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 해당 사용자 프로필을 찾을 수 없습니다
+        '409':
+          description: 닉네임이 이미 사용 중입니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 프로필 수정
+      tags: *ref_2
+    delete:
+      description: 사용자 프로필을 삭제합니다.
+      operationId: deleteUserProfile
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 사용자 프로필을 삭제함
+          content:
+            application/json:
+              schema:
+                title: UserProfileDeletionResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileDeletionResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 해당 사용자 프로필을 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 프로필 삭제
+      tags: *ref_2
+  /api/v1/user-profiles/idx/{idx}:
+    get:
+      description: 프로필 고유 ID로 프로필 정보를 조회합니다.
+      operationId: getUserProfileByIdx
+      parameters:
+        - name: idx
+          required: true
+          in: path
+          description: 프로필 고유 ID
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 성공적으로 사용자 프로필을 조회함
+          content:
+            application/json:
+              schema:
+                title: UserProfileResponse
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 요청하신 사용자 프로필을 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 프로필 ID로 조회
+      tags: *ref_2
+  /api/v1/user-profiles:
+    post:
+      description: 새로운 사용자 프로필을 생성합니다.
+      operationId: createUserProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserProfileRequestDto'
+      responses:
+        '200':
+          description: 성공적으로 사용자 프로필을 생성함
+          content:
+            application/json:
+              schema:
+                title: UserProfileCreationResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileCreationResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 해당 사용자를 찾을 수 없습니다
+        '409':
+          description: 이미 프로필이 존재하거나 닉네임이 중복됩니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 프로필 생성
+      tags: *ref_2
+  /api/v1/user-profiles/{userId}/completeness:
+    get:
+      description: 사용자 프로필의 완성도를 확인하고 누락된 필드를 반환합니다.
+      operationId: checkProfileCompleteness
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 프로필 완성도를 확인함
+          content:
+            application/json:
+              schema:
+                title: UserProfileCompletenessResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileCompletenessResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 프로필 완성도 확인
+      tags: *ref_2
+  /api/v1/user-profiles/{userId}/upsert:
+    put:
+      description: 프로필이 존재하면 수정하고, 존재하지 않으면 생성합니다.
+      operationId: upsertUserProfile
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 프로필을 생성 또는 수정함
+          content:
+            application/json:
+              schema:
+                title: UserProfileUpsertResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/UserProfileUpsertResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 해당 사용자를 찾을 수 없습니다
+        '409':
+          description: 닉네임이 이미 사용 중입니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 프로필 생성 또는 수정
+      tags: *ref_2
+  /api/v1/user-profiles/signup/{userId}:
+    post:
+      description: 회원가입 시 최소한의 정보로 기본 프로필을 생성하고 완성도 가이드를 제공합니다.
+      operationId: createBasicProfileForSignup
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 사용자 ID
+          schema:
+            example: dudtod1596
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 기본 프로필을 생성함
+          content:
+            application/json:
+              schema:
+                title: BasicProfileCreationResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/BasicProfileCreationResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 해당 사용자를 찾을 수 없습니다
+        '409':
+          description: 이미 프로필이 존재하거나 닉네임이 중복됩니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 회원가입 시 기본 프로필 생성
+      tags: *ref_2
+  /api/v1/auth/login:
     post:
       description: 이메일과 비밀번호로 로그인하고 토큰을 발급합니다.
       operationId: login
@@ -793,9 +1656,9 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 로그인
-      tags: &ref_2
+      tags: &ref_3
         - Auth
-  /auth/logout:
+  /api/v1/auth/logout:
     post:
       description: 사용자를 로그아웃하고 토큰을 무효화합니다.
       operationId: logout
@@ -880,8 +1743,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 로그아웃
-      tags: *ref_2
-  /auth/silent-refresh:
+      tags: *ref_3
+  /api/v1/auth/silent-refresh:
     post:
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
       operationId: refreshToken
@@ -944,8 +1807,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 갱신
-      tags: *ref_2
-  /auth/validate-token:
+      tags: *ref_3
+  /api/v1/auth/validate-token:
     post:
       description: 액세스 토큰의 유효성을 검증합니다.
       operationId: validateToken
@@ -1006,8 +1869,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 검증
-      tags: *ref_2
-  /auth/send-verification-code:
+      tags: *ref_3
+  /api/v1/auth/send-verification-code:
     post:
       description: 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
       operationId: sendVerificationCode
@@ -1068,8 +1931,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 발송
-      tags: *ref_2
-  /auth/verify-code:
+      tags: *ref_3
+  /api/v1/auth/verify-code:
     post:
       description: 발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.
       operationId: verifyCode
@@ -1130,8 +1993,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 확인
-      tags: *ref_2
-  /auth/exchange-code:
+      tags: *ref_3
+  /api/v1/auth/exchange-code:
     post:
       description: 소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.
       operationId: exchangeAuthCode
@@ -1192,8 +2055,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 임시 인증 코드를 실제 토큰으로 교환
-      tags: *ref_2
-  /auth/confirm-social-link:
+      tags: *ref_3
+  /api/v1/auth/confirm-social-link:
     post:
       description: 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
       operationId: confirmSocialLink
@@ -1254,8 +2117,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 소셜 계정 연결 확인
-      tags: *ref_2
-  /auth/find-id:
+      tags: *ref_3
+  /api/v1/auth/find-id:
     post:
       description: >-
         인증된 이메일 또는 전화번호를 통해 사용자 아이디(이메일)를 찾습니다. 먼저 send-verification-code 호출 후
@@ -1316,8 +2179,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 아이디 찾기
-      tags: *ref_2
-  /auth/reset-password:
+      tags: *ref_3
+  /api/v1/auth/reset-password:
     post:
       description: 인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.
       operationId: resetPassword
@@ -1376,8 +2239,128 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 재설정
-      tags: *ref_2
-  /auth/github:
+      tags: *ref_3
+  /api/v1/auth/check-email-availability:
+    post:
+      description: 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
+      operationId: checkEmailAvailability
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckEmailAvailabilityRequestDto'
+      responses:
+        '200':
+          description: 이메일 중복 확인 결과
+          content:
+            application/json:
+              schema:
+                title: AvailabilityResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/AvailabilityResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 이메일 중복 확인
+      tags: *ref_3
+  /api/v1/auth/check-userid-availability:
+    post:
+      description: 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
+      operationId: checkUserIdAvailability
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckUserIdAvailabilityRequestDto'
+      responses:
+        '200':
+          description: 사용자 ID 중복 확인 결과
+          content:
+            application/json:
+              schema:
+                title: AvailabilityResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/AvailabilityResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 사용자 ID 중복 확인
+      tags: *ref_3
+  /api/v1/auth/github:
     get:
       description: GitHub OAuth 인증을 시작합니다.
       operationId: githubLogin
@@ -1405,9 +2388,9 @@ paths:
                     type: 'null'
                     description: 응답 데이터 없음
       summary: GitHub 로그인 시작
-      tags: &ref_3
+      tags: &ref_4
         - GithubAuth
-  /auth/github/callback:
+  /api/v1/auth/github/callback:
     get:
       description: GitHub 인증 후 리다이렉트되는 엔드포인트입니다.
       operationId: githubCallback
@@ -1443,8 +2426,8 @@ paths:
         '401':
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
-      tags: *ref_3
-  /auth/google:
+      tags: *ref_4
+  /api/v1/auth/google:
     get:
       description: Google OAuth 인증을 시작합니다.
       operationId: googleLogin
@@ -1472,9 +2455,9 @@ paths:
                     type: 'null'
                     description: 응답 데이터 없음
       summary: Google 로그인 시작
-      tags: &ref_4
+      tags: &ref_5
         - GoogleAuth
-  /auth/google/callback:
+  /api/v1/auth/google/callback:
     get:
       description: Google 인증 후 리다이렉트되는 엔드포인트입니다.
       operationId: googleCallback
@@ -1510,8 +2493,8 @@ paths:
         '401':
           description: Google 인증 실패
       summary: Google 로그인 콜백
-      tags: *ref_4
-  /mail/email-verification:
+      tags: *ref_5
+  /api/v1/mail/email-verification:
     post:
       operationId: sendEmailVerification
       parameters: []
@@ -1602,9 +2585,9 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 이메일 본인확인
-      tags: &ref_5
+      tags: &ref_6
         - Mail
-  /mail/password-recovery:
+  /api/v1/mail/password-recovery:
     post:
       operationId: sendPasswordRecovery
       parameters: []
@@ -1695,8 +2678,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 찾기
-      tags: *ref_5
-  /mail/verification-code:
+      tags: *ref_6
+  /api/v1/mail/verification-code:
     post:
       operationId: sendMailVerificationCode
       parameters: []
@@ -1787,8 +2770,8 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증번호 발송
-      tags: *ref_5
-  /mail/reservation-create:
+      tags: *ref_6
+  /api/v1/mail/reservation-create:
     post:
       operationId: sendReservationCreate
       parameters: []
@@ -1849,8 +2832,8 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 신청
-      tags: *ref_5
-  /mail/reservation-fix:
+      tags: *ref_6
+  /api/v1/mail/reservation-fix:
     post:
       operationId: sendReservationFix
       parameters: []
@@ -1943,8 +2926,8 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 확정
-      tags: *ref_5
-  /mail/reservation-cancel:
+      tags: *ref_6
+  /api/v1/mail/reservation-cancel:
     post:
       operationId: sendReservationCancel
       parameters: []
@@ -2037,8 +3020,8 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 취소
-      tags: *ref_5
-  /mail/reservation-change:
+      tags: *ref_6
+  /api/v1/mail/reservation-change:
     post:
       operationId: sendReservationChange
       parameters: []
@@ -2131,8 +3114,8 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 변경
-      tags: *ref_5
-  /mail/reservation-prenotice:
+      tags: *ref_6
+  /api/v1/mail/reservation-prenotice:
     post:
       operationId: sendReservationPrenotice
       parameters: []
@@ -2225,16 +3208,16 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 사전안내
-      tags: *ref_5
-  /mail-audit/{id}:
+      tags: *ref_6
+  /api/v1/mail-audit/{idx}:
     get:
       operationId: getMailAuditById
       parameters:
-        - name: id
+        - name: idx
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: 메일 감사 조회 성공
@@ -2251,9 +3234,9 @@ paths:
                   data:
                     $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (ID)
-      tags: &ref_6
+      tags: &ref_7
         - MailAudit
-  /mail-audit:
+  /api/v1/mail-audit:
     get:
       operationId: searchMailAudit
       parameters:
@@ -2288,7 +3271,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (검색)
-      tags: *ref_6
+      tags: *ref_7
 info:
   title: CotePT API
   description: 코딩 테스트 멘토링 플랫폼 API
@@ -2333,20 +3316,28 @@ components:
         - INACTIVE
         - SUSPENDED
       description: 사용자 상태
-    UserResponseDto:
+    UserDto:
       type: object
       properties:
-        id:
+        idx:
+          type: number
+          description: 사용자 고유 IDX (자동 증가 기본키)
+          example: 123
+        userId:
           type: string
-          description: 사용자 고유 ID
-          example: 123e4567-e89b-12d3-a456-426614174000
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         email:
           type: string
           description: 사용자 이메일
           example: user@example.com
+        password:
+          type: string
+          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          example: StrongP@ss123
         name:
           type: string
-          description: 사용자 이름
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
         role:
           description: 사용자 역할
@@ -2360,26 +3351,30 @@ components:
             - $ref: '#/components/schemas/UserStatus'
         phoneNumber:
           type: string
-          description: 전화번호
+          description: 전화번호 (- 없이 숫자만)
           example: '01012345678'
         phoneVerified:
           type: boolean
           description: 전화번호 인증 여부
           example: false
         createdAt:
+          format: date-time
           type: string
           description: 사용자 생성일
           example: '2023-01-01T00:00:00Z'
         updatedAt:
+          format: date-time
           type: string
           description: 사용자 정보 수정일
           example: '2023-01-01T00:00:00Z'
         lastLoginAt:
+          format: date-time
           type: string
           description: 마지막 로그인 일시
           example: '2023-01-01T00:00:00Z'
       required:
-        - id
+        - idx
+        - userId
         - email
         - role
         - status
@@ -2392,7 +3387,7 @@ components:
           description: 사용자 목록
           type: array
           items:
-            $ref: '#/components/schemas/UserResponseDto'
+            $ref: '#/components/schemas/UserDto'
         totalCount:
           type: number
           description: 총 사용자 수
@@ -2425,39 +3420,51 @@ components:
         - totalPages
         - hasNext
         - hasPrevious
-    ApiResponseUserResponseDto:
+    ApiResponseUserDto:
       type: object
       properties: {}
     CreateUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         email:
           type: string
           description: 사용자 이메일
           example: user@example.com
         password:
           type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함) - 필수
           example: StrongP@ss123
         name:
           type: string
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
           example: 홍길동
-        phoneNumber:
-          type: string
-          description: 전화번호 (- 없이 숫자만)
-          example: '01012345678'
         role:
           description: '사용자 역할 (기본값: MENTEE)'
           example: MENTEE
           allOf:
             - $ref: '#/components/schemas/UserRole'
+        phoneNumber:
+          type: string
+          description: 전화번호 (- 없이 숫자만)
+          example: '01012345678'
       required:
+        - userId
         - email
-        - password
     UpdateUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
+        email:
+          type: string
+          description: 사용자 이메일
+          example: user@example.com
         name:
           type: string
           description: 사용자 이름 (2~50자, 한글/영문만 허용)
@@ -2479,7 +3486,7 @@ components:
         deletedUserId:
           type: string
           description: 삭제된 사용자 ID
-          example: 123e4567-e89b-12d3-a456-426614174000
+          example: dudtod1596
         deletedAt:
           type: string
           description: 삭제 완료 시간
@@ -2496,6 +3503,10 @@ components:
     DeleteUserRequestDto:
       type: object
       properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
         reason:
           type: string
           description: 삭제 사유
@@ -2504,6 +3515,8 @@ components:
           type: string
           description: 삭제 확인을 위한 비밀번호
           example: UserP@ss123
+      required:
+        - userId
     ApiResponsePasswordChangeResponseDto:
       type: object
       properties: {}
@@ -2536,15 +3549,342 @@ components:
         newPassword:
           type: string
           description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: NewP@ss123
+          example: NewStrongP@ss123
         confirmPassword:
           type: string
-          description: 새 비밀번호 확인
-          example: NewP@ss123
+          description: 새 비밀번호
+          example: NewStrongP@ss123
       required:
         - currentPassword
         - newPassword
         - confirmPassword
+    ApiResponseUserProfileDto:
+      type: object
+      properties: {}
+    UserProfileDto:
+      type: object
+      properties:
+        idx:
+          type: number
+          description: 프로필 ID (자동증가 기본키)
+          example: 1
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
+        nickname:
+          type: string
+          description: 닉네임 (2~50자, 한글/영문만 허용)
+          example: 코딩마스터
+        introduce:
+          type: string
+          description: 자기소개 (280자 이하, 트위터 스타일)
+          example: 안녕하세요! 백엔드 개발을 공부하고 있는 멘티입니다. 열심히 배워보겠습니다!
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          example: https://example.com/profile/image.jpg
+        createdAt:
+          format: date-time
+          type: string
+          description: 생성일시
+          example: '2024-01-15T10:30:00Z'
+        updatedAt:
+          format: date-time
+          type: string
+          description: 수정일시
+          example: '2024-01-15T10:30:00Z'
+      required:
+        - idx
+        - userId
+        - nickname
+        - createdAt
+        - updatedAt
+    ApiResponseUserProfileCreationResponseDto:
+      type: object
+      properties: {}
+    UserProfileResponseDto:
+      type: object
+      properties:
+        idx:
+          type: number
+          description: 프로필 ID (자동증가 기본키)
+          example: 1
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
+          example: dudtod1596
+        nickname:
+          type: string
+          description: 닉네임 (2~50자, 한글/영문만 허용)
+          example: 코딩마스터
+        introduce:
+          type: string
+          description: 자기소개 (280자 이하, 트위터 스타일)
+          example: 안녕하세요! 백엔드 개발을 공부하고 있는 멘티입니다. 열심히 배워보겠습니다!
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          example: https://example.com/profile/image.jpg
+        createdAt:
+          format: date-time
+          type: string
+          description: 생성일시
+          example: '2024-01-15T10:30:00Z'
+        updatedAt:
+          format: date-time
+          type: string
+          description: 수정일시
+          example: '2024-01-15T10:30:00Z'
+      required:
+        - idx
+        - userId
+        - nickname
+        - createdAt
+        - updatedAt
+    UserProfileCreationResponseDto:
+      type: object
+      properties:
+        profile:
+          description: 생성된 사용자 프로필 정보
+          allOf:
+            - $ref: '#/components/schemas/UserProfileResponseDto'
+        message:
+          type: string
+          description: 성공 메시지
+          example: 사용자 프로필이 성공적으로 생성되었습니다.
+        profileId:
+          type: number
+          description: 생성된 프로필 ID
+          example: 1
+      required:
+        - profile
+        - message
+        - profileId
+    CreateUserProfileRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 로그인 아이디 (User 모듈에서 기존 검증된 사용자)
+          example: dudtod1596
+        nickname:
+          type: string
+          description: 닉네임 (2~50자, 한글/영문/숫자만 허용) - 필수
+          example: 코딩마스터123
+        introduce:
+          type: string
+          description: 자기소개 (280자 이하, 트위터 스타일)
+          example: 안녕하세요! 백엔드 개발을 공부하고 있는 멘티입니다. 열심히 배워보겠습니다!
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          example: https://example.com/profile/image.jpg
+      required:
+        - userId
+        - nickname
+    ApiResponseUserProfileUpdateResponseDto:
+      type: object
+      properties: {}
+    UserProfileUpdateResponseDto:
+      type: object
+      properties:
+        profile:
+          description: 업데이트된 사용자 프로필 정보
+          allOf:
+            - $ref: '#/components/schemas/UserProfileResponseDto'
+        message:
+          type: string
+          description: 성공 메시지
+          example: 사용자 프로필이 성공적으로 업데이트되었습니다.
+        updatedFields:
+          description: 업데이트된 필드 목록
+          example:
+            - nickname
+            - introduce
+          type: array
+          items:
+            type: string
+      required:
+        - profile
+        - message
+        - updatedFields
+    UpdateUserProfileRequestDto:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: 닉네임 (2~50자, 한글/영문/숫자만 허용)
+          example: 새로운닉네임123
+        introduce:
+          type: string
+          description: 자기소개 (280자 이하, 트위터 스타일)
+          example: 안녕하세요! 업데이트된 소개입니다.
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          example: https://example.com/new-profile/image.jpg
+        fullName:
+          type: string
+          description: 실명 (2~50자, 한글/영문만 허용)
+          example: 김철수
+    ApiResponseUserProfileDeletionResponseDto:
+      type: object
+      properties: {}
+    UserProfileDeletionResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 삭제 성공 여부
+          example: true
+        message:
+          type: string
+          description: 응답 메시지
+          example: 사용자 프로필이 성공적으로 삭제되었습니다.
+        deletedUserId:
+          type: string
+          description: 삭제된 사용자 ID
+          example: dudtod1596
+        deletedAt:
+          type: string
+          description: 삭제 시각
+          example: '2024-01-01T12:00:00.000Z'
+      required:
+        - success
+        - message
+        - deletedUserId
+        - deletedAt
+    ApiResponseUserProfileCompletenessResponseDto:
+      type: object
+      properties: {}
+    UserProfileCompletenessResponseDto:
+      type: object
+      properties:
+        hasProfile:
+          type: boolean
+          description: 프로필 존재 여부
+          example: true
+        hasBasicInfo:
+          type: boolean
+          description: 기본 정보 완성 여부 (닉네임, 실명)
+          example: true
+        isComplete:
+          type: boolean
+          description: 프로필 완성 여부
+          example: false
+        missingFields:
+          description: 누락된 필드 목록
+          example:
+            - fullName
+            - introduce
+          type: array
+          items:
+            type: string
+        profile:
+          description: 프로필 정보 (존재하는 경우만)
+          allOf:
+            - $ref: '#/components/schemas/UserProfileDto'
+        completenessScore:
+          type: number
+          description: 완성도 점수 (0-100)
+          example: 75
+        message:
+          type: string
+          description: 응답 메시지
+          example: 프로필 완성도를 확인했습니다.
+      required:
+        - hasProfile
+        - hasBasicInfo
+        - isComplete
+        - missingFields
+        - completenessScore
+        - message
+    ApiResponseUserProfileUpsertResponseDto:
+      type: object
+      properties: {}
+    UserProfileUpsertResponseDto:
+      type: object
+      properties:
+        profile:
+          description: 처리된 사용자 프로필 정보
+          allOf:
+            - $ref: '#/components/schemas/UserProfileDto'
+        isNew:
+          type: boolean
+          description: 새로 생성된 프로필인지 여부
+          example: false
+        updatedFields:
+          description: 수정된 필드 목록 (수정의 경우만)
+          example:
+            - nickname
+            - introduce
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+          description: 응답 메시지
+          example: 사용자 프로필이 성공적으로 수정되었습니다.
+        operation:
+          type: string
+          description: 처리 유형
+          enum:
+            - created
+            - updated
+          example: updated
+      required:
+        - profile
+        - isNew
+        - message
+        - operation
+    ApiResponseBasicProfileCreationResponseDto:
+      type: object
+      properties: {}
+    BasicProfileCreationResponseDto:
+      type: object
+      properties:
+        profile:
+          description: 생성된 기본 프로필 정보
+          allOf:
+            - $ref: '#/components/schemas/UserProfileDto'
+        completeness:
+          type: object
+          description: 프로필 완성도 정보
+          properties:
+            hasBasicInfo:
+              type: boolean
+              description: 기본 정보 완성 여부
+            isComplete:
+              type: boolean
+              description: 프로필 완성 여부
+            missingFields:
+              type: array
+              items:
+                type: string
+              description: 누락된 필드들
+        nextSteps:
+          description: 다음 단계 가이드 메시지
+          example:
+            - 실명을 입력하여 프로필을 완성해주세요.
+            - 프로필 사진을 등록하여 더 친근한 인상을 만들어보세요.
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+          description: 응답 메시지
+          example: 회원가입 기본 프로필이 성공적으로 생성되었습니다.
+        completenessScore:
+          type: number
+          description: 완성도 점수 (0-100)
+          example: 50
+      required:
+        - profile
+        - completeness
+        - nextSteps
+        - message
+        - completenessScore
     ApiResponseTokenResponseDto:
       type: object
       properties: {}
@@ -2711,7 +4051,7 @@ components:
         verificationId:
           type: string
           description: 검증 ID
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: '1703123456789'
         code:
           type: string
           description: 인증 코드 (6자리)
@@ -2834,6 +4174,39 @@ components:
         - verificationId
         - verificationCode
         - newPassword
+    ApiResponseAvailabilityResponseDto:
+      type: object
+      properties: {}
+    AvailabilityResponseDto:
+      type: object
+      properties:
+        available:
+          type: boolean
+          description: 사용 가능 여부
+          example: true
+      required:
+        - available
+    CheckEmailAvailabilityRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 확인할 이메일 주소
+          example: user@example.com
+          format: email
+      required:
+        - email
+    CheckUserIdAvailabilityRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 확인할 사용자 ID
+          example: user123
+          minLength: 4
+          maxLength: 20
+      required:
+        - userId
     MailRequestDto:
       type: object
       properties:
@@ -2902,10 +4275,10 @@ components:
     MailAuditResponseDto:
       type: object
       properties:
-        id:
-          type: string
+        idx:
+          type: number
           description: 메일 감사 ID
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: 1
         mailId:
           type: string
           description: 메일 ID
@@ -2950,7 +4323,7 @@ components:
           description: 언어 설정
           example: ko
       required:
-        - id
+        - idx
         - mailId
         - template
         - recipients

@@ -50,7 +50,7 @@ import type { UserDeletionResponseWrapper } from '../types';
 // @ts-ignore
 import type { UserListResponseWrapper } from '../types';
 // @ts-ignore
-import type { UserResponseWrapper } from '../types';
+import type { UserResponse } from '../types';
 /**
  * UserApi - axios parameter creator
  * @export
@@ -60,18 +60,18 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 사용자 비밀번호를 변경합니다.
          * @summary 비밀번호 변경
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 IDX
          * @param {ChangePasswordRequestDto} changePasswordRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        changePassword: async (id: string, changePasswordRequestDto: ChangePasswordRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('changePassword', 'id', id)
+        changePassword: async (idx: number, changePasswordRequestDto: ChangePasswordRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'idx' is not null or undefined
+            assertParamExists('changePassword', 'idx', idx)
             // verify required parameter 'changePasswordRequestDto' is not null or undefined
             assertParamExists('changePassword', 'changePasswordRequestDto', changePasswordRequestDto)
-            const localVarPath = `/users/{id}/password`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/v1/users/{idx}/password`
+                .replace(`{${"idx"}}`, encodeURIComponent(String(idx)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -107,7 +107,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         createUser: async (createUserRequestDto: CreateUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createUserRequestDto' is not null or undefined
             assertParamExists('createUser', 'createUserRequestDto', createUserRequestDto)
-            const localVarPath = `/users/register`;
+            const localVarPath = `/api/v1/users/register`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -136,18 +136,18 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 사용자를 삭제합니다.
          * @summary 사용자 삭제
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 ID
          * @param {DeleteUserRequestDto} deleteUserRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser: async (id: string, deleteUserRequestDto: DeleteUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteUser', 'id', id)
+        deleteUser: async (idx: number, deleteUserRequestDto: DeleteUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'idx' is not null or undefined
+            assertParamExists('deleteUser', 'idx', idx)
             // verify required parameter 'deleteUserRequestDto' is not null or undefined
             assertParamExists('deleteUser', 'deleteUserRequestDto', deleteUserRequestDto)
-            const localVarPath = `/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/v1/users/{idx}`
+                .replace(`{${"idx"}}`, encodeURIComponent(String(idx)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -184,7 +184,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * @throws {RequiredError}
          */
         getAllUsers: async (page?: number, limit?: number, role?: GetAllUsersRole, status?: GetAllUsersStatus, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/users/userlist`;
+            const localVarPath = `/api/v1/users/userlist`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -224,17 +224,51 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         * ID로 사용자 정보를 조회합니다.
+         * IDX로 사용자 정보를 조회합니다.
          * @summary 사용자 상세 조회
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 인덱스
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserById: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getUserById', 'id', id)
-            const localVarPath = `/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        getUserById: async (idx: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'idx' is not null or undefined
+            assertParamExists('getUserById', 'idx', idx)
+            const localVarPath = `/api/v1/users/{idx}`
+                .replace(`{${"idx"}}`, encodeURIComponent(String(idx)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * ID로 사용자 정보를 조회합니다.
+         * @summary 사용자 상세 조회
+         * @param {string} userId 사용자 ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserByUserId: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getUserByUserId', 'userId', userId)
+            const localVarPath = `/api/v1/users/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -260,18 +294,18 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 사용자 정보를 수정합니다.
          * @summary 사용자 정보 수정
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 인덱스
          * @param {UpdateUserRequestDto} updateUserRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser: async (id: string, updateUserRequestDto: UpdateUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateUser', 'id', id)
+        updateUser: async (idx: number, updateUserRequestDto: UpdateUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'idx' is not null or undefined
+            assertParamExists('updateUser', 'idx', idx)
             // verify required parameter 'updateUserRequestDto' is not null or undefined
             assertParamExists('updateUser', 'updateUserRequestDto', updateUserRequestDto)
-            const localVarPath = `/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/v1/users/{idx}`
+                .replace(`{${"idx"}}`, encodeURIComponent(String(idx)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -310,13 +344,13 @@ export const UserApiFp = function(configuration?: Configuration) {
         /**
          * 사용자 비밀번호를 변경합니다.
          * @summary 비밀번호 변경
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 IDX
          * @param {ChangePasswordRequestDto} changePasswordRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async changePassword(id: string, changePasswordRequestDto: ChangePasswordRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PasswordChangeResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.changePassword(id, changePasswordRequestDto, options);
+        async changePassword(idx: number, changePasswordRequestDto: ChangePasswordRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PasswordChangeResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changePassword(idx, changePasswordRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.changePassword']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -328,7 +362,7 @@ export const UserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUser(createUserRequestDto: CreateUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWrapper>> {
+        async createUser(createUserRequestDto: CreateUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(createUserRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.createUser']?.[localVarOperationServerIndex]?.url;
@@ -337,13 +371,13 @@ export const UserApiFp = function(configuration?: Configuration) {
         /**
          * 사용자를 삭제합니다.
          * @summary 사용자 삭제
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 ID
          * @param {DeleteUserRequestDto} deleteUserRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteUser(id: string, deleteUserRequestDto: DeleteUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDeletionResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(id, deleteUserRequestDto, options);
+        async deleteUser(idx: number, deleteUserRequestDto: DeleteUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDeletionResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(idx, deleteUserRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.deleteUser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -365,28 +399,41 @@ export const UserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * ID로 사용자 정보를 조회합니다.
+         * IDX로 사용자 정보를 조회합니다.
          * @summary 사용자 상세 조회
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 인덱스
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUserById(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserById(id, options);
+        async getUserById(idx: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserById(idx, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.getUserById']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * ID로 사용자 정보를 조회합니다.
+         * @summary 사용자 상세 조회
+         * @param {string} userId 사용자 ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUserByUserId(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserByUserId(userId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.getUserByUserId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 사용자 정보를 수정합니다.
          * @summary 사용자 정보 수정
-         * @param {string} id 사용자 ID
+         * @param {number} idx 사용자 인덱스
          * @param {UpdateUserRequestDto} updateUserRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUser(id: string, updateUserRequestDto: UpdateUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(id, updateUserRequestDto, options);
+        async updateUser(idx: number, updateUserRequestDto: UpdateUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(idx, updateUserRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.updateUser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -409,7 +456,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @throws {RequiredError}
          */
         changePassword(requestParameters: UserApiChangePasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<PasswordChangeResponseWrapper> {
-            return localVarFp.changePassword(requestParameters.id, requestParameters.changePasswordRequestDto, options).then((request) => request(axios, basePath));
+            return localVarFp.changePassword(requestParameters.idx, requestParameters.changePasswordRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 새로운 사용자를 생성합니다.
@@ -418,7 +465,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(requestParameters: UserApiCreateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper> {
+        createUser(requestParameters: UserApiCreateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse> {
             return localVarFp.createUser(requestParameters.createUserRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -429,7 +476,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @throws {RequiredError}
          */
         deleteUser(requestParameters: UserApiDeleteUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserDeletionResponseWrapper> {
-            return localVarFp.deleteUser(requestParameters.id, requestParameters.deleteUserRequestDto, options).then((request) => request(axios, basePath));
+            return localVarFp.deleteUser(requestParameters.idx, requestParameters.deleteUserRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 등록된 모든 사용자 목록을 조회합니다.
@@ -442,14 +489,24 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.getAllUsers(requestParameters.page, requestParameters.limit, requestParameters.role, requestParameters.status, options).then((request) => request(axios, basePath));
         },
         /**
-         * ID로 사용자 정보를 조회합니다.
+         * IDX로 사용자 정보를 조회합니다.
          * @summary 사용자 상세 조회
          * @param {UserApiGetUserByIdRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserById(requestParameters: UserApiGetUserByIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper> {
-            return localVarFp.getUserById(requestParameters.id, options).then((request) => request(axios, basePath));
+        getUserById(requestParameters: UserApiGetUserByIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse> {
+            return localVarFp.getUserById(requestParameters.idx, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * ID로 사용자 정보를 조회합니다.
+         * @summary 사용자 상세 조회
+         * @param {UserApiGetUserByUserIdRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserByUserId(requestParameters: UserApiGetUserByUserIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse> {
+            return localVarFp.getUserByUserId(requestParameters.userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 사용자 정보를 수정합니다.
@@ -458,8 +515,8 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(requestParameters: UserApiUpdateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper> {
-            return localVarFp.updateUser(requestParameters.id, requestParameters.updateUserRequestDto, options).then((request) => request(axios, basePath));
+        updateUser(requestParameters: UserApiUpdateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse> {
+            return localVarFp.updateUser(requestParameters.idx, requestParameters.updateUserRequestDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -488,7 +545,7 @@ export interface UserApiInterface {
      * @throws {RequiredError}
      * @memberof UserApiInterface
      */
-    createUser(requestParameters: UserApiCreateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper>;
+    createUser(requestParameters: UserApiCreateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse>;
 
     /**
      * 사용자를 삭제합니다.
@@ -511,14 +568,24 @@ export interface UserApiInterface {
     getAllUsers(requestParameters?: UserApiGetAllUsersRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserListResponseWrapper>;
 
     /**
-     * ID로 사용자 정보를 조회합니다.
+     * IDX로 사용자 정보를 조회합니다.
      * @summary 사용자 상세 조회
      * @param {UserApiGetUserByIdRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApiInterface
      */
-    getUserById(requestParameters: UserApiGetUserByIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper>;
+    getUserById(requestParameters: UserApiGetUserByIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse>;
+
+    /**
+     * ID로 사용자 정보를 조회합니다.
+     * @summary 사용자 상세 조회
+     * @param {UserApiGetUserByUserIdRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApiInterface
+     */
+    getUserByUserId(requestParameters: UserApiGetUserByUserIdRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse>;
 
     /**
      * 사용자 정보를 수정합니다.
@@ -528,7 +595,7 @@ export interface UserApiInterface {
      * @throws {RequiredError}
      * @memberof UserApiInterface
      */
-    updateUser(requestParameters: UserApiUpdateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponseWrapper>;
+    updateUser(requestParameters: UserApiUpdateUserRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserResponse>;
 
 }
 
@@ -539,11 +606,11 @@ export interface UserApiInterface {
  */
 export interface UserApiChangePasswordRequest {
     /**
-     * 사용자 ID
-     * @type {string}
+     * 사용자 IDX
+     * @type {number}
      * @memberof UserApiChangePassword
      */
-    readonly id: string
+    readonly idx: number
 
     /**
      * 
@@ -575,10 +642,10 @@ export interface UserApiCreateUserRequest {
 export interface UserApiDeleteUserRequest {
     /**
      * 사용자 ID
-     * @type {string}
+     * @type {number}
      * @memberof UserApiDeleteUser
      */
-    readonly id: string
+    readonly idx: number
 
     /**
      * 
@@ -630,11 +697,25 @@ export interface UserApiGetAllUsersRequest {
  */
 export interface UserApiGetUserByIdRequest {
     /**
-     * 사용자 ID
-     * @type {string}
+     * 사용자 인덱스
+     * @type {number}
      * @memberof UserApiGetUserById
      */
-    readonly id: string
+    readonly idx: number
+}
+
+/**
+ * Request parameters for getUserByUserId operation in UserApi.
+ * @export
+ * @interface UserApiGetUserByUserIdRequest
+ */
+export interface UserApiGetUserByUserIdRequest {
+    /**
+     * 사용자 ID
+     * @type {string}
+     * @memberof UserApiGetUserByUserId
+     */
+    readonly userId: string
 }
 
 /**
@@ -644,11 +725,11 @@ export interface UserApiGetUserByIdRequest {
  */
 export interface UserApiUpdateUserRequest {
     /**
-     * 사용자 ID
-     * @type {string}
+     * 사용자 인덱스
+     * @type {number}
      * @memberof UserApiUpdateUser
      */
-    readonly id: string
+    readonly idx: number
 
     /**
      * 
@@ -674,7 +755,7 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @memberof UserApi
      */
     public changePassword(requestParameters: UserApiChangePasswordRequest, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).changePassword(requestParameters.id, requestParameters.changePasswordRequestDto, options).then((request) => request(this.axios, this.basePath));
+        return UserApiFp(this.configuration).changePassword(requestParameters.idx, requestParameters.changePasswordRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -698,7 +779,7 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @memberof UserApi
      */
     public deleteUser(requestParameters: UserApiDeleteUserRequest, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).deleteUser(requestParameters.id, requestParameters.deleteUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+        return UserApiFp(this.configuration).deleteUser(requestParameters.idx, requestParameters.deleteUserRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -714,7 +795,7 @@ export class UserApi extends BaseAPI implements UserApiInterface {
     }
 
     /**
-     * ID로 사용자 정보를 조회합니다.
+     * IDX로 사용자 정보를 조회합니다.
      * @summary 사용자 상세 조회
      * @param {UserApiGetUserByIdRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -722,7 +803,19 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @memberof UserApi
      */
     public getUserById(requestParameters: UserApiGetUserByIdRequest, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getUserById(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+        return UserApiFp(this.configuration).getUserById(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * ID로 사용자 정보를 조회합니다.
+     * @summary 사용자 상세 조회
+     * @param {UserApiGetUserByUserIdRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApi
+     */
+    public getUserByUserId(requestParameters: UserApiGetUserByUserIdRequest, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getUserByUserId(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -734,7 +827,7 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @memberof UserApi
      */
     public updateUser(requestParameters: UserApiUpdateUserRequest, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).updateUser(requestParameters.id, requestParameters.updateUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+        return UserApiFp(this.configuration).updateUser(requestParameters.idx, requestParameters.updateUserRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

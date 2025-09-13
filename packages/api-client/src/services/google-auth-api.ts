@@ -38,7 +38,7 @@ export const GoogleAuthApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         googleCallback: async (redirectUrl?: string, code?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/google/callback`;
+            const localVarPath = `/api/v1/auth/google/callback`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -77,7 +77,7 @@ export const GoogleAuthApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         googleLogin: async (redirectUrl?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/google`;
+            const localVarPath = `/api/v1/auth/google`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

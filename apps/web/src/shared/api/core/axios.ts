@@ -35,16 +35,25 @@ class ApiClient {
     // 요청 인터셉터
     this.instance.interceptors.request.use(
       async (config: InternalAxiosRequestConfig) => {
-        // Next-auth 세션에서 토큰 가져오기
-        const session = await getSession()
-        const csrfToken = await getCsrfToken()
+        // 서버 사이드에서는 세션 정보를 가져오지 않음 (NextAuth v5)
+        if (typeof window !== "undefined") {
+          try {
+            // 클라이언트에서만 Next-auth 세션 정보 가져오기
+            const session = await getSession()
+            const csrfToken = await getCsrfToken()
 
-        if (session?.accessToken) {
-          config.headers.Authorization = `Bearer ${session.accessToken}`
+            if (session?.accessToken) {
+              config.headers.Authorization = `Bearer ${session.accessToken}`
+            }
+            if (csrfToken) {
+              config.headers["X-CSRF-Token"] = csrfToken // 헤더명은 서버 요구에 맞게 조정
+            }
+          } catch (error) {
+            // 세션 가져오기 실패 시 무시 (로그인하지 않은 상태일 수 있음)
+            console.warn("Failed to get session:", error)
+          }
         }
-        if (csrfToken) {
-          config.headers["X-CSRF-Token"] = csrfToken // 헤더명은 서버 요구에 맞게 조정
-        }
+
         // Abort controller 추가
         config.signal = this.abortController.signal
 

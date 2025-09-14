@@ -20,15 +20,16 @@ export const credentialsProvider: Provider = CredentialsProvider({
   id: "credentials",
   name: "credentials",
   credentials: {
-    id: { label: "ID", type: "text" },
-    password: { label: "Password", type: "password" },
+    id: { label: "id", type: "text" },
+    password: { label: "password", type: "password" },
   },
   authorize: async (credentials) => {
+    console.log({ credentials })
     try {
       const { id, password } = signInSchema.parse(credentials)
-
-      const response = await authApiService.login({ 
-        loginRequestDto: { id, password } 
+      console.log({ id, password })
+      const response = await authApiService.login({
+        loginRequestDto: { id, password },
       })
 
       if (response.data?.accessToken) {

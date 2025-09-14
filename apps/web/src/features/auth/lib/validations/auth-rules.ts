@@ -60,14 +60,6 @@ export const LoginRules = z.object({
   password: FieldRules.password(),
 })
 
-/**
- * 로그인 폼 기본값
- */
-export const defaultLoginValues: LoginData = {
-  id: "",
-  password: "",
-}
-
 // 타입 추출
 export type EmailStepData = z.infer<typeof EmailStepRules>
 export type PasswordStepData = z.infer<typeof PasswordStepRules>

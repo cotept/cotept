@@ -10,6 +10,9 @@ export default function Home() {
       <Link href="/auth/signup" className="text-blue-500 hover:underline">
         회원가입
       </Link>
+      <Link href="/auth/signin" className="text-blue-500 hover:underline">
+        로그인
+      </Link>
     </div>
   )
 }

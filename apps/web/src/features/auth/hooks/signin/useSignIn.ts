@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 
 import { signInAction } from "@/features/auth/actions/signin"
 import { LoginData, LoginRules } from "@/features/auth/lib/validations/auth-rules"
+import { createClearInputField } from "@/shared/utils"
 
 const isValidId = (id: string) => LoginRules.pick({ id: true }).safeParse({ id }).success
 const isValidPassword = (password: string) => LoginRules.pick({ password: true }).safeParse({ password }).success
@@ -60,8 +61,13 @@ export function useSignIn() {
     setShowPasswordField(true)
   }
 
+  const clearInputField = createClearInputField(form)
+  const clearIdField = () => clearInputField("id")
+  const clearPasswordField = () => clearInputField("password")
   return {
     form,
+    id,
+    password,
     handleSubmit,
     errors,
     isLoading: isLoading || isSubmitting,
@@ -74,5 +80,8 @@ export function useSignIn() {
 
     showPasswordField,
     handleShowPasswordField,
+
+    clearIdField,
+    clearPasswordField,
   }
 }

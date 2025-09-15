@@ -2,8 +2,9 @@ import { QueryClient, QueryKey } from "@tanstack/react-query"
 import { AxiosPromise } from "axios"
 import { produce } from "immer"
 
-import { handleApiError } from "@/shared/api/core/error-handler"
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 
+import { handleApiError } from "@/shared/api/core/error-handler"
 /**
  * Immer를 사용하여 T 형태의 캐시 데이터를 부분적으로 업데이트하기 위한
  * `queryClient.setQueryData`용 업데이터 함수를 생성합니다.
@@ -135,3 +136,11 @@ export const formatTimeMMSS = (seconds: number) => {
   const remainingSeconds = seconds % 60
   return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
 }
+
+// react-hook-form input clear 함수
+export const createClearInputField =
+  <TFieldValues extends FieldValues>(form: UseFormReturn<TFieldValues>) =>
+  (fieldName: Path<TFieldValues>) => {
+    form.setValue(fieldName, "" as any)
+    form.clearErrors(fieldName)
+  }

@@ -5,7 +5,7 @@ import { Input } from "@repo/shared/components/input"
 import { cn } from "@repo/shared/lib/utils"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@repo/shared/src/components/form"
 
-import { Eye, EyeOff } from "lucide-react"
+import { CircleX, Eye, EyeOff } from "lucide-react"
 
 import { useSignIn } from "../../hooks/signin/useSignIn"
 
@@ -14,6 +14,7 @@ import { InlineLoading } from "@/shared/ui/loading/LoadingSpinner"
 export function SignInForm() {
   const {
     form,
+    id,
     handleSubmit,
     errors,
     isLoading,
@@ -23,6 +24,7 @@ export function SignInForm() {
     isPasswordValid,
     showPasswordField,
     handleShowPasswordField,
+    clearIdField,
   } = useSignIn()
   return (
     <Form {...form}>
@@ -35,24 +37,35 @@ export function SignInForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-semibold text-zinc-300">아이디</FormLabel>
-                <FormControl className="relative">
-                  <Input
-                    {...field}
-                    type="text"
-                    required
-                    placeholder="아이디를 입력해주세요"
-                    autoComplete="off"
-                    autoFocus
-                    className={cn(
-                      "h-auth-input w-full rounded-lg",
-                      "bg-auth-input text-white",
-                      "placeholder:text-sm placeholder:text-zinc-500",
-                      "focus:border-b-2 focus:border-b-purple-500",
-                      "transition-colors duration-200",
-                      errors.id && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      type="text"
+                      required
+                      placeholder="아이디를 입력해주세요"
+                      autoComplete="off"
+                      autoFocus
+                      className={cn(
+                        "h-auth-input w-full rounded-lg",
+                        "bg-auth-input text-white",
+                        "placeholder:text-sm placeholder:text-zinc-500",
+                        "focus:border-b-2 focus:border-b-purple-500",
+                        "transition-colors duration-200",
+                        errors.id && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
+                      )}
+                      disabled={isLoading}
+                    />
+                    {id && (
+                      <button
+                        type="button"
+                        onClick={clearIdField}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-300"
+                        disabled={!id}>
+                        <CircleX size={20} />
+                      </button>
                     )}
-                    disabled={isLoading}
-                  />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

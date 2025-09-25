@@ -1,1 +1,1 @@
-export * from './current-user.decorator';
+export * from "@/shared/infrastructure/decorators/current-user.decorator"

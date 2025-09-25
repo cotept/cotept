@@ -55,7 +55,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    ```
 
 3. **🏗️ 설계** → 헥사고날 아키텍처 레이어별 역할 정의
-
    - Domain → Application → Infrastructure 순서
    - 의존성 방향: Infrastructure → Application → Domain
 
@@ -553,24 +552,24 @@ import { z } from "zod"
 
 export const LoginRequestSchema = z.object({
   email: z.string().email("올바른 이메일 형식이 아닙니다"),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다")
+  password: z
+    .string()
+    .min(8, "비밀번호는 8자 이상이어야 합니다")
     .max(32, "비밀번호는 32자 이하여야 합니다")
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 
-           "영문, 숫자, 특수문자를 모두 포함해야 합니다")
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, "영문, 숫자, 특수문자를 모두 포함해야 합니다"),
 })
 
 export const SignupRequestSchema = LoginRequestSchema.extend({
   confirmPassword: z.string(),
-  nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다")
-    .max(20, "닉네임은 20자 이하여야 합니다"),
+  nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다").max(20, "닉네임은 20자 이하여야 합니다"),
   agreements: z.object({
-    terms: z.boolean().refine(val => val === true, "이용약관에 동의해야 합니다"),
-    privacy: z.boolean().refine(val => val === true, "개인정보처리방침에 동의해야 합니다"),
-    marketing: z.boolean().optional()
-  })
-}).refine(data => data.password === data.confirmPassword, {
+    terms: z.boolean().refine((val) => val === true, "이용약관에 동의해야 합니다"),
+    privacy: z.boolean().refine((val) => val === true, "개인정보처리방침에 동의해야 합니다"),
+    marketing: z.boolean().optional(),
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
   message: "비밀번호가 일치하지 않습니다",
-  path: ["confirmPassword"]
+  path: ["confirmPassword"],
 })
 
 // 타입 추출
@@ -595,9 +594,9 @@ export function useSignup() {
       agreements: {
         terms: false,
         privacy: false,
-        marketing: false
-      }
-    }
+        marketing: false,
+      },
+    },
   })
 
   const handleSubmit = form.handleSubmit((data) => {
@@ -697,11 +696,13 @@ export default function LoginPage() {
 ## Turborepo 최적화 전략
 
 ### 캐시 및 의존성 관리
+
 - **Build 의존성**: 공유 패키지 변경 시 자동 재빌드 (`^build`)
 - **글로벌 캐시**: `.env.*local` 파일 변경 시 전체 무효화
 - **선택적 출력**: `.next/cache/**` 제외로 캐시 크기 최적화
 
 ### 병렬 실행 패턴
+
 ```bash
 # 병렬 개발 서버 시작
 pnpm dev                    # 모든 앱 동시 시작
@@ -715,6 +716,7 @@ pnpm test --filter=@repo/shared  # 공유 패키지 변경 시
 ```
 
 ### 환경별 최적화
+
 ```bash
 # ARM64 Mac 개발 환경
 pnpm infra:up:arm64
@@ -729,6 +731,7 @@ NODE_ENV=production pnpm build --filter=\!@repo/storybook
 ## 모듈 생성 자동화
 
 ### 헥사고날 아키텍처 모듈 생성
+
 ```bash
 # 완전한 모듈 구조 자동 생성
 ./scripts/create-module.sh [module-name]
@@ -747,6 +750,7 @@ NODE_ENV=production pnpm build --filter=\!@repo/storybook
 ```
 
 ### 모듈 템플릿 활용
+
 - **도메인 엔티티**: 비즈니스 로직과 불변성 보장
 - **값 객체**: 유효성 검증과 타입 안전성
 - **유스케이스**: 단일 책임과 의존성 주입
@@ -755,9 +759,11 @@ NODE_ENV=production pnpm build --filter=\!@repo/storybook
 ## Figma Make 워크플로우
 
 ### AI 기반 UI 개발 프로세스
+
 **Figma Make**는 LLM 기반으로 Figma 디자인에서 shadcn + React TypeScript 코드를 자동 생성하는 도구입니다. 생성된 코드를 CotePT 컨벤션에 맞게 변환하는 체계적인 워크플로우를 정의했습니다.
 
 #### 🔄 6단계 변환 프로세스
+
 1. **코드 분석 및 분류** → 복잡도 평가 및 FSD 레이어 매핑
 2. **프로젝트 구조 적용** → 파일 분할 및 Import 경로 수정
 3. **비즈니스 로직 분리** → 커스텀 훅 추출 및 타입 정의
@@ -766,10 +772,11 @@ NODE_ENV=production pnpm build --filter=\!@repo/storybook
 6. **테스트 코드 작성** → 컴포넌트 및 훅 테스트
 
 #### 📋 변환 체크리스트
+
 ```bash
 # 코드 품질 검증
 [ ] TypeScript strict 모드 통과
-[ ] ESLint 규칙 준수  
+[ ] ESLint 규칙 준수
 [ ] Import 절대 경로 적용
 
 # FSD 아키텍처 준수
@@ -785,6 +792,7 @@ NODE_ENV=production pnpm build --filter=\!@repo/storybook
 ```
 
 #### 🏗️ 레이어 매핑 가이드
+
 ```typescript
 // FSD 레이어 결정 로직
 if (재사용성 >= 2회 && 비즈니스로직 == 없음) {
@@ -799,19 +807,21 @@ if (재사용성 >= 2회 && 비즈니스로직 == 없음) {
 ```
 
 #### 📁 변환 예시
+
 ```bash
 # ❌ Figma Make 단일 파일
 App.tsx
 
 # ✅ CotePT FSD 구조
 features/auth/types/auth.types.ts      # 타입 정의
-features/auth/hooks/useSignup.ts       # 비즈니스 로직  
+features/auth/hooks/useSignup.ts       # 비즈니스 로직
 features/auth/apis/mutations.ts        # API 연동
 containers/auth/SignupContainer.tsx    # UI 조합
 app/auth/signup/page.tsx              # 라우트
 ```
 
 #### 🎯 핵심 변환 원칙
+
 - **비즈니스 로직 분리**: useState, 이벤트 핸들러 → 커스텀 훅
 - **API 연동**: 직접 fetch → API 클라이언트 + TanStack Query
 - **에러 핸들링**: console.log → AuthErrorHandler 표준화
@@ -819,3 +829,6 @@ app/auth/signup/page.tsx              # 라우트
 - **타입 안전성**: any 타입 → 명시적 TypeScript 타입 정의
 
 **상세 가이드**: [Figma Make 워크플로우 문서](/docs/development/figma-make-workflow.md)
+
+@context/BACKEND_ENDPOINT_WORKFLOW.md
+@context/INFRASTRUCTURE_ARCHITECTURE.md

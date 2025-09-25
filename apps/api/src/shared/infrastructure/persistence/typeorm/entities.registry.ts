@@ -18,6 +18,7 @@ import {
   MentorProfileTagEntity,
   MentorTagEntity,
 } from "@/modules/mentor/infrastructure/adapter/out/persistence/entities"
+import { OnboardingStateEntity } from "@/modules/onboarding/infrastructure/adapter/out/persistence/entities/onboarding-state.entity"
 import { UserEntity, UserProfileEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
 
 /**
@@ -41,6 +42,7 @@ export const MENTOR_PROFILES_ENTITIES: EntityClassOrSchema[] = [
   MentorTagEntity,
   MentorProfileTagEntity,
 ]
+export const ONBOARDING_ENTITIES: EntityClassOrSchema[] = [OnboardingStateEntity]
 
 /**
  * 모든 TypeORM 엔티티 중앙 관리
@@ -53,6 +55,7 @@ export const ALL_ENTITIES: EntityClassOrSchema[] = [
   ...BAEKJOON_ENTITIES,
   ...MAIL_ENTITIES,
   ...MENTOR_PROFILES_ENTITIES,
+  ...ONBOARDING_ENTITIES,
 ] as const
 
 /**

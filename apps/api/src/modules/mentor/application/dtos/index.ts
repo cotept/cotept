@@ -1,2 +1,5 @@
-export * from './mentor.dto';
-export * from './mentor-tag.dto';
+export * from "./create-mentor-profile.dto"
+export * from "./deletion-response.dto"
+export * from "./mentor-profile.dto"
+export * from "./mentor-tag.dto"
+export * from "./update-mentor-profile.dto"

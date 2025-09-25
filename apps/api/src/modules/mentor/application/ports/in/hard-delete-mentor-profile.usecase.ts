@@ -1,3 +1,3 @@
-export interface HardDeleteMentorProfileUseCase {
-  execute(idx: number): Promise<void>
+export abstract class HardDeleteMentorProfileUseCase {
+  abstract execute(idx: number): Promise<void>
 }

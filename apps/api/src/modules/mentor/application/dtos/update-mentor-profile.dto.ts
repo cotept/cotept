@@ -1,7 +1,6 @@
-import { ApiProperty, PickType } from "@nestjs/swagger"
-import { IsArray, IsBoolean, IsInt, IsOptional, IsString, MaxLength } from "class-validator"
+import { ApiProperty } from "@nestjs/swagger"
 
-import { MentorProfileDto } from "./mentor-profile.dto"
+import { IsArray, IsBoolean, IsInt, IsOptional, IsString, MaxLength } from "class-validator"
 
 /**
  * 멘토 프로필 업데이트 DTO (PUT)

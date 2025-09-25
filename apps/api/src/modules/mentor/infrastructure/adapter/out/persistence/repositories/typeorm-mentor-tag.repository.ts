@@ -18,9 +18,18 @@ export class MentorTagRepository implements MentorTagRepositoryPort {
   ) {}
 
   async findByIds(tagIds: number[]): Promise<MentorTag[]> {
-    const entities = await this.repository.findBy({ idx: In(tagIds) })
+    const entities = await this.repository.findBy({ idx: In(tagIds) });
 
-    return this.mapper.toDomainList(entities)
-    // return entities.map(this.mapper.toDomain)
+    return this.mapper.toDomainList(entities);
+  }
+
+  async findAll(): Promise<MentorTag[]> {
+    const entities = await this.repository.find({
+      order: {
+        category: "ASC",
+        displayOrder: "ASC",
+      },
+    });
+    return this.mapper.toDomainList(entities);
   }
 }

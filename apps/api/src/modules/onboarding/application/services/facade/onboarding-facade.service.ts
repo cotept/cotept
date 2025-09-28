@@ -1,20 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common"
 
-import { TagStatisticsOutputDto } from "@/modules/baekjoon/application/dtos"
-import { BaekjoonResponseMapper } from "@/modules/baekjoon/application/mappers"
 import {
+  TagStatisticsResponseDto,
   VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { CreateMentorProfileDto } from "@/modules/mentor/application/dtos/create-mentor-profile.dto"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
+import { MentorTagsResponseDto } from "@/modules/mentor/application/dtos/mentor-tags.dto"
 import { AnalyzeSkillsDto } from "@/modules/onboarding/application/dtos/analyze-skills.dto"
 import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos/check-mentor-eligibility.dto"
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
 import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/complete-onboarding.dto"
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
-import { MentorTagsResponseDto } from "@/modules/onboarding/application/dtos/mentor-tags.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
 import { AnalyzeSkillsUseCase } from "@/modules/onboarding/application/ports/in/analyze-skills.usecase"
 import { CheckMentorEligibilityUseCase } from "@/modules/onboarding/application/ports/in/check-mentor-eligibility.usecase"
@@ -45,7 +44,6 @@ export class OnboardingFacadeService {
     private readonly createMentorProfileOnboardingUseCase: CreateMentorProfileOnboardingUseCase,
     @Inject(CompleteOnboardingUseCase)
     private readonly completeOnboardingUseCase: CompleteOnboardingUseCase,
-    private readonly baekjoonResponseMapper: BaekjoonResponseMapper,
   ) {}
 
   async createBasicProfile(dto: CreateBasicProfileDto): Promise<UserProfileDto> {
@@ -53,16 +51,14 @@ export class OnboardingFacadeService {
   }
 
   async startBaekjoonVerification(dto: StartBaekjoonVerificationDto): Promise<VerificationStatusResponseDto> {
-    const result = await this.startBaekjoonVerificationUseCase.execute(dto)
-    return this.baekjoonResponseMapper.toVerificationStatusResponse(result, dto.baekjoonHandle)
+    return await this.startBaekjoonVerificationUseCase.execute(dto)
   }
 
   async completeBaekjoonVerification(dto: CompleteBaekjoonVerificationDto): Promise<VerificationResultResponseDto> {
-    const result = await this.completeBaekjoonVerificationUseCase.execute(dto)
-    return this.baekjoonResponseMapper.toVerificationResultResponse(result)
+    return await this.completeBaekjoonVerificationUseCase.execute(dto)
   }
 
-  async analyzeSkills(dto: AnalyzeSkillsDto): Promise<TagStatisticsOutputDto> {
+  async analyzeSkills(dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
     return this.analyzeSkillsUseCase.execute(dto)
   }
 

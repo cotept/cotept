@@ -1,7 +1,4 @@
-import { ApiProperty, PickType } from "@nestjs/swagger"
-
-import { Expose } from "class-transformer"
-import { IsNotEmpty, IsString } from "class-validator"
+import { PickType } from "@nestjs/swagger"
 
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
 
@@ -10,10 +7,8 @@ import { UserProfileDto } from "@/modules/user-profile/application/dtos"
  * UserProfileDto에서 nickname과 profileImageUrl만 사용합니다.
  * userId는 인증 컨텍스트에서 받아옵니다.
  */
-export class CreateBasicProfileDto extends PickType(UserProfileDto, ["nickname", "profileImageUrl"] as const) {
-  @ApiProperty({ description: "사용자 ID", example: "user123" })
-  @Expose()
-  @IsString()
-  @IsNotEmpty()
-  userId: string
-}
+export class CreateBasicProfileDto extends PickType(UserProfileDto, [
+  "userId",
+  "nickname",
+  "profileImageUrl",
+] as const) {}

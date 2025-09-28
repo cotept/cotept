@@ -1,24 +1,23 @@
-import { Inject, Injectable } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 
 import { CreateBasicProfileDto } from "../../dtos/create-basic-profile.dto"
 
 import { CreateBasicProfileUseCase } from "@/modules/onboarding/application/ports/in/create-basic-profile.usecase"
 import { OnboardingStateRepositoryPort } from "@/modules/onboarding/application/ports/out/onboarding-state.repository.port"
 import OnboardingState from "@/modules/onboarding/domain/model/onboarding-state.model"
+import { UserProfileFacadeService } from "@/modules/user-profile/application"
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
-import { CreateUserProfileUseCase } from "@/modules/user-profile/application/ports/in"
 
 @Injectable()
 export class CreateBasicProfileUseCaseImpl implements CreateBasicProfileUseCase {
   constructor(
-    @Inject(CreateUserProfileUseCase)
-    private readonly createUserProfileUseCase: CreateUserProfileUseCase,
+    private readonly userProfileService: UserProfileFacadeService,
     private readonly onboardingStateRepository: OnboardingStateRepositoryPort,
   ) {}
 
   async execute(dto: CreateBasicProfileDto): Promise<UserProfileDto> {
     // 1. 기존 user-profile 모듈을 사용해 프로필 생성
-    const userProfile = await this.createUserProfileUseCase.execute({
+    const userProfile = await this.userProfileService.createProfile({
       userId: dto.userId,
       nickname: dto.nickname,
       profileImageUrl: dto.profileImageUrl,

@@ -1,13 +1,16 @@
-import { Inject, Injectable } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 
+import { MentorTagDto, MentorTagsResponseDto } from "@/modules/mentor/application/dtos"
 import { CreateMentorProfileDto } from "@/modules/mentor/application/dtos/create-mentor-profile.dto"
 import { DeletionResponseDto } from "@/modules/mentor/application/dtos/deletion-response.dto"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
 import { UpdateMentorProfileDto } from "@/modules/mentor/application/dtos/update-mentor-profile.dto"
 import { MentorProfileMapper } from "@/modules/mentor/application/mappers/mentor-profile.mapper"
+import { MentorTagMapper } from "@/modules/mentor/application/mappers/mentor-tag.mapper"
 import { CreateMentorProfileUseCase } from "@/modules/mentor/application/ports/in/create-mentor-profile.usecase"
 import { DeleteMentorProfileUseCase } from "@/modules/mentor/application/ports/in/delete-mentor-profile.usecase"
 import { GetMentorProfileUseCase } from "@/modules/mentor/application/ports/in/get-mentor-profile.usecase"
+import { GetMentorTagsUseCase } from "@/modules/mentor/application/ports/in/get-mentor-tags.usecase"
 import { HardDeleteMentorProfileUseCase } from "@/modules/mentor/application/ports/in/hard-delete-mentor-profile.usecase"
 import { UpdateMentorProfileUseCase } from "@/modules/mentor/application/ports/in/update-mentor-profile.usecase"
 
@@ -18,17 +21,14 @@ import { UpdateMentorProfileUseCase } from "@/modules/mentor/application/ports/i
 @Injectable()
 export class MentorFacadeService {
   constructor(
-    @Inject("GetMentorProfileUseCase")
     private readonly getMentorProfileUseCase: GetMentorProfileUseCase,
-    @Inject("CreateMentorProfileUseCase")
     private readonly createMentorProfileUseCase: CreateMentorProfileUseCase,
-    @Inject("UpdateMentorProfileUseCase")
     private readonly updateMentorProfileUseCase: UpdateMentorProfileUseCase,
-    @Inject("DeleteMentorProfileUseCase")
     private readonly deleteMentorProfileUseCase: DeleteMentorProfileUseCase,
-    @Inject("HardDeleteMentorProfileUseCase")
     private readonly hardDeleteMentorProfileUseCase: HardDeleteMentorProfileUseCase,
-    private readonly responseMapper: MentorProfileMapper,
+    private readonly getMentorTagUseCase: GetMentorTagsUseCase,
+    private readonly responseProfileMapper: MentorProfileMapper,
+    private readonly responseTagMapper: MentorTagMapper,
   ) {}
 
   /**
@@ -36,7 +36,7 @@ export class MentorFacadeService {
    */
   async createMentorProfile(dto: CreateMentorProfileDto): Promise<MentorProfileDto> {
     const newProfile = await this.createMentorProfileUseCase.execute(dto)
-    return this.responseMapper.toDto(newProfile)
+    return this.responseProfileMapper.toDto(newProfile)
   }
 
   /**
@@ -44,7 +44,7 @@ export class MentorFacadeService {
    */
   async updateMentorProfile(idx: number, dto: UpdateMentorProfileDto): Promise<MentorProfileDto> {
     const updatedProfile = await this.updateMentorProfileUseCase.execute(idx, dto)
-    return this.responseMapper.toDto(updatedProfile)
+    return this.responseProfileMapper.toDto(updatedProfile)
   }
 
   /**
@@ -68,7 +68,7 @@ export class MentorFacadeService {
    */
   async getMentorProfileByUserId(userId: string): Promise<MentorProfileDto> {
     const mentorProfile = await this.getMentorProfileUseCase.getByUserId(userId)
-    return this.responseMapper.toDto(mentorProfile)
+    return this.responseProfileMapper.toDto(mentorProfile)
   }
 
   /**
@@ -76,6 +76,22 @@ export class MentorFacadeService {
    */
   async getMentorProfileByIdx(idx: number): Promise<MentorProfileDto> {
     const mentorProfile = await this.getMentorProfileUseCase.getByIdx(idx)
-    return this.responseMapper.toDto(mentorProfile)
+    return this.responseProfileMapper.toDto(mentorProfile)
+  }
+
+  /**
+   * IDX로 멘토 태그 조회
+   */
+  async getMentorTagsByIdx(tagIds: number[]): Promise<MentorTagDto[]> {
+    const mentorTags = await this.getMentorTagUseCase.execute(tagIds)
+    return this.responseTagMapper.toDtoList(mentorTags)
+  }
+
+  /**
+   * 모든 멘토 태그 조회
+   */
+  async getAllMentorTags(): Promise<MentorTagsResponseDto> {
+    const mentorTags = await this.getMentorTagUseCase.executeAllTags()
+    return this.responseTagMapper.toDtoTagsList(mentorTags)
   }
 }

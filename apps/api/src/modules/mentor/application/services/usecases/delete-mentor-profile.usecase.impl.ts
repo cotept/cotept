@@ -6,7 +6,7 @@ import { MentorProfileRepositoryPort } from "@/modules/mentor/application/ports/
 @Injectable()
 export class DeleteMentorProfileUseCaseImpl implements DeleteMentorProfileUseCase {
   constructor(
-    @Inject("MentorProfileRepositoryPort")
+    @Inject(MentorProfileRepositoryPort)
     private readonly mentorProfileRepository: MentorProfileRepositoryPort,
   ) {}
 

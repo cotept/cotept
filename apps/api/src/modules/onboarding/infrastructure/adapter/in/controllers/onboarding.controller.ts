@@ -4,10 +4,12 @@ import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 import { TagStatisticsOutputDto } from "@/modules/baekjoon/application/dtos"
 import {
+  TagStatisticsResponseDto,
   VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
+import { MentorTagsResponseDto } from "@/modules/mentor/application/dtos/mentor-tags.dto"
 import { AnalyzeSkillsDto } from "@/modules/onboarding/application/dtos/analyze-skills.dto"
 import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos/check-mentor-eligibility.dto"
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
@@ -15,7 +17,6 @@ import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/com
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
 import { CreateMentorProfileDto } from "@/modules/onboarding/application/dtos/create-mentor-profile.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
-import { MentorTagsResponseDto } from "@/modules/onboarding/application/dtos/mentor-tags.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
 import { OnboardingFacadeService } from "@/modules/onboarding/application/services/facade/onboarding-facade.service"
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
@@ -88,7 +89,7 @@ export class OnboardingController {
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
   @ApiExternalServiceErrors()
-  async analyzeSkills(@CurrentUserId() userId: string): Promise<TagStatisticsOutputDto> {
+  async analyzeSkills(@CurrentUserId() userId: string): Promise<TagStatisticsResponseDto> {
     const dto: AnalyzeSkillsDto = { userId } // userId를 포함하는 DTO 생성
     return this.facadeService.analyzeSkills(dto)
   }
@@ -117,7 +118,10 @@ export class OnboardingController {
 
   @Post("mentor-profile")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: "온보딩 - 멘토 프로필 생성/업데이트" })
+  @ApiOperation({
+    summary: "온보딩 - 멘토 프로필 생성/업데이트",
+    operationId: "createMentorProfileOnboarding"
+  })
   @ApiOkResponseWrapper(MentorProfileDto, "멘토 프로필이 성공적으로 생성/업데이트되었습니다.")
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()

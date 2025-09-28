@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common"
 
+import { MentorTagsResponseDto } from "@/modules/mentor/application/dtos"
 import { MentorTagDto } from "@/modules/mentor/application/dtos/mentor-tag.dto"
-import MentorTag from "@/modules/mentor/domain/model/mentor-tag"
+import MentorTag, { MentorTagCategory } from "@/modules/mentor/domain/model/mentor-tag"
 
 @Injectable()
 export class MentorTagMapper {
@@ -55,5 +56,17 @@ export class MentorTagMapper {
    */
   toDomainList(dtos: MentorTagDto[]): MentorTag[] {
     return dtos.map((dto) => this.toDomain(dto))
+  }
+
+  toDtoTagsList(mentorTags: MentorTag[]): MentorTagsResponseDto {
+    const jobTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.JOB)
+    const experienceTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.EXPERIENCE)
+    const companyTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.COMPANY)
+
+    return {
+      jobTags: this.toDtoList(jobTags),
+      experienceTags: this.toDtoList(experienceTags),
+      companyTags: this.toDtoList(companyTags),
+    }
   }
 }

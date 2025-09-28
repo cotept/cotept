@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common"
-import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { AnalyzeSkillsUseCase } from "./application/ports/in/analyze-skills.usecase"
 import { CheckMentorEligibilityUseCase } from "./application/ports/in/check-mentor-eligibility.usecase"
@@ -26,10 +25,18 @@ import { TypeOrmOnboardingStateRepository } from "./infrastructure/adapter/out/p
 import { BaekjoonModule } from "@/modules/baekjoon/baekjoon.module"
 import { MentorModule } from "@/modules/mentor/mentor.module"
 import { CreateMentorProfileOnboardingUseCaseImpl } from "@/modules/onboarding/application/services/usecases/create-mentor-profile-onboarding.usecase.impl"
+import { UserModule } from "@/modules/user/user.module"
 import { UserProfileModule } from "@/modules/user-profile/user-profile.module"
+import { DatabaseModule } from "@/shared/infrastructure/persistence/database.module"
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OnboardingStateEntity]), UserProfileModule, BaekjoonModule, MentorModule],
+  imports: [
+    DatabaseModule.forFeature([OnboardingStateEntity]),
+    UserProfileModule,
+    BaekjoonModule,
+    MentorModule,
+    UserModule,
+  ],
   controllers: [OnboardingController],
   providers: [
     OnboardingStateMapper,

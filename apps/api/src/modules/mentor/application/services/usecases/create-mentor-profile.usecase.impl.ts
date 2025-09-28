@@ -5,22 +5,22 @@ import { CreateMentorProfileUseCase } from "@/modules/mentor/application/ports/i
 import { MentorProfileRepositoryPort } from "@/modules/mentor/application/ports/out/mentor-profile-repository.port"
 import { MentorTagRepositoryPort } from "@/modules/mentor/application/ports/out/mentor-tag-repository.port"
 import MentorProfile from "@/modules/mentor/domain/model/mentor-profile"
-import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-repository.port"
+import { UserFacadeService } from "@/modules/user/application/services/facade/user-facade.service"
 
 @Injectable()
 export class CreateMentorProfileUseCaseImpl implements CreateMentorProfileUseCase {
   constructor(
-    @Inject("UserRepositoryPort")
-    private readonly userRepository: UserRepositoryPort,
-    @Inject("MentorProfileRepositoryPort")
+    @Inject(UserFacadeService)
+    private readonly userFacadeService: UserFacadeService,
+    @Inject(MentorProfileRepositoryPort)
     private readonly mentorProfileRepository: MentorProfileRepositoryPort,
-    @Inject("MentorTagRepositoryPort")
+    @Inject(MentorTagRepositoryPort)
     private readonly mentorTagRepository: MentorTagRepositoryPort,
   ) {}
 
   async execute(dto: CreateMentorProfileDto): Promise<MentorProfile> {
     // 1. 사용자 존재 여부 확인
-    const user = await this.userRepository.findByUserId(dto.userId)
+    const user = await this.userFacadeService.getUserByUserId(dto.userId)
     if (!user) {
       throw new NotFoundException(`User with ID ${dto.userId} not found.`)
     }

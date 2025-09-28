@@ -13,7 +13,10 @@ export class MentorProfileController {
   constructor(private readonly mentorFacadeService: MentorFacadeService) {}
 
   @Post()
-  @ApiOperation({ summary: "새 멘토 프로필 생성" })
+  @ApiOperation({
+    summary: "새 멘토 프로필 생성",
+    operationId: "createMentorProfile"
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: "멘토 프로필 생성 성공",

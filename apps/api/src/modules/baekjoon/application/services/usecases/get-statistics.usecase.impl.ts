@@ -22,15 +22,15 @@ export class GetStatisticsUseCaseImpl implements GetStatisticsUseCase {
   private readonly logger = new Logger(GetStatisticsUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonProfileRepositoryPort")
+    @Inject(BaekjoonProfileRepositoryPort)
     private readonly profileRepository: BaekjoonProfileRepositoryPort,
-    @Inject("BaekjoonStatisticsRepositoryPort")
+    @Inject(BaekjoonStatisticsRepositoryPort)
     private readonly statisticsRepository: BaekjoonStatisticsRepositoryPort,
-    @Inject("SolvedAcApiPort")
+    @Inject(SolvedAcApiPort)
     private readonly solvedAcApi: SolvedAcApiPort,
-    @Inject("CachePort")
+    @Inject(CachePort)
     private readonly cacheService: CachePort,
-    @Inject("RateLimitPort")
+    @Inject(RateLimitPort)
     private readonly rateLimitAdapter: RateLimitPort,
     private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}

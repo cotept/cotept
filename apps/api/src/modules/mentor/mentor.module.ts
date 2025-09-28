@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common"
-import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { GetMentorTagsUseCaseImpl } from "./application/services/usecases/get-mentor-tags.usecase.impl"
 import { HardDeleteMentorProfileUseCaseImpl } from "./application/services/usecases/hard-delete-mentor-profile.usecase.impl"
@@ -29,9 +28,11 @@ import { MentorFacadeService } from "@/modules/mentor/application/services/facad
 import { CreateMentorProfileUseCaseImpl } from "@/modules/mentor/application/services/usecases/create-mentor-profile.usecase.impl"
 import { DeleteMentorProfileUseCaseImpl } from "@/modules/mentor/application/services/usecases/delete-mentor-profile.usecase.impl"
 import { GetMentorProfileUseCaseImpl } from "@/modules/mentor/application/services/usecases/get-mentor-profile.usecase.impl"
+import { UserModule } from "@/modules/user/user.module"
+import { DatabaseModule } from "@/shared/infrastructure/persistence/database.module"
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MentorProfileEntity, MentorTagEntity, MentorProfileTagEntity])],
+  imports: [UserModule, DatabaseModule.forFeature([MentorProfileEntity, MentorTagEntity, MentorProfileTagEntity])],
   controllers: [MentorProfileController],
   providers: [
     // Facade
@@ -79,6 +80,6 @@ import { GetMentorProfileUseCaseImpl } from "@/modules/mentor/application/servic
       useClass: GetMentorTagsUseCaseImpl,
     },
   ],
-  exports: [GetMentorProfileUseCase, GetMentorTagsUseCase, MentorProfileMapper, MentorTagMapper],
+  exports: [GetMentorProfileUseCase, GetMentorTagsUseCase, MentorProfileMapper, MentorTagMapper, MentorFacadeService],
 })
 export class MentorModule {}

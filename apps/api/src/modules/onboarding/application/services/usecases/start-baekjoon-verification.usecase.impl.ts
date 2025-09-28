@@ -1,30 +1,29 @@
-import { Inject, Injectable } from "@nestjs/common"
-import { NotFoundException } from "@nestjs/common/exceptions"
+import { Injectable } from "@nestjs/common"
 
 import { StartBaekjoonVerificationDto } from "../../dtos/start-baekjoon-verification.dto"
 import { StartBaekjoonVerificationUseCase } from "../../ports/in/start-baekjoon-verification.usecase"
 
-import { StartVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
-import { StartVerificationUseCase as BaekjoonStartVerificationUseCase } from "@/modules/baekjoon/application/ports/in"
-import { UserProfileRepositoryPort } from "@/modules/user-profile/application/ports"
+import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services"
+import { VerificationStatusResponseDto } from "@/modules/baekjoon/infrastructure/dtos/response"
+import { UserFacadeService } from "@/modules/user/application/services"
+import { UserProfileFacadeService } from "@/modules/user-profile/application"
 
 @Injectable()
 export class StartBaekjoonVerificationUseCaseImpl implements StartBaekjoonVerificationUseCase {
   constructor(
-    @Inject(BaekjoonStartVerificationUseCase)
-    private readonly baekjoonStartVerificationUseCase: BaekjoonStartVerificationUseCase,
-    private readonly userProfileRepository: UserProfileRepositoryPort,
+    private readonly baekjoonService: BaekjoonFacadeService,
+    private readonly userService: UserFacadeService,
+    private readonly userProfileService: UserProfileFacadeService,
   ) {}
 
-  async execute(dto: StartBaekjoonVerificationDto): Promise<StartVerificationOutputDto> {
-    const userProfile = await this.userProfileRepository.findByUserId(dto.userId)
-    if (!userProfile) {
-      throw new NotFoundException(`사용자 ID ${dto.userId}에 대한 사용자 프로필을 찾을 수 없습니다.`)
-    }
+  async execute(dto: StartBaekjoonVerificationDto): Promise<VerificationStatusResponseDto> {
+    const user = await this.userService.getUserByUserId(dto.userId)
+
+    await this.userProfileService.getProfileByUserIdOrThrow(dto.userId)
 
     // 기존 baekjoon 모듈의 유스케이스 호출
-    return this.baekjoonStartVerificationUseCase.execute({
-      email: userProfile.userId, // baekjoon 모듈은 email을 식별자로 사용할 수 있음
+    return this.baekjoonService.startVerification({
+      email: user.email,
       handle: dto.baekjoonHandle,
     })
   }

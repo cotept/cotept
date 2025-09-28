@@ -68,6 +68,11 @@ export class BaekjoonFacadeService {
     return this.responseMapper.toProfileResponse(result, inputDto.userId)
   }
 
+  async getProfileByUserId(userId: string): Promise<BaekjoonProfileResponseDto> {
+    const result = await this.getProfileUseCase.executeByUserId(userId)
+    return this.responseMapper.toProfileResponse(result, userId)
+  }
+
   /**
    * 백준 사용자 태그별 통계 조회
    */

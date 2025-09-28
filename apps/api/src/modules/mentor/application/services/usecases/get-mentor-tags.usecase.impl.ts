@@ -7,11 +7,14 @@ import MentorTag from "@/modules/mentor/domain/model/mentor-tag"
 @Injectable()
 export class GetMentorTagsUseCaseImpl implements GetMentorTagsUseCase {
   constructor(
-    @Inject("MentorTagRepositoryPort")
+    @Inject(MentorTagRepositoryPort)
     private readonly mentorTagRepository: MentorTagRepositoryPort,
   ) {}
 
-  async execute(): Promise<MentorTag[]> {
+  async executeAllTags(): Promise<MentorTag[]> {
     return this.mentorTagRepository.findAll()
+  }
+  async execute(tagIds: number[]): Promise<MentorTag[]> {
+    return this.mentorTagRepository.findByIds(tagIds)
   }
 }

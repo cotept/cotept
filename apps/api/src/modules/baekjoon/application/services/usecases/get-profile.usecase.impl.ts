@@ -19,12 +19,22 @@ export class GetProfileUseCaseImpl implements GetProfileUseCase {
   private readonly logger = new Logger(GetProfileUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonProfileRepositoryPort")
+    @Inject(BaekjoonProfileRepositoryPort)
     private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
-    @Inject("SolvedAcApiPort")
+    @Inject(SolvedAcApiPort)
     private readonly solvedAcApi: SolvedAcApiPort,
     private readonly baekjoonMapper: BaekjoonDomainMapper,
   ) {}
+
+  async executeByUserId(userId: string): Promise<BaekjoonProfileOutputDto> {
+    const existingUser = await this.findExistingUser(userId)
+
+    if (!existingUser) {
+      throw new BadRequestException("존재하지 않는 백준 사용자입니다.")
+    }
+
+    return this.convertToProfileDto(existingUser)
+  }
 
   async execute(inputDto: GetProfileInputDto): Promise<BaekjoonProfileOutputDto> {
     try {

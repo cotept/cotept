@@ -1,32 +1,33 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { NotFoundException } from "@nestjs/common/exceptions"
 
 import { CompleteBaekjoonVerificationDto } from "../../dtos/complete-baekjoon-verification.dto"
 import { CompleteBaekjoonVerificationUseCase } from "../../ports/in/complete-baekjoon-verification.usecase"
 import { OnboardingStateRepositoryPort } from "../../ports/out/onboarding-state.repository.port"
 
-import { CompleteVerificationOutputDto } from "@/modules/baekjoon/application/dtos"
 import { CompleteVerificationUseCase } from "@/modules/baekjoon/application/ports/in"
-import { UserProfileRepositoryPort } from "@/modules/user-profile/application/ports"
+import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services"
+import { VerificationResultResponseDto } from "@/modules/baekjoon/infrastructure/dtos/response"
+import { UserFacadeService } from "@/modules/user/application/services"
+import { UserProfileFacadeService } from "@/modules/user-profile/application"
 
 @Injectable()
 export class CompleteBaekjoonVerificationUseCaseImpl implements CompleteBaekjoonVerificationUseCase {
   constructor(
     @Inject(CompleteVerificationUseCase)
-    private readonly baekjoonCompleteVerificationUseCase: CompleteVerificationUseCase,
     private readonly onboardingStateRepository: OnboardingStateRepositoryPort,
-    private readonly userProfileRepository: UserProfileRepositoryPort,
+    private readonly baekjoonService: BaekjoonFacadeService,
+    private readonly userProfileService: UserProfileFacadeService,
+    private readonly userService: UserFacadeService,
   ) {}
 
-  async execute(dto: CompleteBaekjoonVerificationDto): Promise<CompleteVerificationOutputDto> {
-    const userProfile = await this.userProfileRepository.findByUserId(dto.userId)
-    if (!userProfile) {
-      throw new NotFoundException(`User profile for user ID ${dto.userId} not found.`)
-    }
+  async execute(dto: CompleteBaekjoonVerificationDto): Promise<VerificationResultResponseDto> {
+    const user = await this.userService.getUserByUserId(dto.userId)
+
+    await this.userProfileService.getProfileByUserIdOrThrow(dto.userId)
 
     // 기존 baekjoon 모듈의 유스케이스 호출
-    const result = await this.baekjoonCompleteVerificationUseCase.execute({
-      email: dto.userId,
+    const result = await this.baekjoonService.completeVerification({
+      email: user.email,
       handle: dto.baekjoonHandle,
       sessionId: dto.verificationSessionId,
     })

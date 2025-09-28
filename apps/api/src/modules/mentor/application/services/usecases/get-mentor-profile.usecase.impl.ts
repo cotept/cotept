@@ -7,7 +7,7 @@ import MentorProfile from "@/modules/mentor/domain/model/mentor-profile"
 @Injectable()
 export class GetMentorProfileUseCaseImpl implements GetMentorProfileUseCase {
   constructor(
-    @Inject("MentorProfileRepositoryPort")
+    @Inject(MentorProfileRepositoryPort)
     private readonly mentorProfileRepository: MentorProfileRepositoryPort,
   ) {}
 

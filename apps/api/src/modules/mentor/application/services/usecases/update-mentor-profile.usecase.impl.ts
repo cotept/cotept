@@ -9,9 +9,9 @@ import MentorProfile from "@/modules/mentor/domain/model/mentor-profile"
 @Injectable()
 export class UpdateMentorProfileUseCaseImpl implements UpdateMentorProfileUseCase {
   constructor(
-    @Inject("MentorProfileRepositoryPort")
+    @Inject(MentorProfileRepositoryPort)
     private readonly mentorProfileRepository: MentorProfileRepositoryPort,
-    @Inject("MentorTagRepositoryPort")
+    @Inject(MentorTagRepositoryPort)
     private readonly mentorTagRepository: MentorTagRepositoryPort,
   ) {}
 

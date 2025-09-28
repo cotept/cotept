@@ -26,5 +26,59 @@ export interface VerificationResultResponseDto {
      * @memberof VerificationResultResponseDto
      */
     'success': boolean;
+    /**
+     * 인증 세션 ID
+     * @type {string}
+     * @memberof VerificationResultResponseDto
+     */
+    'sessionId': string;
+    /**
+     * 인증 상태
+     * @type {string}
+     * @memberof VerificationResultResponseDto
+     */
+    'status': Status;
+    /**
+     * 결과 메시지
+     * @type {string}
+     * @memberof VerificationResultResponseDto
+     */
+    'message': string;
+    /**
+     * 현재 시도 횟수
+     * @type {number}
+     * @memberof VerificationResultResponseDto
+     */
+    'attempts': number;
+    /**
+     * 남은 시도 횟수
+     * @type {number}
+     * @memberof VerificationResultResponseDto
+     */
+    'remainingAttempts': number;
+    /**
+     * 완료 시간 (성공한 경우에만)
+     * @type {string}
+     * @memberof VerificationResultResponseDto
+     */
+    'completedAt'?: string;
+    /**
+     * 실패 사유 (실패한 경우에만)
+     * @type {string}
+     * @memberof VerificationResultResponseDto
+     */
+    'errorReason'?: string;
 }
+
+/**
+    * @export
+    * @enum {string}
+    */
+export enum Status {
+    pending = 'PENDING',
+    completed = 'COMPLETED',
+    failed = 'FAILED',
+    expired = 'EXPIRED'
+}
+
 

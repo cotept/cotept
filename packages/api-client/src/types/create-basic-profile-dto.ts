@@ -17,32 +17,26 @@
 /**
  * 
  * @export
- * @interface UpdateUserRequestDto
+ * @interface CreateBasicProfileDto
  */
-export interface UpdateUserRequestDto {
+export interface CreateBasicProfileDto {
     /**
      * 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
      * @type {string}
-     * @memberof UpdateUserRequestDto
+     * @memberof CreateBasicProfileDto
      */
-    'userId'?: string;
+    'userId': string;
     /**
-     * 사용자 이메일
+     * 닉네임 (2~50자, 한글/영문만 허용)
      * @type {string}
-     * @memberof UpdateUserRequestDto
+     * @memberof CreateBasicProfileDto
      */
-    'email'?: string;
+    'nickname': string;
     /**
-     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+     * 프로필 이미지 URL
      * @type {string}
-     * @memberof UpdateUserRequestDto
+     * @memberof CreateBasicProfileDto
      */
-    'name'?: string;
-    /**
-     * 전화번호 (- 없이 숫자만)
-     * @type {string}
-     * @memberof UpdateUserRequestDto
-     */
-    'phoneNumber'?: string;
+    'profileImageUrl'?: string;
 }
 

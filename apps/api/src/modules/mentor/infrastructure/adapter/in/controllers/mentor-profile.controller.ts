@@ -7,12 +7,12 @@ import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profi
 import { UpdateMentorProfileDto } from "@/modules/mentor/application/dtos/update-mentor-profile.dto"
 import { MentorFacadeService } from "@/modules/mentor/application/services/facade/mentor-facade.service"
 
-@ApiTags("멘토 프로필")
-@Controller("mentor/profile")
+@ApiTags("Mentor")
+@Controller("mentor")
 export class MentorProfileController {
   constructor(private readonly mentorFacadeService: MentorFacadeService) {}
 
-  @Post()
+  @Post("profile")
   @ApiOperation({
     summary: "새 멘토 프로필 생성",
     operationId: "createMentorProfile"
@@ -29,7 +29,7 @@ export class MentorProfileController {
     return this.mentorFacadeService.createMentorProfile(dto)
   }
 
-  @Put(":idx")
+  @Put("profile/:idx")
   @ApiOperation({ summary: "멘토 프로필 정보 수정 (PUT)" })
   @ApiParam({ name: "idx", type: "number", description: "멘토 프로필 IDX" })
   @ApiResponse({
@@ -46,7 +46,7 @@ export class MentorProfileController {
     return this.mentorFacadeService.updateMentorProfile(idx, dto)
   }
 
-  @Delete(":idx")
+  @Delete("profile/:idx")
   @ApiOperation({ summary: "멘토 프로필 비활성화 (논리적 삭제)" })
   @ApiParam({ name: "idx", type: "number", description: "멘토 프로필 IDX" })
   @ApiResponse({
@@ -59,7 +59,7 @@ export class MentorProfileController {
     return this.mentorFacadeService.deleteMentorProfile(idx)
   }
 
-  @Delete(":idx/permanent")
+  @Delete("profile/:idx/permanent")
   @ApiOperation({ summary: "멘토 프로필 영구 삭제 (물리적 삭제)" })
   @ApiParam({ name: "idx", type: "number", description: "멘토 프로필 IDX" })
   @ApiResponse({
@@ -72,7 +72,7 @@ export class MentorProfileController {
     return this.mentorFacadeService.hardDeleteMentorProfile(idx)
   }
 
-  @Get(":userId")
+  @Get("profile/:userId")
   @ApiOperation({
     summary: "사용자 ID로 멘토 프로필 조회",
     description: "특정 사용자의 멘토 프로필 정보를 조회합니다.",

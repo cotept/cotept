@@ -12,11 +12,11 @@ package.json
 services/app-api.ts
 services/auth-api.ts
 services/baekjoon-api.ts
-services/default-api.ts
 services/github-auth-api.ts
 services/google-auth-api.ts
 services/mail-api.ts
 services/mail-audit-api.ts
+services/mentor-api.ts
 services/onboarding-api.ts
 services/user-api.ts
 services/user-profile-api.ts

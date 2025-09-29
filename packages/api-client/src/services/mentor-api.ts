@@ -30,10 +30,10 @@ import type { MentorProfileDto } from '../types';
 // @ts-ignore
 import type { UpdateMentorProfileDto } from '../types';
 /**
- * DefaultApi - axios parameter creator
+ * MentorApi - axios parameter creator
  * @export
  */
-export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
+export const MentorApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
@@ -217,11 +217,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * DefaultApi - functional programming interface
+ * MentorApi - functional programming interface
  * @export
  */
-export const DefaultApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
+export const MentorApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = MentorApiAxiosParamCreator(configuration)
     return {
         /**
          * 
@@ -233,7 +233,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         async createMentorProfile(createMentorProfileDto: CreateMentorProfileDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorProfileDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createMentorProfile(createMentorProfileDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.createMentorProfile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MentorApi.createMentorProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -246,7 +246,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         async deleteMentorProfile(idx: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeletionResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMentorProfile(idx, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.deleteMentorProfile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MentorApi.deleteMentorProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -259,7 +259,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         async getMentorProfile(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorProfileDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMentorProfile(userId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getMentorProfile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MentorApi.getMentorProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -272,7 +272,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         async hardDeleteMentorProfile(idx: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeletionResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hardDeleteMentorProfile(idx, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.hardDeleteMentorProfile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MentorApi.hardDeleteMentorProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -286,272 +286,272 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         async updateMentorProfile(idx: number, updateMentorProfileDto: UpdateMentorProfileDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorProfileDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateMentorProfile(idx, updateMentorProfileDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.updateMentorProfile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MentorApi.updateMentorProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * DefaultApi - factory interface
+ * MentorApi - factory interface
  * @export
  */
-export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = DefaultApiFp(configuration)
+export const MentorApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = MentorApiFp(configuration)
     return {
         /**
          * 
          * @summary 새 멘토 프로필 생성
-         * @param {DefaultApiCreateMentorProfileRequest} requestParameters Request parameters.
+         * @param {MentorApiCreateMentorProfileRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMentorProfile(requestParameters: DefaultApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
+        createMentorProfile(requestParameters: MentorApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
             return localVarFp.createMentorProfile(requestParameters.createMentorProfileDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary 멘토 프로필 비활성화 (논리적 삭제)
-         * @param {DefaultApiDeleteMentorProfileRequest} requestParameters Request parameters.
+         * @param {MentorApiDeleteMentorProfileRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteMentorProfile(requestParameters: DefaultApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto> {
+        deleteMentorProfile(requestParameters: MentorApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto> {
             return localVarFp.deleteMentorProfile(requestParameters.idx, options).then((request) => request(axios, basePath));
         },
         /**
          * 특정 사용자의 멘토 프로필 정보를 조회합니다.
          * @summary 사용자 ID로 멘토 프로필 조회
-         * @param {DefaultApiGetMentorProfileRequest} requestParameters Request parameters.
+         * @param {MentorApiGetMentorProfileRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMentorProfile(requestParameters: DefaultApiGetMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
+        getMentorProfile(requestParameters: MentorApiGetMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
             return localVarFp.getMentorProfile(requestParameters.userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary 멘토 프로필 영구 삭제 (물리적 삭제)
-         * @param {DefaultApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
+         * @param {MentorApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hardDeleteMentorProfile(requestParameters: DefaultApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto> {
+        hardDeleteMentorProfile(requestParameters: MentorApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto> {
             return localVarFp.hardDeleteMentorProfile(requestParameters.idx, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary 멘토 프로필 정보 수정 (PUT)
-         * @param {DefaultApiUpdateMentorProfileRequest} requestParameters Request parameters.
+         * @param {MentorApiUpdateMentorProfileRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateMentorProfile(requestParameters: DefaultApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
+        updateMentorProfile(requestParameters: MentorApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto> {
             return localVarFp.updateMentorProfile(requestParameters.idx, requestParameters.updateMentorProfileDto, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * DefaultApi - interface
+ * MentorApi - interface
  * @export
- * @interface DefaultApi
+ * @interface MentorApi
  */
-export interface DefaultApiInterface {
+export interface MentorApiInterface {
     /**
      * 
      * @summary 새 멘토 프로필 생성
-     * @param {DefaultApiCreateMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiCreateMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApiInterface
+     * @memberof MentorApiInterface
      */
-    createMentorProfile(requestParameters: DefaultApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
+    createMentorProfile(requestParameters: MentorApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
 
     /**
      * 
      * @summary 멘토 프로필 비활성화 (논리적 삭제)
-     * @param {DefaultApiDeleteMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiDeleteMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApiInterface
+     * @memberof MentorApiInterface
      */
-    deleteMentorProfile(requestParameters: DefaultApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto>;
+    deleteMentorProfile(requestParameters: MentorApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto>;
 
     /**
      * 특정 사용자의 멘토 프로필 정보를 조회합니다.
      * @summary 사용자 ID로 멘토 프로필 조회
-     * @param {DefaultApiGetMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiGetMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApiInterface
+     * @memberof MentorApiInterface
      */
-    getMentorProfile(requestParameters: DefaultApiGetMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
+    getMentorProfile(requestParameters: MentorApiGetMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
 
     /**
      * 
      * @summary 멘토 프로필 영구 삭제 (물리적 삭제)
-     * @param {DefaultApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApiInterface
+     * @memberof MentorApiInterface
      */
-    hardDeleteMentorProfile(requestParameters: DefaultApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto>;
+    hardDeleteMentorProfile(requestParameters: MentorApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<DeletionResponseDto>;
 
     /**
      * 
      * @summary 멘토 프로필 정보 수정 (PUT)
-     * @param {DefaultApiUpdateMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiUpdateMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApiInterface
+     * @memberof MentorApiInterface
      */
-    updateMentorProfile(requestParameters: DefaultApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
+    updateMentorProfile(requestParameters: MentorApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileDto>;
 
 }
 
 /**
- * Request parameters for createMentorProfile operation in DefaultApi.
+ * Request parameters for createMentorProfile operation in MentorApi.
  * @export
- * @interface DefaultApiCreateMentorProfileRequest
+ * @interface MentorApiCreateMentorProfileRequest
  */
-export interface DefaultApiCreateMentorProfileRequest {
+export interface MentorApiCreateMentorProfileRequest {
     /**
      * 
      * @type {CreateMentorProfileDto}
-     * @memberof DefaultApiCreateMentorProfile
+     * @memberof MentorApiCreateMentorProfile
      */
     readonly createMentorProfileDto: CreateMentorProfileDto
 }
 
 /**
- * Request parameters for deleteMentorProfile operation in DefaultApi.
+ * Request parameters for deleteMentorProfile operation in MentorApi.
  * @export
- * @interface DefaultApiDeleteMentorProfileRequest
+ * @interface MentorApiDeleteMentorProfileRequest
  */
-export interface DefaultApiDeleteMentorProfileRequest {
+export interface MentorApiDeleteMentorProfileRequest {
     /**
      * 멘토 프로필 IDX
      * @type {number}
-     * @memberof DefaultApiDeleteMentorProfile
+     * @memberof MentorApiDeleteMentorProfile
      */
     readonly idx: number
 }
 
 /**
- * Request parameters for getMentorProfile operation in DefaultApi.
+ * Request parameters for getMentorProfile operation in MentorApi.
  * @export
- * @interface DefaultApiGetMentorProfileRequest
+ * @interface MentorApiGetMentorProfileRequest
  */
-export interface DefaultApiGetMentorProfileRequest {
+export interface MentorApiGetMentorProfileRequest {
     /**
      * 조회할 사용자의 ID
      * @type {string}
-     * @memberof DefaultApiGetMentorProfile
+     * @memberof MentorApiGetMentorProfile
      */
     readonly userId: string
 }
 
 /**
- * Request parameters for hardDeleteMentorProfile operation in DefaultApi.
+ * Request parameters for hardDeleteMentorProfile operation in MentorApi.
  * @export
- * @interface DefaultApiHardDeleteMentorProfileRequest
+ * @interface MentorApiHardDeleteMentorProfileRequest
  */
-export interface DefaultApiHardDeleteMentorProfileRequest {
+export interface MentorApiHardDeleteMentorProfileRequest {
     /**
      * 멘토 프로필 IDX
      * @type {number}
-     * @memberof DefaultApiHardDeleteMentorProfile
+     * @memberof MentorApiHardDeleteMentorProfile
      */
     readonly idx: number
 }
 
 /**
- * Request parameters for updateMentorProfile operation in DefaultApi.
+ * Request parameters for updateMentorProfile operation in MentorApi.
  * @export
- * @interface DefaultApiUpdateMentorProfileRequest
+ * @interface MentorApiUpdateMentorProfileRequest
  */
-export interface DefaultApiUpdateMentorProfileRequest {
+export interface MentorApiUpdateMentorProfileRequest {
     /**
      * 멘토 프로필 IDX
      * @type {number}
-     * @memberof DefaultApiUpdateMentorProfile
+     * @memberof MentorApiUpdateMentorProfile
      */
     readonly idx: number
 
     /**
      * 
      * @type {UpdateMentorProfileDto}
-     * @memberof DefaultApiUpdateMentorProfile
+     * @memberof MentorApiUpdateMentorProfile
      */
     readonly updateMentorProfileDto: UpdateMentorProfileDto
 }
 
 /**
- * DefaultApi - object-oriented interface
+ * MentorApi - object-oriented interface
  * @export
- * @class DefaultApi
+ * @class MentorApi
  * @extends {BaseAPI}
  */
-export class DefaultApi extends BaseAPI implements DefaultApiInterface {
+export class MentorApi extends BaseAPI implements MentorApiInterface {
     /**
      * 
      * @summary 새 멘토 프로필 생성
-     * @param {DefaultApiCreateMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiCreateMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof MentorApi
      */
-    public createMentorProfile(requestParameters: DefaultApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).createMentorProfile(requestParameters.createMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
+    public createMentorProfile(requestParameters: MentorApiCreateMentorProfileRequest, options?: RawAxiosRequestConfig) {
+        return MentorApiFp(this.configuration).createMentorProfile(requestParameters.createMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary 멘토 프로필 비활성화 (논리적 삭제)
-     * @param {DefaultApiDeleteMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiDeleteMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof MentorApi
      */
-    public deleteMentorProfile(requestParameters: DefaultApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).deleteMentorProfile(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
+    public deleteMentorProfile(requestParameters: MentorApiDeleteMentorProfileRequest, options?: RawAxiosRequestConfig) {
+        return MentorApiFp(this.configuration).deleteMentorProfile(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 특정 사용자의 멘토 프로필 정보를 조회합니다.
      * @summary 사용자 ID로 멘토 프로필 조회
-     * @param {DefaultApiGetMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiGetMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof MentorApi
      */
-    public getMentorProfile(requestParameters: DefaultApiGetMentorProfileRequest, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getMentorProfile(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
+    public getMentorProfile(requestParameters: MentorApiGetMentorProfileRequest, options?: RawAxiosRequestConfig) {
+        return MentorApiFp(this.configuration).getMentorProfile(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary 멘토 프로필 영구 삭제 (물리적 삭제)
-     * @param {DefaultApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiHardDeleteMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof MentorApi
      */
-    public hardDeleteMentorProfile(requestParameters: DefaultApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).hardDeleteMentorProfile(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
+    public hardDeleteMentorProfile(requestParameters: MentorApiHardDeleteMentorProfileRequest, options?: RawAxiosRequestConfig) {
+        return MentorApiFp(this.configuration).hardDeleteMentorProfile(requestParameters.idx, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary 멘토 프로필 정보 수정 (PUT)
-     * @param {DefaultApiUpdateMentorProfileRequest} requestParameters Request parameters.
+     * @param {MentorApiUpdateMentorProfileRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof MentorApi
      */
-    public updateMentorProfile(requestParameters: DefaultApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).updateMentorProfile(requestParameters.idx, requestParameters.updateMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
+    public updateMentorProfile(requestParameters: MentorApiUpdateMentorProfileRequest, options?: RawAxiosRequestConfig) {
+        return MentorApiFp(this.configuration).updateMentorProfile(requestParameters.idx, requestParameters.updateMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

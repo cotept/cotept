@@ -3297,7 +3297,7 @@ paths:
           description: 이미 멘토 프로필이 존재함
       summary: 새 멘토 프로필 생성
       tags: &ref_8
-        - 멘토 프로필
+        - Mentor
   /api/v1/mentor/profile/{idx}:
     put:
       operationId: updateMentorProfile

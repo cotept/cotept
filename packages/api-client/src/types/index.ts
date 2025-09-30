@@ -1,3 +1,4 @@
+export * from './analyze-skills-dto';
 export * from './auth-type';
 export * from './availability-response-dto';
 export * from './availability-response-wrapper';
@@ -9,8 +10,10 @@ export * from './basic-profile-creation-response-wrapper';
 export * from './boolean-response';
 export * from './change-password-request-dto';
 export * from './check-email-availability-request-dto';
+export * from './check-mentor-eligibility-dto';
 export * from './check-user-id-availability-request-dto';
 export * from './complete-baekjoon-verification-dto';
+export * from './complete-onboarding-dto';
 export * from './complete-verification-request-dto';
 export * from './confirm-social-link-request-dto';
 export * from './create-basic-profile-dto';

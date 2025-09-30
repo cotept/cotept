@@ -15,9 +15,14 @@ export const userQueries = {
   }),
 
   // 상세 쿼리
-  detail: (id: string) => ({
+  detail: (idx: number) => ({
+    queryKey: userKeys.detail(idx).queryKey,
+    queryFn: () => userApiService.getUserById({ idx }),
+  }),
+
+  detailBy: (id: string) => ({
     queryKey: userKeys.detail(id).queryKey,
-    queryFn: () => userApiService.getUserById({ id }),
+    queryFn: () => userApiService.getUserByUserId({ userId: id }),
   }),
 } as const
 
@@ -31,13 +36,13 @@ export function useUsers(
 }
 
 // 사용자 상세 조회 훅
-export function useUser(id: string, options?: UseQueryOptions<any, Error, any, any>) {
-  const query = userQueries.detail(id)
+export function useUser(idx: number, options?: UseQueryOptions<any, Error, any, any>) {
+  const query = userQueries.detail(idx)
   return useQuery({ ...query, ...options })
 }
 
 // Prefetch 헬퍼
-export function prefetchUser(queryClient: QueryClient, id: string) {
-  const query = userQueries.detail(id)
+export function prefetchUser(queryClient: QueryClient, idx: number) {
+  const query = userQueries.detail(idx)
   return queryClient.prefetchQuery(query)
 }

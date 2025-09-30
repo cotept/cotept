@@ -89,8 +89,7 @@ export class OnboardingController {
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
   @ApiExternalServiceErrors()
-  async analyzeSkills(@CurrentUserId() userId: string): Promise<TagStatisticsResponseDto> {
-    const dto: AnalyzeSkillsDto = { userId } // userId를 포함하는 DTO 생성
+  async analyzeSkills(@Body() dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
     return this.facadeService.analyzeSkills(dto)
   }
 
@@ -101,8 +100,7 @@ export class OnboardingController {
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
-  async checkMentorEligibility(@CurrentUserId() userId: string): Promise<MentorEligibilityDto> {
-    const dto: CheckMentorEligibilityDto = { userId } // userId를 포함하는 DTO 생성
+  async checkMentorEligibility(@Body() dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
     return this.facadeService.checkMentorEligibility(dto)
   }
 
@@ -120,7 +118,7 @@ export class OnboardingController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: "온보딩 - 멘토 프로필 생성/업데이트",
-    operationId: "createMentorProfileOnboarding"
+    operationId: "createMentorProfileOnboarding",
   })
   @ApiOkResponseWrapper(MentorProfileDto, "멘토 프로필이 성공적으로 생성/업데이트되었습니다.")
   @ApiStandardErrors()
@@ -143,8 +141,7 @@ export class OnboardingController {
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "온보딩 상태를 찾을 수 없습니다." })
   @ApiConflictResponse({ description: "온보딩이 아직 완료되지 않았습니다." })
-  async completeOnboarding(@CurrentUserId() userId: string): Promise<boolean> {
-    const dto: CompleteOnboardingDto = { userId } // userId를 포함하는 DTO 생성
+  async completeOnboarding(@Body() dto: CompleteOnboardingDto): Promise<boolean> {
     return this.facadeService.completeOnboarding(dto)
   }
 }

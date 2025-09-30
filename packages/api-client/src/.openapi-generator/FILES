@@ -22,6 +22,7 @@ services/user-api.ts
 services/user-profile-api.ts
 tsconfig.esm.json
 tsconfig.json
+types/analyze-skills-dto.ts
 types/auth-type.ts
 types/availability-response-dto.ts
 types/availability-response-wrapper.ts
@@ -33,8 +34,10 @@ types/basic-profile-creation-response-wrapper.ts
 types/boolean-response.ts
 types/change-password-request-dto.ts
 types/check-email-availability-request-dto.ts
+types/check-mentor-eligibility-dto.ts
 types/check-user-id-availability-request-dto.ts
 types/complete-baekjoon-verification-dto.ts
+types/complete-onboarding-dto.ts
 types/complete-verification-request-dto.ts
 types/confirm-social-link-request-dto.ts
 types/create-basic-profile-dto.ts

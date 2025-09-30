@@ -3780,6 +3780,12 @@ paths:
     post:
       operationId: analyzeSkills
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeSkillsDto'
       responses:
         '200':
           description: 실력 분석이 성공적으로 완료되었습니다.
@@ -3915,6 +3921,12 @@ paths:
     get:
       operationId: checkMentorEligibility
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckMentorEligibilityDto'
       responses:
         '200':
           description: 멘토 자격 요건을 성공적으로 확인했습니다.
@@ -4182,6 +4194,12 @@ paths:
     post:
       operationId: completeOnboarding
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteOnboardingDto'
       responses:
         '200':
           description: 온보딩이 성공적으로 완료되었습니다.
@@ -6379,6 +6397,15 @@ components:
         - totalSolvedCount
         - tierStats
         - lastSynced
+    AnalyzeSkillsDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 ID
+          example: user123
+      required:
+        - userId
     ApiResponseMentorEligibilityDto:
       type: object
       properties: {}
@@ -6401,6 +6428,15 @@ components:
         - isEligible
         - currentTier
         - requirement
+    CheckMentorEligibilityDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 ID
+          example: user123
+      required:
+        - userId
     ApiResponseMentorTagsResponseDto:
       type: object
       properties: {}
@@ -6435,6 +6471,15 @@ components:
     Boolean:
       type: object
       properties: {}
+    CompleteOnboardingDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 ID
+          example: user123
+      required:
+        - userId
     StartVerificationRequestDto:
       type: object
       properties:

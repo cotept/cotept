@@ -24,5 +24,6 @@
   "allowUnicodeIdentifiers": false,
   "prependFormOrBodyParameters": false,
   "useSquareBracketsInArrayNames": false,
-  "withoutPrefixEnums": true
+  "withoutPrefixEnums": true,
+  "parameterType": "object"
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 
-import { objectstorage } from "oci-sdk"
+import * as objectstorage from "oci-objectstorage"
 import { Readable } from "stream"
 
 import { OciClientFactory } from "../clients/oci-client.factory"

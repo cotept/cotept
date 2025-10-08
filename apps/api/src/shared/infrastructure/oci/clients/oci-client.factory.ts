@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
-import { common, objectstorage } from "oci-sdk"
+import * as common from "oci-common"
+import * as objectstorage from "oci-objectstorage"
 
 import type { OciConfig, OCIObjectStorageConfig } from "@/configs/oci/oci.config"
 

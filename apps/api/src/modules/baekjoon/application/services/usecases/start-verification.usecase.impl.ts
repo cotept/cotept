@@ -32,13 +32,13 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
   private readonly SESSION_TTL = 5 * 60 // 5분
 
   constructor(
-    @Inject("BaekjoonProfileRepositoryPort")
+    @Inject(BaekjoonProfileRepositoryPort)
     private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
-    @Inject("SolvedAcApiPort")
+    @Inject(SolvedAcApiPort)
     private readonly solvedAcApi: SolvedAcApiPort,
-    @Inject("RateLimitPort")
+    @Inject(RateLimitPort)
     private readonly rateLimitAdapter: RateLimitPort,
-    @Inject("CachePort")
+    @Inject(CachePort)
     private readonly cacheAdapter: CachePort,
 
     private readonly baekjoonMapper: BaekjoonDomainMapper,

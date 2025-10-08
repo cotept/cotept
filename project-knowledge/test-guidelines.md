@@ -10,8 +10,9 @@
 
 ## 모든 테스트의 전제
 
-- **내부 구현 사항을 자세히 테스트하지 않습니다.**
-- **내부 구현 사항은 자주 변경되기 때문에 실행 결과를 테스트하는 데 집중합니다.**
+- **테스트는 '무엇을' 하는지 검증하며, '어떻게' 하는지는 검증하지 않습니다 (Test "What", Not "How").**
+- 내부 구현 사항은 자주 변경되기 때문에, 오직 **테스트 대상 함수의 최종 반환 값(Return Value)과 상태 변화(State Change)만을 검증**하는 것을 원칙으로 합니다.
+- 의존성 객체(Mock)의 특정 메서드가 호출되었는지(`toHaveBeenCalled`) 여부나, 어떤 인자로 호출되었는지(`toHaveBeenCalledWith`)를 검증하는 것은 '어떻게'를 테스트하는 대표적인 예시입니다. **이러한 내부 상호작용(Interaction) 검증은 리팩토링을 방해하므로 지양합니다.**
 
 ## 좋은 테스트의 기본 원칙: FIRST
 
@@ -129,6 +130,19 @@
 
 - afterAll, afterEach
 - 실행 결과를 검증합니다.
+
+**Best Practice**: `Then` 단계에서는 `When` 단계에서 실행한 함수의 **최종 결과**가 `Given` 단계에서 준비한 예상 값과 일치하는지만을 확인해야 합니다.
+
+- **좋은 예시 (Good ✅):**
+  ```typescript
+  expect(result).toEqual(expectedResult);
+  ```
+- **지양할 예시 (Bad ❌):**
+  ```typescript
+  // 내부 구현을 테스트하므로 지양합니다.
+  expect(mockRepository.save).toHaveBeenCalled();
+  expect(mockLogger.log).toHaveBeenCalledWith("some message");
+  ```
 
 ## 테스트 코드 구성 요소: Describe-It-Expect
 

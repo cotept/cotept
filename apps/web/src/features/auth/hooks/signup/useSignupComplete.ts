@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation"
 
 import { UserRole } from "@repo/api-client/src/types/user-role"
 
+import type { UserApiCreateUserRequest } from "@repo/api-client/src"
+
 import { SignupData, validateFinalCompletion } from "@/features/auth/lib/validations/auth-rules"
 import { useSignupUser } from "@/features/user/api/mutations"
-import { CreateUserParams } from "@/shared/types/user.type"
 
 interface UseSignupCompleteProps {
   signupData: SignupData
@@ -51,7 +52,7 @@ export function useSignupComplete({ signupData, onComplete }: UseSignupCompleteP
       role: UserRole.mentee, // 기본값은 멘티
     }
 
-    const createUserData: CreateUserParams = [{ createUserRequestDto }]
+    const createUserData: UserApiCreateUserRequest = { createUserRequestDto }
 
     // 4단계: 회원가입 API 호출
     signupUser(createUserData, {

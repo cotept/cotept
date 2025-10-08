@@ -9,4 +9,5 @@ export abstract class GetProfileUseCase {
    * 백준 사용자 프로필을 조회합니다
    */
   abstract execute(inputDto: GetProfileInputDto): Promise<BaekjoonProfileOutputDto>
+  abstract executeByUserId(userId: string): Promise<BaekjoonProfileOutputDto>
 }

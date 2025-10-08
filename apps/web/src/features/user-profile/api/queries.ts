@@ -1,12 +1,8 @@
+import { type UserProfileCompletenessResponseWrapper, type UserProfileResponse } from "@repo/api-client"
+
 import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { userProfileKeys } from "./queryKey"
-
-import type {
-  CheckProfileCompletenessResponse,
-  GetUserProfileByIdxResponse,
-  GetUserProfileResponse,
-} from "@/shared/types/user-profile.type"
 
 import { userProfileApiService } from "@/shared/api/services/user-profile-api-service"
 
@@ -42,9 +38,9 @@ export function useGetUserProfile(
   userId: string,
   options?: Omit<
     UseQueryOptions<
-      GetUserProfileResponse,
+      UserProfileResponse,
       Error,
-      GetUserProfileResponse,
+      UserProfileResponse,
       ReturnType<typeof userProfileQueries.profile>["queryKey"]
     >,
     "queryKey" | "queryFn"
@@ -63,9 +59,9 @@ export function useGetUserProfileByIdx(
   idx: number,
   options?: Omit<
     UseQueryOptions<
-      GetUserProfileByIdxResponse,
+      UserProfileResponse,
       Error,
-      GetUserProfileByIdxResponse,
+      UserProfileResponse,
       ReturnType<typeof userProfileQueries.profileByIdx>["queryKey"]
     >,
     "queryKey" | "queryFn"
@@ -84,9 +80,9 @@ export function useCheckProfileCompleteness(
   userId: string,
   options?: Omit<
     UseQueryOptions<
-      CheckProfileCompletenessResponse,
+      UserProfileCompletenessResponseWrapper,
       Error,
-      CheckProfileCompletenessResponse,
+      UserProfileCompletenessResponseWrapper,
       ReturnType<typeof userProfileQueries.completeness>["queryKey"]
     >,
     "queryKey" | "queryFn"

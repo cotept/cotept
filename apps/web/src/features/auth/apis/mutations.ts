@@ -4,26 +4,22 @@ import { toast } from "sonner"
 import { authKeys, authQueryUtils } from "./queryKey"
 
 import type {
-  CheckEmailAvailabilityResponse,
-  CheckUserIdAvailabilityResponse,
-  ConfirmSocialLinkParams,
-  ConfirmSocialLinkResponse,
-  ExchangeAuthCodeParams,
-  ExchangeAuthCodeResponse,
-  FindIdParams,
-  FindIdResponse,
-  LoginParams,
-  LoginResponse,
-  LogoutResponse,
-  RefreshTokenParams,
-  RefreshTokenResponse,
-  ResetPasswordParams,
-  ResetPasswordResponse,
-  SendVerificationCodeParams,
-  SendVerificationCodeResponse,
-  VerifyCodeParams,
-  VerifyCodeResponse,
-} from "@/shared/types/auth.type"
+  AuthApiConfirmSocialLinkRequest,
+  AuthApiExchangeAuthCodeRequest,
+  AuthApiFindIdRequest,
+  AuthApiLoginRequest,
+  AuthApiRefreshTokenRequest,
+  AuthApiResetPasswordRequest,
+  AuthApiSendVerificationCodeRequest,
+  AuthApiVerifyCodeRequest,
+  AvailabilityResponseWrapper,
+  FindIdResponseWrapper,
+  LogoutResponseWrapper,
+  ResetPasswordResponseWrapper,
+  TokenResponseWrapper,
+  VerificationCodeResponseWrapper,
+  VerificationResultResponseWrapper,
+} from "@repo/api-client"
 
 import { ApiError } from "@/shared/api/core/types"
 import { authApiService } from "@/shared/api/services/auth-api-service"
@@ -31,12 +27,12 @@ import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 로그인
 export function useLogin(
-  options?: Pick<UseMutationOptions<LoginResponse, ApiError, LoginParams>, "onSuccess" | "onError">,
+  options?: Pick<UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiLoginRequest>, "onSuccess" | "onError">,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<LoginResponse, ApiError, LoginParams>({
-    mutationFn: (data) => authApiService.login(...data),
+  return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiLoginRequest>({
+    mutationFn: (data) => authApiService.login(data),
     queryKey: authKeys.all.queryKey,
     successMessage: "로그인에 성공했습니다.",
     onSuccess: async (response, variables, context) => {
@@ -57,10 +53,12 @@ export function useLogin(
 }
 
 // 로그아웃
-export function useLogout(options?: Pick<UseMutationOptions<LogoutResponse, ApiError, []>, "onSuccess" | "onError">) {
+export function useLogout(
+  options?: Pick<UseMutationOptions<LogoutResponseWrapper, ApiError, void>, "onSuccess" | "onError">,
+) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<LogoutResponse, ApiError, []>({
+  return useBaseMutation<LogoutResponseWrapper, ApiError, void>({
     mutationFn: () => authApiService.logout(),
     queryKey: authKeys.all.queryKey,
     successMessage: "로그아웃되었습니다.",
@@ -81,12 +79,15 @@ export function useLogout(options?: Pick<UseMutationOptions<LogoutResponse, ApiE
 
 // 토큰 갱신
 export function useRefreshToken(
-  options?: Pick<UseMutationOptions<RefreshTokenResponse, ApiError, RefreshTokenParams>, "onSuccess" | "onError">,
+  options?: Pick<
+    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiRefreshTokenRequest>,
+    "onSuccess" | "onError"
+  >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<RefreshTokenResponse, ApiError, RefreshTokenParams>({
-    mutationFn: (data) => authApiService.refreshToken(...data),
+  return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiRefreshTokenRequest>({
+    mutationFn: (data) => authApiService.refreshToken(data),
     queryKey: authKeys.all.queryKey,
     onSuccess: async (response, variables, context) => {
       // NextAuth 세션 업데이트
@@ -112,14 +113,14 @@ export function useRefreshToken(
 // 소셜 로그인 코드 교환
 export function useExchangeAuthCode(
   options?: Pick<
-    UseMutationOptions<ExchangeAuthCodeResponse, ApiError, ExchangeAuthCodeParams>,
+    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiExchangeAuthCodeRequest>,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<ExchangeAuthCodeResponse, ApiError, ExchangeAuthCodeParams>({
-    mutationFn: (data) => authApiService.exchangeAuthCode(...data),
+  return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiExchangeAuthCodeRequest>({
+    mutationFn: (data) => authApiService.exchangeAuthCode(data),
     queryKey: authKeys.socialAuth().queryKey,
     successMessage: "소셜 로그인에 성공했습니다.",
     onSuccess: async (response, variables, context) => {
@@ -147,14 +148,14 @@ export function useExchangeAuthCode(
 // 소셜 계정 연결 확인
 export function useConfirmSocialLink(
   options?: Pick<
-    UseMutationOptions<ConfirmSocialLinkResponse, ApiError, ConfirmSocialLinkParams>,
+    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiConfirmSocialLinkRequest>,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<ConfirmSocialLinkResponse, ApiError, ConfirmSocialLinkParams>({
-    mutationFn: (data) => authApiService.confirmSocialLink(...data),
+  return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiConfirmSocialLinkRequest>({
+    mutationFn: (data) => authApiService.confirmSocialLink(data),
     queryKey: authKeys.socialAuth().queryKey,
     successMessage: "소셜 계정 연결이 완료되었습니다.",
     onSuccess: async (response, variables, context) => {
@@ -182,14 +183,14 @@ export function useConfirmSocialLink(
 // 인증 코드 발송
 export function useSendVerificationCode(
   options?: Pick<
-    UseMutationOptions<SendVerificationCodeResponse, ApiError, SendVerificationCodeParams>,
+    UseMutationOptions<VerificationCodeResponseWrapper, ApiError, AuthApiSendVerificationCodeRequest>,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<SendVerificationCodeResponse, ApiError, SendVerificationCodeParams>({
-    mutationFn: (data) => authApiService.sendVerificationCode(...data),
+  return useBaseMutation<VerificationCodeResponseWrapper, ApiError, AuthApiSendVerificationCodeRequest>({
+    mutationFn: (data) => authApiService.sendVerificationCode(data),
     queryKey: authKeys.verifications().queryKey,
     successMessage: "인증 코드가 발송되었습니다.",
     onSuccess: (response, variables, context) => {
@@ -204,12 +205,15 @@ export function useSendVerificationCode(
 
 // 인증 코드 확인
 export function useVerifyCode(
-  options?: Pick<UseMutationOptions<VerifyCodeResponse, ApiError, VerifyCodeParams>, "onSuccess" | "onError">,
+  options?: Pick<
+    UseMutationOptions<VerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>,
+    "onSuccess" | "onError"
+  >,
 ) {
   const queryClient = useQueryClient()
 
-  return useMutation<VerifyCodeResponse, ApiError, VerifyCodeParams>({
-    mutationFn: (data) => authApiService.verifyCode(...data),
+  return useMutation<VerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>({
+    mutationFn: (data) => authApiService.verifyCode(data),
     // queryKey: authKeys.verifications().queryKey,
     // successMessage: "인증이 완료되었습니다.",
     onSuccess: (response, variables, context) => {
@@ -224,10 +228,10 @@ export function useVerifyCode(
 
 // 아이디 찾기
 export function useFindId(
-  options?: Pick<UseMutationOptions<FindIdResponse, ApiError, FindIdParams>, "onSuccess" | "onError">,
+  options?: Pick<UseMutationOptions<FindIdResponseWrapper, ApiError, AuthApiFindIdRequest>, "onSuccess" | "onError">,
 ) {
-  return useBaseMutation<FindIdResponse, ApiError, FindIdParams>({
-    mutationFn: (data) => authApiService.findId(...data),
+  return useBaseMutation<FindIdResponseWrapper, ApiError, AuthApiFindIdRequest>({
+    mutationFn: (data) => authApiService.findId(data),
     queryKey: authKeys.all.queryKey,
     successMessage: "아이디 찾기가 완료되었습니다.",
     onSuccess: (response, variables, context) => {
@@ -241,10 +245,13 @@ export function useFindId(
 
 // 비밀번호 재설정
 export function useResetPassword(
-  options?: Pick<UseMutationOptions<ResetPasswordResponse, ApiError, ResetPasswordParams>, "onSuccess" | "onError">,
+  options?: Pick<
+    UseMutationOptions<ResetPasswordResponseWrapper, ApiError, AuthApiResetPasswordRequest>,
+    "onSuccess" | "onError"
+  >,
 ) {
-  return useBaseMutation<ResetPasswordResponse, ApiError, ResetPasswordParams>({
-    mutationFn: (data) => authApiService.resetPassword(...data),
+  return useBaseMutation<ResetPasswordResponseWrapper, ApiError, AuthApiResetPasswordRequest>({
+    mutationFn: (data) => authApiService.resetPassword(data),
     queryKey: authKeys.all.queryKey,
     successMessage: "비밀번호가 재설정되었습니다.",
     onSuccess: (response, variables, context) => {
@@ -259,7 +266,7 @@ export function useResetPassword(
 // 이메일 중복 확인
 export function useCheckEmailAvailabilityMutation() {
   return useMutation<
-    CheckEmailAvailabilityResponse, // TData: API 응답 타입
+    AvailabilityResponseWrapper, // TData: API 응답 타입
     ApiError, // TError: 에러 타입
     string // TVariables: 입력 파라미터 타입 (email: string)
   >({
@@ -274,7 +281,7 @@ export function useCheckEmailAvailabilityMutation() {
 // 사용자 ID 중복 확인
 export function useCheckUserIdAvailabilityMutation() {
   return useMutation<
-    CheckUserIdAvailabilityResponse, // TData: API 응답 타입
+    AvailabilityResponseWrapper, // TData: API 응답 타입
     ApiError, // TError: 에러 타입
     string // TVariables: 입력 파라미터 타입 (userId: string)
   >({

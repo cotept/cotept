@@ -73,12 +73,15 @@ export interface UserDto {
      * @type {string}
      * @memberof UserDto
      */
+<<<<<<< HEAD
     'password'?: string;
     /**
      * 사용자 이름 (2~50자, 한글/영문만 허용)
      * @type {string}
      * @memberof UserDto
      */
+=======
+>>>>>>> dev
     'name'?: string;
     /**
      * 전화번호 (- 없이 숫자만)

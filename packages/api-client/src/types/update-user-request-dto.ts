@@ -33,7 +33,11 @@ export interface UpdateUserRequestDto {
      */
     'email'?: string;
     /**
+<<<<<<< HEAD
      * 사용자 이름 (2~50자, 한글/영문만 허용)
+=======
+     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+>>>>>>> dev
      * @type {string}
      * @memberof UpdateUserRequestDto
      */

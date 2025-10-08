@@ -33,15 +33,15 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
   private readonly RATE_LIMIT_COUNT = 5 // 5회
 
   constructor(
-    @Inject("BaekjoonProfileRepositoryPort")
+    @Inject(BaekjoonProfileRepositoryPort)
     private readonly baekjoonRepository: BaekjoonProfileRepositoryPort,
-    @Inject("SolvedAcApiPort")
+    @Inject(SolvedAcApiPort)
     private readonly solvedAcApi: SolvedAcApiPort,
-    @Inject("RateLimitPort")
+    @Inject(RateLimitPort)
     private readonly rateLimitService: RateLimitPort,
-    @Inject("CachePort")
+    @Inject(CachePort)
     private readonly cacheAdapter: CachePort,
-    @Inject("SyncVerificationStatusUseCase")
+    @Inject(SyncVerificationStatusUseCase)
     private readonly syncVerificationUseCase: SyncVerificationStatusUseCase,
     private readonly entityManager: EntityManager,
     private readonly baekjoonMapper: BaekjoonDomainMapper,

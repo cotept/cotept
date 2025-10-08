@@ -21,6 +21,13 @@ export interface OCIObjectStorageConfig {
   bucketName: string
 }
 
+/**
+ * OCI 전체 설정 인터페이스
+ */
+export interface OciConfig extends OCIAuthConfig {
+  objectStorage: OCIObjectStorageConfig
+}
+
 // OCI 프라이빗 키 로드 (파일 또는 환경변수)
 const loadPrivateKey = (): string => {
   if (process.env.OCI_PRIVATE_KEY) {
@@ -38,18 +45,17 @@ const loadPrivateKey = (): string => {
  */
 export default registerAs(
   "oci",
-  () =>
-    ({
-      tenancy: process.env.OCI_TENANCY_ID || "",
-      user: process.env.OCI_USER_ID || "",
-      fingerprint: process.env.OCI_FINGERPRINT || "",
-      privateKey: loadPrivateKey(),
-      region: process.env.OCI_REGION || "",
+  (): OciConfig => ({
+    tenancy: process.env.OCI_TENANCY_ID || "",
+    user: process.env.OCI_USER_ID || "",
+    fingerprint: process.env.OCI_FINGERPRINT || "",
+    privateKey: loadPrivateKey(),
+    region: process.env.OCI_REGION || "",
 
-      // 기타 OCI 서비스 설정
-      objectStorage: {
-        namespace: process.env.OCI_OBJECT_STORAGE_NAMESPACE || "",
-        bucketName: process.env.OCI_BUCKET_NAME || "",
-      } as OCIObjectStorageConfig,
-    }) as OCIAuthConfig,
+    // 기타 OCI 서비스 설정
+    objectStorage: {
+      namespace: process.env.OCI_OBJECT_STORAGE_NAMESPACE || "",
+      bucketName: process.env.OCI_BUCKET_NAME || "",
+    },
+  }),
 )

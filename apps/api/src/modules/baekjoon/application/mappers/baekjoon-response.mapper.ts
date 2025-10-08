@@ -9,9 +9,9 @@ import {
 import { VerificationStatusType } from "@/modules/baekjoon/domain/vo"
 import {
   BaekjoonProfileResponseDto,
+  BaekjoonVerificationResultResponseDto,
   TagInfoDto,
   TagStatisticsResponseDto,
-  VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 
@@ -30,7 +30,7 @@ export class BaekjoonResponseMapper {
     }
   }
 
-  toVerificationResultResponse(dto: CompleteVerificationOutputDto): VerificationResultResponseDto {
+  toVerificationResultResponse(dto: CompleteVerificationOutputDto): BaekjoonVerificationResultResponseDto {
     return {
       success: dto.success,
       sessionId: dto.sessionId,

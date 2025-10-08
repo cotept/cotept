@@ -1949,7 +1949,7 @@ paths:
           content:
             application/json:
               schema:
-                title: VerificationResultResponseWrapper
+                title: EmailVerificationResultResponseWrapper
                 type: object
                 properties:
                   message:
@@ -1957,7 +1957,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/VerificationResultResponseDto'
+                    $ref: '#/components/schemas/EmailVerificationResultResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -3651,7 +3651,7 @@ paths:
           content:
             application/json:
               schema:
-                title: VerificationResultResponseWrapper
+                title: BaekjoonVerificationResultResponseWrapper
                 type: object
                 properties:
                   message:
@@ -3659,7 +3659,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/VerificationResultResponseDto'
+                    $ref: '#/components/schemas/BaekjoonVerificationResultResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -4104,7 +4104,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMentorProfileDto'
+              $ref: '#/components/schemas/OnboardingCreateMentorProfileDto'
       responses:
         '200':
           description: 멘토 프로필이 성공적으로 생성/업데이트되었습니다.
@@ -4415,7 +4415,7 @@ paths:
           content:
             application/json:
               schema:
-                title: VerificationResultResponseWrapper
+                title: BaekjoonVerificationResultResponseWrapper
                 type: object
                 properties:
                   message:
@@ -4423,7 +4423,7 @@ paths:
                     description: 응답 메시지
                     example: 성공적으로 처리되었습니다.
                   data:
-                    $ref: '#/components/schemas/VerificationResultResponseDto'
+                    $ref: '#/components/schemas/BaekjoonVerificationResultResponseDto'
         '400':
           description: 잘못된 요청 데이터
           content:
@@ -4935,6 +4935,35 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 백준 태그 통계 조회
       tags: *ref_10
+  /api/v1/storage/upload-url:
+    post:
+      description: 클라이언트가 OCI Object Storage에 직접 파일을 업로드할 수 있는 임시 URL을 발급합니다.
+      operationId: generateUploadUrl
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateUploadUrlRequestDto'
+      responses:
+        '200':
+          description: The result of GenerateUploadUrlResponse
+          content:
+            application/json:
+              schema:
+                title: GenerateUploadUrlResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/GenerateUploadUrlResponseDto'
+      summary: 파일 업로드를 위한 Pre-signed URL 생성
+      tags:
+        - Storage
 info:
   title: CotePT API
   description: 코딩 테스트 멘토링 플랫폼 API
@@ -5688,56 +5717,18 @@ components:
       required:
         - authType
         - target
-    ApiResponseVerificationResultResponseDto:
+    ApiResponseEmailVerificationResultResponseDto:
       type: object
       properties: {}
-    VerificationResultResponseDto:
+    EmailVerificationResultResponseDto:
       type: object
       properties:
         success:
           type: boolean
           description: 인증 성공 여부
           example: true
-        sessionId:
-          type: string
-          description: 인증 세션 ID
-          example: 550e8400-e29b-41d4-a716-446655440000
-        status:
-          type: string
-          description: 인증 상태
-          enum:
-            - PENDING
-            - COMPLETED
-            - FAILED
-            - EXPIRED
-          example: COMPLETED
-        message:
-          type: string
-          description: 결과 메시지
-          example: 백준 ID 인증이 완료되었습니다
-        completedAt:
-          type: string
-          description: 완료 시간 (성공한 경우에만)
-          example: '2025-06-01T12:30:00.000Z'
-        errorReason:
-          type: string
-          description: 실패 사유 (실패한 경우에만)
-          example: 인증 문자열이 일치하지 않습니다
-        attempts:
-          type: number
-          description: 현재 시도 횟수
-          example: 2
-        remainingAttempts:
-          type: number
-          description: 남은 시도 횟수
-          example: 1
       required:
         - success
-        - sessionId
-        - status
-        - message
-        - attempts
-        - remainingAttempts
     VerifyCodeRequestDto:
       type: object
       properties:
@@ -6029,26 +6020,24 @@ components:
       properties:
         userId:
           type: string
-          description: 사용자 ID
-          example: user123
+          description: 연결된 유저의 고유 ID
+          example: cld2clvaw00003575n5da3kch
+        introductionTitle:
+          type: string
+          description: 멘토링 소개 제목
+          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
+        introductionContent:
+          type: string
+          description: 멘토링 소개 내용 (마크다운)
         tagIds:
-          description: 멘토 태그 ID 목록
+          description: 멘토의 기술 스택 및 직무 태그 ID 목록
           example:
             - 1
-            - 2
-            - 3
+            - 5
+            - 10
           type: array
           items:
             type: number
-        introductionTitle:
-          type: string
-          description: 멘토 소개 제목
-          example: 10년차 개발자의 노하우
-          maxLength: 100
-        introductionContent:
-          type: string
-          description: 멘토 소개 내용
-          example: 실전에서 사용하는...
       required:
         - userId
         - tagIds
@@ -6304,6 +6293,56 @@ components:
       required:
         - userId
         - baekjoonHandle
+    ApiResponseBaekjoonVerificationResultResponseDto:
+      type: object
+      properties: {}
+    BaekjoonVerificationResultResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 인증 성공 여부
+          example: true
+        sessionId:
+          type: string
+          description: 인증 세션 ID
+          example: 550e8400-e29b-41d4-a716-446655440000
+        status:
+          type: string
+          description: 인증 상태
+          enum:
+            - PENDING
+            - COMPLETED
+            - FAILED
+            - EXPIRED
+          example: COMPLETED
+        message:
+          type: string
+          description: 결과 메시지
+          example: 백준 ID 인증이 완료되었습니다
+        completedAt:
+          type: string
+          description: 완료 시간 (성공한 경우에만)
+          example: '2025-06-01T12:30:00.000Z'
+        errorReason:
+          type: string
+          description: 실패 사유 (실패한 경우에만)
+          example: 인증 문자열이 일치하지 않습니다
+        attempts:
+          type: number
+          description: 현재 시도 횟수
+          example: 2
+        remainingAttempts:
+          type: number
+          description: 남은 시도 횟수
+          example: 1
+      required:
+        - success
+        - sessionId
+        - status
+        - message
+        - attempts
+        - remainingAttempts
     CompleteBaekjoonVerificationDto:
       type: object
       properties:
@@ -6465,6 +6504,34 @@ components:
     ApiResponseMentorProfileDto:
       type: object
       properties: {}
+    OnboardingCreateMentorProfileDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 ID
+          example: user123
+        tagIds:
+          description: 멘토 태그 ID 목록
+          example:
+            - 1
+            - 2
+            - 3
+          type: array
+          items:
+            type: number
+        introductionTitle:
+          type: string
+          description: 멘토 소개 제목
+          example: 10년차 개발자의 노하우
+          maxLength: 100
+        introductionContent:
+          type: string
+          description: 멘토 소개 내용
+          example: 실전에서 사용하는...
+      required:
+        - userId
+        - tagIds
     ApiResponseBoolean:
       type: object
       properties: {}
@@ -6656,3 +6723,32 @@ components:
         - totalSolvedCount
         - averageRating
         - lastUpdated
+    ApiResponseGenerateUploadUrlResponseDto:
+      type: object
+      properties: {}
+    GenerateUploadUrlResponseDto:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          description: 파일을 업로드할 수 있는 Pre-signed URL
+        fileUrl:
+          type: string
+          description: 업로드 성공 후 파일에 접근할 수 있는 최종 URL
+      required:
+        - uploadUrl
+        - fileUrl
+    GenerateUploadUrlRequestDto:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: 업로드할 파일의 이름 (확장자 포함)
+          example: profile.jpg
+        contentType:
+          type: string
+          description: 파일의 Content-Type (MIME 타입)
+          example: image/jpeg
+      required:
+        - fileName
+        - contentType

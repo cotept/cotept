@@ -17,31 +17,31 @@
 /**
  * 
  * @export
- * @interface CreateMentorProfileDto
+ * @interface OnboardingCreateMentorProfileDto
  */
-export interface CreateMentorProfileDto {
+export interface OnboardingCreateMentorProfileDto {
     /**
-     * 연결된 유저의 고유 ID
+     * 사용자 ID
      * @type {string}
-     * @memberof CreateMentorProfileDto
+     * @memberof OnboardingCreateMentorProfileDto
      */
     'userId': string;
     /**
-     * 멘토의 기술 스택 및 직무 태그 ID 목록
+     * 멘토 태그 ID 목록
      * @type {Array<number>}
-     * @memberof CreateMentorProfileDto
+     * @memberof OnboardingCreateMentorProfileDto
      */
     'tagIds': Array<number>;
     /**
-     * 멘토링 소개 제목
+     * 멘토 소개 제목
      * @type {string}
-     * @memberof CreateMentorProfileDto
+     * @memberof OnboardingCreateMentorProfileDto
      */
     'introductionTitle'?: string;
     /**
-     * 멘토링 소개 내용 (마크다운)
+     * 멘토 소개 내용
      * @type {string}
-     * @memberof CreateMentorProfileDto
+     * @memberof OnboardingCreateMentorProfileDto
      */
     'introductionContent'?: string;
 }

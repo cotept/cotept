@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { BaekjoonProfileResponseWrapper } from '../types';
 // @ts-ignore
+import type { BaekjoonVerificationResultResponseWrapper } from '../types';
+// @ts-ignore
 import type { CompleteVerificationRequestDto } from '../types';
 // @ts-ignore
 import type { GetAllUsers400Response } from '../types';
@@ -43,8 +45,6 @@ import type { StartBaekjoonVerification503Response } from '../types';
 import type { StartVerificationRequestDto } from '../types';
 // @ts-ignore
 import type { TagStatisticsResponseWrapper } from '../types';
-// @ts-ignore
-import type { VerificationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { VerificationStatusResponseWrapper } from '../types';
 /**
@@ -264,7 +264,7 @@ export const BaekjoonApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async completeVerification(completeVerificationRequestDto: CompleteVerificationRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerificationResultResponseWrapper>> {
+        async completeVerification(completeVerificationRequestDto: CompleteVerificationRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaekjoonVerificationResultResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.completeVerification(completeVerificationRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BaekjoonApi.completeVerification']?.[localVarOperationServerIndex]?.url;
@@ -341,7 +341,7 @@ export const BaekjoonApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        completeVerification(requestParameters: BaekjoonApiCompleteVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper> {
+        completeVerification(requestParameters: BaekjoonApiCompleteVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<BaekjoonVerificationResultResponseWrapper> {
             return localVarFp.completeVerification(requestParameters.completeVerificationRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -401,7 +401,7 @@ export interface BaekjoonApiInterface {
      * @throws {RequiredError}
      * @memberof BaekjoonApiInterface
      */
-    completeVerification(requestParameters: BaekjoonApiCompleteVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper>;
+    completeVerification(requestParameters: BaekjoonApiCompleteVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<BaekjoonVerificationResultResponseWrapper>;
 
     /**
      * 사용자의 백준 프로필 정보를 조회합니다. handle을 제공하지 않으면 현재 사용자의 프로필을 조회합니다.

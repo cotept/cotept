@@ -17,55 +17,55 @@
 /**
  * 
  * @export
- * @interface VerificationResultResponseDto
+ * @interface BaekjoonVerificationResultResponseDto
  */
-export interface VerificationResultResponseDto {
+export interface BaekjoonVerificationResultResponseDto {
     /**
      * 인증 성공 여부
      * @type {boolean}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'success': boolean;
     /**
      * 인증 세션 ID
      * @type {string}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'sessionId': string;
     /**
      * 인증 상태
      * @type {string}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'status': Status;
     /**
      * 결과 메시지
      * @type {string}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'message': string;
     /**
      * 현재 시도 횟수
      * @type {number}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'attempts': number;
     /**
      * 남은 시도 횟수
      * @type {number}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'remainingAttempts': number;
     /**
      * 완료 시간 (성공한 경우에만)
      * @type {string}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'completedAt'?: string;
     /**
      * 실패 사유 (실패한 경우에만)
      * @type {string}
-     * @memberof VerificationResultResponseDto
+     * @memberof BaekjoonVerificationResultResponseDto
      */
     'errorReason'?: string;
 }

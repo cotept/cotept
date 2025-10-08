@@ -18,6 +18,7 @@ services/mail-api.ts
 services/mail-audit-api.ts
 services/mentor-api.ts
 services/onboarding-api.ts
+services/storage-api.ts
 services/user-api.ts
 services/user-profile-api.ts
 tsconfig.esm.json
@@ -28,6 +29,8 @@ types/availability-response-dto.ts
 types/availability-response-wrapper.ts
 types/baekjoon-profile-response-dto.ts
 types/baekjoon-profile-response-wrapper.ts
+types/baekjoon-verification-result-response-dto.ts
+types/baekjoon-verification-result-response-wrapper.ts
 types/basic-profile-creation-response-dto-completeness.ts
 types/basic-profile-creation-response-dto.ts
 types/basic-profile-creation-response-wrapper.ts
@@ -46,11 +49,16 @@ types/create-user-profile-request-dto.ts
 types/create-user-request-dto.ts
 types/delete-user-request-dto.ts
 types/deletion-response-dto.ts
+types/email-verification-result-response-dto.ts
+types/email-verification-result-response-wrapper.ts
 types/empty-wrapper.ts
 types/exchange-auth-code-request-dto.ts
 types/find-id-request-dto.ts
 types/find-id-response-dto.ts
 types/find-id-response-wrapper.ts
+types/generate-upload-url-request-dto.ts
+types/generate-upload-url-response-dto.ts
+types/generate-upload-url-response-wrapper.ts
 types/get-all-users400-response.ts
 types/get-all-users401-response.ts
 types/get-all-users403-response.ts
@@ -72,6 +80,7 @@ types/mentor-profile-response.ts
 types/mentor-tag-dto.ts
 types/mentor-tags-response-dto.ts
 types/mentor-tags-response-wrapper.ts
+types/onboarding-create-mentor-profile-dto.ts
 types/password-change-response-dto.ts
 types/password-change-response-wrapper.ts
 types/refresh-token-request-dto.ts
@@ -127,8 +136,6 @@ types/validation-result-response-dto.ts
 types/validation-result-response-wrapper.ts
 types/verification-code-response-dto.ts
 types/verification-code-response-wrapper.ts
-types/verification-result-response-dto.ts
-types/verification-result-response-wrapper.ts
 types/verification-status-response-dto.ts
 types/verification-status-response-wrapper.ts
 types/verification-status-type.ts

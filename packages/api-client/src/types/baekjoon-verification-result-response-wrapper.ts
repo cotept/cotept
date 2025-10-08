@@ -15,25 +15,25 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { VerificationResultResponseDto } from './verification-result-response-dto';
+import type { BaekjoonVerificationResultResponseDto } from './baekjoon-verification-result-response-dto';
 
 /**
  * 
  * @export
- * @interface VerificationResultResponseWrapper
+ * @interface BaekjoonVerificationResultResponseWrapper
  */
-export interface VerificationResultResponseWrapper {
+export interface BaekjoonVerificationResultResponseWrapper {
     /**
      * 응답 메시지
      * @type {string}
-     * @memberof VerificationResultResponseWrapper
+     * @memberof BaekjoonVerificationResultResponseWrapper
      */
     'message'?: string;
     /**
      * 
-     * @type {VerificationResultResponseDto}
-     * @memberof VerificationResultResponseWrapper
+     * @type {BaekjoonVerificationResultResponseDto}
+     * @memberof BaekjoonVerificationResultResponseWrapper
      */
-    'data'?: VerificationResultResponseDto;
+    'data'?: BaekjoonVerificationResultResponseDto;
 }
 

@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { AnalyzeSkillsDto } from '../types';
 // @ts-ignore
+import type { BaekjoonVerificationResultResponseWrapper } from '../types';
+// @ts-ignore
 import type { BooleanResponse } from '../types';
 // @ts-ignore
 import type { CheckMentorEligibilityDto } from '../types';
@@ -33,8 +35,6 @@ import type { CompleteBaekjoonVerificationDto } from '../types';
 import type { CompleteOnboardingDto } from '../types';
 // @ts-ignore
 import type { CreateBasicProfileDto } from '../types';
-// @ts-ignore
-import type { CreateMentorProfileDto } from '../types';
 // @ts-ignore
 import type { GetAllUsers400Response } from '../types';
 // @ts-ignore
@@ -50,6 +50,8 @@ import type { MentorProfileResponse } from '../types';
 // @ts-ignore
 import type { MentorTagsResponseWrapper } from '../types';
 // @ts-ignore
+import type { OnboardingCreateMentorProfileDto } from '../types';
+// @ts-ignore
 import type { StartBaekjoonVerification408Response } from '../types';
 // @ts-ignore
 import type { StartBaekjoonVerification429Response } from '../types';
@@ -61,8 +63,6 @@ import type { StartBaekjoonVerificationDto } from '../types';
 import type { TagStatisticsOutputResponse } from '../types';
 // @ts-ignore
 import type { UserProfileResponse } from '../types';
-// @ts-ignore
-import type { VerificationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { VerificationStatusResponseWrapper } from '../types';
 /**
@@ -254,13 +254,13 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
         /**
          * 
          * @summary 온보딩 - 멘토 프로필 생성/업데이트
-         * @param {CreateMentorProfileDto} createMentorProfileDto 
+         * @param {OnboardingCreateMentorProfileDto} onboardingCreateMentorProfileDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMentorProfileOnboarding: async (createMentorProfileDto: CreateMentorProfileDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createMentorProfileDto' is not null or undefined
-            assertParamExists('createMentorProfileOnboarding', 'createMentorProfileDto', createMentorProfileDto)
+        createMentorProfileOnboarding: async (onboardingCreateMentorProfileDto: OnboardingCreateMentorProfileDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'onboardingCreateMentorProfileDto' is not null or undefined
+            assertParamExists('createMentorProfileOnboarding', 'onboardingCreateMentorProfileDto', onboardingCreateMentorProfileDto)
             const localVarPath = `/api/v1/onboarding/mentor-profile`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -280,7 +280,7 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createMentorProfileDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(onboardingCreateMentorProfileDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -396,7 +396,7 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async completeBaekjoonVerification(completeBaekjoonVerificationDto: CompleteBaekjoonVerificationDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerificationResultResponseWrapper>> {
+        async completeBaekjoonVerification(completeBaekjoonVerificationDto: CompleteBaekjoonVerificationDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaekjoonVerificationResultResponseWrapper>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.completeBaekjoonVerification(completeBaekjoonVerificationDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OnboardingApi.completeBaekjoonVerification']?.[localVarOperationServerIndex]?.url;
@@ -431,12 +431,12 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 온보딩 - 멘토 프로필 생성/업데이트
-         * @param {CreateMentorProfileDto} createMentorProfileDto 
+         * @param {OnboardingCreateMentorProfileDto} onboardingCreateMentorProfileDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createMentorProfileOnboarding(createMentorProfileDto: CreateMentorProfileDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorProfileResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createMentorProfileOnboarding(createMentorProfileDto, options);
+        async createMentorProfileOnboarding(onboardingCreateMentorProfileDto: OnboardingCreateMentorProfileDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorProfileResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createMentorProfileOnboarding(onboardingCreateMentorProfileDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OnboardingApi.createMentorProfileOnboarding']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -503,7 +503,7 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        completeBaekjoonVerification(requestParameters: OnboardingApiCompleteBaekjoonVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper> {
+        completeBaekjoonVerification(requestParameters: OnboardingApiCompleteBaekjoonVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<BaekjoonVerificationResultResponseWrapper> {
             return localVarFp.completeBaekjoonVerification(requestParameters.completeBaekjoonVerificationDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -534,7 +534,7 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
          * @throws {RequiredError}
          */
         createMentorProfileOnboarding(requestParameters: OnboardingApiCreateMentorProfileOnboardingRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorProfileResponse> {
-            return localVarFp.createMentorProfileOnboarding(requestParameters.createMentorProfileDto, options).then((request) => request(axios, basePath));
+            return localVarFp.createMentorProfileOnboarding(requestParameters.onboardingCreateMentorProfileDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -592,7 +592,7 @@ export interface OnboardingApiInterface {
      * @throws {RequiredError}
      * @memberof OnboardingApiInterface
      */
-    completeBaekjoonVerification(requestParameters: OnboardingApiCompleteBaekjoonVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper>;
+    completeBaekjoonVerification(requestParameters: OnboardingApiCompleteBaekjoonVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<BaekjoonVerificationResultResponseWrapper>;
 
     /**
      * 
@@ -723,10 +723,10 @@ export interface OnboardingApiCreateBasicProfileRequest {
 export interface OnboardingApiCreateMentorProfileOnboardingRequest {
     /**
      * 
-     * @type {CreateMentorProfileDto}
+     * @type {OnboardingCreateMentorProfileDto}
      * @memberof OnboardingApiCreateMentorProfileOnboarding
      */
-    readonly createMentorProfileDto: CreateMentorProfileDto
+    readonly onboardingCreateMentorProfileDto: OnboardingCreateMentorProfileDto
 }
 
 /**
@@ -819,7 +819,7 @@ export class OnboardingApi extends BaseAPI implements OnboardingApiInterface {
      * @memberof OnboardingApi
      */
     public createMentorProfileOnboarding(requestParameters: OnboardingApiCreateMentorProfileOnboardingRequest, options?: RawAxiosRequestConfig) {
-        return OnboardingApiFp(this.configuration).createMentorProfileOnboarding(requestParameters.createMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
+        return OnboardingApiFp(this.configuration).createMentorProfileOnboarding(requestParameters.onboardingCreateMentorProfileDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

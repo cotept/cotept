@@ -23,6 +23,7 @@ export * from './services/mail-api';
 export * from './services/mail-audit-api';
 export * from './services/mentor-api';
 export * from './services/onboarding-api';
+export * from './services/storage-api';
 export * from './services/user-api';
 export * from './services/user-profile-api';
 

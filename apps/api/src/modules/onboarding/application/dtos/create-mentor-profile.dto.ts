@@ -6,7 +6,7 @@ import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from "cla
 /**
  * 온보딩 중 멘토 프로필 생성을 위한 DTO
  */
-export class CreateMentorProfileDto {
+export class OnboardingCreateMentorProfileDto {
   @ApiProperty({ description: "사용자 ID", example: "user123" })
   @Expose()
   @IsString()

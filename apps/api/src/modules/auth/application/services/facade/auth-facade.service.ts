@@ -42,6 +42,7 @@ import {
 import {
   AvailabilityResponseDto,
   FindIdResponseDto,
+  EmailVerificationResultResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   SocialLinkConfirmationResponseDto,
@@ -49,7 +50,6 @@ import {
   TokenResponseDto,
   ValidationResultResponseDto,
   VerificationCodeResponseDto,
-  VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
 import { convertDomainUserIdToString, convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
@@ -220,7 +220,7 @@ export class AuthFacadeService {
   /**
    * 인증 코드 확인
    */
-  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
+  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<EmailVerificationResultResponseDto> {
     try {
       console.log("verifyCode", { verifyCodeRequestDto })
       this.logger.log("verifyCode 1")

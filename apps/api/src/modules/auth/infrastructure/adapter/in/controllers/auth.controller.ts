@@ -28,13 +28,13 @@ import {
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
   AvailabilityResponseDto,
+  EmailVerificationResultResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   TokenResponseDto,
   ValidationResultResponseDto,
   VerificationCodeResponseDto,
-  VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 import {
@@ -163,10 +163,10 @@ export class AuthController {
     description: "발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.",
   })
   @ApiBody({ type: VerifyCodeRequestDto })
-  @ApiOkResponseWrapper(VerificationResultResponseDto, "인증 코드 확인 성공")
+  @ApiOkResponseWrapper(EmailVerificationResultResponseDto, "인증 코드 확인 성공")
   @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "인증 코드가 일치하지 않습니다" })
-  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
+  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<EmailVerificationResultResponseDto> {
     this.logger.debug(verifyCodeRequestDto)
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
   }

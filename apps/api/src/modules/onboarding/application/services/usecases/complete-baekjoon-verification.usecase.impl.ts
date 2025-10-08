@@ -6,7 +6,7 @@ import { OnboardingStateRepositoryPort } from "../../ports/out/onboarding-state.
 
 import { CompleteVerificationUseCase } from "@/modules/baekjoon/application/ports/in"
 import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services"
-import { VerificationResultResponseDto } from "@/modules/baekjoon/infrastructure/dtos/response"
+import { BaekjoonVerificationResultResponseDto } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { UserFacadeService } from "@/modules/user/application/services"
 import { UserProfileFacadeService } from "@/modules/user-profile/application"
 
@@ -20,7 +20,7 @@ export class CompleteBaekjoonVerificationUseCaseImpl implements CompleteBaekjoon
     private readonly userService: UserFacadeService,
   ) {}
 
-  async execute(dto: CompleteBaekjoonVerificationDto): Promise<VerificationResultResponseDto> {
+  async execute(dto: CompleteBaekjoonVerificationDto): Promise<BaekjoonVerificationResultResponseDto> {
     const user = await this.userService.getUserByUserId(dto.userId)
 
     await this.userProfileService.getProfileByUserIdOrThrow(dto.userId)

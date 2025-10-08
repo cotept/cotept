@@ -15,8 +15,8 @@ import {
 } from "@/modules/baekjoon/application/ports/in"
 import {
   BaekjoonProfileResponseDto,
+  BaekjoonVerificationResultResponseDto,
   TagStatisticsResponseDto,
-  VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 
@@ -47,7 +47,7 @@ export class BaekjoonFacadeService {
   /**
    * 백준 ID 인증 완료
    */
-  async completeVerification(inputDto: CompleteVerificationInputDto): Promise<VerificationResultResponseDto> {
+  async completeVerification(inputDto: CompleteVerificationInputDto): Promise<BaekjoonVerificationResultResponseDto> {
     const result = await this.completeVerificationUseCase.execute(inputDto)
     return this.responseMapper.toVerificationResultResponse(result)
   }

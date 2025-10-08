@@ -4,8 +4,8 @@ import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
 import { TagStatisticsOutputDto } from "@/modules/baekjoon/application/dtos"
 import {
+  BaekjoonVerificationResultResponseDto,
   TagStatisticsResponseDto,
-  VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
@@ -15,7 +15,7 @@ import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
 import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/complete-onboarding.dto"
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
-import { CreateMentorProfileDto } from "@/modules/onboarding/application/dtos/create-mentor-profile.dto"
+import { OnboardingCreateMentorProfileDto } from "@/modules/onboarding/application/dtos/create-mentor-profile.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
 import { OnboardingFacadeService } from "@/modules/onboarding/application/services/facade/onboarding-facade.service"
@@ -68,7 +68,7 @@ export class OnboardingController {
   @Post("baekjoon/verify/complete")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "온보딩 - 백준 인증 완료" })
-  @ApiOkResponseWrapper(VerificationResultResponseDto, "백준 인증이 성공적으로 완료되었습니다.")
+  @ApiOkResponseWrapper(BaekjoonVerificationResultResponseDto, "백준 인증이 성공적으로 완료되었습니다.")
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "진행 중인 인증 세션을 찾을 수 없습니다." })
@@ -76,7 +76,7 @@ export class OnboardingController {
   async completeBaekjoonVerification(
     @CurrentUserId() userId: string,
     @Body() dto: CompleteBaekjoonVerificationDto,
-  ): Promise<VerificationResultResponseDto> {
+  ): Promise<BaekjoonVerificationResultResponseDto> {
     dto.userId = userId // userId 주입
     return this.facadeService.completeBaekjoonVerification(dto)
   }
@@ -127,7 +127,7 @@ export class OnboardingController {
   @ApiConflictResponse({ description: "멘토 프로필이 이미 존재합니다." })
   async createMentorProfile(
     @CurrentUserId() userId: string,
-    @Body() dto: CreateMentorProfileDto,
+    @Body() dto: OnboardingCreateMentorProfileDto,
   ): Promise<MentorProfileDto> {
     dto.userId = userId // userId 주입
     return this.facadeService.createMentorProfile(dto)

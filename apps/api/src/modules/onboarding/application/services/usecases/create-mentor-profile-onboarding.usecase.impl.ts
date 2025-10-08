@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
 
-import { CreateMentorProfileDto } from "../../dtos/create-mentor-profile.dto"
+import { OnboardingCreateMentorProfileDto } from "../../dtos/create-mentor-profile.dto"
 import { CreateMentorProfileOnboardingUseCase } from "../../ports/in/create-mentor-profile-onboarding.usecase"
 import { OnboardingStateRepositoryPort } from "../../ports/out/onboarding-state.repository.port"
 
@@ -17,7 +17,7 @@ export class CreateMentorProfileOnboardingUseCaseImpl implements CreateMentorPro
     private readonly mentorService: MentorFacadeService,
   ) {}
 
-  async execute(dto: CreateMentorProfileDto): Promise<MentorProfileDto> {
+  async execute(dto: OnboardingCreateMentorProfileDto): Promise<MentorProfileDto> {
     // 1. 사용자 및 태그 유효성 검증
     await this.validateUserAndTags(dto.userId, dto.tagIds)
 

@@ -3,9 +3,9 @@ import { ApiProperty } from "@nestjs/swagger"
 import { Expose } from "class-transformer"
 
 /**
- * 인증 결과 응답 DTO
+ * 백준 ID 인증 결과 응답 DTO
  */
-export class VerificationResultResponseDto {
+export class BaekjoonVerificationResultResponseDto {
   @ApiProperty({
     description: "인증 성공 여부",
     example: true,

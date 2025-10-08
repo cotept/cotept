@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common"
 
 import {
+  BaekjoonVerificationResultResponseDto,
   TagStatisticsResponseDto,
-  VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { CreateMentorProfileDto } from "@/modules/mentor/application/dtos/create-mentor-profile.dto"
@@ -54,7 +54,7 @@ export class OnboardingFacadeService {
     return await this.startBaekjoonVerificationUseCase.execute(dto)
   }
 
-  async completeBaekjoonVerification(dto: CompleteBaekjoonVerificationDto): Promise<VerificationResultResponseDto> {
+  async completeBaekjoonVerification(dto: CompleteBaekjoonVerificationDto): Promise<BaekjoonVerificationResultResponseDto> {
     return await this.completeBaekjoonVerificationUseCase.execute(dto)
   }
 

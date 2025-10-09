@@ -5,7 +5,7 @@ import { baekjoonKeys, baekjoonQueryUtils } from "./queryKey"
 import type {
   BaekjoonApiCompleteVerificationRequest,
   BaekjoonApiStartVerificationRequest,
-  VerificationResultResponseWrapper,
+  BaekjoonVerificationResultResponseWrapper,
   VerificationStatusResponseWrapper,
 } from "@repo/api-client"
 
@@ -42,13 +42,13 @@ export function useStartBaekjoonVerification(
 export function useCompleteBaekjoonVerification(
   userId: string,
   options?: Pick<
-    UseMutationOptions<VerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>,
+    UseMutationOptions<BaekjoonVerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<VerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>({
+  return useBaseMutation<BaekjoonVerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>({
     mutationFn: (data) => baekjoonApiService.completeVerification({ ...data }),
     queryKey: baekjoonKeys.verification().queryKey,
     successMessage: "백준 인증이 완료되었습니다.",

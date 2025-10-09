@@ -13,12 +13,12 @@ import type {
   AuthApiSendVerificationCodeRequest,
   AuthApiVerifyCodeRequest,
   AvailabilityResponseWrapper,
+  EmailVerificationResultResponseWrapper,
   FindIdResponseWrapper,
   LogoutResponseWrapper,
   ResetPasswordResponseWrapper,
   TokenResponseWrapper,
   VerificationCodeResponseWrapper,
-  VerificationResultResponseWrapper,
 } from "@repo/api-client"
 
 import { ApiError } from "@/shared/api/core/types"
@@ -206,13 +206,13 @@ export function useSendVerificationCode(
 // 인증 코드 확인
 export function useVerifyCode(
   options?: Pick<
-    UseMutationOptions<VerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>,
+    UseMutationOptions<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useMutation<VerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>({
+  return useMutation<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>({
     mutationFn: (data) => authApiService.verifyCode(data),
     // queryKey: authKeys.verifications().queryKey,
     // successMessage: "인증이 완료되었습니다.",

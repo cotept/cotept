@@ -3,6 +3,7 @@ import { type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 import { onboardingKeys, onboardingQueryUtils } from "./queryKey"
 
 import type {
+  BaekjoonVerificationResultResponseWrapper,
   BooleanResponse,
   MentorProfileResponse,
   OnboardingApiCompleteBaekjoonVerificationRequest,
@@ -11,7 +12,6 @@ import type {
   OnboardingApiCreateMentorProfileOnboardingRequest,
   OnboardingApiStartBaekjoonVerificationRequest,
   UserProfileResponse,
-  VerificationResultResponseWrapper,
   VerificationStatusResponseWrapper,
 } from "@repo/api-client"
 
@@ -70,28 +70,34 @@ export function useStartBaekjoonVerification(
 // 백준 인증 완료
 export function useCompleteBaekjoonVerification(
   options?: Pick<
-    UseMutationOptions<VerificationResultResponseWrapper, ApiError, OnboardingApiCompleteBaekjoonVerificationRequest>,
+    UseMutationOptions<
+      BaekjoonVerificationResultResponseWrapper,
+      ApiError,
+      OnboardingApiCompleteBaekjoonVerificationRequest
+    >,
     "onSuccess" | "onError"
   >,
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<VerificationResultResponseWrapper, ApiError, OnboardingApiCompleteBaekjoonVerificationRequest>(
-    {
-      mutationFn: (data) => onboardingApiService.completeBaekjoonVerification({ ...data }),
-      queryKey: onboardingKeys.baekjoonVerification().queryKey,
-      successMessage: "백준 인증이 완료되었습니다.",
-      onSuccess: async (response, variables, context) => {
-        // 백준 인증 및 실력 분석 쿼리 무효화
-        onboardingQueryUtils.invalidateBaekjoonVerification(queryClient)
-        onboardingQueryUtils.invalidateSkillAnalysis(queryClient)
+  return useBaseMutation<
+    BaekjoonVerificationResultResponseWrapper,
+    ApiError,
+    OnboardingApiCompleteBaekjoonVerificationRequest
+  >({
+    mutationFn: (data) => onboardingApiService.completeBaekjoonVerification({ ...data }),
+    queryKey: onboardingKeys.baekjoonVerification().queryKey,
+    successMessage: "백준 인증이 완료되었습니다.",
+    onSuccess: async (response, variables, context) => {
+      // 백준 인증 및 실력 분석 쿼리 무효화
+      onboardingQueryUtils.invalidateBaekjoonVerification(queryClient)
+      onboardingQueryUtils.invalidateSkillAnalysis(queryClient)
 
-        // 사용자 호출 콜백 실행
-        options?.onSuccess?.(response, variables, context)
-      },
-      ...options,
+      // 사용자 호출 콜백 실행
+      options?.onSuccess?.(response, variables, context)
     },
-  )
+    ...options,
+  })
 }
 
 // 멘토 프로필 생성 (온보딩 과정)

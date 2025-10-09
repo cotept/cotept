@@ -30,11 +30,8 @@ import type { CheckUserIdAvailabilityRequestDto } from '../types';
 // @ts-ignore
 import type { ConfirmSocialLinkRequestDto } from '../types';
 // @ts-ignore
-<<<<<<< HEAD
-=======
 import type { EmailVerificationResultResponseWrapper } from '../types';
 // @ts-ignore
->>>>>>> dev
 import type { ExchangeAuthCodeRequestDto } from '../types';
 // @ts-ignore
 import type { FindIdRequestDto } from '../types';
@@ -69,11 +66,6 @@ import type { ValidationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { VerificationCodeResponseWrapper } from '../types';
 // @ts-ignore
-<<<<<<< HEAD
-import type { VerificationResultResponseWrapper } from '../types';
-// @ts-ignore
-=======
->>>>>>> dev
 import type { VerifyCodeRequestDto } from '../types';
 /**
  * AuthApi - axios parameter creator
@@ -666,11 +658,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-<<<<<<< HEAD
-        async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerificationResultResponseWrapper>> {
-=======
         async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmailVerificationResultResponseWrapper>> {
->>>>>>> dev
             const localVarAxiosArgs = await localVarAxiosParamCreator.verifyCode(verifyCodeRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.verifyCode']?.[localVarOperationServerIndex]?.url;
@@ -802,11 +790,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-<<<<<<< HEAD
-        verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper> {
-=======
         verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmailVerificationResultResponseWrapper> {
->>>>>>> dev
             return localVarFp.verifyCode(requestParameters.verifyCodeRequestDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -935,11 +919,7 @@ export interface AuthApiInterface {
      * @throws {RequiredError}
      * @memberof AuthApiInterface
      */
-<<<<<<< HEAD
-    verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationResultResponseWrapper>;
-=======
     verifyCode(requestParameters: AuthApiVerifyCodeRequest, options?: RawAxiosRequestConfig): AxiosPromise<EmailVerificationResultResponseWrapper>;
->>>>>>> dev
 
 }
 

@@ -293,10 +293,16 @@ export class Tier {
     return "Unknown"
   }
 
-  /**
-   * solved.ac 프로필 이미지 URL 생성
-   */
-  public getProfileImageUrl(): string {
-    return `https://static.solved.ac/tier_small/${this.level}.svg`
+  public static getAllTiers() {
+    return Object.values(TierLevel)
+      .filter((level) => typeof level === "number")
+      .map((level) => {
+        const tier = Tier.ofLevel(level as TierLevel)
+        return {
+          level: tier.getLevel(),
+          name: tier.getName(),
+          color: tier.getColor(),
+        }
+      })
   }
 }

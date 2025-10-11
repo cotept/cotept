@@ -49,7 +49,7 @@ export function useSignupComplete({ signupData, onComplete }: UseSignupCompleteP
       email: signupData.email.email,
       password: signupData.password.password,
       userId: signupData.userId.userId,
-      role: UserRole.mentee, // 기본값은 멘티
+      role: UserRole.MENTEE, // 기본값은 멘티
     }
 
     const createUserData: UserApiCreateUserRequest = { createUserRequestDto }

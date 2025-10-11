@@ -228,7 +228,7 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
     )
     sendCode({
       sendVerificationCodeRequestDto: {
-        authType: AuthType.email,
+        authType: AuthType.EMAIL,
         target: email,
       },
     })

@@ -24,7 +24,10 @@
     "infra:logs:arm64": "docker-compose -f docker-compose.yml -f docker-compose.arm64.yml --env-file ./apps/api/.env --env-file ./apps/api/.env.local --env-file ./apps/api/.env.arm64 logs -f",
     "openapi:export": "cd apps/api && cross-env NODE_ENV=local EXPORT_OPENAPI=true pnpm nest start",
     "openapi:generate": "cd packages/api-client && pnpm generate",
-    "gen:api": "pnpm openapi:export && pnpm openapi:generate"
+    "gen:api": "pnpm openapi:export && pnpm openapi:generate",
+    "typecheck": "turbo run typecheck",
+    "typecheck:api": "turbo run typecheck --filter=api",
+    "typecheck:web": "turbo run typecheck --filter=web"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.14",

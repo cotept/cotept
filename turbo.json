@@ -44,6 +44,10 @@
     "clean": {
       "cache": false,
       "outputs": ["dist/**", ".next/**", "coverage/**", "node_modules/.cache/**", ".turbo/**"]
+    },
+    "typecheck": {
+      "cache": false,
+      "outputs": ["dist/**", ".next/**", "coverage/**", "node_modules/.cache/**", ".turbo/**"]
     }
   }
 }

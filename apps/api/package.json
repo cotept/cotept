@@ -27,7 +27,8 @@
     "test:e2e": "jest --config ./apps/api/test/jest-e2e.json",
     "create:module": "bash ../../scripts/create-module.sh",
     "test:module": "jest --testPathPattern",
-    "analyze:module": "echo 'Analyzing module structure...'"
+    "analyze:module": "echo 'Analyzing module structure...'",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@keyv/redis": "^4.3.2",

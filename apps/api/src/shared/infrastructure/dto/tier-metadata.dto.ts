@@ -1,8 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-import { Tier, TierLevel } from "@/modules/baekjoon/domain/vo"
-
-const TIER_NAMES = Tier.getAllTiers().map((tier) => tier.name)
+import { TierColorEnum, TierLevelEnum, TierNameEnum } from "@/modules/baekjoon/domain/vo"
 
 /**
  * Tier Level Enum Schema (for Swagger export)
@@ -14,24 +12,30 @@ const TIER_NAMES = Tier.getAllTiers().map((tier) => tier.name)
 export class TierLevelSchema {
   @ApiProperty({
     description: "Tier level value",
-    enum: TierLevel,
+    enum: TierLevelEnum,
+    example: TierLevelEnum.PlatinumIII,
     enumName: "TierLevel",
-    example: TierLevel.PLATINUM_III,
+    "x-enumNames": Object.keys(TierLevelEnum),
   })
-  level: TierLevel
+  level: typeof TierLevelEnum
 
   @ApiProperty({
     description: "Tier display name",
-    example: "Platinum III",
-    enum: TIER_NAMES,
+    example: TierNameEnum.PlatinumIII,
+    enum: TierNameEnum,
+    enumName: "TierName",
+    "x-enumNames": Object.keys(TierNameEnum),
   })
-  name: string
+  name: typeof TierNameEnum
 
   @ApiProperty({
     description: "Tier color hex code",
-    example: "#27E2A4",
+    example: TierColorEnum.PlatinumIII,
+    enum: TierColorEnum,
+    enumName: "TierColor",
+    "x-enumNames": Object.keys(TierColorEnum),
   })
-  color: string
+  color: typeof TierColorEnum
 }
 
 /**
@@ -46,8 +50,8 @@ export class TierMetadataDto {
 
   @ApiProperty({
     description: "Mentor eligibility threshold tier level",
-    enum: TierLevel,
-    example: TierLevel.PLATINUM_III,
+    enum: TierLevelEnum,
+    example: TierLevelEnum.PlatinumIII,
   })
-  mentorEligibilityTier: TierLevel
+  mentorEligibilityTier: TierLevelEnum
 }

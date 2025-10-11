@@ -30,6 +30,7 @@ export class BaekjoonDomainMapper {
       tier: baekjoonUser.getCurrentTier().toString(),
       solvedCount: baekjoonUser.getSolvedCount(),
       lastUpdated: baekjoonUser.getLastSyncedAt(),
+      isMentorEligible: baekjoonUser.isMentorEligible(),
     }
 
     return plainToInstance(BaekjoonProfileOutputDto, plainProfile, {

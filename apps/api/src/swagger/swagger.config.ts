@@ -4,8 +4,7 @@ import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from "@nestjs/sw
 
 import { ISwaggerConfig } from "./swagger.interface"
 
-import { Tier, TierLevel } from "@/modules/baekjoon/domain/vo"
-import { TierLevelSchema, TierMetadataDto } from "@/shared/infrastructure/dto/tier-metadata.dto"
+import { TierColorEnum, TierNameEnum } from "@/modules/baekjoon/domain/vo"
 
 export class SwaggerConfig {
   private readonly config: ISwaggerConfig = {
@@ -60,7 +59,7 @@ export class SwaggerConfig {
   public setup(app: INestApplication) {
     const config = this.buildDocumentOptions()
     const document = SwaggerModule.createDocument(app, config, {
-      extraModels: [TierMetadataDto, TierLevelSchema],
+      // extraModels: [TierMetadataDto, TierLevelSchema],
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         // 간단한 메소드명 정리
         return methodKey
@@ -89,11 +88,33 @@ export class SwaggerConfig {
     }
 
     // TierMetadataDto에 동적 데이터 예시 주입
-    if (document.components.schemas.TierMetadataDto) {
-      document.components.schemas.TierMetadataDto["example"] = {
-        tiers: Tier.getAllTiers(),
-        mentorEligibilityTier: TierLevel.PLATINUM_III,
-      }
+    // if (document.components.schemas.TierMetadataDto) {
+    //   document.components.schemas.TierMetadataDto["example"] = {
+    //     tiers: Tier.getAllTiers(),
+    //     mentorEligibilityTier: TierLevelEnum.PlatinumIII,
+    //   }
+    // }
+
+    // Tier 관련 스키마
+    // document.components.schemas.TierLevel = {
+    //   type: "string",
+    //   enum: Object.values(TierLevelEnum),
+    //   description: "Tier level value",
+    //   "x-enumNames": Object.keys(TierLevelEnum),
+    // }
+
+    document.components.schemas.TierColor = {
+      type: "string",
+      enum: Object.values(TierColorEnum),
+      description: "Tier color hex code",
+      "x-enumNames": Object.keys(TierColorEnum),
+    }
+
+    document.components.schemas.TierName = {
+      type: "string",
+      enum: Object.values(TierNameEnum),
+      description: "Tier display name",
+      "x-enumNames": Object.keys(TierNameEnum),
     }
 
     // AuthType 공통 스키마

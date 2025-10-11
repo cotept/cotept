@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
 
 import { BaekjoonUser } from "@/modules/baekjoon/domain/model"
-import { Tier, TierLevel } from "@/modules/baekjoon/domain/vo"
+import { Tier, TierLevelEnum } from "@/modules/baekjoon/domain/vo"
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 
 @Injectable()
@@ -80,19 +80,19 @@ export class BaekjoonProfileMapper {
   }
 
   /**
-   * 티어 문자열을 TierLevel로 변환
-   * 티어 이름을 파싱하여 적절한 TierLevel 반환
+   * 티어 문자열을 TierLevelEnum로 변환
+   * 티어 이름을 파싱하여 적절한 TierLevelEnum 반환
    */
-  private parseTierFromString(tierString?: string): TierLevel {
+  private parseTierFromString(tierString?: string): TierLevelEnum {
     if (!tierString) {
-      return TierLevel.UNRATED
+      return TierLevelEnum.Unrated
     }
 
     try {
       return Tier.fromName(tierString).getLevel()
     } catch (error) {
       console.warn(`Unknown tier string: ${tierString}, defaulting to UNRATED`)
-      return TierLevel.UNRATED
+      return TierLevelEnum.Unrated
     }
   }
 }

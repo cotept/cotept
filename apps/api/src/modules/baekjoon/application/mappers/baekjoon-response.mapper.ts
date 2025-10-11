@@ -44,9 +44,6 @@ export class BaekjoonResponseMapper {
   }
 
   toProfileResponse(dto: BaekjoonProfileOutputDto, userId: string = ""): BaekjoonProfileResponseDto {
-    // Platinum 3 (레이팅 2000) 이상이면 멘토 자격
-    const isMentorEligible = dto.rating >= 2000
-
     return {
       userId,
       handle: dto.handle,
@@ -57,7 +54,7 @@ export class BaekjoonResponseMapper {
       profileImageUrl: dto.profileImageUrl,
       bio: dto.bio,
       lastUpdated: new Date().toISOString(),
-      isMentorEligible,
+      isMentorEligible: dto.isMentorEligible,
     }
   }
 

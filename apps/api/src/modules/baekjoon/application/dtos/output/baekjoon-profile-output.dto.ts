@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 
 import { Expose, Transform } from "class-transformer"
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from "class-validator"
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from "class-validator"
 
 /**
  * 백준 프로필 응답 DTO
@@ -85,4 +85,12 @@ export class BaekjoonProfileOutputDto {
   @Expose()
   @IsDate({ message: "마지막 업데이트 시간은 유효한 날짜여야 합니다." })
   lastUpdated: Date
+
+  @ApiProperty({
+    description: "사용자가 멘토인지 확인",
+    example: false,
+  })
+  @Expose()
+  @IsBoolean()
+  isMentorEligible: boolean
 }

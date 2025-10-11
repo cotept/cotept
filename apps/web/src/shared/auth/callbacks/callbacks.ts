@@ -17,6 +17,7 @@ export const authCallbacks: NextAuthConfig["callbacks"] = {
       token.accessToken = (user as any).accessToken
       token.refreshToken = (user as any).refreshToken
       token.role = (user as any).role
+      token.id = (user as any).id
     }
     return token
   },
@@ -25,7 +26,7 @@ export const authCallbacks: NextAuthConfig["callbacks"] = {
     session.accessToken = token.accessToken as string
     session.refreshToken = token.refreshToken as string
     if (session.user) {
-      session.user.id = token.sub as string
+      session.user.id = token.id as string
       session.user.role = token.role as string
     }
     return session

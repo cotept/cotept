@@ -21,11 +21,11 @@
  */
 
 export enum VerificationStatusType {
-    pending = 'PENDING',
-    inProgress = 'IN_PROGRESS',
-    completed = 'COMPLETED',
-    failed = 'FAILED',
-    expired = 'EXPIRED'
+    PENDING = 'PENDING',
+    IN_PROGRESS = 'IN_PROGRESS',
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
+    EXPIRED = 'EXPIRED'
 }
 
 

@@ -75,6 +75,8 @@ export * from './tag-statistics-output-dto';
 export * from './tag-statistics-output-response';
 export * from './tag-statistics-response-dto';
 export * from './tag-statistics-response-wrapper';
+export * from './tier-color';
+export * from './tier-name';
 export * from './token-response-dto';
 export * from './token-response-wrapper';
 export * from './top-tag-dto';
@@ -114,3 +116,5 @@ export * from './verification-status-response-dto';
 export * from './verification-status-response-wrapper';
 export * from './verification-status-type';
 export * from './verify-code-request-dto';
+
+export * from './extra-enums';

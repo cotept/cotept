@@ -75,10 +75,10 @@ export interface BaekjoonVerificationResultResponseDto {
     * @enum {string}
     */
 export enum Status {
-    pending = 'PENDING',
-    completed = 'COMPLETED',
-    failed = 'FAILED',
-    expired = 'EXPIRED'
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
+    EXPIRED = 'EXPIRED'
 }
 
 

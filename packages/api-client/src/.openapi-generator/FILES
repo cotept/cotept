@@ -101,6 +101,8 @@ types/tag-statistics-output-dto.ts
 types/tag-statistics-output-response.ts
 types/tag-statistics-response-dto.ts
 types/tag-statistics-response-wrapper.ts
+types/tier-color.ts
+types/tier-name.ts
 types/token-response-dto.ts
 types/token-response-wrapper.ts
 types/top-tag-dto.ts

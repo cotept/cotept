@@ -21,9 +21,9 @@
  */
 
 export enum UserRole {
-    mentee = 'MENTEE',
-    mentor = 'MENTOR',
-    admin = 'ADMIN'
+    MENTEE = 'MENTEE',
+    MENTOR = 'MENTOR',
+    ADMIN = 'ADMIN'
 }
 
 

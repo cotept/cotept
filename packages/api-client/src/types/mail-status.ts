@@ -21,9 +21,9 @@
  */
 
 export enum MailStatus {
-    pending = 'PENDING',
-    sent = 'SENT',
-    failed = 'FAILED'
+    PENDING = 'PENDING',
+    SENT = 'SENT',
+    FAILED = 'FAILED'
 }
 
 

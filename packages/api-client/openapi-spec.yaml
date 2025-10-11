@@ -5025,8 +5025,8 @@ components:
           example: user@example.com
         name:
           type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: StrongP@ss123
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
+          example: 홍길동
         role:
           description: 사용자 역할
           example: MENTEE
@@ -5124,8 +5124,8 @@ components:
           example: user@example.com
         name:
           type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: StrongP@ss123
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
+          example: 홍길동
         role:
           description: '사용자 역할 (기본값: MENTEE)'
           example: MENTEE
@@ -5151,8 +5151,8 @@ components:
           example: user@example.com
         name:
           type: string
-          description: 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: StrongP@ss123
+          description: 사용자 이름 (2~50자, 한글/영문만 허용)
+          example: 홍길동
         phoneNumber:
           type: string
           description: 전화번호 (- 없이 숫자만)
@@ -6752,3 +6752,141 @@ components:
       required:
         - fileName
         - contentType
+    TierColor:
+      type: string
+      enum:
+        - '#2D2D2D'
+        - '#AD5600'
+        - '#AD5600'
+        - '#AD5600'
+        - '#AD5600'
+        - '#AD5600'
+        - '#435F7A'
+        - '#435F7A'
+        - '#435F7A'
+        - '#435F7A'
+        - '#435F7A'
+        - '#EC9A00'
+        - '#EC9A00'
+        - '#EC9A00'
+        - '#EC9A00'
+        - '#EC9A00'
+        - '#27E2A4'
+        - '#27E2A4'
+        - '#27E2A4'
+        - '#27E2A4'
+        - '#27E2A4'
+        - '#00D2F0'
+        - '#00D2F0'
+        - '#00D2F0'
+        - '#00D2F0'
+        - '#00D2F0'
+        - '#FF0062'
+        - '#FF0062'
+        - '#FF0062'
+        - '#FF0062'
+        - '#FF0062'
+        - '#B491FF'
+      description: Tier color hex code
+      x-enumNames:
+        - Unrated
+        - BronzeV
+        - BronzeIV
+        - BronzeIII
+        - BronzeII
+        - BronzeI
+        - SilverV
+        - SilverIV
+        - SilverIII
+        - SilverII
+        - SilverI
+        - GoldV
+        - GoldIV
+        - GoldIII
+        - GoldII
+        - GoldI
+        - PlatinumV
+        - PlatinumIV
+        - PlatinumIII
+        - PlatinumII
+        - PlatinumI
+        - DiamondV
+        - DiamondIV
+        - DiamondIII
+        - DiamondII
+        - DiamondI
+        - RubyV
+        - RubyIV
+        - RubyIII
+        - RubyII
+        - RubyI
+        - Master
+    TierName:
+      type: string
+      enum:
+        - Unrated
+        - BronzeV
+        - BronzeIV
+        - BronzeIII
+        - BronzeII
+        - BronzeI
+        - SilverV
+        - SilverIV
+        - SilverIII
+        - SilverII
+        - SilverI
+        - GoldV
+        - GoldIV
+        - GoldIII
+        - GoldII
+        - GoldI
+        - PlatinumV
+        - PlatinumIV
+        - PlatinumIII
+        - PlatinumII
+        - PlatinumI
+        - DiamondV
+        - DiamondIV
+        - DiamondIII
+        - DiamondII
+        - DiamondI
+        - RubyV
+        - RubyIV
+        - RubyIII
+        - RubyII
+        - RubyI
+        - Master
+      description: Tier display name
+      x-enumNames:
+        - Unrated
+        - BronzeV
+        - BronzeIV
+        - BronzeIII
+        - BronzeII
+        - BronzeI
+        - SilverV
+        - SilverIV
+        - SilverIII
+        - SilverII
+        - SilverI
+        - GoldV
+        - GoldIV
+        - GoldIII
+        - GoldII
+        - GoldI
+        - PlatinumV
+        - PlatinumIV
+        - PlatinumIII
+        - PlatinumII
+        - PlatinumI
+        - DiamondV
+        - DiamondIV
+        - DiamondIII
+        - DiamondII
+        - DiamondI
+        - RubyV
+        - RubyIV
+        - RubyIII
+        - RubyII
+        - RubyI
+        - Master

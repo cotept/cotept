@@ -69,7 +69,7 @@ export interface UserDto {
      */
     'updatedAt': string;
     /**
-     * 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+     * 사용자 이름 (2~50자, 한글/영문만 허용)
      * @type {string}
      * @memberof UserDto
      */

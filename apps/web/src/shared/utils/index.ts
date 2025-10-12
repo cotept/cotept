@@ -1,6 +1,7 @@
 import { QueryClient, QueryKey } from "@tanstack/react-query"
 import { AxiosPromise } from "axios"
 import { produce } from "immer"
+import { toast } from "sonner"
 
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 
@@ -144,3 +145,28 @@ export const createClearInputField =
     form.setValue(fieldName, "" as any)
     form.clearErrors(fieldName)
   }
+
+/**
+ * OCI Object Storage로 직접 파일을 업로드하는 헬퍼 함수
+ * @param uploadUrl 백엔드에서 받은 1회용 업로드 URL (PAR)
+ * @param file 업로드할 파일 객체
+ * @returns 업로드 성공 시, 최종 파일 URL
+ */
+export async function uploadFileToOCIObjectStorage(uploadUrl: string, file: File) {
+  try {
+    const response = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    })
+    if (!response.ok) {
+      throw new Error("파일 업로드에 실패했습니다.")
+    }
+    // PAR URL에서 쿼리스트링을 제거하여 실제 오브젝트 URL을 얻음
+    return uploadUrl.split("?")[0]
+  } catch (error) {
+    toast.error("파일 업로드에 실패했습니다.")
+    console.error(error)
+    return null
+  }
+}

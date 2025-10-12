@@ -21,16 +21,13 @@ import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 프로필 생성
 export function useCreateUserProfile(
-  options?: Pick<
-    UseMutationOptions<UserProfileCreationResponseWrapper, ApiError, UserProfileApiCreateUserProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<UserProfileCreationResponseWrapper, ApiError, UserProfileApiCreateUserProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileCreationResponseWrapper, ApiError, UserProfileApiCreateUserProfileRequest>({
     mutationFn: (data) => userProfileApiService.createUserProfile({ ...data }),
-    queryKey: userProfileKeys.all.queryKey,
+    invalidateKeys: [userProfileKeys.all.queryKey],
     successMessage: "프로필이 성공적으로 생성되었습니다.",
     onSuccess: (response, variables, context) => {
       // 관련 쿼리들 무효화
@@ -52,16 +49,13 @@ export function useCreateUserProfile(
 
 // 프로필 수정
 export function useUpdateUserProfile(
-  options?: Pick<
-    UseMutationOptions<UserProfileUpdateResponseWrapper, ApiError, UserProfileApiUpdateUserProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<UserProfileUpdateResponseWrapper, ApiError, UserProfileApiUpdateUserProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileUpdateResponseWrapper, ApiError, UserProfileApiUpdateUserProfileRequest>({
     mutationFn: (data) => userProfileApiService.updateUserProfile({ ...data }),
-    queryKey: userProfileKeys.all.queryKey,
+    invalidateKeys: [userProfileKeys.all.queryKey],
     successMessage: "프로필이 성공적으로 수정되었습니다.",
     onSuccess: (response, variables, context) => {
       // 수정된 프로필 관련 쿼리 무효화
@@ -82,16 +76,13 @@ export function useUpdateUserProfile(
 
 // 프로필 삭제
 export function useDeleteUserProfile(
-  options?: Pick<
-    UseMutationOptions<UserProfileDeletionResponseWrapper, ApiError, UserProfileApiDeleteUserProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<UserProfileDeletionResponseWrapper, ApiError, UserProfileApiDeleteUserProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileDeletionResponseWrapper, ApiError, UserProfileApiDeleteUserProfileRequest>({
     mutationFn: (data) => userProfileApiService.deleteUserProfile({ ...data }),
-    queryKey: userProfileKeys.all.queryKey,
+    invalidateKeys: [userProfileKeys.all.queryKey],
     successMessage: "프로필이 성공적으로 삭제되었습니다.",
     onSuccess: (response, variables, context) => {
       // 삭제된 프로필 관련 쿼리 클리어
@@ -113,16 +104,13 @@ export function useDeleteUserProfile(
 
 // 프로필 생성 또는 업데이트 (upsert)
 export function useUpsertUserProfile(
-  options?: Pick<
-    UseMutationOptions<UserProfileUpsertResponseWrapper, ApiError, UserProfileApiUpsertUserProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<UserProfileUpsertResponseWrapper, ApiError, UserProfileApiUpsertUserProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileUpsertResponseWrapper, ApiError, UserProfileApiUpsertUserProfileRequest>({
     mutationFn: (data) => userProfileApiService.upsertUserProfile({ ...data }),
-    queryKey: userProfileKeys.all.queryKey,
+    invalidateKeys: [userProfileKeys.all.queryKey],
     successMessage: "프로필이 성공적으로 처리되었습니다.",
     onSuccess: (response, variables, context) => {
       // upsert된 프로필 관련 쿼리 무효화
@@ -143,9 +131,10 @@ export function useUpsertUserProfile(
 
 // 회원가입용 기본 프로필 생성
 export function useCreateBasicProfileForSignup(
-  options?: Pick<
-    UseMutationOptions<BasicProfileCreationResponseWrapper, ApiError, UserProfileApiCreateBasicProfileForSignupRequest>,
-    "onSuccess" | "onError"
+  options?: UseMutationOptions<
+    BasicProfileCreationResponseWrapper,
+    ApiError,
+    UserProfileApiCreateBasicProfileForSignupRequest
   >,
 ) {
   const queryClient = useQueryClient()
@@ -156,7 +145,7 @@ export function useCreateBasicProfileForSignup(
     UserProfileApiCreateBasicProfileForSignupRequest
   >({
     mutationFn: (data) => userProfileApiService.createBasicProfileForSignup({ ...data }),
-    queryKey: userProfileKeys.basicProfile().queryKey,
+    invalidateKeys: [userProfileKeys.basicProfile().queryKey],
     successMessage: "기본 프로필이 생성되었습니다.",
     onSuccess: (response, variables, context) => {
       // 기본 프로필 관련 쿼리 무효화

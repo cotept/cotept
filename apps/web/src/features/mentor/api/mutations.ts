@@ -17,16 +17,13 @@ import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 멘토 프로필 생성
 export function useCreateMentorProfile(
-  options?: Pick<
-    UseMutationOptions<MentorProfileDto, ApiError, MentorApiCreateMentorProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<MentorProfileDto, ApiError, MentorApiCreateMentorProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<MentorProfileDto, ApiError, MentorApiCreateMentorProfileRequest>({
     mutationFn: (data) => mentorApiService.createMentorProfile({ ...data }),
-    queryKey: mentorKeys.profiles().queryKey,
+    invalidateKeys: [mentorKeys.profiles().queryKey],
     successMessage: "멘토 프로필이 생성되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 멘토 프로필 관련 모든 쿼리 무효화
@@ -41,16 +38,13 @@ export function useCreateMentorProfile(
 
 // 멘토 프로필 수정
 export function useUpdateMentorProfile(
-  options?: Pick<
-    UseMutationOptions<MentorProfileDto, ApiError, MentorApiUpdateMentorProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<MentorProfileDto, ApiError, MentorApiUpdateMentorProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<MentorProfileDto, ApiError, MentorApiUpdateMentorProfileRequest>({
     mutationFn: (data) => mentorApiService.updateMentorProfile({ ...data }),
-    queryKey: mentorKeys.profiles().queryKey,
+    invalidateKeys: [mentorKeys.profiles().queryKey],
     successMessage: "멘토 프로필이 수정되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 멘토 프로필 관련 모든 쿼리 무효화
@@ -71,16 +65,13 @@ export function useUpdateMentorProfile(
 
 // 멘토 프로필 삭제 (소프트 삭제)
 export function useDeleteMentorProfile(
-  options?: Pick<
-    UseMutationOptions<DeletionResponseDto, ApiError, MentorApiDeleteMentorProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<DeletionResponseDto, ApiError, MentorApiDeleteMentorProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<DeletionResponseDto, ApiError, MentorApiDeleteMentorProfileRequest>({
     mutationFn: (data) => mentorApiService.deleteMentorProfile({ ...data }),
-    queryKey: mentorKeys.profiles().queryKey,
+    invalidateKeys: [mentorKeys.profiles().queryKey],
     successMessage: "멘토 프로필이 삭제되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 멘토 프로필 관련 모든 쿼리 무효화
@@ -95,16 +86,13 @@ export function useDeleteMentorProfile(
 
 // 멘토 프로필 영구 삭제
 export function useHardDeleteMentorProfile(
-  options?: Pick<
-    UseMutationOptions<DeletionResponseDto, ApiError, MentorApiHardDeleteMentorProfileRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<DeletionResponseDto, ApiError, MentorApiHardDeleteMentorProfileRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<DeletionResponseDto, ApiError, MentorApiHardDeleteMentorProfileRequest>({
     mutationFn: (data) => mentorApiService.hardDeleteMentorProfile({ ...data }),
-    queryKey: mentorKeys.profiles().queryKey,
+    invalidateKeys: [mentorKeys.profiles().queryKey],
     successMessage: "멘토 프로필이 영구 삭제되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 멘토 프로필 관련 모든 쿼리 무효화

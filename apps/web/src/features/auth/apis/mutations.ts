@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { authKeys, authQueryUtils } from "./queryKey"
+import { authKeys } from "./queryKey"
 
 import type {
   AuthApiConfirmSocialLinkRequest,
@@ -26,70 +26,50 @@ import { authApiService } from "@/shared/api/services/auth-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 로그인
-export function useLogin(
-  options?: Pick<UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiLoginRequest>, "onSuccess" | "onError">,
-) {
-  const queryClient = useQueryClient()
-
+export function useLogin(options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiLoginRequest>) {
   return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiLoginRequest>({
     mutationFn: (data) => authApiService.login(data),
-    queryKey: authKeys.all.queryKey,
+    invalidateKeys: [authKeys.all.queryKey],
     successMessage: "로그인에 성공했습니다.",
-    onSuccess: async (response, variables, context) => {
+    onSuccess: async (response) => {
       // NextAuth 세션 업데이트
       if (response.data) {
         // 토큰 정보로 세션 업데이트 (구체적인 구현은 NextAuth 설정에 따라 다름)
         // const { signIn } = await import("next-auth/react")
       }
-
-      // 인증 관련 쿼리 무효화
-      authQueryUtils.invalidateAuthRelated(queryClient)
-      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options, // Fat Hook의 onSuccess도 실행됨
   })
 }
 
 // 로그아웃
-export function useLogout(
-  options?: Pick<UseMutationOptions<LogoutResponseWrapper, ApiError, void>, "onSuccess" | "onError">,
-) {
+export function useLogout(options?: UseMutationOptions<LogoutResponseWrapper, ApiError, void>) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<LogoutResponseWrapper, ApiError, void>({
     mutationFn: () => authApiService.logout(),
-    queryKey: authKeys.all.queryKey,
+    invalidateKeys: [authKeys.all.queryKey],
     successMessage: "로그아웃되었습니다.",
-    onSuccess: async (response, variables, context) => {
+    onSuccess: async () => {
       // NextAuth 세션 정리
       const { signOut } = await import("next-auth/react")
       await signOut({ redirect: false })
 
       // 모든 인증 쿼리 클리어
-      authQueryUtils.clearAuthQueries(queryClient)
-      options?.onSuccess?.(response, variables, context)
+      queryClient.clear()
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
 // 토큰 갱신
 export function useRefreshToken(
-  options?: Pick<
-    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiRefreshTokenRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiRefreshTokenRequest>,
 ) {
-  const queryClient = useQueryClient()
-
   return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiRefreshTokenRequest>({
     mutationFn: (data) => authApiService.refreshToken(data),
-    queryKey: authKeys.all.queryKey,
-    onSuccess: async (response, variables, context) => {
+    invalidateKeys: [authKeys.all.queryKey],
+    onSuccess: async (response) => {
       // NextAuth 세션 업데이트
       if (response.data) {
         const { update } = await import("@/auth")
@@ -100,30 +80,20 @@ export function useRefreshToken(
           },
         })
       }
-
-      authQueryUtils.invalidateAuthRelated(queryClient)
-      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
 // 소셜 로그인 코드 교환
 export function useExchangeAuthCode(
-  options?: Pick<
-    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiExchangeAuthCodeRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiExchangeAuthCodeRequest>,
 ) {
-  const queryClient = useQueryClient()
-
   return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiExchangeAuthCodeRequest>({
     mutationFn: (data) => authApiService.exchangeAuthCode(data),
-    queryKey: authKeys.socialAuth().queryKey,
+    invalidateKeys: [authKeys.all.queryKey, authKeys.socialAuth().queryKey],
     successMessage: "소셜 로그인에 성공했습니다.",
-    onSuccess: async (response, variables, context) => {
+    onSuccess: async (response) => {
       // NextAuth 세션에 토큰 저장
       if (response.data) {
         const { update } = await import("@/auth")
@@ -134,31 +104,20 @@ export function useExchangeAuthCode(
           },
         })
       }
-
-      authQueryUtils.invalidateAuthRelated(queryClient)
-      authQueryUtils.invalidateSocialAuth(queryClient)
-      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
 // 소셜 계정 연결 확인
 export function useConfirmSocialLink(
-  options?: Pick<
-    UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiConfirmSocialLinkRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiConfirmSocialLinkRequest>,
 ) {
-  const queryClient = useQueryClient()
-
   return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiConfirmSocialLinkRequest>({
     mutationFn: (data) => authApiService.confirmSocialLink(data),
-    queryKey: authKeys.socialAuth().queryKey,
+    invalidateKeys: [authKeys.profile().queryKey, authKeys.socialAuth().queryKey],
     successMessage: "소셜 계정 연결이 완료되었습니다.",
-    onSuccess: async (response, variables, context) => {
+    onSuccess: async (response) => {
       // NextAuth 세션에 토큰 저장 (연결 승인 시)
       if (response.data) {
         const { update } = await import("@/auth")
@@ -169,97 +128,54 @@ export function useConfirmSocialLink(
           },
         })
       }
-
-      authQueryUtils.invalidateProfile(queryClient)
-      authQueryUtils.invalidateSocialAuth(queryClient)
-      options?.onSuccess?.(response, variables, context)
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
 // 인증 코드 발송
 export function useSendVerificationCode(
-  options?: Pick<
-    UseMutationOptions<VerificationCodeResponseWrapper, ApiError, AuthApiSendVerificationCodeRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<VerificationCodeResponseWrapper, ApiError, AuthApiSendVerificationCodeRequest>,
 ) {
-  const queryClient = useQueryClient()
-
   return useBaseMutation<VerificationCodeResponseWrapper, ApiError, AuthApiSendVerificationCodeRequest>({
     mutationFn: (data) => authApiService.sendVerificationCode(data),
-    queryKey: authKeys.verifications().queryKey,
+    invalidateKeys: [authKeys.verifications().queryKey],
     successMessage: "인증 코드가 발송되었습니다.",
-    onSuccess: (response, variables, context) => {
-      authQueryUtils.invalidateVerifications(queryClient)
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
-// 인증 코드 확인
+// 인증 코드 확인 (토스트 메시지 없음 - 사용자가 직접 처리)
 export function useVerifyCode(
-  options?: Pick<
-    UseMutationOptions<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>,
 ) {
-  const queryClient = useQueryClient()
-
-  return useMutation<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>({
+  return useBaseMutation<EmailVerificationResultResponseWrapper, ApiError, AuthApiVerifyCodeRequest>({
     mutationFn: (data) => authApiService.verifyCode(data),
-    // queryKey: authKeys.verifications().queryKey,
-    // successMessage: "인증이 완료되었습니다.",
-    onSuccess: (response, variables, context) => {
-      authQueryUtils.invalidateVerifications(queryClient)
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    invalidateKeys: [authKeys.verifications().queryKey],
+    // successMessage 없음 - Fat Hook에서 성공/실패 메시지 처리
+    ...options,
   })
 }
 
 // 아이디 찾기
-export function useFindId(
-  options?: Pick<UseMutationOptions<FindIdResponseWrapper, ApiError, AuthApiFindIdRequest>, "onSuccess" | "onError">,
-) {
+export function useFindId(options?: UseMutationOptions<FindIdResponseWrapper, ApiError, AuthApiFindIdRequest>) {
   return useBaseMutation<FindIdResponseWrapper, ApiError, AuthApiFindIdRequest>({
     mutationFn: (data) => authApiService.findId(data),
-    queryKey: authKeys.all.queryKey,
+    invalidateKeys: [authKeys.all.queryKey],
     successMessage: "아이디 찾기가 완료되었습니다.",
-    onSuccess: (response, variables, context) => {
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 
 // 비밀번호 재설정
 export function useResetPassword(
-  options?: Pick<
-    UseMutationOptions<ResetPasswordResponseWrapper, ApiError, AuthApiResetPasswordRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<ResetPasswordResponseWrapper, ApiError, AuthApiResetPasswordRequest>,
 ) {
   return useBaseMutation<ResetPasswordResponseWrapper, ApiError, AuthApiResetPasswordRequest>({
     mutationFn: (data) => authApiService.resetPassword(data),
-    queryKey: authKeys.all.queryKey,
+    invalidateKeys: [authKeys.all.queryKey],
     successMessage: "비밀번호가 재설정되었습니다.",
-    onSuccess: (response, variables, context) => {
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...options,
   })
 }
 

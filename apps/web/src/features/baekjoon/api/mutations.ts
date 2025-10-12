@@ -16,16 +16,13 @@ import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 // 백준 인증 시작
 export function useStartBaekjoonVerification(
   userId: string,
-  options?: Pick<
-    UseMutationOptions<VerificationStatusResponseWrapper, ApiError, BaekjoonApiStartVerificationRequest>,
-    "onSuccess" | "onError"
-  >,
+  options?: UseMutationOptions<VerificationStatusResponseWrapper, ApiError, BaekjoonApiStartVerificationRequest>,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<VerificationStatusResponseWrapper, ApiError, BaekjoonApiStartVerificationRequest>({
     mutationFn: (data) => baekjoonApiService.startVerification({ ...data }),
-    queryKey: baekjoonKeys.verification().queryKey,
+    invalidateKeys: [baekjoonKeys.verification().queryKey],
     successMessage: "백준 인증이 시작되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 백준 인증 관련 쿼리들 무효화
@@ -41,16 +38,17 @@ export function useStartBaekjoonVerification(
 // 백준 인증 완료
 export function useCompleteBaekjoonVerification(
   userId: string,
-  options?: Pick<
-    UseMutationOptions<BaekjoonVerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>,
-    "onSuccess" | "onError"
+  options?: UseMutationOptions<
+    BaekjoonVerificationResultResponseWrapper,
+    ApiError,
+    BaekjoonApiCompleteVerificationRequest
   >,
 ) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<BaekjoonVerificationResultResponseWrapper, ApiError, BaekjoonApiCompleteVerificationRequest>({
     mutationFn: (data) => baekjoonApiService.completeVerification({ ...data }),
-    queryKey: baekjoonKeys.verification().queryKey,
+    invalidateKeys: [baekjoonKeys.verification().queryKey],
     successMessage: "백준 인증이 완료되었습니다.",
     onSuccess: async (response, variables, context) => {
       // 백준 인증 관련 쿼리들 무효화

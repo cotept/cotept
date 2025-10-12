@@ -5,120 +5,97 @@ import { toast } from "sonner"
  * @typeParam TData - 뮤테이션 함수의 반환 타입
  * @typeParam TError - 에러 타입
  * @typeParam TVariables - 뮤테이션 함수에 전달되는 변수 타입
- * @typeParam TContext - onMutate에서 반환되어 다른 콜백으로 전달되는 컨텍스트 타입. 기본값은 `{ previousData: TData | undefined }`입니다.
+ * @typeParam TContext - onMutate에서 반환되어 다른 콜백으로 전달되는 컨텍스트 타입
  */
-interface BaseMutationOptions<TData, TError, TVariables, TContext>
-  extends Omit<
-    UseMutationOptions<TData, TError, TVariables, TContext>,
-    "onSuccess" | "onError" | "onSettled" | "onMutate"
-  > {
-  /** 각 뮤테이션을 식별하고 관련 쿼리를 관리하기 위한 필수 키 */
-  queryKey: QueryKey
+interface UseBaseMutationOptions<TData, TError, TVariables, TContext = unknown>
+  extends UseMutationOptions<TData, TError, TVariables, TContext> {
+  /** 뮤테이션 성공 시 무효화할 쿼리 키 배열 */
+  invalidateKeys?: QueryKey[]
 
   /** 뮤테이션 성공 시 표시될 메시지 */
   successMessage?: string
 
   /** 뮤테이션 실패 시 표시될 메시지. 제공되지 않으면 서버 에러 메시지나 기본 메시지가 사용됩니다. */
   errorMessage?: string
-
-  /** UseMutationOptions의 콜백들을 그대로 받아서 사용 */
-  onSuccess?: (data: TData, variables: TVariables, context: TContext | undefined) => void
-  onError?: (error: TError, variables: TVariables, context: TContext | undefined) => void
-  onSettled?: (
-    data: TData | undefined,
-    error: TError | null,
-    variables: TVariables,
-    context: TContext | undefined,
-  ) => void
-  /**
-   * 뮤테이션이 실행되기 전에 호출됩니다. 낙관적 업데이트 로직을 구현하는 데 사용됩니다.
-   * `useBaseMutation` 내부에서 이미 `queryClient.cancelQueries`와 `queryClient.getQueryData`를 수행하므로,
-   * 이 콜백에서는 `previousData`를 인자로 받아 바로 사용할 수 있습니다.
-   * 반환하는 값은 `TContext`에 병합되어 `onSuccess`, `onError`, `onSettled` 콜백으로 전달됩니다.
-   */
-  onMutate?: (
-    variables: TVariables,
-    previousData: TData | undefined,
-  ) => Promise<Partial<TContext> | undefined> | Partial<TContext> | undefined
 }
 
 /**
- * 공통 로직(성공/에러 토스트, 쿼리 무효화, 낙관적 업데이트 롤백)을 처리하는 useMutation의 래퍼 훅입니다.
+ * 공통 로직(성공/에러 토스트, 쿼리 무효화)을 처리하는 useMutation의 래퍼 훅입니다.
+ * 일반 useMutation과 동일한 시그니처로 사용 가능하며, invalidateKeys만 추가로 전달하면 됩니다.
  *
  * @param options - useMutation 옵션과 추가적인 공통 옵션을 포함합니다.
  * @returns React Query의 useMutation 훅에서 반환하는 것과 동일한 값을 반환합니다.
  *
  * @example
- * // 기본 사용법 (생성)
+ * // 기본 사용법 (일반 useMutation과 동일)
  * const createUser = useBaseMutation({
  *   mutationFn: (newUser) => api.users.create(newUser),
- *   queryKey: userKeys.lists().queryKey,
+ *   invalidateKeys: [userKeys.lists().queryKey],
  *   successMessage: '사용자가 생성되었습니다.',
+ *   onSuccess: (data) => {
+ *     console.log('성공!', data)
+ *   }
  * });
  *
- * // 낙관적 업데이트 사용법 (수정)
+ * // 복잡한 사용법 (낙관적 업데이트)
  * const updateUser = useBaseMutation({
  *   mutationFn: (updatedUser) => api.users.update(updatedUser.id, updatedUser),
- *   queryKey: userKeys.detail(userId).queryKey,
+ *   invalidateKeys: [userKeys.detail(userId).queryKey],
  *   successMessage: '사용자가 수정되었습니다.',
- *   onMutate: (updatedUser, previousData) => {
- *     // `previousData`를 사용하여 낙관적 업데이트 로직 구현
+ *   onMutate: async (variables) => {
+ *     await queryClient.cancelQueries({ queryKey: userKeys.detail(userId).queryKey })
+ *     const previousData = queryClient.getQueryData(userKeys.detail(userId).queryKey)
  *     queryClient.setQueryData(userKeys.detail(userId).queryKey, (old) =>
- *       old ? { ...old, name: updatedUser.name } : undefined
- *     );
- *     return { previousData }; // 롤백을 위해 previousData 반환
+ *       old ? { ...old, name: variables.name } : undefined
+ *     )
+ *     return { previousData }
+ *   },
+ *   onError: (err, variables, context) => {
+ *     if (context?.previousData) {
+ *       queryClient.setQueryData(userKeys.detail(userId).queryKey, context.previousData)
+ *     }
  *   }
  * });
  */
-export function useBaseMutation<
-  TData = unknown,
-  TError = unknown,
-  TVariables = unknown,
-  TContext = { previousData: TData | undefined },
->(options: BaseMutationOptions<TData, TError, TVariables, TContext>) {
+export function useBaseMutation<TData = unknown, TError = unknown, TVariables = unknown, TContext = unknown>(
+  options: UseBaseMutationOptions<TData, TError, TVariables, TContext>,
+) {
   const queryClient = useQueryClient()
 
-  return useMutation({
-    ...options, // mutationFn 등 나머지 옵션들을 그대로 전달
+  const { invalidateKeys, successMessage, errorMessage, onSuccess, onError, onSettled, ...mutationOptions } = options
 
-    onMutate: async (variables: TVariables) => {
-      // 기존 쿼리 취소
-      await queryClient.cancelQueries({ queryKey: options.queryKey })
-      // 이전 데이터 스냅샷
-      const previousData = queryClient.getQueryData<TData>(options.queryKey)
-      // 사용자가 정의한 onMutate 실행 (e.g., optimistic update 로직)
-      const userDefinedContext = options.onMutate ? await options.onMutate(variables, previousData) : undefined
-      // 이전 데이터와 사용자 정의 context를 함께 반환
-      return { previousData, ...((userDefinedContext as object) ?? {}) } as TContext
-    },
+  return useMutation({
+    ...mutationOptions,
 
     onSuccess: (data, variables, context) => {
-      // 성공 메시지가 있으면 toast로 표시
-      if (options.successMessage) {
-        toast.success(options.successMessage)
+      // 성공 메시지 표시
+      if (successMessage) {
+        toast.success(successMessage)
       }
+
       // 원래 onSuccess 콜백 실행
-      options.onSuccess?.(data, variables, context)
+      onSuccess?.(data, variables, context)
     },
 
-    onError: (error: TError, variables, context: any) => {
-      // onMutate에서 스냅샷한 데이터로 롤백
-      if (context?.previousData) {
-        queryClient.setQueryData(options.queryKey, context.previousData)
-      }
-      // 에러 메시지가 있으면 toast로 표시
-      const message = (error as any)?.message || options.errorMessage || "오류가 발생했습니다."
+    onError: (error: TError, variables, context) => {
+      // 에러 메시지 표시
+      const message = (error as any)?.message || errorMessage || "오류가 발생했습니다."
       toast.error(message)
 
-      options.onError?.(error, variables, context)
+      // 원래 onError 콜백 실행
+      onError?.(error, variables, context)
     },
 
     onSettled: (data, error, variables, context) => {
-      // 뮤테이션이 성공하든 실패하든 항상 실행  쿼리 무효화로 서버 데이터와 동기화
-      queryClient.invalidateQueries({ queryKey: options.queryKey })
+      // 지정된 쿼리 무효화
+      if (invalidateKeys) {
+        invalidateKeys.forEach((queryKey) => {
+          queryClient.invalidateQueries({ queryKey })
+        })
+      }
 
       // 원래 onSettled 콜백 실행
-      options.onSettled?.(data, error, variables, context)
+      onSettled?.(data, error, variables, context)
     },
   })
 }

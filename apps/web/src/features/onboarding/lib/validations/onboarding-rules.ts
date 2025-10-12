@@ -17,10 +17,9 @@ import { FieldRules } from "@/shared/lib/validations/field-rules"
  * 온보딩 1단계: 기본 프로필 설정
  */
 export const ProfileSetupRules = z.object({
-  userId: z.string(),
   nickname: FieldRules.nickname(),
   profileImageUrl: z.string().url("올바른 이미지 URL 형식이 아닙니다").optional(),
-}) satisfies z.ZodType<CreateBasicProfileDto>
+}) satisfies z.ZodType<Pick<CreateBasicProfileDto, "nickname" | "profileImageUrl">>
 
 /**
  * 프로필 이미지 파일 또는 URL 검증 (폼 입력용)
@@ -31,7 +30,6 @@ export const ProfileSetupRules = z.object({
  * - File 객체는 업로드 후 URL로 변환되어 API로 전송
  */
 export const ProfileSetupFormRules = z.object({
-  userId: z.string(),
   nickname: FieldRules.nickname(),
   profileImage: z
     .union([
@@ -132,25 +130,6 @@ export type BaekjoonVerifyCompleteData = z.infer<typeof BaekjoonVerifyCompleteRu
 export type MentorTagsData = z.infer<typeof MentorTagsRules>
 export type MentorIntroData = z.infer<typeof MentorIntroRules>
 export type MentorProfileData = z.infer<typeof MentorProfileRules>
-
-/**
- * 폼 데이터 → API DTO 변환 헬퍼
- *
- * ★ Insight:
- * - File 객체는 별도 업로드 API 호출 후 URL 반환받아 사용
- * - 기본 프로필 이미지 선택 시에는 이미 URL이므로 그대로 사용
- */
-export function transformToProfileSetupDto(
-  formData: ProfileSetupFormData,
-  uploadedImageUrl?: string,
-): ProfileSetupData {
-  return {
-    userId: formData.userId,
-    nickname: formData.nickname,
-    profileImageUrl:
-      uploadedImageUrl || (typeof formData.profileImage === "string" ? formData.profileImage : undefined),
-  }
-}
 
 /**
  * 멘토 태그 데이터 → API DTO 변환 헬퍼

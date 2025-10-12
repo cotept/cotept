@@ -29,7 +29,7 @@ export const useProfileStore = create<ProfileState>()(
         setNickname: (nickname) =>
           set((state) => ({
             profile: { ...state.profile, nickname },
-            isComplete: !!nickname && !!state.profile.userId,
+            isComplete: !!nickname && !!state.profile.profileImageUrl,
           })),
 
         setProfileImageUrl: (url) =>

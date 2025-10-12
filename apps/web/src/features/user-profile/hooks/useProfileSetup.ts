@@ -1,6 +1,8 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
+
+import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -16,6 +18,28 @@ import { useProfileStore } from "@/features/user-profile/store/useProfileStore"
 import { AuthErrorHandler } from "@/shared/auth/errors/handler"
 import { useGetUploadUrl } from "@/shared/hooks/useStorage"
 import { uploadFileToOCIObjectStorage } from "@/shared/utils"
+
+function getNicknameValidationState(nickname: string) {
+  if (!nickname) return { lengthValid: false, charsValid: false }
+
+  const result = ProfileSetupFormRules.pick({ nickname: true }).safeParse({ nickname })
+  if (result.success) return { lengthValid: true, charsValid: true }
+
+  const errors = result.error.flatten().fieldErrors.nickname || []
+  const lengthValid = !errors.some((e) => e.includes("2자 이상") || e.includes("20자 이하"))
+  const charsValid = !errors.some((e) => e.includes("한글, 영문, 숫자"))
+
+  return { lengthValid, charsValid }
+}
+
+function getImageValidationState(image: File | string | null | undefined) {
+  if (!image || !(image instanceof File)) return { isValid: true, errors: [] }
+
+  const result = ProfileSetupFormRules.pick({ profileImage: true }).safeParse({ profileImage: image })
+  if (result.success) return { isValid: true, errors: [] }
+
+  return { isValid: false, errors: result.error.flatten().fieldErrors.profileImage || [] }
+}
 
 export const useProfileSetup = () => {
   const { profile, setProfile } = useProfileStore()
@@ -35,11 +59,18 @@ export const useProfileSetup = () => {
   const nickname = form.watch("nickname")
   const profileImage = form.watch("profileImage")
 
+  const validationChecks: ValidationCheck[] = useMemo(() => {
+    const { lengthValid, charsValid } = getNicknameValidationState(nickname)
+    return [
+      { id: "length", label: "2자 이상 20자 이하", isValid: lengthValid },
+      { id: "chars", label: "한글, 영문, 숫자만 사용", isValid: charsValid },
+    ]
+  }, [nickname])
+
   const { mutate: createProfile, isPending: isCreating } = useCreateBasicProfile({
     onSuccess: ({ data: response }) => {
       if (!response) {
         toast.error("프로필 생성에 실패했습니다. 다시 시도해주세요.")
-        setIsSubmitting(false)
         return
       }
       const { userId, nickname, profileImageUrl } = response
@@ -50,62 +81,56 @@ export const useProfileSetup = () => {
     onError: (error) => {
       const handledError = AuthErrorHandler.handle(error)
       toast.error(handledError.message)
+    },
+    onSettled: () => {
       setIsSubmitting(false)
     },
-    onSettled: () => setIsSubmitting(false),
   })
 
-  const { mutate: getUploadUrl } = useGetUploadUrl()
+  const { mutateAsync: getUploadUrlAsync } = useGetUploadUrl()
 
-  // 업로드 및 프로필 생성을 함께 처리하는 함수
   const uploadAndCreateProfile = useCallback(
-    (formData: ProfileSetupFormData, imageFile: File, userId: string) => {
-      setUploadError(null) // 오류 초기화
+    async (formData: ProfileSetupFormData, imageFile: File, userId: string) => {
+      setUploadError(null)
       setIsSubmitting(true)
 
-      getUploadUrl(
-        { generateUploadUrlRequestDto: { fileName: imageFile.name, contentType: imageFile.type } },
-        {
-          onSuccess: async ({ data: uploadData }) => {
-            if (!uploadData) {
-              const errorMsg = "업로드 정보를 받아오지 못했습니다."
-              setUploadError(errorMsg)
-              toast.error(errorMsg)
-              setIsSubmitting(false)
-              return
-            }
+      try {
+        const { data: uploadData } = await getUploadUrlAsync({
+          generateUploadUrlRequestDto: { fileName: imageFile.name, contentType: imageFile.type },
+        })
 
-            const { uploadUrl, fileUrl } = uploadData
+        if (!uploadData) {
+          const errorMsg = "업로드 정보를 받아오지 못했습니다."
+          setUploadError(errorMsg)
+          toast.error(errorMsg)
+          setIsSubmitting(false)
+          return
+        }
 
-            const uploadedUrl = await uploadFileToOCIObjectStorage(uploadUrl, imageFile)
-            if (!uploadedUrl) {
-              const errorMsg = "파일 업로드에 실패했습니다."
-              setUploadError(errorMsg)
-              setIsSubmitting(false)
-              return
-            }
+        const uploadedUrl = await uploadFileToOCIObjectStorage(uploadData.uploadUrl, imageFile)
+        if (!uploadedUrl) {
+          setUploadError("파일 업로드에 실패했습니다.")
+          setIsSubmitting(false)
+          return
+        }
 
-            createProfile({
-              createBasicProfileDto: {
-                userId,
-                nickname: formData.nickname,
-                profileImageUrl: fileUrl,
-              },
-            })
+        createProfile({
+          createBasicProfileDto: {
+            userId,
+            nickname: formData.nickname,
+            profileImageUrl: uploadData.fileUrl,
           },
-          onError: () => {
-            const errorMsg = "업로드 URL을 받아오는데 실패했습니다."
-            setUploadError(errorMsg)
-            toast.error(errorMsg)
-            setIsSubmitting(false)
-          },
-        },
-      )
+        })
+      } catch (error) {
+        const handledError = AuthErrorHandler.handle(error)
+        setUploadError(handledError.message)
+        toast.error(handledError.message)
+        setIsSubmitting(false)
+      }
     },
-    [getUploadUrl, createProfile],
+    [getUploadUrlAsync, createProfile],
   )
 
-  // 재시도 함수 (uploadError가 있을 때 호출 가능)
   const retryUploadAndCreateProfile = useCallback(() => {
     const data = form.getValues()
     const imageFile = data.profileImage
@@ -119,10 +144,19 @@ export const useProfileSetup = () => {
 
   const handleImageSelect = (file: File) => {
     if (!file) return
-    setUploadError(null) // 이미지 변경 시 기존 오류 초기화
+
+    const { isValid, errors } = getImageValidationState(file)
+    if (!isValid) {
+      toast.error(errors[0] || "유효하지 않은 파일입니다.")
+      form.setError("profileImage", { type: "manual", message: errors[0] })
+      return
+    }
+
+    setUploadError(null)
     const tempPreviewUrl = URL.createObjectURL(file)
     setImagePreview(tempPreviewUrl)
     form.setValue("profileImage", file, { shouldValidate: true })
+    getUploadUrlAsync({ generateUploadUrlRequestDto: { fileName: file.name, contentType: file.type } })
   }
 
   const handleSubmit = useCallback(
@@ -132,12 +166,12 @@ export const useProfileSetup = () => {
         toast.error("사용자 ID를 찾을 수 없습니다.")
         return
       }
-      setIsSubmitting(true)
 
       const imageFile = data.profileImage
       if (imageFile instanceof File) {
         uploadAndCreateProfile(data, imageFile, userId)
       } else {
+        setIsSubmitting(true)
         createProfile({
           createBasicProfileDto: {
             userId,
@@ -157,7 +191,8 @@ export const useProfileSetup = () => {
     profileImage,
     imagePreview,
     handleImageSelect,
-    uploadError, // 업로드 실패 메시지
-    retryUploadAndCreateProfile, // 재시도 함수
+    uploadError,
+    retryUploadAndCreateProfile,
+    validationChecks,
   }
 }

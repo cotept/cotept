@@ -17,6 +17,7 @@ import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/com
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
 import { OnboardingCreateMentorProfileDto } from "@/modules/onboarding/application/dtos/create-mentor-profile.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
+import { SkipBaekjoonDto, SkipBaekjoonResponseDto } from "@/modules/onboarding/application/dtos/skip-baekjoon.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
 import { OnboardingFacadeService } from "@/modules/onboarding/application/services/facade/onboarding-facade.service"
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
@@ -131,6 +132,19 @@ export class OnboardingController {
   ): Promise<MentorProfileDto> {
     dto.userId = userId // userId 주입
     return this.facadeService.createMentorProfile(dto)
+  }
+
+  @Post("baekjoon/skip")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "온보딩 - 백준 연동 건너뛰기" })
+  @ApiOkResponseWrapper(SkipBaekjoonResponseDto, "백준 연동을 건너뛰고 온보딩을 완료했습니다.")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "온보딩 상태를 찾을 수 없습니다." })
+  @ApiConflictResponse({ description: "백준 연동을 건너뛸 수 없습니다. 프로필 설정을 먼저 완료해주세요." })
+  async skipBaekjoon(@CurrentUserId() userId: string): Promise<SkipBaekjoonResponseDto> {
+    const dto: SkipBaekjoonDto = { userId }
+    return await this.facadeService.skipBaekjoon(dto)
   }
 
   @Post("complete")

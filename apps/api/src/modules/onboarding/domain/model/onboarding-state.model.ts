@@ -83,12 +83,37 @@ export default class OnboardingState {
 
   /**
    * 온보딩 프로세스가 완료되었는지 확인합니다.
+   * 프로필 생성만 필수이며, 백준 연동은 선택 사항입니다.
    */
   isCompleted(): boolean {
-    return (
-      this.profileCreated && this.baekjoonVerified && this.skillAnalysisCompleted
-      // 멘토 프로필 생성은 선택적이므로 완료 조건에서 제외
-    )
+    return this.profileCreated
+    // 백준 인증 및 멘토 프로필 생성은 선택적이므로 완료 조건에서 제외
+  }
+
+  /**
+   * 백준 연동을 건너뛸 수 있는지 확인합니다.
+   * 프로필 생성이 완료되어야 백준 단계를 건너뛸 수 있습니다.
+   */
+  canSkipBaekjoon(): boolean {
+    return this.profileCreated && !this.baekjoonVerified
+  }
+
+  /**
+   * 백준 연동이 완료되었는지 확인합니다.
+   */
+  hasBaekjoonLinked(): boolean {
+    return this.baekjoonVerified && this.skillAnalysisCompleted
+  }
+
+  /**
+   * 백준 연동 단계를 건너뜁니다.
+   * 프로필 생성이 완료된 경우에만 가능합니다.
+   */
+  skipBaekjoon(): void {
+    if (!this.canSkipBaekjoon()) {
+      throw new Error("Cannot skip Baekjoon verification: profile setup not completed")
+    }
+    this.moveToStep(OnboardingStep.COMPLETED)
   }
 
   /**

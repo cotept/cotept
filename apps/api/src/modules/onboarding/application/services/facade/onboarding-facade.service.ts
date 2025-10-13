@@ -13,7 +13,9 @@ import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
 import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/complete-onboarding.dto"
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
+import { GetOnboardingStateDto } from "@/modules/onboarding/application/dtos/get-onboarding-state.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
+import { SkipBaekjoonDto, SkipBaekjoonResponseDto } from "@/modules/onboarding/application/dtos/skip-baekjoon.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
 import { AnalyzeSkillsUseCase } from "@/modules/onboarding/application/ports/in/analyze-skills.usecase"
 import { CheckMentorEligibilityUseCase } from "@/modules/onboarding/application/ports/in/check-mentor-eligibility.usecase"
@@ -22,6 +24,8 @@ import { CompleteOnboardingUseCase } from "@/modules/onboarding/application/port
 import { CreateBasicProfileUseCase } from "@/modules/onboarding/application/ports/in/create-basic-profile.usecase"
 import { CreateMentorProfileOnboardingUseCase } from "@/modules/onboarding/application/ports/in/create-mentor-profile-onboarding.usecase"
 import { GetMentorTagsUseCase } from "@/modules/onboarding/application/ports/in/get-mentor-tags.usecase"
+import { GetOnboardingStateUseCase } from "@/modules/onboarding/application/ports/in/get-onboarding-state.usecase"
+import { SkipBaekjoonUseCase } from "@/modules/onboarding/application/ports/in/skip-baekjoon.usecase"
 import { StartBaekjoonVerificationUseCase } from "@/modules/onboarding/application/ports/in/start-baekjoon-verification.usecase"
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
 
@@ -44,6 +48,10 @@ export class OnboardingFacadeService {
     private readonly createMentorProfileOnboardingUseCase: CreateMentorProfileOnboardingUseCase,
     @Inject(CompleteOnboardingUseCase)
     private readonly completeOnboardingUseCase: CompleteOnboardingUseCase,
+    @Inject(GetOnboardingStateUseCase)
+    private readonly getOnboardingStateUseCase: GetOnboardingStateUseCase,
+    @Inject(SkipBaekjoonUseCase)
+    private readonly skipBaekjoonUseCase: SkipBaekjoonUseCase,
   ) {}
 
   async createBasicProfile(dto: CreateBasicProfileDto): Promise<UserProfileDto> {
@@ -54,7 +62,13 @@ export class OnboardingFacadeService {
     return await this.startBaekjoonVerificationUseCase.execute(dto)
   }
 
-  async completeBaekjoonVerification(dto: CompleteBaekjoonVerificationDto): Promise<BaekjoonVerificationResultResponseDto> {
+  async skipBaekjoon(dto: SkipBaekjoonDto): Promise<SkipBaekjoonResponseDto> {
+    return this.skipBaekjoonUseCase.execute(dto)
+  }
+
+  async completeBaekjoonVerification(
+    dto: CompleteBaekjoonVerificationDto,
+  ): Promise<BaekjoonVerificationResultResponseDto> {
     return await this.completeBaekjoonVerificationUseCase.execute(dto)
   }
 
@@ -76,5 +90,9 @@ export class OnboardingFacadeService {
 
   async completeOnboarding(dto: CompleteOnboardingDto): Promise<boolean> {
     return this.completeOnboardingUseCase.execute(dto)
+  }
+
+  async getOnboardingState(dto: GetOnboardingStateDto) {
+    return this.getOnboardingStateUseCase.execute(dto)
   }
 }

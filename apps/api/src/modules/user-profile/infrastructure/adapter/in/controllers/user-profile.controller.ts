@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from "@nestjs/common"
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -21,9 +10,7 @@ import {
 } from "@nestjs/swagger"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards/jwt-auth.guards"
-import {
-  UserProfileDto,
-} from "@/modules/user-profile/application/dtos/user-profile.dto"
+import { UserProfileDto } from "@/modules/user-profile/application/dtos/user-profile.dto"
 import { UserProfileFacadeService } from "@/modules/user-profile/application/services/facade/user-profile-facade.service"
 import {
   CreateUserProfileRequestDto,
@@ -31,6 +18,7 @@ import {
 } from "@/modules/user-profile/infrastructure/adapter/in/dto/request"
 import {
   BasicProfileCreationResponseDto,
+  MyProfileResponseDto,
   UserProfileCompletenessResponseDto,
   UserProfileCreationResponseDto,
   UserProfileDeletionResponseDto,
@@ -43,6 +31,7 @@ import {
   ApiAuthRequiredErrors,
   ApiStandardErrors,
 } from "@/shared/infrastructure/decorators/common-error-responses.decorator"
+import { CurrentUserId } from "@/shared/infrastructure/decorators/current-user.decorator"
 
 @ApiTags("UserProfile")
 @Controller("user-profiles")
@@ -51,6 +40,21 @@ export class UserProfileController {
     private readonly userProfileFacadeService: UserProfileFacadeService,
     private readonly requestMapper: UserProfileRequestMapper,
   ) {}
+
+  @Get("profile")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "내 프로필 정보 조회",
+    description: "현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.",
+    operationId: "getMyProfile",
+  })
+  @ApiOkResponseWrapper(MyProfileResponseDto, "성공적으로 내 프로필 정보를 조회함")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  @ApiNotFoundResponse({ description: "프로필을 찾을 수 없습니다" })
+  async getMyProfile(@CurrentUserId() userId: string): Promise<MyProfileResponseDto> {
+    return await this.userProfileFacadeService.getMyProfile(userId)
+  }
 
   @Get(":userId")
   @UseGuards(JwtAuthGuard)
@@ -127,10 +131,12 @@ export class UserProfileController {
   ): Promise<UserProfileUpdateResponseDto> {
     const applicationDto = this.requestMapper.toUpdateApplicationDto(updateDto)
     const profile = await this.userProfileFacadeService.updateProfile(userId, applicationDto)
-    
+
     // 업데이트된 필드 목록 계산 (null이 아닌 필드들)
-    const updatedFields = Object.keys(updateDto).filter(key => updateDto[key] !== undefined && updateDto[key] !== null)
-    
+    const updatedFields = Object.keys(updateDto).filter(
+      (key) => updateDto[key] !== undefined && updateDto[key] !== null,
+    )
+
     return new UserProfileUpdateResponseDto(profile, updatedFields)
   }
 
@@ -187,7 +193,8 @@ export class UserProfileController {
   @ApiForbiddenResponse({ description: "다른 사용자의 프로필은 수정할 수 없습니다" })
   async upsertProfile(
     @Param("userId") userId: string,
-    @Body() profileData: {
+    @Body()
+    profileData: {
       nickname: string
       fullName?: string
       introduce?: string

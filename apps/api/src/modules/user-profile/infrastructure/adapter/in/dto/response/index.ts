@@ -4,6 +4,7 @@
  */
 
 export { BasicProfileCreationResponseDto } from "./basic-profile-creation.response.dto"
+export { MyProfileResponseDto } from "./my-profile.response.dto"
 export { UserProfileResponseDto } from "./user-profile.response.dto"
 export { UserProfileCompletenessResponseDto } from "./user-profile-completeness.response.dto"
 export { UserProfileCreationResponseDto } from "./user-profile-creation.response.dto"

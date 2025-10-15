@@ -4,6 +4,7 @@ import { JwtModule } from "@nestjs/jwt"
 import { PassportModule } from "@nestjs/passport"
 
 import { MailModule } from "../mail/mail.module"
+import { MentorModule } from "../mentor/mentor.module"
 import { NotificationPort } from "./application/ports/out"
 import { NotificationService } from "./infrastructure/adapter/out/services/notification.adapter"
 
@@ -19,6 +20,7 @@ import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
 import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecase"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
 import { ResetPasswordUseCase } from "@/modules/auth/application/ports/in/reset-password.usecase"
+import { SelectProfileUseCase } from "@/modules/auth/application/ports/in/select-profile.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
@@ -43,6 +45,7 @@ import {
   LogoutUseCaseImpl,
   RefreshTokenUseCaseImpl,
   ResetPasswordUseCaseImpl,
+  SelectProfileUseCaseImpl,
   SendVerificationCodeUseCaseImpl,
   SocialAuthCallbackUseCaseImpl,
   ValidateAuthCodeUseCaseImpl,
@@ -122,6 +125,7 @@ import { CryptoService } from "@/shared/infrastructure/services"
     }),
     CacheModule,
     MailModule,
+    MentorModule,
   ],
   controllers: [AuthController, GithubAuthController, GoogleAuthController],
   providers: [
@@ -198,6 +202,10 @@ import { CryptoService } from "@/shared/infrastructure/services"
     {
       provide: ResetPasswordUseCase,
       useClass: ResetPasswordUseCaseImpl,
+    },
+    {
+      provide: SelectProfileUseCase,
+      useClass: SelectProfileUseCaseImpl,
     },
     {
       provide: CheckEmailAvailabilityUseCase,

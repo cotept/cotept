@@ -1,4 +1,4 @@
-import { RefreshTokenPayload, TokenPair,TokenPayload } from '@/modules/auth/domain/model';
+import { RefreshTokenPayload, TokenMetadata, TokenPair, TokenPayload } from '@/modules/auth/domain/model';
 
 /**
  * 토큰 생성기 포트
@@ -10,9 +10,15 @@ export abstract class TokenGeneratorPort {
    * @param userId 사용자 ID
    * @param email 사용자 이메일
    * @param role 사용자 역할
+   * @param metadata JWT에 포함할 추가 메타데이터 (예: activeProfile)
    * @returns 토큰 쌍
    */
-  abstract generateTokenPair(userId: number, email: string, role: string): TokenPair;
+  abstract generateTokenPair(
+    userId: number,
+    email: string,
+    role: string,
+    metadata?: TokenMetadata
+  ): TokenPair;
 
   /**
    * 액세스 토큰 검증 및 페이로드 추출

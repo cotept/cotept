@@ -22,6 +22,7 @@ import {
   LoginRequestDto,
   RefreshTokenRequestDto,
   ResetPasswordRequestDto,
+  SelectProfileRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
@@ -292,5 +293,25 @@ export class AuthController {
     @Body() checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto,
   ): Promise<AvailabilityResponseDto> {
     return this.authFacadeService.checkUserIdAvailability(checkUserIdAvailabilityRequestDto)
+  }
+
+  /**
+   * 프로필 선택 (멘토/멘티)
+   * 멘토 사용자가 활성 프로필을 선택하여 JWT 메타데이터를 업데이트합니다.
+   */
+  @Post("select-profile")
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "프로필 선택",
+    description:
+      "멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.",
+  })
+  @ApiBody({ type: SelectProfileRequestDto })
+  @ApiOkResponseWrapper(TokenResponseDto, "프로필 선택 성공 - 새로운 토큰 발급")
+  @ApiAuthRequiredErrors()
+  @ApiStandardErrors()
+  async selectProfile(@Body() selectProfileRequestDto: SelectProfileRequestDto): Promise<TokenResponseDto> {
+    return this.authFacadeService.selectProfile(selectProfileRequestDto)
   }
 }

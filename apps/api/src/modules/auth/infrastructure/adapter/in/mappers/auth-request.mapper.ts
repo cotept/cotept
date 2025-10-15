@@ -14,6 +14,7 @@ import {
   ValidateTokenDto,
   VerifyCodeDto,
 } from "@/modules/auth/application/dtos"
+import { SelectProfileDto } from "@/modules/auth/application/dtos/select-profile.dto"
 import {
   CheckEmailAvailabilityRequestDto,
   CheckUserIdAvailabilityRequestDto,
@@ -25,6 +26,7 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
+import { SelectProfileRequestDto } from "@/modules/auth/infrastructure/dtos/request/select-profile.request.dto"
 
 /**
  * 인바운드 어댑터 매퍼
@@ -177,6 +179,14 @@ export class AuthRequestMapper {
    */
   toCheckUserIdAvailabilityDto(request: CheckUserIdAvailabilityRequestDto): CheckUserIdAvailabilityDto {
     return plainToInstance(CheckUserIdAvailabilityDto, request, {
+      excludeExtraneousValues: true,
+    })
+  }
+  /**
+   * 프로필 선택 요청 DTO를 내부 DTO로 변환
+   */
+  toSelectProfileDto(request: SelectProfileRequestDto): SelectProfileDto {
+    return plainToInstance(SelectProfileDto, request, {
       excludeExtraneousValues: true,
     })
   }

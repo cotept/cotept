@@ -80,6 +80,8 @@ types/mentor-profile-response.ts
 types/mentor-tag-dto.ts
 types/mentor-tags-response-dto.ts
 types/mentor-tags-response-wrapper.ts
+types/my-profile-response-dto.ts
+types/my-profile-response-wrapper.ts
 types/onboarding-create-mentor-profile-dto.ts
 types/password-change-response-dto.ts
 types/password-change-response-wrapper.ts
@@ -90,6 +92,8 @@ types/reset-password-response-wrapper.ts
 types/send-email-verification429-response.ts
 types/send-email-verification503-response.ts
 types/send-verification-code-request-dto.ts
+types/skip-baekjoon-response-dto.ts
+types/skip-baekjoon-response-wrapper.ts
 types/start-baekjoon-verification-dto.ts
 types/start-baekjoon-verification408-response.ts
 types/start-baekjoon-verification429-response.ts

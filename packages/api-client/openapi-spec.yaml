@@ -822,6 +822,95 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 변경
       tags: *ref_1
+  /api/v1/user-profiles/profile:
+    get:
+      description: 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+      operationId: getMyProfile
+      parameters: []
+      responses:
+        '200':
+          description: 성공적으로 내 프로필 정보를 조회함
+          content:
+            application/json:
+              schema:
+                title: MyProfileResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/MyProfileResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 프로필을 찾을 수 없습니다
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 내 프로필 정보 조회
+      tags: &ref_2
+        - UserProfile
   /api/v1/user-profiles/{userId}:
     get:
       description: 사용자 ID로 프로필 정보를 조회합니다.
@@ -916,8 +1005,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 프로필 조회
-      tags: &ref_2
-        - UserProfile
+      tags: *ref_2
     put:
       description: 사용자 프로필 정보를 수정합니다.
       operationId: updateUserProfile
@@ -1591,6 +1679,132 @@ paths:
                     example: '2024-01-01T00:00:00.000Z'
       summary: 회원가입 시 기본 프로필 생성
       tags: *ref_2
+  /api/v1/mentor/profile:
+    post:
+      operationId: createMentorProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMentorProfileDto'
+      responses:
+        '201':
+          description: 멘토 프로필 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfileDto'
+        '400':
+          description: 잘못된 요청 데이터
+        '404':
+          description: 사용자 또는 태그를 찾을 수 없음
+        '409':
+          description: 이미 멘토 프로필이 존재함
+      summary: 새 멘토 프로필 생성
+      tags: &ref_3
+        - Mentor
+  /api/v1/mentor/profile/{idx}:
+    put:
+      operationId: updateMentorProfile
+      parameters:
+        - name: idx
+          required: true
+          in: path
+          description: 멘토 프로필 IDX
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMentorProfileDto'
+      responses:
+        '200':
+          description: 멘토 프로필 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfileDto'
+        '400':
+          description: 잘못된 요청 데이터
+        '404':
+          description: 프로필 또는 태그를 찾을 수 없음
+      summary: 멘토 프로필 정보 수정 (PUT)
+      tags: *ref_3
+    delete:
+      operationId: deleteMentorProfile
+      parameters:
+        - name: idx
+          required: true
+          in: path
+          description: 멘토 프로필 IDX
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 멘토 프로필 비활성화 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionResponseDto'
+        '404':
+          description: 프로필을 찾을 수 없음
+      summary: 멘토 프로필 비활성화 (논리적 삭제)
+      tags: *ref_3
+  /api/v1/mentor/profile/{idx}/permanent:
+    delete:
+      operationId: hardDeleteMentorProfile
+      parameters:
+        - name: idx
+          required: true
+          in: path
+          description: 멘토 프로필 IDX
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 멘토 프로필 영구 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionResponseDto'
+        '404':
+          description: 프로필을 찾을 수 없음
+      summary: 멘토 프로필 영구 삭제 (물리적 삭제)
+      tags: *ref_3
+  /api/v1/mentor/profile/{userId}:
+    get:
+      description: 특정 사용자의 멘토 프로필 정보를 조회합니다.
+      operationId: getMentorProfile
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: 조회할 사용자의 ID
+          schema:
+            example: user-12345
+            type: string
+      responses:
+        '200':
+          description: 멘토 프로필 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfileDto'
+        '404':
+          description: 멘토 프로필을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User ID user-12345에 해당하는 멘토 프로필을 찾을 수 없습니다.
+                  error: Not Found
+      summary: 사용자 ID로 멘토 프로필 조회
+      tags: *ref_3
   /api/v1/auth/login:
     post:
       description: 이메일과 비밀번호로 로그인하고 토큰을 발급합니다.
@@ -1656,7 +1870,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 로그인
-      tags: &ref_3
+      tags: &ref_4
         - Auth
   /api/v1/auth/logout:
     post:
@@ -1743,7 +1957,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 로그아웃
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/silent-refresh:
     post:
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
@@ -1807,7 +2021,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 갱신
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/validate-token:
     post:
       description: 액세스 토큰의 유효성을 검증합니다.
@@ -1869,7 +2083,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 토큰 검증
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/send-verification-code:
     post:
       description: 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
@@ -1931,7 +2145,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 발송
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/verify-code:
     post:
       description: 발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.
@@ -1993,7 +2207,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증 코드 확인
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/exchange-code:
     post:
       description: 소셜 로그인 후 서버에서 발급된 임시 인증 코드를 토큰으로 교환합니다.
@@ -2055,7 +2269,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 임시 인증 코드를 실제 토큰으로 교환
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/confirm-social-link:
     post:
       description: 기존 계정에 소셜 계정 연결을 승인 또는 거부합니다.
@@ -2117,7 +2331,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 소셜 계정 연결 확인
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/find-id:
     post:
       description: >-
@@ -2179,7 +2393,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 아이디 찾기
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/reset-password:
     post:
       description: 인증된 사용자의 비밀번호를 재설정합니다. 먼저 send-verification-code 호출 후 인증 코드를 발급받아야 합니다.
@@ -2239,7 +2453,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 재설정
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/check-email-availability:
     post:
       description: 회원가입 시 이메일 주소의 사용 가능 여부를 확인합니다.
@@ -2299,7 +2513,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 이메일 중복 확인
-      tags: *ref_3
+      tags: *ref_4
   /api/v1/auth/check-userid-availability:
     post:
       description: 회원가입 시 사용자 ID의 사용 가능 여부를 확인합니다.
@@ -2359,7 +2573,101 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 사용자 ID 중복 확인
-      tags: *ref_3
+      tags: *ref_4
+  /api/v1/auth/select-profile:
+    post:
+      description: >-
+        멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운
+        Access Token을 발급받습니다.
+      operationId: selectProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectProfileRequestDto'
+      responses:
+        '200':
+          description: 프로필 선택 성공 - 새로운 토큰 발급
+          content:
+            application/json:
+              schema:
+                title: TokenResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/TokenResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 프로필 선택
+      tags: *ref_4
   /api/v1/auth/github:
     get:
       description: GitHub OAuth 인증을 시작합니다.
@@ -2388,7 +2696,7 @@ paths:
                     type: 'null'
                     description: 응답 데이터 없음
       summary: GitHub 로그인 시작
-      tags: &ref_4
+      tags: &ref_5
         - GithubAuth
   /api/v1/auth/github/callback:
     get:
@@ -2426,7 +2734,7 @@ paths:
         '401':
           description: GitHub 인증 실패
       summary: GitHub 로그인 콜백
-      tags: *ref_4
+      tags: *ref_5
   /api/v1/auth/google:
     get:
       description: Google OAuth 인증을 시작합니다.
@@ -2455,7 +2763,7 @@ paths:
                     type: 'null'
                     description: 응답 데이터 없음
       summary: Google 로그인 시작
-      tags: &ref_5
+      tags: &ref_6
         - GoogleAuth
   /api/v1/auth/google/callback:
     get:
@@ -2493,7 +2801,7 @@ paths:
         '401':
           description: Google 인증 실패
       summary: Google 로그인 콜백
-      tags: *ref_5
+      tags: *ref_6
   /api/v1/mail/email-verification:
     post:
       operationId: sendEmailVerification
@@ -2585,7 +2893,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 이메일 본인확인
-      tags: &ref_6
+      tags: &ref_7
         - Mail
   /api/v1/mail/password-recovery:
     post:
@@ -2678,7 +2986,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 비밀번호 찾기
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/verification-code:
     post:
       operationId: sendMailVerificationCode
@@ -2770,7 +3078,7 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 인증번호 발송
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/reservation-create:
     post:
       operationId: sendReservationCreate
@@ -2832,7 +3140,7 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 신청
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/reservation-fix:
     post:
       operationId: sendReservationFix
@@ -2926,7 +3234,7 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 확정
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/reservation-cancel:
     post:
       operationId: sendReservationCancel
@@ -3020,7 +3328,7 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 취소
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/reservation-change:
     post:
       operationId: sendReservationChange
@@ -3114,7 +3422,7 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 예약 변경
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail/reservation-prenotice:
     post:
       operationId: sendReservationPrenotice
@@ -3208,7 +3516,7 @@ paths:
         '503':
           description: 메일 서비스를 사용할 수 없습니다
       summary: 멘토링 사전안내
-      tags: *ref_6
+      tags: *ref_7
   /api/v1/mail-audit/{idx}:
     get:
       operationId: getMailAuditById
@@ -3234,7 +3542,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (ID)
-      tags: &ref_7
+      tags: &ref_8
         - MailAudit
   /api/v1/mail-audit:
     get:
@@ -3271,132 +3579,6 @@ paths:
                   data:
                     $ref: '#/components/schemas/MailAuditResponseDto'
       summary: 메일 감사 조회 (검색)
-      tags: *ref_7
-  /api/v1/mentor/profile:
-    post:
-      operationId: createMentorProfile
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateMentorProfileDto'
-      responses:
-        '201':
-          description: 멘토 프로필 생성 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MentorProfileDto'
-        '400':
-          description: 잘못된 요청 데이터
-        '404':
-          description: 사용자 또는 태그를 찾을 수 없음
-        '409':
-          description: 이미 멘토 프로필이 존재함
-      summary: 새 멘토 프로필 생성
-      tags: &ref_8
-        - Mentor
-  /api/v1/mentor/profile/{idx}:
-    put:
-      operationId: updateMentorProfile
-      parameters:
-        - name: idx
-          required: true
-          in: path
-          description: 멘토 프로필 IDX
-          schema:
-            type: number
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateMentorProfileDto'
-      responses:
-        '200':
-          description: 멘토 프로필 수정 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MentorProfileDto'
-        '400':
-          description: 잘못된 요청 데이터
-        '404':
-          description: 프로필 또는 태그를 찾을 수 없음
-      summary: 멘토 프로필 정보 수정 (PUT)
-      tags: *ref_8
-    delete:
-      operationId: deleteMentorProfile
-      parameters:
-        - name: idx
-          required: true
-          in: path
-          description: 멘토 프로필 IDX
-          schema:
-            type: number
-      responses:
-        '200':
-          description: 멘토 프로필 비활성화 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletionResponseDto'
-        '404':
-          description: 프로필을 찾을 수 없음
-      summary: 멘토 프로필 비활성화 (논리적 삭제)
-      tags: *ref_8
-  /api/v1/mentor/profile/{idx}/permanent:
-    delete:
-      operationId: hardDeleteMentorProfile
-      parameters:
-        - name: idx
-          required: true
-          in: path
-          description: 멘토 프로필 IDX
-          schema:
-            type: number
-      responses:
-        '200':
-          description: 멘토 프로필 영구 삭제 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletionResponseDto'
-        '404':
-          description: 프로필을 찾을 수 없음
-      summary: 멘토 프로필 영구 삭제 (물리적 삭제)
-      tags: *ref_8
-  /api/v1/mentor/profile/{userId}:
-    get:
-      description: 특정 사용자의 멘토 프로필 정보를 조회합니다.
-      operationId: getMentorProfile
-      parameters:
-        - name: userId
-          required: true
-          in: path
-          description: 조회할 사용자의 ID
-          schema:
-            example: user-12345
-            type: string
-      responses:
-        '200':
-          description: 멘토 프로필 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MentorProfileDto'
-        '404':
-          description: 멘토 프로필을 찾을 수 없음
-          content:
-            application/json:
-              schema:
-                example:
-                  statusCode: 404
-                  message: User ID user-12345에 해당하는 멘토 프로필을 찾을 수 없습니다.
-                  error: Not Found
-      summary: 사용자 ID로 멘토 프로필 조회
       tags: *ref_8
   /api/v1/onboarding/profile:
     post:
@@ -4189,6 +4371,95 @@ paths:
                     type: string
                     example: '2024-01-01T00:00:00.000Z'
       summary: 온보딩 - 멘토 프로필 생성/업데이트
+      tags: *ref_9
+  /api/v1/onboarding/baekjoon/skip:
+    post:
+      operationId: skipBaekjoon
+      parameters: []
+      responses:
+        '200':
+          description: 백준 연동을 건너뛰고 온보딩을 완료했습니다.
+          content:
+            application/json:
+              schema:
+                title: SkipBaekjoonResponseWrapper
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 응답 메시지
+                    example: 성공적으로 처리되었습니다.
+                  data:
+                    $ref: '#/components/schemas/SkipBaekjoonResponseDto'
+        '400':
+          description: 잘못된 요청 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: 잘못된 요청 데이터입니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: 인증이 필요합니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: 인증이 필요합니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '403':
+          description: 접근 권한이 없습니다
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: 해당 작업을 수행할 권한이 없습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+        '404':
+          description: 온보딩 상태를 찾을 수 없습니다.
+        '409':
+          description: 백준 연동을 건너뛸 수 없습니다. 프로필 설정을 먼저 완료해주세요.
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: 서버 내부 오류가 발생했습니다.
+                  timestamp:
+                    type: string
+                    example: '2024-01-01T00:00:00.000Z'
+      summary: 온보딩 - 백준 연동 건너뛰기
       tags: *ref_9
   /api/v1/onboarding/complete:
     post:
@@ -5242,7 +5513,7 @@ components:
         - currentPassword
         - newPassword
         - confirmPassword
-    ApiResponseUserProfileDto:
+    ApiResponseMyProfileResponseDto:
       type: object
       properties: {}
     UserProfileDto:
@@ -5284,6 +5555,27 @@ components:
         - nickname
         - createdAt
         - updatedAt
+    MyProfileResponseDto:
+      type: object
+      properties:
+        menteeProfile:
+          description: 멘티 프로필 정보
+          allOf:
+            - $ref: '#/components/schemas/UserProfileDto'
+        hasMentorProfile:
+          type: boolean
+          description: 멘토 프로필 보유 여부
+          example: true
+        mentorProfileId:
+          type: number
+          description: 멘토 프로필 ID (멘토인 경우)
+          example: 123
+      required:
+        - menteeProfile
+        - hasMentorProfile
+    ApiResponseUserProfileDto:
+      type: object
+      properties: {}
     ApiResponseUserProfileCreationResponseDto:
       type: object
       properties: {}
@@ -5569,6 +5861,187 @@ components:
         - nextSteps
         - message
         - completenessScore
+    CreateMentorProfileDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 연결된 유저의 고유 ID
+          example: cld2clvaw00003575n5da3kch
+        introductionTitle:
+          type: string
+          description: 멘토링 소개 제목
+          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
+        introductionContent:
+          type: string
+          description: 멘토링 소개 내용 (마크다운)
+        tagIds:
+          description: 멘토의 기술 스택 및 직무 태그 ID 목록
+          example:
+            - 1
+            - 5
+            - 10
+          type: array
+          items:
+            type: number
+      required:
+        - userId
+        - tagIds
+    MentorTagDto:
+      type: object
+      properties:
+        idx:
+          type: number
+          description: 태그 IDX
+          example: 1
+        name:
+          type: string
+          description: 태그 이름
+          example: 프론트엔드
+        category:
+          type: string
+          description: 태그 카테고리
+          enum:
+            - job
+            - experience
+            - company
+          example: job
+        displayOrder:
+          type: number
+          description: 표시 순서
+          example: 1
+        isActive:
+          type: boolean
+          description: 활성화 여부
+          example: true
+        createdAt:
+          format: date-time
+          type: string
+          description: 생성일
+        updatedAt:
+          format: date-time
+          type: string
+          description: 수정일
+      required:
+        - idx
+        - name
+        - category
+        - displayOrder
+        - isActive
+        - createdAt
+        - updatedAt
+    MentorProfileDto:
+      type: object
+      properties:
+        idx:
+          type: number
+          description: 멘토 프로필 IDX
+          example: 1
+        userId:
+          type: string
+          description: 연결된 유저의 고유 ID
+          example: cld2clvaw00003575n5da3kch
+        introductionTitle:
+          type: string
+          description: 멘토링 소개 제목
+          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
+        introductionContent:
+          type: string
+          description: 멘토링 소개 내용 (마크다운)
+        baekjoonTierDisplay:
+          type: boolean
+          description: 백준 티어 표시 여부
+          example: true
+        mentoringCount:
+          type: number
+          description: 총 멘토링 횟수
+          example: 15
+        totalReviewCount:
+          type: number
+          description: 총 리뷰 개수
+          example: 12
+        averageRating:
+          type: number
+          description: 평균 평점 (0.0 ~ 5.0)
+          example: 4.8
+        isVerified:
+          type: boolean
+          description: 멘토 인증 여부
+          example: true
+        isActive:
+          type: boolean
+          description: 멘토 활동 여부
+          example: true
+        profileCompletion:
+          type: number
+          description: 프로필 완성도 (0 ~ 100)
+          example: 95
+        tags:
+          description: 멘토 태그 목록
+          type: array
+          items:
+            $ref: '#/components/schemas/MentorTagDto'
+        createdAt:
+          format: date-time
+          type: string
+          description: 생성일
+        updatedAt:
+          format: date-time
+          type: string
+          description: 수정일
+      required:
+        - idx
+        - userId
+        - baekjoonTierDisplay
+        - mentoringCount
+        - totalReviewCount
+        - averageRating
+        - isVerified
+        - isActive
+        - profileCompletion
+        - tags
+        - createdAt
+        - updatedAt
+    UpdateMentorProfileDto:
+      type: object
+      properties:
+        introductionTitle:
+          type: string
+          description: 멘토링 소개 제목
+          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
+        introductionContent:
+          type: string
+          description: 멘토링 소개 내용 (마크다운)
+        baekjoonTierDisplay:
+          type: boolean
+          description: 백준 티어 표시 여부
+          example: true
+        tagIds:
+          description: 멘토의 기술 스택 및 직무 태그 ID 목록
+          example:
+            - 1
+            - 5
+            - 10
+          type: array
+          items:
+            type: number
+      required:
+        - baekjoonTierDisplay
+        - tagIds
+    DeletionResponseDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 작업 성공 여부
+          example: true
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공적으로 삭제되었습니다.
+      required:
+        - success
+        - message
     ApiResponseTokenResponseDto:
       type: object
       properties: {}
@@ -5891,6 +6364,9 @@ components:
           maxLength: 20
       required:
         - userId
+    SelectProfileRequestDto:
+      type: object
+      properties: {}
     MailRequestDto:
       type: object
       properties:
@@ -6015,187 +6491,6 @@ components:
         - createdAt
         - context
         - locale
-    CreateMentorProfileDto:
-      type: object
-      properties:
-        userId:
-          type: string
-          description: 연결된 유저의 고유 ID
-          example: cld2clvaw00003575n5da3kch
-        introductionTitle:
-          type: string
-          description: 멘토링 소개 제목
-          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
-        introductionContent:
-          type: string
-          description: 멘토링 소개 내용 (마크다운)
-        tagIds:
-          description: 멘토의 기술 스택 및 직무 태그 ID 목록
-          example:
-            - 1
-            - 5
-            - 10
-          type: array
-          items:
-            type: number
-      required:
-        - userId
-        - tagIds
-    MentorTagDto:
-      type: object
-      properties:
-        idx:
-          type: number
-          description: 태그 IDX
-          example: 1
-        name:
-          type: string
-          description: 태그 이름
-          example: 프론트엔드
-        category:
-          type: string
-          description: 태그 카테고리
-          enum:
-            - job
-            - experience
-            - company
-          example: job
-        displayOrder:
-          type: number
-          description: 표시 순서
-          example: 1
-        isActive:
-          type: boolean
-          description: 활성화 여부
-          example: true
-        createdAt:
-          format: date-time
-          type: string
-          description: 생성일
-        updatedAt:
-          format: date-time
-          type: string
-          description: 수정일
-      required:
-        - idx
-        - name
-        - category
-        - displayOrder
-        - isActive
-        - createdAt
-        - updatedAt
-    MentorProfileDto:
-      type: object
-      properties:
-        idx:
-          type: number
-          description: 멘토 프로필 IDX
-          example: 1
-        userId:
-          type: string
-          description: 연결된 유저의 고유 ID
-          example: cld2clvaw00003575n5da3kch
-        introductionTitle:
-          type: string
-          description: 멘토링 소개 제목
-          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
-        introductionContent:
-          type: string
-          description: 멘토링 소개 내용 (마크다운)
-        baekjoonTierDisplay:
-          type: boolean
-          description: 백준 티어 표시 여부
-          example: true
-        mentoringCount:
-          type: number
-          description: 총 멘토링 횟수
-          example: 15
-        totalReviewCount:
-          type: number
-          description: 총 리뷰 개수
-          example: 12
-        averageRating:
-          type: number
-          description: 평균 평점 (0.0 ~ 5.0)
-          example: 4.8
-        isVerified:
-          type: boolean
-          description: 멘토 인증 여부
-          example: true
-        isActive:
-          type: boolean
-          description: 멘토 활동 여부
-          example: true
-        profileCompletion:
-          type: number
-          description: 프로필 완성도 (0 ~ 100)
-          example: 95
-        tags:
-          description: 멘토 태그 목록
-          type: array
-          items:
-            $ref: '#/components/schemas/MentorTagDto'
-        createdAt:
-          format: date-time
-          type: string
-          description: 생성일
-        updatedAt:
-          format: date-time
-          type: string
-          description: 수정일
-      required:
-        - idx
-        - userId
-        - baekjoonTierDisplay
-        - mentoringCount
-        - totalReviewCount
-        - averageRating
-        - isVerified
-        - isActive
-        - profileCompletion
-        - tags
-        - createdAt
-        - updatedAt
-    UpdateMentorProfileDto:
-      type: object
-      properties:
-        introductionTitle:
-          type: string
-          description: 멘토링 소개 제목
-          example: 실전처럼 배우는 프론트엔드 테스트 코드 작성법
-        introductionContent:
-          type: string
-          description: 멘토링 소개 내용 (마크다운)
-        baekjoonTierDisplay:
-          type: boolean
-          description: 백준 티어 표시 여부
-          example: true
-        tagIds:
-          description: 멘토의 기술 스택 및 직무 태그 ID 목록
-          example:
-            - 1
-            - 5
-            - 10
-          type: array
-          items:
-            type: number
-      required:
-        - baekjoonTierDisplay
-        - tagIds
-    DeletionResponseDto:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: 작업 성공 여부
-          example: true
-        message:
-          type: string
-          description: 응답 메시지
-          example: 성공적으로 삭제되었습니다.
-      required:
-        - success
-        - message
     CreateBasicProfileDto:
       type: object
       properties:
@@ -6532,6 +6827,23 @@ components:
       required:
         - userId
         - tagIds
+    ApiResponseSkipBaekjoonResponseDto:
+      type: object
+      properties: {}
+    SkipBaekjoonResponseDto:
+      type: object
+      properties:
+        onboardingCompleted:
+          type: boolean
+          description: 온보딩 완료 여부
+          example: true
+        baekjoonLinked:
+          type: boolean
+          description: 백준 연동 상태
+          example: false
+      required:
+        - onboardingCompleted
+        - baekjoonLinked
     ApiResponseBoolean:
       type: object
       properties: {}

@@ -34,6 +34,8 @@ import type { GetAllUsers403Response } from '../types';
 // @ts-ignore
 import type { GetAllUsers500Response } from '../types';
 // @ts-ignore
+import type { MyProfileResponseWrapper } from '../types';
+// @ts-ignore
 import type { UpdateUserProfileRequestDto } from '../types';
 // @ts-ignore
 import type { UserProfileCompletenessResponseWrapper } from '../types';
@@ -177,6 +179,36 @@ export const UserProfileApiAxiosParamCreator = function (configuration?: Configu
             }
 
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+         * @summary 내 프로필 정보 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMyProfile: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/user-profiles/profile`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -396,6 +428,18 @@ export const UserProfileApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+         * @summary 내 프로필 정보 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMyProfile(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MyProfileResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMyProfile(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserProfileApi.getMyProfile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 사용자 ID로 프로필 정보를 조회합니다.
          * @summary 사용자 프로필 조회
          * @param {string} userId 사용자 ID
@@ -499,6 +543,15 @@ export const UserProfileApiFactory = function (configuration?: Configuration, ba
             return localVarFp.deleteUserProfile(requestParameters.userId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+         * @summary 내 프로필 정보 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMyProfile(options?: RawAxiosRequestConfig): AxiosPromise<MyProfileResponseWrapper> {
+            return localVarFp.getMyProfile(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 사용자 ID로 프로필 정보를 조회합니다.
          * @summary 사용자 프로필 조회
          * @param {UserProfileApiGetUserProfileRequest} requestParameters Request parameters.
@@ -586,6 +639,15 @@ export interface UserProfileApiInterface {
      * @memberof UserProfileApiInterface
      */
     deleteUserProfile(requestParameters: UserProfileApiDeleteUserProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserProfileDeletionResponseWrapper>;
+
+    /**
+     * 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+     * @summary 내 프로필 정보 조회
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserProfileApiInterface
+     */
+    getMyProfile(options?: RawAxiosRequestConfig): AxiosPromise<MyProfileResponseWrapper>;
 
     /**
      * 사용자 ID로 프로필 정보를 조회합니다.
@@ -801,6 +863,17 @@ export class UserProfileApi extends BaseAPI implements UserProfileApiInterface {
      */
     public deleteUserProfile(requestParameters: UserProfileApiDeleteUserProfileRequest, options?: RawAxiosRequestConfig) {
         return UserProfileApiFp(this.configuration).deleteUserProfile(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 현재 로그인한 사용자의 멘티 프로필과 멘토 프로필 보유 여부를 조회합니다.
+     * @summary 내 프로필 정보 조회
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserProfileApi
+     */
+    public getMyProfile(options?: RawAxiosRequestConfig) {
+        return UserProfileApiFp(this.configuration).getMyProfile(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

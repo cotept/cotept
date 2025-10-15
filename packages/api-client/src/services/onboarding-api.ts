@@ -52,6 +52,8 @@ import type { MentorTagsResponseWrapper } from '../types';
 // @ts-ignore
 import type { OnboardingCreateMentorProfileDto } from '../types';
 // @ts-ignore
+import type { SkipBaekjoonResponseWrapper } from '../types';
+// @ts-ignore
 import type { StartBaekjoonVerification408Response } from '../types';
 // @ts-ignore
 import type { StartBaekjoonVerification429Response } from '../types';
@@ -319,6 +321,36 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
         },
         /**
          * 
+         * @summary 온보딩 - 백준 연동 건너뛰기
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        skipBaekjoon: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/onboarding/baekjoon/skip`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 인증 시작
          * @param {StartBaekjoonVerificationDto} startBaekjoonVerificationDto 
          * @param {*} [options] Override http request option.
@@ -455,6 +487,18 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 온보딩 - 백준 연동 건너뛰기
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async skipBaekjoon(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SkipBaekjoonResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.skipBaekjoon(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OnboardingApi.skipBaekjoon']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 인증 시작
          * @param {StartBaekjoonVerificationDto} startBaekjoonVerificationDto 
          * @param {*} [options] Override http request option.
@@ -547,6 +591,15 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
         },
         /**
          * 
+         * @summary 온보딩 - 백준 연동 건너뛰기
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        skipBaekjoon(options?: RawAxiosRequestConfig): AxiosPromise<SkipBaekjoonResponseWrapper> {
+            return localVarFp.skipBaekjoon(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 인증 시작
          * @param {OnboardingApiStartBaekjoonVerificationRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -632,6 +685,15 @@ export interface OnboardingApiInterface {
      * @memberof OnboardingApiInterface
      */
     getMentorTags(options?: RawAxiosRequestConfig): AxiosPromise<MentorTagsResponseWrapper>;
+
+    /**
+     * 
+     * @summary 온보딩 - 백준 연동 건너뛰기
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OnboardingApiInterface
+     */
+    skipBaekjoon(options?: RawAxiosRequestConfig): AxiosPromise<SkipBaekjoonResponseWrapper>;
 
     /**
      * 
@@ -831,6 +893,17 @@ export class OnboardingApi extends BaseAPI implements OnboardingApiInterface {
      */
     public getMentorTags(options?: RawAxiosRequestConfig) {
         return OnboardingApiFp(this.configuration).getMentorTags(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 온보딩 - 백준 연동 건너뛰기
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OnboardingApi
+     */
+    public skipBaekjoon(options?: RawAxiosRequestConfig) {
+        return OnboardingApiFp(this.configuration).skipBaekjoon(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

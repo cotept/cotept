@@ -392,6 +392,42 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
+         * 멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.
+         * @summary 프로필 선택
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        selectProfile: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('selectProfile', 'body', body)
+            const localVarPath = `/api/v1/auth/select-profile`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
          * @summary 인증 코드 발송
          * @param {SendVerificationCodeRequestDto} sendVerificationCodeRequestDto 
@@ -626,6 +662,19 @@ export const AuthApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * 멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.
+         * @summary 프로필 선택
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async selectProfile(body: object, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TokenResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.selectProfile(body, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.selectProfile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
          * @summary 인증 코드 발송
          * @param {SendVerificationCodeRequestDto} sendVerificationCodeRequestDto 
@@ -764,6 +813,16 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.resetPassword(requestParameters.resetPasswordRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
+         * 멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.
+         * @summary 프로필 선택
+         * @param {AuthApiSelectProfileRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        selectProfile(requestParameters: AuthApiSelectProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<TokenResponseWrapper> {
+            return localVarFp.selectProfile(requestParameters.body, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
          * @summary 인증 코드 발송
          * @param {AuthApiSendVerificationCodeRequest} requestParameters Request parameters.
@@ -890,6 +949,16 @@ export interface AuthApiInterface {
      * @memberof AuthApiInterface
      */
     resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResetPasswordResponseWrapper>;
+
+    /**
+     * 멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.
+     * @summary 프로필 선택
+     * @param {AuthApiSelectProfileRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApiInterface
+     */
+    selectProfile(requestParameters: AuthApiSelectProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<TokenResponseWrapper>;
 
     /**
      * 이메일 또는 전화번호로 인증 코드를 발송합니다. 아이디 찾기나 비밀번호 재설정을 위해 사용됩니다.
@@ -1033,6 +1102,20 @@ export interface AuthApiResetPasswordRequest {
      * @memberof AuthApiResetPassword
      */
     readonly resetPasswordRequestDto: ResetPasswordRequestDto
+}
+
+/**
+ * Request parameters for selectProfile operation in AuthApi.
+ * @export
+ * @interface AuthApiSelectProfileRequest
+ */
+export interface AuthApiSelectProfileRequest {
+    /**
+     * 
+     * @type {object}
+     * @memberof AuthApiSelectProfile
+     */
+    readonly body: object
 }
 
 /**
@@ -1189,6 +1272,18 @@ export class AuthApi extends BaseAPI implements AuthApiInterface {
      */
     public resetPassword(requestParameters: AuthApiResetPasswordRequest, options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).resetPassword(requestParameters.resetPasswordRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.
+     * @summary 프로필 선택
+     * @param {AuthApiSelectProfileRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public selectProfile(requestParameters: AuthApiSelectProfileRequest, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).selectProfile(requestParameters.body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -42,3 +42,25 @@ const makeZodSchema = <T extends Record<string, any>>(map: RuleMap<T>): ZodObjec
 export const zodValidateToggle = <T extends Record<string, any>>(ruleMap: RuleMap<T>, values: any): boolean => {
   return makeZodSchema(ruleMap).safeParse(values).success
 }
+
+/**
+ * Zod 스키마를 사용한 데이터 검증
+ * @param schema
+ * @param data
+ * @returns
+ */
+export function validateWithZod<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown,
+): { success: true; data: T } | { success: false; errors: string[] } {
+  const result = schema.safeParse(data)
+
+  if (result.success) {
+    return { success: true, data: result.data }
+  }
+
+  return {
+    success: false,
+    errors: result.error.errors.map((e) => e.message),
+  }
+}

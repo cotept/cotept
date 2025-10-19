@@ -9,9 +9,7 @@ import axios, {
   isAxiosError,
 } from "axios"
 
-import { update } from "@/auth"
 import { ApiError } from "@/shared/api/core/types"
-import { authApiService } from "@/shared/api/services/auth-api-service"
 
 class ApiClient {
   private instance: AxiosInstance
@@ -67,8 +65,9 @@ class ApiClient {
       (response: AxiosResponse) => response,
       async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
-        // 401 에러이고, 재시도한 요청이 아닐 경우
-        if (error.response?.status === 401 && !originalRequest._retry) {
+
+        // 401 에러이고, 재시도한 요청이 아닐 경우, 그리고 클라이언트 사이드일 경우
+        if (typeof window !== "undefined" && error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true // 재시도 플래그 설정
           try {
             // 현재 세션에서 refreshToken 가져오기
@@ -77,17 +76,24 @@ class ApiClient {
               throw new Error("No refresh token available")
             }
 
-            // 1. 토큰 갱신 시도
-            const response = await authApiService.refreshToken({
-              refreshTokenRequestDto: { refreshToken: session.refreshToken },
-            })
-            const newTokens = response.data
+            // 1. 토큰 갱신 시도 (독립적인 axios 인스턴스 사용)
+            const refreshResponse = await axios.post(
+              // authApiService의 basePath가 /auth이므로, 전체 경로는 /api/auth/refresh-token이 됩니다.
+              `${process.env.NEXT_PUBLIC_API_URL || "/api"}/auth/refresh-token`,
+              { refreshToken: session.refreshToken },
+              {
+                headers: { "Content-Type": "application/json" },
+              },
+            )
 
-            if (!newTokens) {
-              throw new Error("Token refresh failed - no data received")
+            const newTokens = refreshResponse.data
+
+            if (!newTokens || !newTokens.accessToken) {
+              throw new Error("Token refresh failed - no new access token received")
             }
 
             // 2. NextAuth 세션 업데이트
+            const { update } = await import("@/auth")
             await update({
               user: {
                 accessToken: newTokens.accessToken,
@@ -102,10 +108,9 @@ class ApiClient {
             return this.instance(originalRequest)
           } catch (refreshError) {
             if (typeof window !== "undefined") {
-              // 토큰 갱신 실패 시 로그인 페이지로 리다이렉트
               window.location.href = "/auth/signin?message=세션이 만료되었습니다. 다시 로그인해주세요."
+              return Promise.reject(refreshError)
             }
-            return Promise.reject(refreshError)
           }
         }
 

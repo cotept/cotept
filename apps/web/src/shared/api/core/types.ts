@@ -1,4 +1,4 @@
-import { AxiosError } from "axios"
+import { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios"
 
 // 기본 API 응답 타입
 export interface ApiResponse<T = any> {
@@ -57,7 +57,6 @@ export interface QueryConfig {
   gcTime?: number
 }
 
-
 // 사용자 타입 (예시)
 export interface User extends BaseEntity {
   email: string
@@ -75,4 +74,35 @@ export interface CreateUserRequest {
 export interface UpdateUserRequest {
   name?: string
   email?: string
+}
+
+export enum ErrorType {
+  NETWORK_ERROR = "NETWORK_ERROR",
+  AUTHENTICATION_ERROR = "AUTHENTICATION_ERROR",
+  AUTHORIZATION_ERROR = "AUTHORIZATION_ERROR",
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  SERVER_ERROR = "SERVER_ERROR",
+  CLIENT_ERROR = "CLIENT_ERROR",
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+}
+
+export interface ProcessedError {
+  type: ErrorType
+  message: string
+  originalError: Error
+  statusCode?: number
+  retryable: boolean
+}
+
+// Interceptor용 에러 핸들러 타입
+export type ErrorHandler = (
+  error: AxiosError,
+  originalRequest: InternalAxiosRequestConfig & { _retry?: boolean; silent?: boolean },
+  axiosInstance: AxiosInstance,
+) => Promise<AxiosResponse | null>
+
+export interface ApiErrorInfo {
+  message: string
+  description?: string
+  action?: string
 }

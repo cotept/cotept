@@ -1,3 +1,5 @@
+import { typedKeys } from "@repo/shared/lib/utils"
+
 import { QueryClient, QueryKey } from "@tanstack/react-query"
 import { AxiosPromise } from "axios"
 import { produce } from "immer"
@@ -5,7 +7,8 @@ import { toast } from "sonner"
 
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 
-import { handleApiError } from "@/shared/api/core/error-handler"
+import { handleApiError } from "@/shared/api/core/errors/handlers"
+
 /**
  * Immer를 사용하여 T 형태의 캐시 데이터를 부분적으로 업데이트하기 위한
  * `queryClient.setQueryData`용 업데이터 함수를 생성합니다.
@@ -80,16 +83,13 @@ export function createApiService<T extends object>(
   const service = {} as any
 
   // apiInstance의 모든 키(메서드명)를 순회합니다.
-  for (const key in apiInstance) {
-    // 프로토타입 체인이 아닌, 해당 객체가 직접 소유한 속성인지 확인합니다.
-    if (Object.prototype.hasOwnProperty.call(apiInstance, key)) {
-      const property = apiInstance[key]
+  for (const key of typedKeys(apiInstance)) {
+    const property = apiInstance[key]
 
-      // 속성이 함수(API 메서드)인 경우에만 래핑을 적용합니다.
-      if (typeof property === "function") {
-        // .bind(apiInstance)를 통해 'this' 컨텍스트를 유지하고, withErrorHandling으로 래핑합니다.
-        service[key] = withErrorHandling(property.bind(apiInstance))
-      }
+    // 속성이 함수(API 메서드)인 경우에만 래핑을 적용합니다.
+    if (typeof property === "function") {
+      // .bind(apiInstance)를 통해 'this' 컨텍스트를 유지하고, withErrorHandling으로 래핑합니다.
+      service[key] = withErrorHandling(property.bind(apiInstance))
     }
   }
 

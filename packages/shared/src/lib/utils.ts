@@ -1,5 +1,4 @@
-import { DebouncedFunction } from "@repo/shared/rules"
-import { DeepPartial, JSONValue, PathsToProps, PathValue } from "@repo/shared/types/types"
+import { DebouncedFunction, DeepPartial, JSONValue, PathsToProps, PathValue } from "@repo/shared/types/types"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -493,4 +492,15 @@ export async function runInChunks<T>(tasks: (() => Promise<T>)[], chunkSize: num
   }
 
   return results
+}
+
+/**
+ * 빈 값 체크
+ */
+export function isEmpty(value: unknown): boolean {
+  if (value === null || value === undefined) return true
+  if (typeof value === "string") return value.trim() === ""
+  if (Array.isArray(value)) return value.length === 0
+  if (typeof value === "object") return Object.keys(value).length === 0
+  return false
 }

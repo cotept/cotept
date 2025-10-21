@@ -129,3 +129,16 @@ export type PathValue<T, P extends string> = P extends `${infer K}.${infer Rest}
   : P extends keyof T
     ? T[P]
     : never
+
+/**
+ * 디바운싱된 함수 타입
+ */
+export interface DebouncedFunction<T extends (...args: any[]) => any> {
+  (...args: Parameters<T>): void
+  /** 대기 중인 호출을 취소 */
+  cancel: () => void
+  /** 대기 중인 호출을 즉시 실행 */
+  flush: () => void
+  /** 현재 대기 중인 호출이 있는지 확인 */
+  isPending: () => boolean
+}

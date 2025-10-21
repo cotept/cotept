@@ -3,6 +3,7 @@ import { useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 import { signInAction } from "@/features/auth/actions/signin"
 import { LoginData, LoginRules } from "@/features/auth/lib/validations/auth-rules"
@@ -41,9 +42,12 @@ export function useSignIn() {
       const result = await signInAction(formData)
 
       if (result?.error) {
+        toast.error(result.error)
+        return
       }
       // 성공 시에는 서버 액션에서 자동으로 리다이렉트됨
     } catch (error) {
+      // 운영 환경에서는 sentry 추가 예정
       console.error("로그인 오류:", error)
     }
   })

@@ -1,3 +1,4 @@
+import { isEmpty, typedEntries, typedFromEntries } from "@repo/shared/lib/utils"
 import { z, ZodError, ZodObject, ZodRawShape, ZodSchema, ZodTypeAny } from "zod"
 
 /**
@@ -15,6 +16,7 @@ export interface FieldValidation {
   isValid: boolean
   errors: string[]
   errorCodes: string[]
+  errorMessage?: string
 }
 
 /**
@@ -33,15 +35,14 @@ export interface ValidationCheckItem {
 const makeZodSchema = <T extends Record<string, any>>(map: RuleMap<T>): ZodObject<any> => {
   const result: ZodRawShape = {}
 
-  for (const key in map) {
-    const val = map[key]
+  // ✅ typedEntries 사용
+  typedEntries(map).forEach(([key, val]) => {
     if (val && typeof val === "object" && !("safeParse" in val)) {
-      // 재귀 함수 처리
-      result[key] = makeZodSchema(val as RuleMap<any>)
+      result[key as string] = makeZodSchema(val as RuleMap<any>)
     } else {
-      result[key] = val as ZodTypeAny
+      result[key as string] = val as ZodTypeAny
     }
-  }
+  })
 
   return z.object(result)
 }
@@ -55,9 +56,6 @@ export const zodValidateToggle = <T extends Record<string, any>>(ruleMap: RuleMa
 
 /**
  * 전체 검증 with 에러 메시지 (폼 submit 시 사용)
- * @param schema
- * @param data
- * @returns
  */
 export function validateWithZod<T>(
   schema: z.ZodSchema<T>,
@@ -82,13 +80,22 @@ export function validateField<T>(fieldSchema: ZodSchema<T>, value: unknown): Fie
   const result = fieldSchema.safeParse(value)
 
   if (result.success) {
-    return { isValid: true, errors: [], errorCodes: [] }
+    return {
+      isValid: true,
+      errors: [],
+      errorCodes: [],
+      errorMessage: undefined,
+    }
   }
+
+  const errors = result.error.errors.map((e) => e.message)
+  const errorCodes = result.error.errors.map((e) => e.code)
 
   return {
     isValid: false,
-    errors: result.error.errors.map((e) => e.message),
-    errorCodes: result.error.errors.map((e) => e.code),
+    errors,
+    errorCodes,
+    errorMessage: errors[0] || "유효하지 않은 값입니다", // ✅ 추가
   }
 }
 
@@ -140,9 +147,62 @@ export function groupErrorsByField(error: ZodError): Record<string, string[]> {
 }
 
 /**
- * 첫 번째 에러 메시지만 추출
+ * 첫 번째 에러 메시지만 추출 (✅ utils 활용)
  */
 export function getFirstFieldError(error: ZodError): Record<string, string> {
   const grouped = groupErrorsByField(error)
-  return Object.fromEntries(Object.entries(grouped).map(([field, errors]) => [field, errors[0]]))
+  return typedFromEntries(typedEntries(grouped).map(([field, errors]) => [field, errors[0]]))
+}
+
+/**
+ * 단일 필드 검증 - 간단 버전 (에러 메시지만 반환)
+ */
+export function validateFieldSimple<T>(fieldSchema: ZodSchema<T>, value: unknown): string | null {
+  const result = fieldSchema.safeParse(value)
+  return result.success ? null : result.error.errors[0]?.message || "유효하지 않은 값입니다"
+}
+
+/**
+ * 객체 필드 검증 - 간단 버전
+ */
+export function validateObjectFieldSimple<T extends Record<string, any>>(
+  schema: z.ZodObject<any>,
+  fieldName: keyof T,
+  value: unknown,
+): string | null {
+  const fieldSchema = schema.shape[fieldName]
+  if (!fieldSchema) return null
+  return validateFieldSimple(fieldSchema, value)
+}
+
+/**
+ * 객체 전체 검증 후 필드별 첫 에러만 추출 (✅ 추가)
+ */
+export function validateObjectSimple<T>(schema: ZodSchema<T>, data: unknown): Record<string, string> | null {
+  const result = schema.safeParse(data)
+
+  if (result.success) return null
+
+  return getFirstFieldError(result.error)
+}
+
+/**
+ * 필드가 비어있는지 체크 후 검증 (✅ isEmpty 활용)
+ */
+export function validateFieldWithEmpty<T>(
+  fieldSchema: ZodSchema<T>,
+  value: unknown,
+  emptyMessage: string = "필수 입력 항목입니다",
+): FieldValidation {
+  // ✅ isEmpty 활용
+  if (isEmpty(value)) {
+    return {
+      isValid: false,
+      errors: [emptyMessage],
+      errorCodes: [],
+      errorMessage: emptyMessage,
+    }
+  }
+
+  return validateField(fieldSchema, value)
 }

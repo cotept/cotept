@@ -562,21 +562,6 @@ cotept/
 
 ---
 
-## 코드 품질 및 컨벤션
-
-### TypeScript
-
-- 공유 설정은 `@repo/typescript-config` 사용
-
-### ESLint
-
-- 공유 설정은 `@repo/eslint-config` 사용
-- 자동 import 정렬
-- 미사용 import 감지
-- 아키텍처 경계 검증
-
----
-
 ## 주요 문서
 
 ### 아키텍처
@@ -585,22 +570,10 @@ cotept/
 - [실시간 프로토콜 서비스](docs/architecture/realtime-protocol-services.md)
 - [인프라 아키텍처](context/INFRASTRUCTURE_ARCHITECTURE.md)
 
-### 개발 가이드
-
-- [백엔드 엔드포인트 개발 워크플로우](context/BACKEND_ENDPOINT_WORKFLOW.md)
-- [API 통합 가이드](docs/development/open-api-spec/api-integration-practical-guide.md)
-- [CDN 및 Object Storage 아키텍처](docs/development/cdn-object-storage-architecture.md)
-
 ### 인증 시스템
 
 - [인증 시스템 개요](docs/auth/login/auth-system.md)
 - [회원가입 플로우](docs/auth/signup/signup-flow.md)
-
-### UI/UX
-
-- [디자인 시스템 계획](docs/ui/design-system-plan.md)
-- [Overlay 시스템 구현](docs/ui/overlay/overlay-system-implementation.md)
-- [Storybook 모범 사례](docs/ui/storybook-best-practices.md)
 
 ### 미디어 처리
 

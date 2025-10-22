@@ -6,6 +6,7 @@ import {
   UserProfileDto,
   UserProfileResponseDto,
 } from "@/modules/user-profile/application/dtos/user-profile.dto"
+import { MyProfileResponseDto } from "@/modules/user-profile/infrastructure/adapter/in/dto/response"
 import UserProfile from "@/modules/user-profile/domain/model/user-profile"
 
 /**
@@ -145,5 +146,17 @@ export class UserProfileMapper {
       isComplete: domain.isComplete(),
       missingFields,
     }
+  }
+
+  /**
+   * 내 프로필 조회용 Response DTO 생성
+   * 멘티 프로필 + 멘토 프로필 보유 여부 포함
+   */
+  toMyProfileResponseDto(
+    menteeProfile: UserProfileDto,
+    hasMentorProfile: boolean,
+    mentorProfileId?: number,
+  ): MyProfileResponseDto {
+    return new MyProfileResponseDto(menteeProfile, hasMentorProfile, mentorProfileId)
   }
 }

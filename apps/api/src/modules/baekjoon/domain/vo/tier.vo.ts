@@ -1,125 +1,195 @@
+export enum TierNameEnum {
+  Unrated = "Unrated",
+  BronzeV = "BronzeV",
+  BronzeIV = "BronzeIV",
+  BronzeIII = "BronzeIII",
+  BronzeII = "BronzeII",
+  BronzeI = "BronzeI",
+  SilverV = "SilverV",
+  SilverIV = "SilverIV",
+  SilverIII = "SilverIII",
+  SilverII = "SilverII",
+  SilverI = "SilverI",
+  GoldV = "GoldV",
+  GoldIV = "GoldIV",
+  GoldIII = "GoldIII",
+  GoldII = "GoldII",
+  GoldI = "GoldI",
+  PlatinumV = "PlatinumV",
+  PlatinumIV = "PlatinumIV",
+  PlatinumIII = "PlatinumIII",
+  PlatinumII = "PlatinumII",
+  PlatinumI = "PlatinumI",
+  DiamondV = "DiamondV",
+  DiamondIV = "DiamondIV",
+  DiamondIII = "DiamondIII",
+  DiamondII = "DiamondII",
+  DiamondI = "DiamondI",
+  RubyV = "RubyV",
+  RubyIV = "RubyIV",
+  RubyIII = "RubyIII",
+  RubyII = "RubyII",
+  RubyI = "RubyI",
+  Master = "Master",
+}
+
+export enum TierColorEnum {
+  Unrated = "#2D2D2D",
+  BronzeV = "#AD5600",
+  BronzeIV = "#AD5600",
+  BronzeIII = "#AD5600",
+  BronzeII = "#AD5600",
+  BronzeI = "#AD5600",
+  SilverV = "#435F7A",
+  SilverIV = "#435F7A",
+  SilverIII = "#435F7A",
+  SilverII = "#435F7A",
+  SilverI = "#435F7A",
+  GoldV = "#EC9A00",
+  GoldIV = "#EC9A00",
+  GoldIII = "#EC9A00",
+  GoldII = "#EC9A00",
+  GoldI = "#EC9A00",
+  PlatinumV = "#27E2A4",
+  PlatinumIV = "#27E2A4",
+  PlatinumIII = "#27E2A4",
+  PlatinumII = "#27E2A4",
+  PlatinumI = "#27E2A4",
+  DiamondV = "#00D2F0",
+  DiamondIV = "#00D2F0",
+  DiamondIII = "#00D2F0",
+  DiamondII = "#00D2F0",
+  DiamondI = "#00D2F0",
+  RubyV = "#FF0062",
+  RubyIV = "#FF0062",
+  RubyIII = "#FF0062",
+  RubyII = "#FF0062",
+  RubyI = "#FF0062",
+  Master = "#B491FF",
+}
+
 /**
  * solved.ac 티어 값 객체
  * 백준 사용자의 solved.ac 티어 정보를 관리
  */
-export enum TierLevel {
-  UNRATED = 0,
-  BRONZE_V = 1,
-  BRONZE_IV = 2,
-  BRONZE_III = 3,
-  BRONZE_II = 4,
-  BRONZE_I = 5,
-  SILVER_V = 6,
-  SILVER_IV = 7,
-  SILVER_III = 8,
-  SILVER_II = 9,
-  SILVER_I = 10,
-  GOLD_V = 11,
-  GOLD_IV = 12,
-  GOLD_III = 13,
-  GOLD_II = 14,
-  GOLD_I = 15,
-  PLATINUM_V = 16,
-  PLATINUM_IV = 17,
-  PLATINUM_III = 18,
-  PLATINUM_II = 19,
-  PLATINUM_I = 20,
-  DIAMOND_V = 21,
-  DIAMOND_IV = 22,
-  DIAMOND_III = 23,
-  DIAMOND_II = 24,
-  DIAMOND_I = 25,
-  RUBY_V = 26,
-  RUBY_IV = 27,
-  RUBY_III = 28,
-  RUBY_II = 29,
-  RUBY_I = 30,
-  MASTER = 31,
+export enum TierLevelEnum {
+  Unrated = 0,
+  BronzeV = 1,
+  BronzeIV = 2,
+  BronzeIII = 3,
+  BronzeII = 4,
+  BronzeI = 5,
+  SilverV = 6,
+  SilverIV = 7,
+  SilverIII = 8,
+  SilverII = 9,
+  SilverI = 10,
+  GoldV = 11,
+  GoldIV = 12,
+  GoldIII = 13,
+  GoldII = 14,
+  GoldI = 15,
+  PlatinumV = 16,
+  PlatinumIV = 17,
+  PlatinumIII = 18,
+  PlatinumII = 19,
+  PlatinumI = 20,
+  DiamondV = 21,
+  DiamondIV = 22,
+  DiamondIII = 23,
+  DiamondII = 24,
+  DiamondI = 25,
+  RubyV = 26,
+  RubyIV = 27,
+  RubyIII = 28,
+  RubyII = 29,
+  RubyI = 30,
+  Master = 31,
 }
 
 export class Tier {
-  private readonly level: TierLevel
+  private readonly level: TierLevelEnum
 
   // 티어별 이름 매핑
-  private static readonly TIER_NAMES: Record<TierLevel, string> = {
-    [TierLevel.UNRATED]: "Unrated",
-    [TierLevel.BRONZE_V]: "Bronze V",
-    [TierLevel.BRONZE_IV]: "Bronze IV",
-    [TierLevel.BRONZE_III]: "Bronze III",
-    [TierLevel.BRONZE_II]: "Bronze II",
-    [TierLevel.BRONZE_I]: "Bronze I",
-    [TierLevel.SILVER_V]: "Silver V",
-    [TierLevel.SILVER_IV]: "Silver IV",
-    [TierLevel.SILVER_III]: "Silver III",
-    [TierLevel.SILVER_II]: "Silver II",
-    [TierLevel.SILVER_I]: "Silver I",
-    [TierLevel.GOLD_V]: "Gold V",
-    [TierLevel.GOLD_IV]: "Gold IV",
-    [TierLevel.GOLD_III]: "Gold III",
-    [TierLevel.GOLD_II]: "Gold II",
-    [TierLevel.GOLD_I]: "Gold I",
-    [TierLevel.PLATINUM_V]: "Platinum V",
-    [TierLevel.PLATINUM_IV]: "Platinum IV",
-    [TierLevel.PLATINUM_III]: "Platinum III",
-    [TierLevel.PLATINUM_II]: "Platinum II",
-    [TierLevel.PLATINUM_I]: "Platinum I",
-    [TierLevel.DIAMOND_V]: "Diamond V",
-    [TierLevel.DIAMOND_IV]: "Diamond IV",
-    [TierLevel.DIAMOND_III]: "Diamond III",
-    [TierLevel.DIAMOND_II]: "Diamond II",
-    [TierLevel.DIAMOND_I]: "Diamond I",
-    [TierLevel.RUBY_V]: "Ruby V",
-    [TierLevel.RUBY_IV]: "Ruby IV",
-    [TierLevel.RUBY_III]: "Ruby III",
-    [TierLevel.RUBY_II]: "Ruby II",
-    [TierLevel.RUBY_I]: "Ruby I",
-    [TierLevel.MASTER]: "Master",
+  private static readonly TIER_NAMES: Record<TierLevelEnum, TierNameEnum> = {
+    [TierLevelEnum.Unrated]: TierNameEnum.Unrated,
+    [TierLevelEnum.BronzeV]: TierNameEnum.BronzeV,
+    [TierLevelEnum.BronzeIV]: TierNameEnum.BronzeIV,
+    [TierLevelEnum.BronzeIII]: TierNameEnum.BronzeIII,
+    [TierLevelEnum.BronzeII]: TierNameEnum.BronzeII,
+    [TierLevelEnum.BronzeI]: TierNameEnum.BronzeI,
+    [TierLevelEnum.SilverV]: TierNameEnum.SilverV,
+    [TierLevelEnum.SilverIV]: TierNameEnum.SilverIV,
+    [TierLevelEnum.SilverIII]: TierNameEnum.SilverIII,
+    [TierLevelEnum.SilverII]: TierNameEnum.SilverII,
+    [TierLevelEnum.SilverI]: TierNameEnum.SilverI,
+    [TierLevelEnum.GoldV]: TierNameEnum.GoldV,
+    [TierLevelEnum.GoldIV]: TierNameEnum.GoldIV,
+    [TierLevelEnum.GoldIII]: TierNameEnum.GoldIII,
+    [TierLevelEnum.GoldII]: TierNameEnum.GoldII,
+    [TierLevelEnum.GoldI]: TierNameEnum.GoldI,
+    [TierLevelEnum.PlatinumV]: TierNameEnum.PlatinumV,
+    [TierLevelEnum.PlatinumIV]: TierNameEnum.PlatinumIV,
+    [TierLevelEnum.PlatinumIII]: TierNameEnum.PlatinumIII,
+    [TierLevelEnum.PlatinumII]: TierNameEnum.PlatinumII,
+    [TierLevelEnum.PlatinumI]: TierNameEnum.PlatinumI,
+    [TierLevelEnum.DiamondV]: TierNameEnum.DiamondV,
+    [TierLevelEnum.DiamondIV]: TierNameEnum.DiamondIV,
+    [TierLevelEnum.DiamondIII]: TierNameEnum.DiamondIII,
+    [TierLevelEnum.DiamondII]: TierNameEnum.DiamondII,
+    [TierLevelEnum.DiamondI]: TierNameEnum.DiamondI,
+    [TierLevelEnum.RubyV]: TierNameEnum.RubyV,
+    [TierLevelEnum.RubyIV]: TierNameEnum.RubyIV,
+    [TierLevelEnum.RubyIII]: TierNameEnum.RubyIII,
+    [TierLevelEnum.RubyII]: TierNameEnum.RubyII,
+    [TierLevelEnum.RubyI]: TierNameEnum.RubyI,
+    [TierLevelEnum.Master]: TierNameEnum.Master,
   }
 
   // 티어별 색상 코드
-  private static readonly TIER_COLORS: Record<TierLevel, string> = {
-    [TierLevel.UNRATED]: "#2D2D2D",
-    [TierLevel.BRONZE_V]: "#AD5600",
-    [TierLevel.BRONZE_IV]: "#AD5600",
-    [TierLevel.BRONZE_III]: "#AD5600",
-    [TierLevel.BRONZE_II]: "#AD5600",
-    [TierLevel.BRONZE_I]: "#AD5600",
-    [TierLevel.SILVER_V]: "#435F7A",
-    [TierLevel.SILVER_IV]: "#435F7A",
-    [TierLevel.SILVER_III]: "#435F7A",
-    [TierLevel.SILVER_II]: "#435F7A",
-    [TierLevel.SILVER_I]: "#435F7A",
-    [TierLevel.GOLD_V]: "#EC9A00",
-    [TierLevel.GOLD_IV]: "#EC9A00",
-    [TierLevel.GOLD_III]: "#EC9A00",
-    [TierLevel.GOLD_II]: "#EC9A00",
-    [TierLevel.GOLD_I]: "#EC9A00",
-    [TierLevel.PLATINUM_V]: "#27E2A4",
-    [TierLevel.PLATINUM_IV]: "#27E2A4",
-    [TierLevel.PLATINUM_III]: "#27E2A4",
-    [TierLevel.PLATINUM_II]: "#27E2A4",
-    [TierLevel.PLATINUM_I]: "#27E2A4",
-    [TierLevel.DIAMOND_V]: "#00D2F0",
-    [TierLevel.DIAMOND_IV]: "#00D2F0",
-    [TierLevel.DIAMOND_III]: "#00D2F0",
-    [TierLevel.DIAMOND_II]: "#00D2F0",
-    [TierLevel.DIAMOND_I]: "#00D2F0",
-    [TierLevel.RUBY_V]: "#FF0062",
-    [TierLevel.RUBY_IV]: "#FF0062",
-    [TierLevel.RUBY_III]: "#FF0062",
-    [TierLevel.RUBY_II]: "#FF0062",
-    [TierLevel.RUBY_I]: "#FF0062",
-    [TierLevel.MASTER]: "#B491FF",
+  private static readonly TIER_COLORS: Record<TierLevelEnum, TierColorEnum> = {
+    [TierLevelEnum.Unrated]: TierColorEnum.Unrated,
+    [TierLevelEnum.BronzeV]: TierColorEnum.BronzeV,
+    [TierLevelEnum.BronzeIV]: TierColorEnum.BronzeIV,
+    [TierLevelEnum.BronzeIII]: TierColorEnum.BronzeIII,
+    [TierLevelEnum.BronzeII]: TierColorEnum.BronzeII,
+    [TierLevelEnum.BronzeI]: TierColorEnum.BronzeI,
+    [TierLevelEnum.SilverV]: TierColorEnum.SilverV,
+    [TierLevelEnum.SilverIV]: TierColorEnum.SilverIV,
+    [TierLevelEnum.SilverIII]: TierColorEnum.SilverIII,
+    [TierLevelEnum.SilverII]: TierColorEnum.SilverII,
+    [TierLevelEnum.SilverI]: TierColorEnum.SilverI,
+    [TierLevelEnum.GoldV]: TierColorEnum.GoldV,
+    [TierLevelEnum.GoldIV]: TierColorEnum.GoldIV,
+    [TierLevelEnum.GoldIII]: TierColorEnum.GoldIII,
+    [TierLevelEnum.GoldII]: TierColorEnum.GoldII,
+    [TierLevelEnum.GoldI]: TierColorEnum.GoldI,
+    [TierLevelEnum.PlatinumV]: TierColorEnum.PlatinumV,
+    [TierLevelEnum.PlatinumIV]: TierColorEnum.PlatinumIV,
+    [TierLevelEnum.PlatinumIII]: TierColorEnum.PlatinumIII,
+    [TierLevelEnum.PlatinumII]: TierColorEnum.PlatinumII,
+    [TierLevelEnum.PlatinumI]: TierColorEnum.PlatinumI,
+    [TierLevelEnum.DiamondV]: TierColorEnum.DiamondV,
+    [TierLevelEnum.DiamondIV]: TierColorEnum.DiamondIV,
+    [TierLevelEnum.DiamondIII]: TierColorEnum.DiamondIII,
+    [TierLevelEnum.DiamondII]: TierColorEnum.DiamondII,
+    [TierLevelEnum.DiamondI]: TierColorEnum.DiamondI,
+    [TierLevelEnum.RubyV]: TierColorEnum.RubyV,
+    [TierLevelEnum.RubyIV]: TierColorEnum.RubyIV,
+    [TierLevelEnum.RubyIII]: TierColorEnum.RubyIII,
+    [TierLevelEnum.RubyII]: TierColorEnum.RubyII,
+    [TierLevelEnum.RubyI]: TierColorEnum.RubyI,
+    [TierLevelEnum.Master]: TierColorEnum.Master,
   }
 
-  private constructor(level: TierLevel) {
+  private constructor(level: TierLevelEnum) {
     this.level = level
   }
 
   /**
    * 티어 레벨로부터 생성
    */
-  public static ofLevel(level: TierLevel): Tier {
+  public static ofLevel(level: TierLevelEnum): Tier {
     return new Tier(level)
   }
 
@@ -130,18 +200,18 @@ export class Tier {
     if (tierNumber < 0 || tierNumber > 31) {
       throw new Error(`유효하지 않은 티어 번호입니다: ${tierNumber}`)
     }
-    return new Tier(tierNumber as TierLevel)
+    return new Tier(tierNumber as TierLevelEnum)
   }
 
   /**
    * 티어 이름으로부터 생성
    */
-  public static fromName(tierName: string): Tier {
-    const entry = Object.entries(Tier.TIER_NAMES).find(([_, name]) => name === tierName)
+  public static fromName(tierNameETierNameEnum: string): Tier {
+    const entry = Object.entries(Tier.TIER_NAMES).find(([_, name]) => name === tierNameETierNameEnum)
     if (!entry) {
-      throw new Error(`유효하지 않은 티어 이름입니다: ${tierName}`)
+      throw new Error(`유효하지 않은 티어 이름입니다: ${tierNameETierNameEnum}`)
     }
-    return new Tier(parseInt(entry[0]) as TierLevel)
+    return new Tier(parseInt(entry[0]) as TierLevelEnum)
   }
 
   /**
@@ -154,28 +224,28 @@ export class Tier {
   /**
    * 티어 레벨 반환
    */
-  public getLevel(): TierLevel {
+  public getLevel(): TierLevelEnum {
     return this.level
   }
 
   /**
    * 티어 이름 반환
    */
-  public getName(): string {
+  public getName(): TierNameEnum {
     return Tier.TIER_NAMES[this.level]
   }
 
   /**
    * 티어 색상 코드 반환
    */
-  public getColor(): string {
+  public getColor(): TierColorEnum {
     return Tier.TIER_COLORS[this.level]
   }
 
   /**
    * 원시 값(string) 반환 - 티어 이름 반환
    */
-  public toString(): string {
+  public toString(): TierNameEnum {
     return this.getName()
   }
 
@@ -190,63 +260,63 @@ export class Tier {
    * 브론즈 티어인지 확인
    */
   public isBronze(): boolean {
-    return this.level >= TierLevel.BRONZE_V && this.level <= TierLevel.BRONZE_I
+    return this.level >= TierLevelEnum.BronzeV && this.level <= TierLevelEnum.BronzeI
   }
 
   /**
    * 실버 티어인지 확인
    */
   public isSilver(): boolean {
-    return this.level >= TierLevel.SILVER_V && this.level <= TierLevel.SILVER_I
+    return this.level >= TierLevelEnum.SilverV && this.level <= TierLevelEnum.SilverI
   }
 
   /**
    * 골드 티어인지 확인
    */
   public isGold(): boolean {
-    return this.level >= TierLevel.GOLD_V && this.level <= TierLevel.GOLD_I
+    return this.level >= TierLevelEnum.GoldV && this.level <= TierLevelEnum.GoldI
   }
 
   /**
    * 플래티넘 티어인지 확인
    */
   public isPlatinum(): boolean {
-    return this.level >= TierLevel.PLATINUM_V && this.level <= TierLevel.PLATINUM_I
+    return this.level >= TierLevelEnum.PlatinumV && this.level <= TierLevelEnum.PlatinumI
   }
 
   /**
    * 다이아몬드 티어인지 확인
    */
   public isDiamond(): boolean {
-    return this.level >= TierLevel.DIAMOND_V && this.level <= TierLevel.DIAMOND_I
+    return this.level >= TierLevelEnum.DiamondV && this.level <= TierLevelEnum.DiamondI
   }
 
   /**
    * 루비 티어인지 확인
    */
   public isRuby(): boolean {
-    return this.level >= TierLevel.RUBY_V && this.level <= TierLevel.RUBY_I
+    return this.level >= TierLevelEnum.RubyV && this.level <= TierLevelEnum.RubyI
   }
 
   /**
    * 마스터 티어인지 확인
    */
   public isMaster(): boolean {
-    return this.level === TierLevel.MASTER
+    return this.level === TierLevelEnum.Master
   }
 
   /**
    * Unrated인지 확인
    */
   public isUnrated(): boolean {
-    return this.level === TierLevel.UNRATED
+    return this.level === TierLevelEnum.Unrated
   }
 
   /**
    * 멘토 자격을 충족하는지 확인 (Platinum 3 이상)
    */
   public isMentorEligible(): boolean {
-    return this.level >= TierLevel.PLATINUM_III
+    return this.level >= TierLevelEnum.PlatinumIII
   }
 
   /**
@@ -293,10 +363,16 @@ export class Tier {
     return "Unknown"
   }
 
-  /**
-   * solved.ac 프로필 이미지 URL 생성
-   */
-  public getProfileImageUrl(): string {
-    return `https://static.solved.ac/tier_small/${this.level}.svg`
+  public static getAllTiers() {
+    return Object.values(TierLevelEnum)
+      .filter((level) => typeof level === "number")
+      .map((level) => {
+        const tier = Tier.ofLevel(level as TierLevelEnum)
+        return {
+          level: tier.getLevel(),
+          name: tier.getName(),
+          color: tier.getColor(),
+        }
+      })
   }
 }

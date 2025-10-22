@@ -22,19 +22,20 @@ import {
   LoginRequestDto,
   RefreshTokenRequestDto,
   ResetPasswordRequestDto,
+  SelectProfileRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
   AvailabilityResponseDto,
+  EmailVerificationResultResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   TokenResponseDto,
   ValidationResultResponseDto,
   VerificationCodeResponseDto,
-  VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
 import {
@@ -163,10 +164,10 @@ export class AuthController {
     description: "발송된 인증 코드의 유효성을 검증합니다. 이 과정을 통해 인증을 완료할 수 있습니다.",
   })
   @ApiBody({ type: VerifyCodeRequestDto })
-  @ApiOkResponseWrapper(VerificationResultResponseDto, "인증 코드 확인 성공")
+  @ApiOkResponseWrapper(EmailVerificationResultResponseDto, "인증 코드 확인 성공")
   @ApiStandardErrors()
   @ApiUnauthorizedResponse({ description: "인증 코드가 일치하지 않습니다" })
-  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
+  async verifyCode(@Body() verifyCodeRequestDto: VerifyCodeRequestDto): Promise<EmailVerificationResultResponseDto> {
     this.logger.debug(verifyCodeRequestDto)
     return this.authFacadeService.verifyCode(verifyCodeRequestDto)
   }
@@ -292,5 +293,25 @@ export class AuthController {
     @Body() checkUserIdAvailabilityRequestDto: CheckUserIdAvailabilityRequestDto,
   ): Promise<AvailabilityResponseDto> {
     return this.authFacadeService.checkUserIdAvailability(checkUserIdAvailabilityRequestDto)
+  }
+
+  /**
+   * 프로필 선택 (멘토/멘티)
+   * 멘토 사용자가 활성 프로필을 선택하여 JWT 메타데이터를 업데이트합니다.
+   */
+  @Post("select-profile")
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "프로필 선택",
+    description:
+      "멘토 사용자가 사용할 프로필(mentee/mentor)을 선택합니다. activeProfile 메타데이터가 포함된 새로운 Access Token을 발급받습니다.",
+  })
+  @ApiBody({ type: SelectProfileRequestDto })
+  @ApiOkResponseWrapper(TokenResponseDto, "프로필 선택 성공 - 새로운 토큰 발급")
+  @ApiAuthRequiredErrors()
+  @ApiStandardErrors()
+  async selectProfile(@Body() selectProfileRequestDto: SelectProfileRequestDto): Promise<TokenResponseDto> {
+    return this.authFacadeService.selectProfile(selectProfileRequestDto)
   }
 }

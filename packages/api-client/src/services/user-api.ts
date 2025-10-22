@@ -836,16 +836,16 @@ export class UserApi extends BaseAPI implements UserApiInterface {
   * @enum {string}
   */
 export enum GetAllUsersRole {
-    mentee = 'MENTEE',
-    mentor = 'MENTOR',
-    admin = 'ADMIN'
+    MENTEE = 'MENTEE',
+    MENTOR = 'MENTOR',
+    ADMIN = 'ADMIN'
 }
 /**
   * @export
   * @enum {string}
   */
 export enum GetAllUsersStatus {
-    active = 'ACTIVE',
-    inactive = 'INACTIVE',
-    suspended = 'SUSPENDED'
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+    SUSPENDED = 'SUSPENDED'
 }

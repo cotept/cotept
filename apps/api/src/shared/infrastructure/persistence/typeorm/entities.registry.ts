@@ -13,6 +13,12 @@ import { TermsAgreementEntity } from "@/modules/auth/infrastructure/adapter/out/
 // 모든 엔티티 import
 import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { MailAuditEntity } from "@/modules/mail/infrastructure/adapter/out/persistence/entities/mail-audit.entity"
+import {
+  MentorProfileEntity,
+  MentorProfileTagEntity,
+  MentorTagEntity,
+} from "@/modules/mentor/infrastructure/adapter/out/persistence/entities"
+import { OnboardingStateEntity } from "@/modules/onboarding/infrastructure/adapter/out/persistence/entities/onboarding-state.entity"
 import { UserEntity, UserProfileEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities"
 
 /**
@@ -31,6 +37,12 @@ export const AUTH_ENTITIES: EntityClassOrSchema[] = [
 ]
 export const BAEKJOON_ENTITIES: EntityClassOrSchema[] = [BaekjoonProfileEntity]
 export const MAIL_ENTITIES: EntityClassOrSchema[] = [MailAuditEntity]
+export const MENTOR_PROFILES_ENTITIES: EntityClassOrSchema[] = [
+  MentorProfileEntity,
+  MentorTagEntity,
+  MentorProfileTagEntity,
+]
+export const ONBOARDING_ENTITIES: EntityClassOrSchema[] = [OnboardingStateEntity]
 
 /**
  * 모든 TypeORM 엔티티 중앙 관리
@@ -42,6 +54,8 @@ export const ALL_ENTITIES: EntityClassOrSchema[] = [
   ...AUTH_ENTITIES,
   ...BAEKJOON_ENTITIES,
   ...MAIL_ENTITIES,
+  ...MENTOR_PROFILES_ENTITIES,
+  ...ONBOARDING_ENTITIES,
 ] as const
 
 /**

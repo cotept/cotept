@@ -198,14 +198,12 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
           draft.phase = "verifying"
         }),
       )
-      verifyCode([
-        {
-          verifyCodeRequestDto: {
-            verificationId: state.verificationId,
-            code,
-          },
+      verifyCode({
+        verifyCodeRequestDto: {
+          verificationId: state.verificationId,
+          code,
         },
-      ])
+      })
     }
   }, [code, state.verificationId, state.phase, verifyCode])
 
@@ -228,14 +226,12 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
         draft.error = null
       }),
     )
-    sendCode([
-      {
-        sendVerificationCodeRequestDto: {
-          authType: AuthType.email,
-          target: email,
-        },
+    sendCode({
+      sendVerificationCodeRequestDto: {
+        authType: AuthType.EMAIL,
+        target: email,
       },
-    ])
+    })
   }, [state.cooldownTime, isSending, email, sendCode])
 
   const resendVerificationCode = useCallback(() => {
@@ -268,14 +264,12 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
           draft.phase = "verifying"
         }),
       )
-      verifyCode([
-        {
-          verifyCodeRequestDto: {
-            verificationId: state.verificationId,
-            code: data.verificationCode,
-          },
+      verifyCode({
+        verifyCodeRequestDto: {
+          verificationId: state.verificationId,
+          code: data.verificationCode,
         },
-      ])
+      })
     }
   })
 

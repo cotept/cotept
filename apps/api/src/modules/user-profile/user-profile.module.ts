@@ -5,6 +5,7 @@ import { UserProfileMapper } from "./application/mappers/user-profile.mapper"
 // 포트
 import { CreateUserProfileUseCase } from "./application/ports/in/create-user-profile.usecase"
 import { DeleteUserProfileUseCase } from "./application/ports/in/delete-user-profile.usecase"
+import { GetMyProfileUseCase } from "./application/ports/in/get-my-profile.usecase"
 import { GetUserProfileUseCase } from "./application/ports/in/get-user-profile.usecase"
 import { UpdateUserProfileUseCase } from "./application/ports/in/update-user-profile.usecase"
 import { UserProfileRepositoryPort } from "./application/ports/out/user-profile-repository.port"
@@ -17,6 +18,7 @@ import {
   GetUserProfileUseCaseImpl,
   UpdateUserProfileUseCaseImpl,
 } from "./application/services/usecases"
+import { GetMyProfileUseCaseImpl } from "./application/services/usecases/get-my-profile.usecase.impl"
 // 컨트롤러 (인바운드 어댑터)
 import { UserProfileController } from "./infrastructure/adapter/in/controllers/user-profile.controller"
 // 매퍼 (Infrastructure → Application)
@@ -26,6 +28,8 @@ import { UserProfileEntity } from "./infrastructure/adapter/out/persistence/enti
 import { UserProfilePersistenceMapper } from "./infrastructure/adapter/out/persistence/mappers"
 import { TypeOrmUserProfileRepository } from "./infrastructure/adapter/out/persistence/repositories"
 
+// Mentor 모듈 의존성
+import { MentorModule } from "@/modules/mentor/mentor.module"
 // User 모듈 의존성
 import { UserModule } from "@/modules/user/user.module"
 // 공유 모듈
@@ -35,6 +39,7 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
   imports: [
     DatabaseModule.forFeature([UserProfileEntity]), // Repository 주입을 위해 필요
     UserModule, // User 존재 여부 확인을 위한 의존성
+    MentorModule, // 멘토 프로필 조회를 위한 의존성
   ],
   controllers: [UserProfileController],
   providers: [
@@ -62,6 +67,10 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
       useClass: GetUserProfileUseCaseImpl,
     },
     {
+      provide: GetMyProfileUseCase,
+      useClass: GetMyProfileUseCaseImpl,
+    },
+    {
       provide: UpdateUserProfileUseCase,
       useClass: UpdateUserProfileUseCaseImpl,
     },
@@ -76,6 +85,7 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
     UserProfileFacadeService,
     CreateUserProfileUseCase,
     GetUserProfileUseCase,
+    GetMyProfileUseCase,
     UpdateUserProfileUseCase,
     DeleteUserProfileUseCase,
   ],

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 
 import { JwtConfig } from "@/configs/token"
 import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
-import { RefreshTokenPayload, TokenPair, TokenPayload } from "@/modules/auth/domain/model"
+import { RefreshTokenPayload, TokenMetadata, TokenPair, TokenPayload } from "@/modules/auth/domain/model"
 
 /**
  * JWT 토큰 생성기 구현 클래스
@@ -23,9 +23,10 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
    * @param userId 사용자 ID
    * @param email 사용자 이메일
    * @param role 사용자 역할
+   * @param metadata JWT에 포함할 추가 메타데이터 (예: activeProfile)
    * @returns 토큰 쌍
    */
-  generateTokenPair(userId: number, email: string, role: string): TokenPair {
+  generateTokenPair(userId: number, email: string, role: string, metadata?: TokenMetadata): TokenPair {
     // 액세스 토큰 설정
     const accessTokenExpiresIn = parseInt(
       this.configService.getOrThrow<JwtConfig>("jwt").accessExpiresIn || "1800", // 기본 30분
@@ -38,7 +39,7 @@ export class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
       jti: accessTokenId,
       iat: Math.floor(Date.now() / 1000),
       // exp: Math.floor(Date.now() / 1000) + accessTokenExpiresIn,
-      metadata: undefined,
+      ...(metadata && Object.keys(metadata).length > 0 ? metadata : {}), // 메타데이터 평탄화하여 포함
     }
 
     const accessToken = this.jwtService.sign(accessTokenPayload, {

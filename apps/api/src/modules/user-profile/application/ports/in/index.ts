@@ -5,5 +5,6 @@
 
 export { CreateUserProfileUseCase } from "./create-user-profile.usecase"
 export { DeleteUserProfileUseCase } from "./delete-user-profile.usecase"
+export { GetMyProfileUseCase } from "./get-my-profile.usecase"
 export { GetUserProfileUseCase } from "./get-user-profile.usecase"
 export { UpdateUserProfileUseCase } from "./update-user-profile.usecase"

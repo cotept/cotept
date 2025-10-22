@@ -27,7 +27,8 @@
     "test:e2e": "jest --config ./apps/api/test/jest-e2e.json",
     "create:module": "bash ../../scripts/create-module.sh",
     "test:module": "jest --testPathPattern",
-    "analyze:module": "echo 'Analyzing module structure...'"
+    "analyze:module": "echo 'Analyzing module structure...'",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@keyv/redis": "^4.3.2",
@@ -59,6 +60,8 @@
     "js-yaml": "^4.1.0",
     "nest-winston": "^1.10.2",
     "nodemailer": "^7.0.3",
+    "oci-common": "^2.119.0",
+    "oci-objectstorage": "^2.119.0",
     "oracle-nosqldb": "^5.5.2",
     "oracledb": "^6.8.0",
     "passport": "^0.7.0",

@@ -2,7 +2,7 @@ import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { authKeys } from "./queryKey"
 
-import type { ValidateTokenResponse } from "@/shared/types/auth.type"
+import type { ValidationResultResponseWrapper } from "@repo/api-client"
 
 import { authApiService } from "@/shared/api/services/auth-api-service"
 
@@ -46,7 +46,7 @@ export const authQueries = {
 // 토큰 검증 훅
 export function useValidateToken(
   token: string,
-  options?: UseQueryOptions<ValidateTokenResponse, Error, ValidateTokenResponse, any>,
+  options?: UseQueryOptions<ValidationResultResponseWrapper, Error, ValidationResultResponseWrapper, any>,
 ) {
   const query = authQueries.validateToken(token)
   return useQuery({

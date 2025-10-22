@@ -12,9 +12,9 @@ export class SyncVerificationStatusUseCaseImpl implements SyncVerificationStatus
   private readonly logger = new Logger(SyncVerificationStatusUseCaseImpl.name)
 
   constructor(
-    @Inject("BaekjoonProfileRepositoryPort")
+    @Inject(BaekjoonProfileRepositoryPort)
     private readonly profileRepository: BaekjoonProfileRepositoryPort,
-    @Inject("CachePort")
+    @Inject(CachePort)
     private readonly cacheAdapter: CachePort,
   ) {}
 

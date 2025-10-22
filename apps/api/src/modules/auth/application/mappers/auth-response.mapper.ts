@@ -4,6 +4,7 @@ import { AvailabilityResultDto } from "@/modules/auth/application/dtos"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
 import {
   AvailabilityResponseDto,
+  EmailVerificationResultResponseDto,
   FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
@@ -12,7 +13,6 @@ import {
   TokenResponseDto,
   ValidationResultResponseDto,
   VerificationCodeResponseDto,
-  VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
 
 /**
@@ -44,7 +44,7 @@ export class AuthResponseMapper {
     }
   }
 
-  toVerificationResultResponse(success: boolean): VerificationResultResponseDto {
+  toVerificationResultResponse(success: boolean): EmailVerificationResultResponseDto {
     return {
       success,
     }

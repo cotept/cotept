@@ -9,6 +9,7 @@ import { UserProfileMapper } from "@/modules/user-profile/application/mappers/us
 import {
   CreateUserProfileUseCase,
   DeleteUserProfileUseCase,
+  GetMyProfileUseCase,
   GetUserProfileUseCase,
   UpdateUserProfileUseCase,
 } from "@/modules/user-profile/application/ports/in"
@@ -23,6 +24,7 @@ export class UserProfileFacadeService {
   constructor(
     private readonly createUserProfileUseCase: CreateUserProfileUseCase,
     private readonly getUserProfileUseCase: GetUserProfileUseCase,
+    private readonly getMyProfileUseCase: GetMyProfileUseCase,
     private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
     private readonly deleteUserProfileUseCase: DeleteUserProfileUseCase,
     private readonly userProfileMapper: UserProfileMapper,
@@ -54,6 +56,13 @@ export class UserProfileFacadeService {
    */
   async getProfileByUserIdOrThrow(userId: string): Promise<UserProfileDto> {
     return await this.getUserProfileUseCase.executeByUserIdOrThrow(userId)
+  }
+
+  /**
+   * 내 프로필 정보 조회 (멘티 프로필 + 멘토 프로필 보유 여부)
+   */
+  async getMyProfile(userId: string) {
+    return await this.getMyProfileUseCase.execute(userId)
   }
 
   /**

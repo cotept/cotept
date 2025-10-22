@@ -28,6 +28,8 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
   exports: [
     // Repository export (다른 모듈에서 주입받을 수 있도록)
     BaekjoonStatisticsRepository,
+    // Mapper export (Repository가 의존하므로)
+    BaekjoonNosqlMapper,
   ],
 })
 export class BaekjoonNoSQLModule {}

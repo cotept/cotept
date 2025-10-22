@@ -21,9 +21,9 @@
  */
 
 export enum AuthType {
-    phone = 'PHONE',
-    email = 'EMAIL',
-    company = 'COMPANY'
+    PHONE = 'PHONE',
+    EMAIL = 'EMAIL',
+    COMPANY = 'COMPANY'
 }
 
 

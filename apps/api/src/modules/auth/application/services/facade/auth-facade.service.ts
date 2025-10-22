@@ -15,6 +15,7 @@ import { LoginUseCase } from "@/modules/auth/application/ports/in/login.usecase"
 import { LogoutUseCase } from "@/modules/auth/application/ports/in/logout.usecase"
 import { RefreshTokenUseCase } from "@/modules/auth/application/ports/in/refresh-token.usecase"
 import { ResetPasswordUseCase } from "@/modules/auth/application/ports/in/reset-password.usecase"
+import { SelectProfileUseCase } from "@/modules/auth/application/ports/in/select-profile.usecase"
 import { SendVerificationCodeUseCase } from "@/modules/auth/application/ports/in/send-verification-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
 import { ValidateAuthCodeUseCase } from "@/modules/auth/application/ports/in/validate-auth-code.usecase"
@@ -35,6 +36,7 @@ import {
   LoginRequestDto,
   RefreshTokenRequestDto,
   ResetPasswordRequestDto,
+  SelectProfileRequestDto,
   SendVerificationCodeRequestDto,
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
@@ -42,6 +44,7 @@ import {
 import {
   AvailabilityResponseDto,
   FindIdResponseDto,
+  EmailVerificationResultResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   SocialLinkConfirmationResponseDto,
@@ -49,7 +52,6 @@ import {
   TokenResponseDto,
   ValidationResultResponseDto,
   VerificationCodeResponseDto,
-  VerificationResultResponseDto,
 } from "@/modules/auth/infrastructure/dtos/response"
 import { convertDomainUserIdToString, convertJwtUserIdToNumber } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
@@ -72,8 +74,9 @@ export class AuthFacadeService {
     private readonly socialAuthCallbackUseCase: SocialAuthCallbackUseCase,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly validateAuthCodeUseCase: ValidateAuthCodeUseCase,
-    private readonly findIdUseCase: FindIdUseCase, // 추가
-    private readonly resetPasswordUseCase: ResetPasswordUseCase, // 추가
+    private readonly findIdUseCase: FindIdUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly selectProfileUseCase: SelectProfileUseCase,
     private readonly checkEmailAvailabilityUseCase: CheckEmailAvailabilityUseCase,
     private readonly checkUserIdAvailabilityUseCase: CheckUserIdAvailabilityUseCase,
     private readonly authRequestMapper: AuthRequestMapper,
@@ -220,7 +223,7 @@ export class AuthFacadeService {
   /**
    * 인증 코드 확인
    */
-  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<VerificationResultResponseDto> {
+  async verifyCode(verifyCodeRequestDto: VerifyCodeRequestDto): Promise<EmailVerificationResultResponseDto> {
     try {
       console.log("verifyCode", { verifyCodeRequestDto })
       this.logger.log("verifyCode 1")
@@ -556,6 +559,29 @@ export class AuthFacadeService {
     } catch (error) {
       this.logger.error(
         `사용자 ID 중복 확인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
+        ErrorUtils.getErrorStack(error),
+      )
+      throw error
+    }
+  }
+
+  /**
+   * 프로필 선택 및 토큰 갱신
+   * 멘토 사용자가 활성 프로필(mentee/mentor)을 선택하여 JWT 메타데이터를 업데이트합니다.
+   */
+  async selectProfile(selectProfileRequestDto: SelectProfileRequestDto): Promise<TokenResponseDto> {
+    try {
+      // Request DTO를 Application DTO로 변환
+      const selectProfileDto = this.authRequestMapper.toSelectProfileDto(selectProfileRequestDto)
+
+      // UseCase 실행 (TokenPair 반환)
+      const tokenPair = await this.selectProfileUseCase.execute(selectProfileDto)
+
+      // TokenPair를 TokenResponseDto로 변환하여 반환
+      return this.authResponseMapper.toTokenResponse(tokenPair)
+    } catch (error) {
+      this.logger.error(
+        `프로필 선택 처리 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
         ErrorUtils.getErrorStack(error),
       )
       throw error

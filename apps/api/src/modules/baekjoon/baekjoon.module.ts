@@ -103,16 +103,8 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
       useClass: BaekjoonProfileRepository,
     },
     {
-      provide: "BaekjoonProfileRepositoryPort",
-      useClass: BaekjoonProfileRepository,
-    },
-    {
       provide: BaekjoonStatisticsRepositoryPort, // 태그 통계용 포트
       useClass: BaekjoonStatisticsRepository, // NoSQL Repository 사용
-    },
-    {
-      provide: "BaekjoonStatisticsRepositoryPort",
-      useClass: BaekjoonStatisticsRepository,
     },
     // Infrastructure Adapters - Services
     {
@@ -134,6 +126,8 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
     GetProfileUseCase,
     GetStatisticsUseCase,
     SyncVerificationStatusUseCase,
+    BaekjoonProfileRepositoryPort,
+    BaekjoonStatisticsRepositoryPort,
   ],
 })
 export class BaekjoonModule {}

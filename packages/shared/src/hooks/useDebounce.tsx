@@ -1,3 +1,4 @@
+import { DebouncedFunction } from "@repo/shared/types/types"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 export interface DebounceOptions {
@@ -5,16 +6,6 @@ export interface DebounceOptions {
   leading?: boolean
   /** 마지막 호출을 지연 후 실행할지 여부 (기본: true) */
   trailing?: boolean
-}
-
-export interface DebouncedFunction<T extends (...args: any[]) => any> {
-  (...args: Parameters<T>): void
-  /** 대기 중인 호출을 취소 */
-  cancel: () => void
-  /** 대기 중인 호출을 즉시 실행 */
-  flush: () => void
-  /** 현재 대기 중인 호출이 있는지 확인 */
-  isPending: () => boolean
 }
 
 /**

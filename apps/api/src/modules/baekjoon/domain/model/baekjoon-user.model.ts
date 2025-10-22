@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common"
 
-import { BaekjoonHandle, Tier, TierLevel } from "../vo"
+import { BaekjoonHandle, Tier, TierLevelEnum } from "../vo"
 import {
   BaekjoonProfileVerificationStatus,
   BaekjoonProfileVerificationStatusType,
@@ -37,7 +37,7 @@ export class BaekjoonUser {
   constructor(params: {
     userId: string
     handle: BaekjoonHandle | string
-    currentTier: Tier | TierLevel
+    currentTier: Tier | TierLevelEnum
     solvedCount: number
     name?: string
     verified?: boolean

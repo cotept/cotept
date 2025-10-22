@@ -11,7 +11,7 @@
   "enumNameSuffix": "",
   "withSeparateModelsAndApi": true,
   "stringEnums": true,
-  "enumPropertyNaming": "camelCase",
+  "enumPropertyNaming": "original",
   "paramNaming": "camelCase",
   "sortParamsByRequiredFlag": true,
   "sortModelPropertiesByRequiredFlag": true,
@@ -24,5 +24,6 @@
   "allowUnicodeIdentifiers": false,
   "prependFormOrBodyParameters": false,
   "useSquareBracketsInArrayNames": false,
-  "withoutPrefixEnums": true
+  "withoutPrefixEnums": true,
+  "parameterType": "object"
 }

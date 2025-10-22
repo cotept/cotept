@@ -193,7 +193,7 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
             <Button
               type="submit"
               disabled={!isCodeComplete || isVerifying}
-              className="sr-only h-12 w-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500">
+              className="sr-only h-12 bg-zinc-700 text-white hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500">
               인증 완료
             </Button>
           </form>

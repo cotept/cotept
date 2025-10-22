@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "chromatic --exit-zero-on-changes"
+    "chromatic": "chromatic --exit-zero-on-changes",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -26,6 +27,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.6.2",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eventemitter3": "^5.0.1",
     "immer": "^10.1.1",

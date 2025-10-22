@@ -63,14 +63,14 @@ export interface MailRequestDto {
     * @enum {string}
     */
 export enum Template {
-    emailVerification = 'email_verification',
-    passwordRecovery = 'password_recovery',
-    reservationCreate = 'reservation_create',
-    reservationFix = 'reservation_fix',
-    reservationCancel = 'reservation_cancel',
-    reservationChange = 'reservation_change',
-    reservationPrenotice = 'reservation_prenotice',
-    verificationCode = 'verification_code'
+    email_verification = 'email_verification',
+    password_recovery = 'password_recovery',
+    reservation_create = 'reservation_create',
+    reservation_fix = 'reservation_fix',
+    reservation_cancel = 'reservation_cancel',
+    reservation_change = 'reservation_change',
+    reservation_prenotice = 'reservation_prenotice',
+    verification_code = 'verification_code'
 }
 /**
     * @export

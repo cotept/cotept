@@ -19,8 +19,8 @@ import {
 } from "@/modules/baekjoon/infrastructure/dtos/request"
 import {
   BaekjoonProfileResponseDto,
+  BaekjoonVerificationResultResponseDto,
   TagStatisticsResponseDto,
-  VerificationResultResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { ApiOkResponseWrapper } from "@/shared/infrastructure/decorators/api-response.decorator"
@@ -60,7 +60,7 @@ export class BaekjoonController {
     summary: "백준 ID 인증 완료",
     description: "solved.ac 프로필 이름을 확인하여 백준 ID 인증을 완료합니다.",
   })
-  @ApiOkResponseWrapper(VerificationResultResponseDto, "인증이 성공적으로 완료됨")
+  @ApiOkResponseWrapper(BaekjoonVerificationResultResponseDto, "인증이 성공적으로 완료됨")
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "인증 세션을 찾을 수 없습니다" })
@@ -68,7 +68,7 @@ export class BaekjoonController {
   async completeVerification(
     @Body() request: CompleteVerificationRequestDto,
     // @CurrentUser() user: UserContext, // TODO: 인증 가드 구현 후 추가
-  ): Promise<VerificationResultResponseDto> {
+  ): Promise<BaekjoonVerificationResultResponseDto> {
     const inputDto = this.requestMapper.toCompleteVerificationInput(request)
     return this.baekjoonFacadeService.completeVerification(inputDto)
   }

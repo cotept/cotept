@@ -1,0 +1,42 @@
+# <type>(<scope>): <subject>
+# |<----  제목은 최대 50자까지만  ---->|
+
+# 본문 (선택사항): 변경한 이유를 설명
+# |<----   본문은 한 줄에 최대 72자까지만   ---->|
+
+# 꼬리말 (선택사항): 이슈 번호 참조
+# 예: Closes #123, Refs #456
+
+# --- 커밋 타입 ---
+# feat     : 새 기능 추가
+# fix      : 버그 수정
+# refactor : 리팩토링 (기능 변경 없음)
+# style    : 코드 포맷팅, 세미콜론 누락 등
+# design   : CSS, UI 디자인 변경
+# docs     : 문서 수정
+# test     : 테스트 코드 추가/수정
+# chore    : 빌드 스크립트, 패키지 매니저 설정 등
+# perf     : 성능 개선
+#
+# --- 스코프 ---
+# project      : 프로젝트 설정/구성
+# web          : 프론트엔드 전체
+# api          : 백엔드
+# shared       : 공통 컴포넌트/유틸
+# api-client   : API 클라이언트
+#
+# web 하위 스코프:
+# web/auth     : 인증 관련
+# web/profile  : 프로필 페이지
+# web/session  : 멘토링 세션
+# web/onboarding : 온보딩
+# web/ui       : UI 컴포넌트
+# web/config   : 프론트 설정/구성
+#
+# --- 예시 ---
+# feat(web/auth): 소셜 로그인 UI 컴포넌트 추가
+# fix(web/profile): 프로필 이미지 업로드 버그 수정
+# refactor(web/ui): Button 컴포넌트 shadcn 마이그레이션
+# style(web): Prettier 포맷팅 적용
+# design(web/onboarding): 온보딩 플로우 레이아웃 개선
+# perf(web): Next.js Image 최적화로 LCP 개선

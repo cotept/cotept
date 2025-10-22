@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from "@nestjs/sw
 
 import { ISwaggerConfig } from "./swagger.interface"
 
+import { TierColorEnum, TierNameEnum } from "@/modules/baekjoon/domain/vo"
+
 export class SwaggerConfig {
   private readonly config: ISwaggerConfig = {
     path: "api-docs",
@@ -55,8 +57,9 @@ export class SwaggerConfig {
   }
 
   public setup(app: INestApplication) {
-    const options = this.buildDocumentOptions()
-    const document = SwaggerModule.createDocument(app, options, {
+    const config = this.buildDocumentOptions()
+    const document = SwaggerModule.createDocument(app, config, {
+      // extraModels: [TierMetadataDto, TierLevelSchema],
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         // 간단한 메소드명 정리
         return methodKey
@@ -68,7 +71,7 @@ export class SwaggerConfig {
       },
     })
 
-    // 공통 스키마 컴포넌트 추가
+    // 공통 스키마 컴포넌트 추가 및 예시 데이터 주입
     this.addCommonSchemas(document)
 
     SwaggerModule.setup(this.config.path, app, document, this.customOptions)
@@ -84,32 +87,62 @@ export class SwaggerConfig {
       document.components.schemas = {}
     }
 
+    // TierMetadataDto에 동적 데이터 예시 주입
+    // if (document.components.schemas.TierMetadataDto) {
+    //   document.components.schemas.TierMetadataDto["example"] = {
+    //     tiers: Tier.getAllTiers(),
+    //     mentorEligibilityTier: TierLevelEnum.PlatinumIII,
+    //   }
+    // }
+
+    // Tier 관련 스키마
+    // document.components.schemas.TierLevel = {
+    //   type: "string",
+    //   enum: Object.values(TierLevelEnum),
+    //   description: "Tier level value",
+    //   "x-enumNames": Object.keys(TierLevelEnum),
+    // }
+
+    document.components.schemas.TierColor = {
+      type: "string",
+      enum: Object.values(TierColorEnum),
+      description: "Tier color hex code",
+      "x-enumNames": Object.keys(TierColorEnum),
+    }
+
+    document.components.schemas.TierName = {
+      type: "string",
+      enum: Object.values(TierNameEnum),
+      description: "Tier display name",
+      "x-enumNames": Object.keys(TierNameEnum),
+    }
+
     // AuthType 공통 스키마
     document.components.schemas.AuthType = {
-      type: 'string',
-      enum: ['PHONE', 'EMAIL', 'COMPANY'],
-      description: '인증 유형'
+      type: "string",
+      enum: ["PHONE", "EMAIL", "COMPANY"],
+      description: "인증 유형",
     }
 
     // UserRole 공통 스키마
     document.components.schemas.UserRole = {
-      type: 'string',
-      enum: ['MENTEE', 'MENTOR', 'ADMIN'],
-      description: '사용자 역할'
+      type: "string",
+      enum: ["MENTEE", "MENTOR", "ADMIN"],
+      description: "사용자 역할",
     }
 
     // UserStatus 공통 스키마
     document.components.schemas.UserStatus = {
-      type: 'string',
-      enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
-      description: '사용자 상태'
+      type: "string",
+      enum: ["ACTIVE", "INACTIVE", "SUSPENDED"],
+      description: "사용자 상태",
     }
 
     // MailStatus 공통 스키마
     document.components.schemas.MailStatus = {
-      type: 'string',
-      enum: ['PENDING', 'SENT', 'FAILED'],
-      description: '메일 상태'
+      type: "string",
+      enum: ["PENDING", "SENT", "FAILED"],
+      description: "메일 상태",
     }
   }
 }

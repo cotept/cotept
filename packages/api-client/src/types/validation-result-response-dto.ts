@@ -51,9 +51,9 @@ export interface ValidationResultResponseDto {
     * @enum {string}
     */
 export enum Role {
-    mentee = 'MENTEE',
-    mentor = 'MENTOR',
-    admin = 'ADMIN'
+    MENTEE = 'MENTEE',
+    MENTOR = 'MENTOR',
+    ADMIN = 'ADMIN'
 }
 
 

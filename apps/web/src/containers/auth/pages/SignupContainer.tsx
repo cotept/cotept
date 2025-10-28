@@ -2,7 +2,10 @@
 
 import Link from "next/link"
 
+import { StepDots } from "@repo/shared/components/step-dots"
 import { FormStep } from "@repo/shared/src/components/form-step"
+import FormStepContent from "@repo/shared/src/components/form-step-content"
+import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
 
 import { Sparkles } from "lucide-react"
 
@@ -21,7 +24,7 @@ import SignupCompleteStep from "@/features/auth/components/signup/SignupComplete
 import TermsStep from "@/features/auth/components/signup/TermsStep"
 import VerificationStep from "@/features/auth/components/signup/VerificationStep"
 import { useSignupSteps } from "@/features/auth/hooks/signup/useSignupSteps"
-import { SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
+import { SIGNUP_STEP_ORDER, SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
 import Logo from "@/shared/ui/Logo"
 
 interface StepConfig {
@@ -122,51 +125,37 @@ export default function SignupContainer() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black p-4">
-      <div className="w-full max-w-md">
+    <StepFlowLayout>
+      <div className="mb-8">
         {/* 스텝 인디케이터 */}
-        <div className="mb-8">
-          <div className="mb-4 flex justify-center space-x-2">
-            {Array.from({ length: totalSteps }).map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 w-2 rounded-full ${
-                  index === currentStepIndex
-                    ? "bg-purple-400"
-                    : isStepCompleted(Object.values(SIGNUP_STEPS)[index])
-                      ? "bg-gray-400"
-                      : "bg-gray-600"
-                }`}
-              />
-            ))}
-          </div>
-          <Logo />
-        </div>
-
-        <div className="mx-auto w-full max-w-md">
-          <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-7">
-            <FormStep
-              title={STEP_CONFIGS[currentStep].title}
-              description={STEP_CONFIGS[currentStep].description}
-              subDescription={STEP_CONFIGS[currentStep].subDescription}
-              icon={STEP_CONFIGS[currentStep].icon}
-              align={STEP_CONFIGS[currentStep].align}>
-              {renderCurrentStep()}
-            </FormStep>
-          </div>
-
-          {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
-            <div className="pt-4 text-center">
-              <p className="space-x-1 text-sm text-zinc-400">
-                <span className="">이미 코테피티의 회원이신가요?</span>
-                <Link href="/auth/signin" className="text-purple-400 underline hover:text-purple-300">
-                  로그인 하러가기
-                </Link>
-              </p>
-            </div>
-          )}
-        </div>
+        <StepDots
+          totalSteps={totalSteps}
+          currentStepIndex={currentStepIndex}
+          isStepCompleted={isStepCompleted}
+          stepOrder={SIGNUP_STEP_ORDER}
+        />
+        <Logo />
       </div>
-    </div>
+      <FormStepContent>
+        <FormStep
+          title={STEP_CONFIGS[currentStep].title}
+          description={STEP_CONFIGS[currentStep].description}
+          subDescription={STEP_CONFIGS[currentStep].subDescription}
+          icon={STEP_CONFIGS[currentStep].icon}
+          align={STEP_CONFIGS[currentStep].align}>
+          {renderCurrentStep()}
+        </FormStep>
+      </FormStepContent>
+      {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
+        <div className="pt-4 text-center">
+          <p className="space-x-1 text-sm text-zinc-400">
+            <span className="">이미 코테피티의 회원이신가요?</span>
+            <Link href="/auth/signin" className="text-purple-400 underline hover:text-purple-300">
+              로그인 하러가기
+            </Link>
+          </p>
+        </div>
+      )}
+    </StepFlowLayout>
   )
 }

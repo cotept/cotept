@@ -1,6 +1,9 @@
 "use client"
 
+import FormStepContent from "@repo/shared/components/form-step-content"
 import { FormStep } from "@repo/shared/src/components/form-step"
+import { StepDots } from "@repo/shared/src/components/step-dots"
+import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
 
 import { BarChart3, BookOpen, CheckCircle, FileText, Tags, User } from "lucide-react"
 
@@ -8,7 +11,7 @@ import type { ProfileSetupData } from "@/features/onboarding/lib/validations/onb
 
 import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
 import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
-import { ONBOARDING_STEPS, type OnboardingStep } from "@/shared/constants/basic-types"
+import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/constants/basic-types"
 import Logo from "@/shared/ui/Logo"
 
 // 단계별 설정 타입
@@ -91,41 +94,28 @@ const OnBoardingContainer = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black p-4">
-      <div className="w-full max-w-md">
+    <StepFlowLayout>
+      <div className="mb-8">
         {/* 스텝 인디케이터 */}
-        <div className="mb-8">
-          <div className="mb-4 flex justify-center space-x-2">
-            {Array.from({ length: totalSteps }).map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 w-2 rounded-full ${
-                  index === currentStepIndex
-                    ? "bg-purple-400"
-                    : isStepCompleted(Object.values(ONBOARDING_STEPS)[index])
-                      ? "bg-gray-400"
-                      : "bg-gray-600"
-                }`}
-              />
-            ))}
-          </div>
-          {/* 로고 영역 */}
-          <Logo />
-        </div>
-        {/* 메인 카드 */}
-        <div className="mx-auto w-full max-w-md">
-          <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-7">
-            {/* FormStep 래퍼로 현재 단계 컴포넌트 감싸기 */}
-            <FormStep
-              title={STEP_CONFIGS[currentStep].title}
-              description={STEP_CONFIGS[currentStep].description}
-              icon={STEP_CONFIGS[currentStep].icon}>
-              {renderCurrentStep()}
-            </FormStep>
-          </div>
-        </div>
+        <StepDots
+          totalSteps={totalSteps}
+          currentStepIndex={currentStepIndex}
+          isStepCompleted={isStepCompleted}
+          stepOrder={ONBOARDING_STEP_ORDER}
+        />
+        {/* 로고 영역 */}
+        <Logo />
       </div>
-    </div>
+      {/* 메인 카드 */}
+      <FormStepContent>
+        <FormStep
+          title={STEP_CONFIGS[currentStep].title}
+          description={STEP_CONFIGS[currentStep].description}
+          icon={STEP_CONFIGS[currentStep].icon}>
+          {renderCurrentStep()}
+        </FormStep>
+      </FormStepContent>
+    </StepFlowLayout>
   )
 }
 

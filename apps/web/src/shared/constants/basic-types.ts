@@ -11,6 +11,16 @@ export const SIGNUP_STEPS = {
 // 타입 안전성도 확보
 export type SignupStep = (typeof SIGNUP_STEPS)[keyof typeof SIGNUP_STEPS]
 
+// 단계 순서 배열 (상수로 정의)
+export const SIGNUP_STEP_ORDER: SignupStep[] = [
+  SIGNUP_STEPS.TERMS_AGREEMENT,
+  SIGNUP_STEPS.ENTER_EMAIL,
+  SIGNUP_STEPS.VERIFY_EMAIL,
+  SIGNUP_STEPS.SET_USERID,
+  SIGNUP_STEPS.SET_PASSWORD,
+  SIGNUP_STEPS.SIGNUP_COMPLETE,
+] as const
+
 /**
  * 온보딩 단계 상수 정의
  */

@@ -40,8 +40,8 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
   const validationChecks: ValidationCheck[] = useMemo(() => {
     const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
     return createValidationChecks(fieldValidation, [
-      { id: "length", label: "2자 이상 20자 이하", errorCodes: ["too_small", "too_big"] },
-      { id: "chars", label: "한글과 영문만 사용", errorCodes: ["invalid_string"] },
+      { id: "length", label: "2자 이상 20자 이하", isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big") },
+      { id: "chars", label: "한글과 영문만 사용", isIssuePresent: (issues) => issues.some((i) => i.code === "invalid_string") },
     ])
   }, [nickname])
 

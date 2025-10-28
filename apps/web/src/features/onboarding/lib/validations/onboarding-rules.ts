@@ -132,6 +132,16 @@ export type MentorIntroData = z.infer<typeof MentorIntroRules>
 export type MentorProfileData = z.infer<typeof MentorProfileRules>
 
 /**
+ * 온보딩 전체 플로우 데이터
+ */
+export type OnboardingData = {
+  profile?: ProfileSetupData
+  baekjoonVerification?: BaekjoonVerifyStartData & Partial<BaekjoonVerifyCompleteData>
+  mentorTags?: MentorTagsData
+  mentorIntro?: MentorIntroData
+}
+
+/**
  * 멘토 태그 데이터 → API DTO 변환 헬퍼
  */
 export function transformToMentorProfileDto(

@@ -32,10 +32,40 @@ export const FieldRules = {
         required_error: "사용자 ID를 입력해주세요",
         invalid_type_error: "사용자 ID는 문자열이어야 합니다",
       })
-      .min(6, "사용자 ID는 6자 이상이어야 합니다")
-      .max(20, "사용자 ID는 20자 이하여야 합니다")
-      .regex(/^[A-Za-z0-9]+$/, "영문과 숫자만 사용할 수 있습니다")
-      .regex(/^(?=.*[A-Za-z])(?=.*\d)/, "영문과 숫자를 모두 포함해야 합니다"),
+      .superRefine((val, ctx) => {
+        if (val.length < 6) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            minimum: 6,
+            type: "string",
+            inclusive: true,
+            message: "사용자 ID는 6자 이상이어야 합니다",
+          })
+        }
+        if (val.length > 20) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: 20,
+            type: "string",
+            inclusive: true,
+            message: "사용자 ID는 20자 이하여야 합니다",
+          })
+        }
+        if (!/^[A-Za-z0-9]+$/.test(val)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [...ctx.path, "format"],
+            message: "영문과 숫자만 사용할 수 있습니다",
+          })
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)/.test(val)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [...ctx.path, "composition"],
+            message: "영문과 숫자를 모두 포함해야 합니다",
+          })
+        }
+      }),
 
   /**
    * 비밀번호 검증 (8자 이상, 영문+숫자+특수문자)
@@ -46,12 +76,33 @@ export const FieldRules = {
         required_error: "비밀번호를 입력해주세요",
         invalid_type_error: "비밀번호는 문자열이어야 합니다",
       })
-      .min(8, "비밀번호는 8자 이상이어야 합니다")
-      .max(32, "비밀번호는 32자 이하여야 합니다")
-      .regex(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/,
-        "영문, 숫자, 특수문자를 모두 포함해야 합니다",
-      ),
+      .superRefine((val, ctx) => {
+        if (val.length < 8) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            minimum: 8,
+            type: "string",
+            inclusive: true,
+            message: "비밀번호는 8자 이상이어야 합니다",
+          })
+        }
+        if (val.length > 32) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: 32,
+            type: "string",
+            inclusive: true,
+            message: "비밀번호는 32자 이하여야 합니다",
+          })
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])/.test(val)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [...ctx.path, "composition"],
+            message: "영문, 숫자, 특수문자를 모두 포함해야 합니다",
+          })
+        }
+      }),
 
   /**
    * 닉네임 검증 (2-20자, 한글/영문만)

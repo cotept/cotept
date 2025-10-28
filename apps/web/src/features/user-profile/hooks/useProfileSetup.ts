@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react"
 import { useSession } from "next-auth/react"
 
 import { ValidationCheck } from "@repo/shared/components/validation-indicator"
+import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -10,40 +11,17 @@ import { toast } from "sonner"
 
 import { useCreateBasicProfile } from "@/features/onboarding/api/mutations"
 import {
+  type ProfileSetupData,
   type ProfileSetupFormData,
   ProfileSetupFormRules,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { useOnboardingFlowStore } from "@/features/onboarding/store/useOnboardingFlowStore"
 import { useProfileStore } from "@/features/user-profile/store/useProfileStore"
 import { AuthErrorHandler } from "@/shared/auth/errors/handler"
 import { useGetUploadUrl } from "@/shared/hooks/useStorage"
 import { uploadFileToOCIObjectStorage } from "@/shared/utils"
 
-function getNicknameValidationState(nickname: string) {
-  if (!nickname) return { lengthValid: false, charsValid: false }
-
-  const result = ProfileSetupFormRules.pick({ nickname: true }).safeParse({ nickname })
-  if (result.success) return { lengthValid: true, charsValid: true }
-
-  const errors = result.error.flatten().fieldErrors.nickname || []
-  const lengthValid = !errors.some((e) => e.includes("2자 이상") || e.includes("20자 이하"))
-  const charsValid = !errors.some((e) => e.includes("한글, 영문, 숫자"))
-
-  return { lengthValid, charsValid }
-}
-
-function getImageValidationState(image: File | string | null | undefined) {
-  if (!image || !(image instanceof File)) return { isValid: true, errors: [] }
-
-  const result = ProfileSetupFormRules.pick({ profileImage: true }).safeParse({ profileImage: image })
-  if (result.success) return { isValid: true, errors: [] }
-
-  return { isValid: false, errors: result.error.flatten().fieldErrors.profileImage || [] }
-}
-
-export const useProfileSetup = () => {
+export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetupData) => void }) => {
   const { profile, setProfile } = useProfileStore()
-  const { goToNextStep } = useOnboardingFlowStore()
   const { data: session } = useSession()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -60,11 +38,11 @@ export const useProfileSetup = () => {
   const profileImage = form.watch("profileImage")
 
   const validationChecks: ValidationCheck[] = useMemo(() => {
-    const { lengthValid, charsValid } = getNicknameValidationState(nickname)
-    return [
-      { id: "length", label: "2자 이상 20자 이하", isValid: lengthValid },
-      { id: "chars", label: "한글, 영문, 숫자만 사용", isValid: charsValid },
-    ]
+    const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
+    return createValidationChecks(fieldValidation, [
+      { id: "length", label: "2자 이상 20자 이하", errorCodes: ["too_small", "too_big"] },
+      { id: "chars", label: "한글과 영문만 사용", errorCodes: ["invalid_string"] },
+    ])
   }, [nickname])
 
   const { mutate: createProfile, isPending: isCreating } = useCreateBasicProfile({
@@ -76,7 +54,7 @@ export const useProfileSetup = () => {
       const { userId, nickname, profileImageUrl } = response
       setProfile({ userId, nickname, profileImageUrl })
       toast.success("프로필이 저장되었습니다.")
-      goToNextStep()
+      onComplete({ nickname, profileImageUrl: profileImageUrl ?? undefined })
     },
     onError: (error) => {
       const handledError = AuthErrorHandler.handle(error)
@@ -145,10 +123,11 @@ export const useProfileSetup = () => {
   const handleImageSelect = (file: File) => {
     if (!file) return
 
-    const { isValid, errors } = getImageValidationState(file)
-    if (!isValid) {
-      toast.error(errors[0] || "유효하지 않은 파일입니다.")
-      form.setError("profileImage", { type: "manual", message: errors[0] })
+    const fieldValidation = validateField(ProfileSetupFormRules.shape.profileImage, file)
+
+    if (!fieldValidation.isValid) {
+      toast.error(fieldValidation.errorMessage || "유효하지 않은 파일입니다.")
+      form.setError("profileImage", { type: "manual", message: fieldValidation.errorMessage })
       return
     }
 

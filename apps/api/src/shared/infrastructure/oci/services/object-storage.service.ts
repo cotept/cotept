@@ -35,6 +35,20 @@ export interface CreatePAROptions {
 }
 
 /**
+ * PAR 생성 결과
+ */
+export interface CreatePARResult {
+  /** PAR 전체 URL */
+  url: string
+  /** PAR ID (삭제 시 필요) */
+  parId: string
+  /** PAR 이름 */
+  parName: string
+  /** 만료 시간 */
+  expiresAt: Date
+}
+
+/**
  * OCI Object Storage 서비스
  *
  * @description
@@ -135,18 +149,22 @@ export class ObjectStorageService {
    * - CDN 없이 직접 파일 액세스 가능
    * - 만료 시간 설정 필수
    * - 읽기/쓰기/읽기+쓰기 권한 선택 가능
+   * - PAR ID 반환으로 나중에 삭제 가능
    *
-   * @returns PAR의 전체 URL
+   * @returns PAR 정보 (URL, ID, 이름, 만료시간)
    *
    * @example
-   * const url = await service.createPAR({
+   * const par = await service.createPAR({
    *   objectName: 'users/123/profile.jpg',
    *   parName: 'profile-temp-access',
-   *   expiresAt: new Date(Date.now() + 3600 * 1000), // 1시간 후 만료
-   *   accessType: 'ObjectRead'
+   *   expiresAt: new Date(Date.now() + 60 * 1000), // 1분 후 만료
+   *   accessType: 'ObjectWrite'
    * });
+   *
+   * // 나중에 PAR 삭제
+   * await service.deletePAR(par.parId);
    */
-  async createPAR(options: CreatePAROptions): Promise<string> {
+  async createPAR(options: CreatePAROptions): Promise<CreatePARResult> {
     try {
       const client = this.ociClientFactory.getObjectStorageClient()
       const namespace = this.ociClientFactory.getNamespace()
@@ -167,8 +185,14 @@ export class ObjectStorageService {
       // PAR의 전체 URL 조합
       const region = this.ociClientFactory.getObjectStorageClient().region
       const parPath = response.preauthenticatedRequest.accessUri
+      const url = `https://objectstorage.${region}.oraclecloud.com${parPath}`
 
-      return `https://objectstorage.${region}.oraclecloud.com${parPath}`
+      return {
+        url,
+        parId: response.preauthenticatedRequest.id,
+        parName: options.parName,
+        expiresAt: options.expiresAt,
+      }
     } catch (error) {
       throw mapOciErrorToDomainException(error, "createPAR")
     }

@@ -6,8 +6,8 @@ import {
   UserProfileDto,
   UserProfileResponseDto,
 } from "@/modules/user-profile/application/dtos/user-profile.dto"
-import { MyProfileResponseDto } from "@/modules/user-profile/infrastructure/adapter/in/dto/response"
 import UserProfile from "@/modules/user-profile/domain/model/user-profile"
+import { MyProfileResponseDto } from "@/modules/user-profile/infrastructure/adapter/in/dto/response"
 
 /**
  * UserProfile 매퍼

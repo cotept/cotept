@@ -19,6 +19,7 @@ export interface OCIAuthConfig {
 export interface OCIObjectStorageConfig {
   namespace: string
   bucketName: string
+  cdnBaseUrl: string // Cloudflare CDN 기본 URL (읽기 전용 PAR을 통해 접근)
 }
 
 /**
@@ -56,6 +57,7 @@ export default registerAs(
     objectStorage: {
       namespace: process.env.OCI_OBJECT_STORAGE_NAMESPACE || "",
       bucketName: process.env.OCI_BUCKET_NAME || "",
+      cdnBaseUrl: process.env.OCI_CDN_BASE_URL || "",
     },
   }),
 )

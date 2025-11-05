@@ -18,4 +18,5 @@ export const ociSchema = {
   // OCI 오브젝트 스토리지 설정 (선택사항)
   OCI_OBJECT_STORAGE_NAMESPACE: Joi.string().description("OCI 오브젝트 스토리지 네임스페이스"),
   OCI_BUCKET_NAME: Joi.string().description("OCI 오브젝트 스토리지 버킷 이름"),
+  OCI_CDN_BASE_URL: Joi.string().uri().description("Cloudflare CDN 기본 URL (읽기 전용)"),
 }

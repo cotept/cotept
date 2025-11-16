@@ -77,7 +77,14 @@ export const ProfileSetupFormRules = z.object({
 })
 
 /**
- * 온보딩 2단계: 백준 ID 인증 시작
+ * 온보딩 2단계: 백준 ID 인증 시작 (API 전송용)
+ *
+ * ★ Insight:
+ * - API DTO와 1:1 매핑되는 스키마
+ * - userId는 런타임에 세션에서 주입
+ * - baekjoonHandle 검증 규칙:
+ *   - 3-20자: solved.ac 정책 준수
+ *   - 영문/숫자/_: 백준 ID 정책
  */
 export const BaekjoonVerifyStartRules = z.object({
   userId: z.string(),
@@ -92,7 +99,30 @@ export const BaekjoonVerifyStartRules = z.object({
 }) satisfies z.ZodType<StartBaekjoonVerificationDto>
 
 /**
+ * 백준 ID 인증 시작 (폼 입력용)
+ *
+ * ★ Insight:
+ * - userId 제외: 폼에서는 백준 ID만 입력받음
+ * - 실시간 검증 지원을 위해 독립적으로 정의
+ * - react-hook-form과 직접 연동
+ */
+export const BaekjoonVerifyStartFormRules = z.object({
+  baekjoonHandle: z
+    .string({
+      required_error: "백준 아이디를 입력해주세요",
+      invalid_type_error: "백준 아이디는 문자열이어야 합니다",
+    })
+    .min(3, "백준 아이디는 3자 이상이어야 합니다")
+    .max(20, "백준 아이디는 20자 이하여야 합니다")
+    .regex(/^[a-zA-Z0-9_]+$/, "영문, 숫자, 언더스코어(_)만 사용할 수 있습니다"),
+})
+
+/**
  * 온보딩 2단계: 백준 ID 인증 완료
+ *
+ * ★ Insight:
+ * - verificationCode: 서버에서 발급받은 랜덤 문자열
+ * - 사용자가 solved.ac 프로필 이름에 입력 후 검증
  */
 export const BaekjoonVerifyCompleteRules = z.object({
   userId: z.string(),
@@ -157,6 +187,7 @@ export const MentorProfileRules = z.object({
 export type ProfileSetupData = z.infer<typeof ProfileSetupRules>
 export type ProfileSetupFormData = z.infer<typeof ProfileSetupFormRules>
 export type BaekjoonVerifyStartData = z.infer<typeof BaekjoonVerifyStartRules>
+export type BaekjoonVerifyStartFormData = z.infer<typeof BaekjoonVerifyStartFormRules>
 export type BaekjoonVerifyCompleteData = z.infer<typeof BaekjoonVerifyCompleteRules>
 export type MentorTagsData = z.infer<typeof MentorTagsRules>
 export type MentorIntroData = z.infer<typeof MentorIntroRules>

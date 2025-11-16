@@ -24,7 +24,8 @@ export class CreateUserProfileUseCaseImpl implements CreateUserProfileUseCase {
    */
   async execute(createDto: CreateUserProfileRequestDto): Promise<UserProfileDto> {
     // 1. 사용자 존재 여부 확인
-    const userExists = await this.userRepository.findByUserId(createDto.userId)
+    // const userExists = await this.userRepository.findByUserId(createDto.userId)
+    const userExists = await this.userRepository.findByIdx(Number(createDto.userId))
     if (!userExists) {
       throw new NotFoundException(`사용자 ${createDto.userId}을(를) 찾을 수 없습니다.`)
     }

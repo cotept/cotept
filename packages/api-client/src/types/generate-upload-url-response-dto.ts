@@ -21,7 +21,7 @@
  */
 export interface GenerateUploadUrlResponseDto {
     /**
-     * 파일을 업로드할 수 있는 Pre-signed URL
+     * 파일을 업로드할 수 있는 Pre-signed URL (1분 유효)
      * @type {string}
      * @memberof GenerateUploadUrlResponseDto
      */
@@ -32,5 +32,33 @@ export interface GenerateUploadUrlResponseDto {
      * @memberof GenerateUploadUrlResponseDto
      */
     'fileUrl': string;
+    /**
+     * 업로드 가능한 최대 파일 크기 (바이트)
+     * @type {number}
+     * @memberof GenerateUploadUrlResponseDto
+     */
+    'maxSize': number;
+    /**
+     * PAR 만료 시간 (ISO 8601 형식)
+     * @type {string}
+     * @memberof GenerateUploadUrlResponseDto
+     */
+    'expiresAt': string;
+    /**
+     * 파일 가시성 (public: CDN 접근 가능, private: 인증 필요)
+     * @type {string}
+     * @memberof GenerateUploadUrlResponseDto
+     */
+    'visibility': Visibility;
 }
+
+/**
+    * @export
+    * @enum {string}
+    */
+export enum Visibility {
+    public = 'public',
+    private = 'private'
+}
+
 

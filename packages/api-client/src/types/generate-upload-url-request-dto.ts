@@ -32,5 +32,25 @@ export interface GenerateUploadUrlRequestDto {
      * @memberof GenerateUploadUrlRequestDto
      */
     'contentType': string;
+    /**
+     * 업로드 파일의 용도 (타입)
+     * @type {string}
+     * @memberof GenerateUploadUrlRequestDto
+     */
+    'uploadType': UploadType;
 }
+
+/**
+    * @export
+    * @enum {string}
+    */
+export enum UploadType {
+    USER_PROFILE = 'USER_PROFILE',
+    MENTOR_PROFILE = 'MENTOR_PROFILE',
+    PORTFOLIO_IMAGE = 'PORTFOLIO_IMAGE',
+    SESSION_RECORDING = 'SESSION_RECORDING',
+    SESSION_DOCUMENT = 'SESSION_DOCUMENT',
+    USER_DOCUMENT = 'USER_DOCUMENT'
+}
+
 

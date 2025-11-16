@@ -31,9 +31,11 @@ export interface OciConfig extends OCIAuthConfig {
 
 // OCI 프라이빗 키 로드 (파일 또는 환경변수)
 const loadPrivateKey = (): string => {
-  if (process.env.OCI_PRIVATE_KEY) {
-    return process.env.OCI_PRIVATE_KEY.replace(/\\n/g, "\n")
-  } else if (process.env.OCI_PRIVATE_KEY_PATH && fs.existsSync(process.env.OCI_PRIVATE_KEY_PATH)) {
+  // if (process.env.OCI_PRIVATE_KEY) {
+  //   return process.env.OCI_PRIVATE_KEY.replace(/\\n/g, "\n")
+  // } else
+
+  if (process.env.OCI_PRIVATE_KEY_PATH && fs.existsSync(process.env.OCI_PRIVATE_KEY_PATH)) {
     return fs.readFileSync(process.env.OCI_PRIVATE_KEY_PATH, "utf8")
   } else {
     console.warn("OCI private key not found, using dummy value")

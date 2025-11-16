@@ -43,8 +43,8 @@ import {
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
   AvailabilityResponseDto,
-  FindIdResponseDto,
   EmailVerificationResultResponseDto,
+  FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   SocialLinkConfirmationResponseDto,

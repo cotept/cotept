@@ -66,10 +66,12 @@ flowchart TD
 **목표**: 최소한의 사용자 입력으로 기본 프로필 생성
 
 **사용자 입력**:
+
 - 프로필 사진 (업로드 또는 기본 이미지 선택)
 - 닉네임 (중복 검사 포함)
 
 **시스템 처리**:
+
 - 멘티 프로필 자동 생성
 - 기본 프로필 정보 저장
 
@@ -78,6 +80,7 @@ flowchart TD
 **목표**: solved.ac API를 통한 백준 계정 소유권 인증
 
 **인증 프로세스**:
+
 1. 백준 ID 입력
 2. solved.ac 사용자 존재 확인
 3. 랜덤 인증 문자열 생성 (예: "배부른고양이223")
@@ -86,6 +89,7 @@ flowchart TD
 6. 인증 성공시 백준 데이터 수집
 
 **사용 API**:
+
 - `https://solved.ac/api/v3/user/show?handle={userId}`
 - `https://solved.ac/api/v3/user/tag_ratings?handle={userId}`
 
@@ -94,11 +98,13 @@ flowchart TD
 **목표**: 백준 데이터를 통한 사용자 실력 분석 및 시각화
 
 **분석 데이터**:
+
 - 기본 프로필: 티어, 레이팅, 해결 문제 수
 - 태그별 분석: 알고리즘 유형별 실력 분포
 - 성장 지표: 클래스, 스트릭, 경쟁 참여 이력
 
 **시각화**:
+
 - **방사형 차트**: 알고리즘 유형별 강약점 표시
 - **티어 진행률**: 현재 티어 및 다음 티어까지 진행도
 - **해결 문제 통계**: 난이도별 해결 현황
@@ -108,10 +114,12 @@ flowchart TD
 **목표**: 실력 기반 멘토 자격 검증 및 멘토 프로필 생성
 
 **멘토 자격 조건**:
+
 - **티어**: 플래티넘3 (Platinum III) 이상
 - **solved.ac tier 값**: 16 이상
 
 **멘토 온보딩 (조건 충족시)**:
+
 - **F4**: 직무/연차/회사 태그 선택 (각 1개씩 필수)
 - **F5**: 마크다운 형식 멘토링 소개글 작성 + 백준 티어 자동 표시
 - **F6**: 멘토 프로필 미리보기 및 최종 확인
@@ -123,11 +131,13 @@ flowchart TD
 #### 📊 인프런 프로필 구조 분석
 
 **기본 프로필 요소**:
+
 - 프로필 이미지 + 닉네임 (기존 user-profile에서 가져오기)
 - 한 줄 자기소개 (선택사항)
 - 프로필 URL: `cotept.com/mentor/@username`
 
 **멘토 전용 정보**:
+
 - **역할 태그** (각 카테고리에서 1개씩 선택):
   - 직무: "프론트엔드 개발자", "백엔드 개발자", "풀스택 개발자", "데브옵스 엔지니어", "프로덕트 디자이너"
   - 연차: "주니어 레벨", "미들 레벨", "시니어 레벨", "Lead 레벨"
@@ -136,22 +146,26 @@ flowchart TD
 - **멘토링 소개**: 마크다운 형식 자유 작성 (제한 없음)
 
 **자동 생성 통계** (사용자 입력 불가):
+
 - 멘티 수, 리뷰 수, 평점 (서비스 운영 중 자동 누적)
 
 #### 📋 F4-F6 단계별 상세
 
 **F4: 멘토 정보 입력**
+
 - 직무 태그 선택 (라디오 버튼, 필수)
 - 연차 태그 선택 (라디오 버튼, 필수)
 - 회사 태그 선택 (라디오 버튼, 필수)
 
 **F5: 멘토링 소개 작성**
+
 - 백준 티어 자동 표시 (읽기 전용)
 - 마크다운 에디터로 소개글 작성
 - 실시간 미리보기 제공
 - 글자 수 제한 없음 (합리적 범위 내)
 
 **F6: 멘토 프로필 완성**
+
 - 최종 프로필 미리보기
 - 모든 입력 정보 확인
 - 멘토 프로필 생성 완료
@@ -161,6 +175,7 @@ flowchart TD
 **목표**: 역할별 맞춤 서비스 제공
 
 **프로필 선택 화면**:
+
 ```
 ┌─────────────────────────────────────────┐
 │             프로필 선택                    │
@@ -177,6 +192,7 @@ flowchart TD
 ### Frontend
 
 **온보딩 컴포넌트**:
+
 - `OnboardingLayout`: 전체 온보딩 레이아웃
 - `ProfileSetupStep`: 기본 프로필 설정 단계
 - `BaekjoonVerifyStep`: 백준 ID 인증 단계
@@ -187,11 +203,13 @@ flowchart TD
 - `ProfileSelectPage`: 프로필 선택 화면
 
 **차트 컴포넌트**:
+
 - `RadarChart`: 방사형 차트 (알고리즘 유형별 실력)
 - `TierProgressBar`: 티어 진행률 표시
 - `ProblemStatsChart`: 문제 해결 통계
 
 **폼 관리**:
+
 - React Hook Form + Zod 검증
 - 이미지 업로드 처리 (기존 user-profile 활용)
 - 실시간 닉네임 중복 검사
@@ -201,22 +219,24 @@ flowchart TD
 ### Backend
 
 **API 엔드포인트**:
+
 ```typescript
 // 온보딩 관련
-POST /api/v1/onboarding/profile          // 기본 프로필 생성
-POST /api/v1/onboarding/baekjoon/verify  // 백준 ID 인증
-GET  /api/v1/onboarding/baekjoon/status  // 인증 상태 확인
-POST /api/v1/onboarding/mentor/info      // 멘토 정보 입력 (F4: 태그 선택)
-POST /api/v1/onboarding/mentor/intro     // 멘토 소개글 저장 (F5: 마크다운)
-POST /api/v1/onboarding/mentor/complete  // 멘토 프로필 완성 (F6: 최종 확인)
-GET  /api/v1/onboarding/mentor/tags      // 사용 가능한 태그 목록
+POST / api / v1 / onboarding / profile // 기본 프로필 생성
+POST / api / v1 / onboarding / baekjoon / verify // 백준 ID 인증
+GET / api / v1 / onboarding / baekjoon / status // 인증 상태 확인
+POST / api / v1 / onboarding / mentor / info // 멘토 정보 입력 (F4: 태그 선택)
+POST / api / v1 / onboarding / mentor / intro // 멘토 소개글 저장 (F5: 마크다운)
+POST / api / v1 / onboarding / mentor / complete // 멘토 프로필 완성 (F6: 최종 확인)
+GET / api / v1 / onboarding / mentor / tags // 사용 가능한 태그 목록
 
 // 프로필 관리
-GET  /api/v1/profiles                    // 사용자 프로필 목록
-POST /api/v1/profiles/select             // 프로필 선택
+GET / api / v1 / profiles // 사용자 프로필 목록
+POST / api / v1 / profiles / select // 프로필 선택
 ```
 
 **데이터 모델**:
+
 ```typescript
 // 기본 사용자 정보
 type User = {
@@ -230,7 +250,7 @@ type User = {
 type UserProfile = {
   id: string
   userId: string
-  profileType: 'MENTOR' | 'MENTEE'
+  profileType: "MENTOR" | "MENTEE"
   nickname: string
   profileImageUrl: string
   bio?: string
@@ -253,17 +273,17 @@ type BaekjoonData = {
 type MentorProfile = {
   profileId: string
   // 역할 태그 (각 1개씩)
-  jobTag: string              // 직무 태그 (예: "프론트엔드 개발자")
-  levelTag: string            // 연차 태그 (예: "시니어 레벨")
-  companyTag: string          // 회사 태그 (예: "네카라쿠배")
+  jobTag: string // 직무 태그 (예: "프론트엔드 개발자")
+  levelTag: string // 연차 태그 (예: "시니어 레벨")
+  companyTag: string // 회사 태그 (예: "네카라쿠배")
   // 멘토링 정보
-  introduction: string        // 마크다운 형식 소개글
-  baekjoonTier: number       // 백준 티어 (자동 표시용)
+  introduction: string // 마크다운 형식 소개글
+  baekjoonTier: number // 백준 티어 (자동 표시용)
   // 통계 정보 (자동 생성)
-  menteeCount: number        // 멘티 수
-  reviewCount: number        // 리뷰 수
-  rating: number             // 평점
-  isActive: boolean          // 멘토 활성 상태
+  menteeCount: number // 멘티 수
+  reviewCount: number // 리뷰 수
+  rating: number // 평점
+  isActive: boolean // 멘토 활성 상태
 }
 
 // 온보딩 진행 상태
@@ -279,9 +299,9 @@ type OnboardingState = {
 
 // 멘토 태그 시스템
 type MentorTags = {
-  jobTags: string[]           // ["프론트엔드 개발자", "백엔드 개발자", "풀스택 개발자", ...]
-  levelTags: string[]         // ["주니어 레벨", "미들 레벨", "시니어 레벨", "Lead 레벨"]
-  companyTags: string[]       // ["네카라쿠배", "스타트업", "외국계", "기타"]
+  jobTags: string[] // ["프론트엔드 개발자", "백엔드 개발자", "풀스택 개발자", ...]
+  levelTags: string[] // ["주니어 레벨", "미들 레벨", "시니어 레벨", "Lead 레벨"]
+  companyTags: string[] // ["네카라쿠배", "스타트업", "외국계", "기타"]
 }
 
 // API DTO 타입들
@@ -292,7 +312,7 @@ type MentorInfoRequestDto = {
 }
 
 type MentorIntroRequestDto = {
-  introduction: string        // 마크다운 형식
+  introduction: string // 마크다운 형식
 }
 
 type MentorProfileResponseDto = {
@@ -307,7 +327,7 @@ type MentorProfileResponseDto = {
   menteeCount: number
   reviewCount: number
   rating: number
-  profileUrl: string          // cotept.com/mentor/@username
+  profileUrl: string // cotept.com/mentor/@username
 }
 ```
 
@@ -330,6 +350,7 @@ type MentorProfileResponseDto = {
 ### 방사형 차트 구성
 
 **알고리즘 카테고리 (8개 축)**:
+
 - 구현 (Implementation)
 - 그래프 (Graph)
 - 동적 계획법 (Dynamic Programming)
@@ -348,11 +369,13 @@ type MentorProfileResponseDto = {
 ## 🔄 예외 처리
 
 ### 백준 ID 인증 실패
+
 - 사용자 존재하지 않음 → 다시 입력 요청
 - 프로필 이름 불일치 → 재시도 안내
 - API 호출 실패 → 나중에 다시 시도 옵션
 
 ### 네트워크 오류
+
 - 자동 재시도 (최대 3회)
 - 오프라인 상태 감지
 - 로컬 저장소 활용한 임시 저장
@@ -370,3 +393,11 @@ type MentorProfileResponseDto = {
 - **개인화**: AI 기반 맞춤 학습 경로 제안
 - **가이드 투어**: 인터랙티브 서비스 소개
 - **프로그레시브 온보딩**: 서비스 사용 중 점진적 정보 수집
+
+## 백준 ID 점유 인증 프로세스
+
+1. 백준 ID 입력후 인증하기 버튼 클릭
+2. 사용자에게 “사용자 프로필을 다음 문자열로 수정해주세요” 문구와 함께 `랜덤 문자열`(카카오뱅크 입금 느낌 ex. 배부른고양이223)과 [`solvedac 프로필 수정](https://solved.ac/settings/profile) 링크`그리고`“인증하기” 버튼`을 화면에 제공
+3. 사용자는 프로필을 수정하고 인증하기 버튼을 눌러 인증을 요청
+4. 서버는 사용자 핸들로 부가 정보 가져오기 API로 프로필 이름을 조회해 문자열이 일치하면 인증을 완료
+5. 일치하지 않으면 인증 실패

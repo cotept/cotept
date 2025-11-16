@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
 
+import { UploadType } from "@repo/api-client/src"
 import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
@@ -40,8 +41,16 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
   const validationChecks: ValidationCheck[] = useMemo(() => {
     const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
     return createValidationChecks(fieldValidation, [
-      { id: "length", label: "2자 이상 20자 이하", isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big") },
-      { id: "chars", label: "한글과 영문만 사용", isIssuePresent: (issues) => issues.some((i) => i.code === "invalid_string") },
+      {
+        id: "length",
+        label: "2자 이상 20자 이하",
+        isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big"),
+      },
+      {
+        id: "chars",
+        label: "한글과 영문만 사용",
+        isIssuePresent: (issues) => issues.some((i) => i.code === "invalid_string"),
+      },
     ])
   }, [nickname])
 
@@ -74,7 +83,11 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
 
       try {
         const { data: uploadData } = await getUploadUrlAsync({
-          generateUploadUrlRequestDto: { fileName: imageFile.name, contentType: imageFile.type },
+          generateUploadUrlRequestDto: {
+            fileName: imageFile.name,
+            contentType: imageFile.type,
+            uploadType: UploadType.USER_PROFILE,
+          },
         })
 
         if (!uploadData) {
@@ -135,11 +148,15 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
     const tempPreviewUrl = URL.createObjectURL(file)
     setImagePreview(tempPreviewUrl)
     form.setValue("profileImage", file, { shouldValidate: true })
-    getUploadUrlAsync({ generateUploadUrlRequestDto: { fileName: file.name, contentType: file.type } })
   }
 
   const handleSubmit = useCallback(
     (data: ProfileSetupFormData) => {
+      // 🔧 중복 제출 방지: 이미 제출 중이면 무시
+      if (isSubmitting || isCreating) {
+        return
+      }
+
       const userId = session?.user?.id
       if (!userId) {
         toast.error("사용자 ID를 찾을 수 없습니다.")
@@ -159,7 +176,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         })
       }
     },
-    [session, createProfile, uploadAndCreateProfile],
+    [session, createProfile, uploadAndCreateProfile, isSubmitting, isCreating],
   )
 
   return {

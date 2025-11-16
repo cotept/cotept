@@ -3,6 +3,7 @@
  * overlay-kit의 External Events 패턴 구현
  */
 
+import React from "react"
 import { createUseExternalEvents } from "../utils/createUseExternalEvents"
 import { randomId } from "../utils/randomId"
 
@@ -33,11 +34,15 @@ import type {
  * ));
  *
  * // 비동기 사용
- * const result = await overlay.openAsync<string>(({ isOpen, close }) => (
- *   <Dialog open={isOpen}>
- *     <Button onClick={() => close('confirmed')}>확인</Button>
- *   </Dialog>
- * ));
+ * try {
+ *   const result = await overlay.openAsync<string>(({ isOpen, close }) => (
+ *     <Dialog open={isOpen}>
+ *       <Button onClick={() => close('confirmed')}>확인</Button>
+ *     </Dialog>
+ *   ));
+ * } catch (e) {
+ *   console.log('Dismissed');
+ * }
  * ```
  */
 export function createOverlay(overlayId: string): OverlayAPI {
@@ -73,16 +78,36 @@ export function createOverlay(overlayId: string): OverlayAPI {
     options?: OpenOverlayOptions,
   ): Promise<T> => {
     console.log(`[Overlay Debug] openAsync: Creating promise-wrapped overlay.`)
-    return new Promise<T>((resolve) => {
+    return new Promise<T>((resolve, reject) => {
+      let isSettled = false
+
       // 비동기 Controller를 일반 Controller로 래핑
       const wrappedController: OverlayControllerComponent = (overlayProps) => {
+        // 오버레이가 unmount될 때 Promise가 완료되지 않았으면 reject 처리
+        React.useEffect(
+          () => () => {
+            if (!isSettled) {
+              isSettled = true
+              console.log(
+                `[Overlay Debug] openAsync: Promise rejected due to dismissal for overlayId: ${overlayProps.overlayId}`,
+              )
+              reject(new Error("Overlay was dismissed."))
+            }
+          },
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          [],
+        )
+
         /**
          * 결과값과 함께 오버레이 닫기
          */
-        const close = (param: T) => {
-          console.log(`[Overlay Debug] openAsync: Promise resolved for overlayId: ${overlayProps.overlayId}`)
-          resolve(param)
-          overlayProps.close()
+        const close = (...args: T extends void ? [] : [T]) => {
+          if (!isSettled) {
+            isSettled = true
+            console.log(`[Overlay Debug] openAsync: Promise resolved for overlayId: ${overlayProps.overlayId}`)
+            resolve(args[0] as T)
+            overlayProps.close()
+          }
         }
 
         // 오버라이드된 props 전달

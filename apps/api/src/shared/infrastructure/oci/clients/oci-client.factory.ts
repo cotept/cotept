@@ -1,10 +1,21 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
+import fetch, { Headers, Request, Response } from "node-fetch"
 import * as common from "oci-common"
 import * as objectstorage from "oci-objectstorage"
 
 import type { OciConfig, OCIObjectStorageConfig } from "@/configs/oci/oci.config"
+
+// OCI SDK가 node-fetch를 사용하도록 fetch 구현체 주입
+// Node.js 네이티브 fetch(undici)와 isomorphic-fetch(node-fetch) 간 Response 객체 불일치 해결
+if (!globalThis.fetch || globalThis.fetch.name === "fetch") {
+  // 네이티브 fetch인 경우에만 node-fetch로 교체
+  ;(globalThis as any).fetch = fetch
+  ;(globalThis as any).Headers = Headers
+  ;(globalThis as any).Request = Request
+  ;(globalThis as any).Response = Response
+}
 
 /**
  * OCI 클라이언트 팩토리 (Singleton)
@@ -16,6 +27,7 @@ import type { OciConfig, OCIObjectStorageConfig } from "@/configs/oci/oci.config
  */
 @Injectable()
 export class OciClientFactory {
+  private readonly logger = new Logger(OciClientFactory.name)
   private authProvider: common.SimpleAuthenticationDetailsProvider | null = null
   private objectStorageClient: objectstorage.ObjectStorageClient | null = null
   private uploadManager: objectstorage.UploadManager | null = null
@@ -63,9 +75,9 @@ export class OciClientFactory {
 
     const clientConfiguration: common.ClientConfiguration = {
       retryConfiguration: {
-        terminationStrategy: new common.MaxAttemptsTerminationStrategy(3),
+        terminationStrategy: new common.MaxAttemptsTerminationStrategy(1),
         delayStrategy: new common.FixedTimeDelayStrategy(5),
-        retryCondition: common.OciSdkDefaultRetryConfiguration.retryCondition,
+        retryCondition: () => false,
       },
     }
 
@@ -110,5 +122,13 @@ export class OciClientFactory {
   getBucketName(): string {
     const objectStorageConfig = this.configService.get<OCIObjectStorageConfig>("oci.objectStorage")
     return objectStorageConfig?.bucketName || ""
+  }
+
+  /**
+   * Region ID 조회 (예: ap-chuncheon-1)
+   */
+  getRegionId(): string {
+    const ociConfig = this.configService.get<OciConfig>("oci")
+    return ociConfig?.region || ""
   }
 }

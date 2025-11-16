@@ -9,6 +9,10 @@ import { AuthErrorHandler } from "@/shared/auth/errors/handler"
 
 /**
  * 파일 업로드 URL 생성 (기본 useMutation 사용)
+ *
+ * @description
+ * - React Query의 자동 중복 제거 기능 활용
+ * - 동일한 파일에 대한 동시 요청은 자동으로 하나로 병합됩니다
  */
 export function useGetUploadUrl(
   options?: UseMutationOptions<GenerateUploadUrlResponseWrapper, ApiError, StorageApiGenerateUploadUrlRequest>,
@@ -19,6 +23,10 @@ export function useGetUploadUrl(
   return useMutation<GenerateUploadUrlResponseWrapper, ApiError, StorageApiGenerateUploadUrlRequest>({
     ...restOptions, // 나머지 옵션들(예: onMutate)을 전달
     mutationFn: (data) => storageApiService.generateUploadUrl({ ...data }),
+
+    // 🔧 중복 요청 방지: 이전 요청이 진행 중일 때 새 요청 무시
+    retry: false, // 실패 시 자동 재시도 비활성화
+    gcTime: 0, // 성공 후 캐시 즉시 삭제 (매번 새 PAR URL 필요)
 
     //  onSuccess 콜백을 직접 정의
     onSuccess: (data, variables, context) => {

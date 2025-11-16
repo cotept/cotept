@@ -8,7 +8,10 @@ import { ValidationIndicator } from "@repo/shared/components/validation-indicato
 
 import { Camera } from "lucide-react"
 
-import { type ProfileSetupData } from "@/features/onboarding/lib/validations/onboarding-rules"
+import {
+  PROFILE_IMAGE_ACCEPT_STRING,
+  type ProfileSetupData,
+} from "@/features/onboarding/lib/validations/onboarding-rules"
 import { useProfileSetup } from "@/features/user-profile/hooks/useProfileSetup"
 import { InlineLoading } from "@/shared/ui/loading"
 
@@ -44,7 +47,7 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
                   <Input
                     type="file"
                     className="hidden"
-                    accept="image/png, image/jpeg, image/gif"
+                    accept={PROFILE_IMAGE_ACCEPT_STRING}
                     onChange={(e) => e.target.files?.[0] && handleImageSelect(e.target.files[0])}
                     disabled={isPending}
                   />

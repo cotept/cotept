@@ -26,7 +26,7 @@ export function useCreateBasicProfile(
   return useBaseMutation<UserProfileResponse, ApiError, OnboardingApiCreateBasicProfileRequest>({
     mutationFn: (data) => onboardingApiService.createBasicProfile({ ...data }),
     invalidateKeys: [onboardingKeys.profile().queryKey],
-    successMessage: "기본 프로필이 생성되었습니다.",
+    // successMessage: "기본 프로필이 생성되었습니다.",
     ...options,
   })
 }

@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 
+import * as path from "path"
 import { v4 as uuidv4 } from "uuid"
 
 import { OciConfig } from "@/configs/oci"
@@ -14,6 +15,8 @@ import { ObjectStorageService } from "@/shared/infrastructure/oci/services/objec
 
 @Injectable()
 export class GenerateUploadUrlUseCase {
+  private readonly logger = new Logger(GenerateUploadUrlUseCase.name)
+
   constructor(
     private readonly objectStorageService: ObjectStorageService,
     private readonly configService: ConfigService,
@@ -35,7 +38,8 @@ export class GenerateUploadUrlUseCase {
     }
 
     // 1. 파일 확장자 검증
-    const fileExtension = dto.fileName.split(".").pop()?.toLowerCase() || ""
+    const fileExtension = path.extname(dto.fileName).slice(1).toLowerCase() // 점(.) 제거 후 소문자 변환
+    this.logger.debug("GenerateUploadUrlUseCase fileExtension", fileExtension)
     const allowedExtensions = UPLOAD_TYPE_ALLOWED_EXTENSIONS[dto.uploadType]
 
     if (!allowedExtensions.includes(fileExtension)) {
@@ -66,6 +70,8 @@ export class GenerateUploadUrlUseCase {
 
     // 6. CDN을 통한 최종 파일 URL 생성
     const fileUrl = `${cdnBaseUrl}/${objectName}`
+    this.logger.debug("GenerateUploadUrlUseCase fileUrl", fileUrl)
+    this.logger.debug("GenerateUploadUrlUseCase parResult", parResult.url)
 
     return {
       uploadUrl: parResult.url,

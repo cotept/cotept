@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 
 import * as objectstorage from "oci-objectstorage"
 import { Readable } from "stream"
@@ -58,6 +58,7 @@ export interface CreatePARResult {
  */
 @Injectable()
 export class ObjectStorageService {
+  private readonly logger = new Logger(ObjectStorageService.name)
   constructor(private readonly ociClientFactory: OciClientFactory) {}
 
   /**
@@ -169,6 +170,7 @@ export class ObjectStorageService {
       const client = this.ociClientFactory.getObjectStorageClient()
       const namespace = this.ociClientFactory.getNamespace()
       const bucketName = this.ociClientFactory.getBucketName()
+      const regionId = this.ociClientFactory.getRegionId()
 
       const response = await client.createPreauthenticatedRequest({
         namespaceName: namespace,
@@ -181,19 +183,25 @@ export class ObjectStorageService {
           timeExpires: options.expiresAt,
         },
       })
-
+      if ("text" in response && typeof (response as any).text === "function") {
+        // 이 코드가 실행되면 SDK가 잘못된 객체를 반환한 것입니다.
+        this.logger.debug("🚨 경고: 응답 객체가 예상치 못한 'text()' 메서드를 포함하고 있습니다. 라이브러리 충돌 의심.")
+      }
+      this.logger.debug("createPAR response", JSON.stringify(response))
       // PAR의 전체 URL 조합
-      const region = this.ociClientFactory.getObjectStorageClient().region
       const parPath = response.preauthenticatedRequest.accessUri
-      const url = `https://objectstorage.${region}.oraclecloud.com${parPath}`
-
+      const url = `https://objectstorage.${regionId}.oraclecloud.com${parPath}`
       return {
         url,
         parId: response.preauthenticatedRequest.id,
         parName: options.parName,
         expiresAt: options.expiresAt,
       }
-    } catch (error) {
+    } catch (error: any) {
+      // 상세한 에러 로깅
+      this.logger.error(`Failed to create PAR for object '${options.objectName}'.`, {
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+      })
       throw mapOciErrorToDomainException(error, "createPAR")
     }
   }

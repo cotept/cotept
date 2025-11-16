@@ -14,6 +14,34 @@ import type {
 import { FieldRules } from "@/shared/lib/validations/field-rules"
 
 /**
+ * 프로필 이미지 허용 파일 타입
+ *
+ * ★ Insight:
+ * - 단일 진실 원천(Single Source of Truth)
+ * - Zod 검증과 HTML input accept 속성에 공유
+ * - WebP 추가로 최신 이미지 포맷 지원
+ */
+export const PROFILE_IMAGE_ACCEPTED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+] as const
+
+/**
+ * 프로필 이미지 최대 파일 크기 (바이트)
+ */
+export const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024 // 5MB
+
+/**
+ * HTML input accept 속성용 문자열
+ *
+ * @example
+ * <input type="file" accept={PROFILE_IMAGE_ACCEPT_STRING} />
+ * // => accept="image/jpeg, image/png, image/webp"
+ */
+export const PROFILE_IMAGE_ACCEPT_STRING = PROFILE_IMAGE_ACCEPTED_TYPES.join(", ")
+
+/**
  * 온보딩 1단계: 기본 프로필 설정
  */
 export const ProfileSetupRules = z.object({
@@ -36,10 +64,13 @@ export const ProfileSetupFormRules = z.object({
       z.string().url("올바른 이미지 URL 형식이 아닙니다"),
       z
         .instanceof(File)
-        .refine((file) => file.size <= 5 * 1024 * 1024, "이미지 크기는 5MB 이하여야 합니다")
         .refine(
-          (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
-          "JPG, PNG, Webp 형식의 이미지만 업로드할 수 있습니다",
+          (file) => file.size <= PROFILE_IMAGE_MAX_SIZE,
+          `이미지 크기는 ${PROFILE_IMAGE_MAX_SIZE / (1024 * 1024)}MB 이하여야 합니다`,
+        )
+        .refine(
+          (file) => PROFILE_IMAGE_ACCEPTED_TYPES.includes(file.type as any),
+          "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
         ),
     ])
     .optional(),

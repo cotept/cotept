@@ -17,7 +17,8 @@ export class StartBaekjoonVerificationUseCaseImpl implements StartBaekjoonVerifi
   ) {}
 
   async execute(dto: StartBaekjoonVerificationDto): Promise<VerificationStatusResponseDto> {
-    const user = await this.userService.getUserByUserId(dto.userId)
+    // const user = await this.userService.getUserByUserId(dto.userId)
+    const user = await this.userService.getUserByIdx(Number(dto.userId))
 
     await this.userProfileService.getProfileByUserIdOrThrow(dto.userId)
 

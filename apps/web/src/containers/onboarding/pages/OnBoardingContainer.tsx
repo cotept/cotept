@@ -7,8 +7,9 @@ import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
 
 import { BarChart3, BookOpen, CheckCircle, FileText, Tags, User } from "lucide-react"
 
-import type { ProfileSetupData } from "@/features/onboarding/lib/validations/onboarding-rules"
+import type { BaekjoonVerifyStepData, ProfileSetupData } from "@/features/onboarding/lib/validations/onboarding-rules"
 
+import { BaekjoonVerifyStep } from "@/features/onboarding/components/BaekjoonVerifyStep"
 import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
 import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
 import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/constants/basic-types"
@@ -62,6 +63,10 @@ const OnBoardingContainer = () => {
     updateAndGoNext("profile", data, ONBOARDING_STEPS.BAEKJOON_VERIFY)
   }
 
+  const handleBaekjoonVerifyComplete = (data: BaekjoonVerifyStepData) => {
+    updateAndGoNext("baekjoonVerification", data, ONBOARDING_STEPS.SKILL_ANALYSIS)
+  }
+
   // 스텝별 컴포넌트 렌더링
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -69,7 +74,7 @@ const OnBoardingContainer = () => {
         return <ProfileSetupStep onComplete={handleProfileSetupComplete} />
 
       case ONBOARDING_STEPS.BAEKJOON_VERIFY:
-        return <div className="text-muted-foreground text-center">백준 인증 단계 (구현 예정)</div>
+        return <BaekjoonVerifyStep onComplete={handleBaekjoonVerifyComplete} />
 
       case ONBOARDING_STEPS.SKILL_ANALYSIS:
         return <div className="text-muted-foreground text-center">실력 분석 단계 (구현 예정)</div>

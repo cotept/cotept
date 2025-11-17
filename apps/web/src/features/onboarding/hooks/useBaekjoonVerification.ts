@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-import { useStartBaekjoonVerification } from "@/features/onboarding/api/mutations"
+import { useCompleteBaekjoonVerification, useStartBaekjoonVerification } from "@/features/onboarding/api/mutations"
 import {
   canSkipBaekjoonVerification,
   createBaekjoonValidationChecks,
@@ -19,6 +19,7 @@ import {
 import {
   type BaekjoonVerifyStartFormData,
   BaekjoonVerifyStartFormRules,
+  BaekjoonVerifyStepData,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
 import { AuthErrorHandler } from "@/shared/auth/errors/handler"
 import { formatCountdownTime, useCountdown } from "@/shared/hooks/useCountdown"
@@ -37,7 +38,7 @@ import { copyToClipboard } from "@/shared/utils"
  * @param onComplete 인증 완료 시 콜백 (다음 단계로 이동)
  * @returns 폼 상태, 핸들러, 검증 체크, 인증 상태 등
  */
-export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: { baekjoonHandle: string }) => void }) => {
+export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: BaekjoonVerifyStepData) => void }) => {
   const { data: session } = useSession()
   const userId = session?.user?.id
 
@@ -136,6 +137,57 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: { b
     window.open(url, "_blank", "noopener,noreferrer")
   }, [])
 
+  // 백준 인증 완료 mutation
+  const { mutate: completeVerification, isPending: isCompleting } = useCompleteBaekjoonVerification({
+    onSuccess: () => {
+      toast.success("백준 인증이 완료되었습니다!")
+      onComplete({
+        baekjoonHandle: form.getValues("baekjoonHandle"),
+        verificationSessionId: verificationSession?.sessionId,
+      })
+    },
+    onError: (error) => {
+      const handledError = AuthErrorHandler.handle(error)
+      toast.error(handledError.message)
+
+      // 에러 발생 시 상태 업데이트
+      if (verificationSession) {
+        setVerificationSession({
+          ...verificationSession,
+          status: VerificationStatusType.FAILED,
+          errorReason: handledError.message,
+        })
+      }
+    },
+  })
+
+  // 인증 완료 핸들러
+  const handleCompleteVerification = useCallback(() => {
+    if (!userId) {
+      toast.error("사용자 정보를 찾을 수 없습니다.")
+      return
+    }
+
+    if (!verificationSession?.sessionId) {
+      toast.error("인증 세션을 찾을 수 없습니다.")
+      return
+    }
+
+    completeVerification({
+      completeBaekjoonVerificationDto: {
+        userId,
+        baekjoonHandle: form.getValues("baekjoonHandle"),
+        verificationSessionId: verificationSession.sessionId,
+      },
+    })
+  }, [userId, verificationSession?.sessionId, completeVerification, form])
+
+  // 재시도 핸들러
+  const handleRetry = useCallback(() => {
+    setVerificationSession(null)
+    form.reset()
+  }, [form])
+
   // 인증 건너뛰기
   const handleSkip = useCallback(() => {
     if (!canSkipBaekjoonVerification()) {
@@ -181,8 +233,11 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: { b
     handleSubmit: form.handleSubmit(handleStartVerification),
     handleCopyCode,
     handleOpenSolvedAc,
+    handleCompleteVerification,
+    handleRetry,
     handleSkip,
     isStarting,
+    isCompleting,
 
     // 유틸리티
     canSkip: canSkipBaekjoonVerification(),

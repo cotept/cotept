@@ -36,15 +36,22 @@ export const usePasswordStep = ({ onComplete }: UsePasswordStepProps) => {
   const password = form.watch("password")
   const confirmPassword = form.watch("confirmPassword")
 
-  const validationChecks: ValidationCheck[] = useMemo(() => {
+  // 비밀번호 검증 결과 (배열 + 객체 형태 동시 생성)
+  const { validationChecks, passwordChecks } = useMemo(() => {
     if (!password) {
-      return [
+      const checks = [
         { id: "length", label: "8자 이상 32자 이하", isValid: false },
         { id: "composition", label: "영문, 숫자, 특수문자 포함", isValid: false },
-      ]
+      ] as const
+
+      return {
+        validationChecks: checks as unknown as ValidationCheck[],
+        passwordChecks: { lengthValid: false, compositionValid: false },
+      }
     }
+
     const fieldValidation = validateField(PasswordStepBaseRules.shape.password, password)
-    return createValidationChecks(fieldValidation, [
+    const checks = createValidationChecks(fieldValidation, [
       {
         id: "length",
         label: "8자 이상 32자 이하",
@@ -56,11 +63,20 @@ export const usePasswordStep = ({ onComplete }: UsePasswordStepProps) => {
         isIssuePresent: (issues) => issues.some((i) => i.path.includes("composition")),
       },
     ])
+
+    return {
+      validationChecks: checks,
+      passwordChecks: {
+        lengthValid: checks[0].isValid,
+        compositionValid: checks[1].isValid,
+      },
+    }
   }, [password])
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
   }
+
   const passwordsMatch = useMemo(() => {
     return password && confirmPassword && password === confirmPassword
   }, [password, confirmPassword])
@@ -77,6 +93,7 @@ export const usePasswordStep = ({ onComplete }: UsePasswordStepProps) => {
     form,
     password,
     handleSubmit,
+    passwordChecks,
     showPassword,
     togglePasswordVisibility,
     showConfirmPassword,

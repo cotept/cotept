@@ -3,9 +3,12 @@
  * @description 온보딩 단계별 검증 로직 (프로필 설정, 백준 인증, 멘토 프로필)
  */
 
+import { DeepPartial } from "@repo/shared/src/types/types"
+
 import { z } from "zod"
 
 import type {
+  CompleteBaekjoonVerificationDto,
   CreateBasicProfileDto,
   OnboardingCreateMentorProfileDto,
   StartBaekjoonVerificationDto,
@@ -21,11 +24,7 @@ import { FieldRules } from "@/shared/lib/validations/field-rules"
  * - Zod 검증과 HTML input accept 속성에 공유
  * - WebP 추가로 최신 이미지 포맷 지원
  */
-export const PROFILE_IMAGE_ACCEPTED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-] as const
+export const PROFILE_IMAGE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const
 
 /**
  * 프로필 이미지 최대 파일 크기 (바이트)
@@ -135,6 +134,23 @@ export const BaekjoonVerifyCompleteRules = z.object({
 })
 
 /**
+ * 백준 인증 스텝 데이터 (온보딩 플로우 상태 저장용)
+ *
+ * ★ Insight:
+ * - StartBaekjoonVerificationDto에서 userId 제외 (세션에서 관리)
+ * - verificationSessionId는 인증 완료 시에만 추가됨 (선택적)
+ * - API 호출 시 세션의 userId와 조합하여 DTO로 변환
+ * - ProfileSetupData와 동일한 패턴 (API DTO에서 userId를 제외한 필드)
+ */
+export const BaekjoonVerifyStepRules = z.object({
+  baekjoonHandle: z.string(),
+  verificationSessionId: z.string().optional(),
+}) satisfies z.ZodType<
+  Pick<StartBaekjoonVerificationDto, "baekjoonHandle"> &
+    DeepPartial<Pick<CompleteBaekjoonVerificationDto, "verificationSessionId">>
+>
+
+/**
  * 멘토 프로필 F4: 태그 선택 (직무/연차/회사)
  */
 export const MentorTagsRules = z.object({
@@ -189,6 +205,7 @@ export type ProfileSetupFormData = z.infer<typeof ProfileSetupFormRules>
 export type BaekjoonVerifyStartData = z.infer<typeof BaekjoonVerifyStartRules>
 export type BaekjoonVerifyStartFormData = z.infer<typeof BaekjoonVerifyStartFormRules>
 export type BaekjoonVerifyCompleteData = z.infer<typeof BaekjoonVerifyCompleteRules>
+export type BaekjoonVerifyStepData = z.infer<typeof BaekjoonVerifyStepRules>
 export type MentorTagsData = z.infer<typeof MentorTagsRules>
 export type MentorIntroData = z.infer<typeof MentorIntroRules>
 export type MentorProfileData = z.infer<typeof MentorProfileRules>
@@ -198,7 +215,7 @@ export type MentorProfileData = z.infer<typeof MentorProfileRules>
  */
 export type OnboardingData = {
   profile?: ProfileSetupData
-  baekjoonVerification?: BaekjoonVerifyStartData & Partial<BaekjoonVerifyCompleteData>
+  baekjoonVerification?: BaekjoonVerifyStepData
   mentorTags?: MentorTagsData
   mentorIntro?: MentorIntroData
 }

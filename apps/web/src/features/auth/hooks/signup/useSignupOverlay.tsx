@@ -7,7 +7,7 @@ import { useCallback } from "react"
 
 import { useRouter } from "next/navigation"
 
-import { SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
+import { SIGNUP_STEPS, type SignupStep } from "@/shared/types/basic-types"
 import { SystemAlert } from "@/shared/ui/overlay/components/SystemAlert"
 import { SystemConfirm } from "@/shared/ui/overlay/components/SystemConfirm"
 import { overlay } from "@/shared/ui/overlay/createOverlayContext"

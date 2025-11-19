@@ -24,7 +24,7 @@ import SignupCompleteStep from "@/features/auth/components/signup/SignupComplete
 import TermsStep from "@/features/auth/components/signup/TermsStep"
 import VerificationStep from "@/features/auth/components/signup/VerificationStep"
 import { useSignupSteps } from "@/features/auth/hooks/signup/useSignupSteps"
-import { SIGNUP_STEP_ORDER, SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
+import { SIGNUP_STEP_ORDER, SIGNUP_STEPS, type SignupStep } from "@/shared/types/basic-types"
 import Logo from "@/shared/ui/Logo"
 
 interface StepConfig {

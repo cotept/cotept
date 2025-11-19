@@ -8,7 +8,7 @@ import { useBaekjoonStore } from "@/features/baekjoon/store"
 import { useMentorStore } from "@/features/mentor/store"
 import { useOnboardingFlowStore } from "@/features/onboarding/store"
 import { useProfileStore } from "@/features/user-profile/store"
-import { ONBOARDING_STEPS } from "@/shared/constants/basic-types"
+import { ONBOARDING_STEPS } from "@/shared/types/basic-types"
 
 /**
  * 모든 온보딩 스토어 초기화

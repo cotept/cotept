@@ -28,7 +28,7 @@ export class AuthResponseMapper {
       refreshToken: tokenPair.refreshToken,
       tokenType: tokenPair.tokenType,
       expiresIn: tokenPair.accessTokenExpiresIn,
-      userIdx: user.getId(),
+      idx: user.getId(),
       email: user.getEmail(),
       role: user.role as any,
     }

@@ -28,21 +28,13 @@ export const credentialsProvider: Provider = CredentialsProvider({
     try {
       const { id, password } = signInSchema.parse(credentials)
       console.log({ id, password })
-      const response = await authApiService.login({
+      const { data: response } = await authApiService.login({
         loginRequestDto: { id, password },
       })
 
-      if (response.data?.accessToken) {
-        // TODO: 백엔드 API 응답 구조에 맞게 수정 필요
-        const responseData = response.data as any
-        return {
-          id: responseData.userId || id,
-          // account: responseData.,
-          email: responseData.email || id,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
-          role: responseData.role,
-        }
+      if (!!response) {
+        console.log({ response })
+        return response
       }
 
       // 로그인 실패 시 null 반환 (NextAuth가 CredentialsSignin으로 처리)

@@ -7,7 +7,7 @@ import {
   ONBOARDING_STEP_ORDER,
   ONBOARDING_STEPS,
   type OnboardingStep,
-} from "@/shared/constants/basic-types"
+} from "@/shared/types/basic-types"
 
 // ===== 온보딩 플로우 스토어 (공통 진행 상태) =====
 

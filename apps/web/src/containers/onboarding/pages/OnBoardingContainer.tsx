@@ -12,7 +12,7 @@ import type { BaekjoonVerifyStepData, ProfileSetupData } from "@/features/onboar
 import { BaekjoonVerifyStep } from "@/features/onboarding/components/BaekjoonVerifyStep"
 import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
 import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
-import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/constants/basic-types"
+import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
 import Logo from "@/shared/ui/Logo"
 
 // 단계별 설정 타입

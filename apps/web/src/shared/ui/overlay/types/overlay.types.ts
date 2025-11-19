@@ -28,7 +28,7 @@ export interface OverlayControllerProps {
  */
 export interface OverlayAsyncControllerProps<T> extends Omit<OverlayControllerProps, 'close'> {
   /** 결과값과 함께 오버레이 닫기 */
-  close: (param: T) => void;
+  close: [T] extends [void] ? () => void : (param: T) => void;
 }
 
 /**

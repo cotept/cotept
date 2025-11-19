@@ -24,7 +24,6 @@ import { uploadFileToOCIObjectStorage } from "@/shared/utils"
 export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetupData) => void }) => {
   const { profile, setProfile } = useProfileStore()
   const { data: session } = useSession()
-
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(profile.profileImageUrl || null)
@@ -125,7 +124,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
   const retryUploadAndCreateProfile = useCallback(() => {
     const data = form.getValues()
     const imageFile = data.profileImage
-    const userId = session?.user?.id
+    const userId = session?.member?.idx.toString() || null
     if (!imageFile || !(imageFile instanceof File) || !userId) {
       toast.error("재시도할 수 없습니다. 사용자 정보 또는 이미지가 유효하지 않습니다.")
       return
@@ -157,7 +156,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         return
       }
 
-      const userId = session?.user?.id
+      const userId = session?.member?.idx.toString() || null
       if (!userId) {
         toast.error("사용자 ID를 찾을 수 없습니다.")
         return

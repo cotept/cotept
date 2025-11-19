@@ -178,7 +178,8 @@ export interface UseBaekjoonVerifyProps {
  */
 export function useBaekjoonVerify({ onComplete }: UseBaekjoonVerifyProps = {}) {
   const { data: session } = useSession()
-  const user = session?.user
+  const user = session?.member
+  const userId = user?.idx.toString()
   const [state, dispatch] = useReducer(verificationReducer, initialState)
 
   // API Mutations
@@ -198,7 +199,7 @@ export function useBaekjoonVerify({ onComplete }: UseBaekjoonVerifyProps = {}) {
    * - 랜덤 인증 문자열 생성
    */
   const startVerification = useCallback(async () => {
-    if (!user?.id) {
+    if (!userId) {
       toast.error("로그인이 필요합니다.")
       return
     }
@@ -213,7 +214,7 @@ export function useBaekjoonVerify({ onComplete }: UseBaekjoonVerifyProps = {}) {
     try {
       const response = await startMutation.mutateAsync({
         startBaekjoonVerificationDto: {
-          userId: user.id,
+          userId,
           baekjoonHandle: state.baekjoonHandle.trim(),
         },
       })
@@ -245,7 +246,7 @@ export function useBaekjoonVerify({ onComplete }: UseBaekjoonVerifyProps = {}) {
    * - 일치하면 인증 완료, 불일치하면 실패
    */
   const completeVerification = useCallback(async () => {
-    if (!user?.id) {
+    if (!userId) {
       toast.error("로그인이 필요합니다.")
       return
     }
@@ -260,7 +261,7 @@ export function useBaekjoonVerify({ onComplete }: UseBaekjoonVerifyProps = {}) {
     try {
       const response = await completeMutation.mutateAsync({
         completeBaekjoonVerificationDto: {
-          userId: user.id,
+          userId,
           baekjoonHandle: state.baekjoonHandle.trim(),
           verificationSessionId: state.sessionId,
         },

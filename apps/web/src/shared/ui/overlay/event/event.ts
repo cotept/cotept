@@ -4,6 +4,7 @@
  */
 
 import React from "react"
+
 import { createUseExternalEvents } from "../utils/createUseExternalEvents"
 import { randomId } from "../utils/randomId"
 
@@ -11,6 +12,7 @@ import type {
   OpenOverlayOptions,
   OverlayAPI,
   OverlayAsyncControllerComponent,
+  OverlayAsyncControllerProps,
   OverlayControllerComponent,
   OverlayEvent,
 } from "../types/overlay.types"
@@ -82,7 +84,7 @@ export function createOverlay(overlayId: string): OverlayAPI {
       let isSettled = false
 
       // 비동기 Controller를 일반 Controller로 래핑
-      const wrappedController: OverlayControllerComponent = (overlayProps) => {
+      const WrappedController: OverlayControllerComponent = (overlayProps) => {
         // 오버레이가 unmount될 때 Promise가 완료되지 않았으면 reject 처리
         React.useEffect(
           () => () => {
@@ -101,22 +103,22 @@ export function createOverlay(overlayId: string): OverlayAPI {
         /**
          * 결과값과 함께 오버레이 닫기
          */
-        const close = (...args: T extends void ? [] : [T]) => {
+        const close = ((...args: any[]) => {
           if (!isSettled) {
             isSettled = true
             console.log(`[Overlay Debug] openAsync: Promise resolved for overlayId: ${overlayProps.overlayId}`)
             resolve(args[0] as T)
             overlayProps.close()
           }
-        }
+        }) as OverlayAsyncControllerProps<T>["close"]
 
         // 오버라이드된 props 전달
-        const asyncProps = { ...overlayProps, close }
+        const asyncProps: OverlayAsyncControllerProps<T> = { ...overlayProps, close }
         return controller(asyncProps)
       }
 
       // 래핑된 Controller로 오버레이 열기
-      open(wrappedController, options)
+      open(WrappedController, options)
     })
   }
 

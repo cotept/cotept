@@ -52,7 +52,7 @@ export interface TokenResponseDto {
      * @type {number}
      * @memberof TokenResponseDto
      */
-    'userIdx': number;
+    'idx': number;
     /**
      * 사용자 이메일
      * @type {string}

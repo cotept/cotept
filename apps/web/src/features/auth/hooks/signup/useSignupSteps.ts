@@ -1,7 +1,7 @@
 import type { SignupData } from "@/features/auth/lib/validations/auth-rules"
 
-import { SIGNUP_STEP_ORDER, SignupStep } from "@/shared/constants/basic-types"
 import { useFormStepFlow } from "@/shared/hooks/useFormStepFlow"
+import { SIGNUP_STEP_ORDER, SignupStep } from "@/shared/types/basic-types"
 
 export function useSignupSteps() {
   const {

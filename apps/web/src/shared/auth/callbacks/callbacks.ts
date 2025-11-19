@@ -1,34 +1,43 @@
+import type { CotePtUser } from "@/shared/types/auth"
 import type { NextAuthConfig } from "next-auth"
 
 export const authCallbacks: NextAuthConfig["callbacks"] = {
   signIn: async ({ user, account }) => {
     // 로그인 성공 조건 검증
     if (
-      user?.id &&
+      user?.idx &&
       (account?.provider === "credentials" || account?.provider === "google" || account?.provider === "github")
     ) {
       return true
     }
     return false
   },
-  jwt: async ({ token, user }) => {
+  jwt: async ({ token, trigger, user, session }) => {
+    // 초기 로그인 시 user 정보를 token.user 객체로 저장
     if (user) {
-      // 새로 로그인한 경우, user 객체에서 토큰 정보 복사
-      token.accessToken = (user as any).accessToken
-      token.refreshToken = (user as any).refreshToken
-      token.role = (user as any).role
-      token.id = (user as any).id
+      const { accessToken, refreshToken, ...member } = user as any
+      token.member = member as CotePtUser
+      token.accessToken = accessToken
+      token.refreshToken = refreshToken
     }
+
+    // session.update() 호출 시 사용자 정보 업데이트
+    if (trigger === "update" && session?.user) {
+      token.member = session.user as CotePtUser
+    }
+
     return token
   },
   session: async ({ session, token }) => {
-    // 세션에 토큰 정보 추가
+    // 토큰 정보를 세션에 복사
     session.accessToken = token.accessToken as string
     session.refreshToken = token.refreshToken as string
-    if (session.user) {
-      session.user.id = token.id as string
-      session.user.role = token.role as string
+
+    // token.member를 session.member에 할당
+    if (token.member) {
+      session.member = token.member as CotePtUser
     }
+
     return session
   },
   redirect: async ({ url, baseUrl }) => {

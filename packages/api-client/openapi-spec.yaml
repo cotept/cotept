@@ -6064,7 +6064,7 @@ components:
           type: number
           example: 1800
           description: 액세스 토큰 만료 시간(초)
-        userIdx:
+        idx:
           type: number
           example: 1
           description: 사용자 고유 ID (idx)
@@ -6082,7 +6082,7 @@ components:
         - refreshToken
         - tokenType
         - expiresIn
-        - userIdx
+        - idx
         - email
         - role
     LoginRequestDto:

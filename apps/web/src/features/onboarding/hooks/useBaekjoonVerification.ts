@@ -40,7 +40,7 @@ import { copyToClipboard } from "@/shared/utils"
  */
 export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: BaekjoonVerifyStepData) => void }) => {
   const { data: session } = useSession()
-  const userId = session?.user?.id
+  const userId = session?.member?.idx?.toString() || null
 
   // 인증 세션 정보 (API 응답을 단일 객체로 관리)
   const [verificationSession, setVerificationSession] = useState<VerificationStatusResponseDto | null>(null)

@@ -1,7 +1,7 @@
 import type { OnboardingData } from "@/features/onboarding/lib/validations/onboarding-rules"
 
-import { ONBOARDING_STEP_ORDER, OnboardingStep } from "@/shared/constants/basic-types"
 import { useFormStepFlow } from "@/shared/hooks/useFormStepFlow"
+import { ONBOARDING_STEP_ORDER, OnboardingStep } from "@/shared/types/basic-types"
 
 export function useOnboardingSteps() {
   const {

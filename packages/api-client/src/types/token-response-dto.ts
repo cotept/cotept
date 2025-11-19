@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { UserRole } from './user-role';
 
 /**
  * 
@@ -44,5 +47,25 @@ export interface TokenResponseDto {
      * @memberof TokenResponseDto
      */
     'expiresIn': number;
+    /**
+     * 사용자 고유 ID (idx)
+     * @type {number}
+     * @memberof TokenResponseDto
+     */
+    'userIdx': number;
+    /**
+     * 사용자 이메일
+     * @type {string}
+     * @memberof TokenResponseDto
+     */
+    'email': string;
+    /**
+     * 사용자 역할
+     * @type {UserRole}
+     * @memberof TokenResponseDto
+     */
+    'role': UserRole;
 }
+
+
 

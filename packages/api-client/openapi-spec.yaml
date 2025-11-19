@@ -6064,11 +6064,27 @@ components:
           type: number
           example: 1800
           description: 액세스 토큰 만료 시간(초)
+        userIdx:
+          type: number
+          example: 1
+          description: 사용자 고유 ID (idx)
+        email:
+          type: string
+          example: user@example.com
+          description: 사용자 이메일
+        role:
+          example: MENTEE
+          description: 사용자 역할
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
       required:
         - accessToken
         - refreshToken
         - tokenType
         - expiresIn
+        - userIdx
+        - email
+        - role
     LoginRequestDto:
       type: object
       properties:

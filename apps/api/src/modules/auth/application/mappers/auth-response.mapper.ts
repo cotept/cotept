@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 
 import { AvailabilityResultDto } from "@/modules/auth/application/dtos"
+import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { TokenPair } from "@/modules/auth/domain/model/token-pair"
 import {
   AvailabilityResponseDto,
@@ -21,12 +22,15 @@ import {
  */
 @Injectable()
 export class AuthResponseMapper {
-  toTokenResponse(tokenPair: TokenPair): TokenResponseDto {
+  toTokenResponse(tokenPair: TokenPair, user: AuthUser): TokenResponseDto {
     return {
       accessToken: tokenPair.accessToken,
       refreshToken: tokenPair.refreshToken,
       tokenType: tokenPair.tokenType,
       expiresIn: tokenPair.accessTokenExpiresIn,
+      userIdx: user.getId(),
+      email: user.getEmail(),
+      role: user.role as any,
     }
   }
 

@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Expose } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
+
+import { UserRole } from '@/modules/user/domain/model/user';
 
 /**
  * 토큰 응답 DTO
@@ -38,4 +40,30 @@ export class TokenResponseDto {
   @Expose()
   @IsNumber()
   expiresIn: number;
+
+  @ApiProperty({
+    example: 1,
+    description: '사용자 고유 ID (idx)',
+  })
+  @Expose()
+  @IsNumber()
+  userIdx: number;
+
+  @ApiProperty({
+    example: 'user@example.com',
+    description: '사용자 이메일',
+  })
+  @Expose()
+  @IsString()
+  email: string;
+
+  @ApiProperty({
+    example: UserRole.MENTEE,
+    description: '사용자 역할',
+    enum: UserRole,
+    enumName: 'UserRole',
+  })
+  @Expose()
+  @IsEnum(UserRole)
+  role: UserRole;
 }

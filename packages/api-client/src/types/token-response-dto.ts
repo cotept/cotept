@@ -54,6 +54,12 @@ export interface TokenResponseDto {
      */
     'idx': number;
     /**
+     * 사용자 고유 ID (userId)
+     * @type {string}
+     * @memberof TokenResponseDto
+     */
+    'userId': string;
+    /**
      * 사용자 이메일
      * @type {string}
      * @memberof TokenResponseDto

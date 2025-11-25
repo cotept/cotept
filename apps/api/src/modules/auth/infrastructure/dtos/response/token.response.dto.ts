@@ -50,6 +50,14 @@ export class TokenResponseDto {
   idx: number
 
   @ApiProperty({
+    example: "dudtod1596",
+    description: "사용자 고유 ID (userId)",
+  })
+  @Expose()
+  @IsString()
+  userId: string
+
+  @ApiProperty({
     example: "user@example.com",
     description: "사용자 이메일",
   })

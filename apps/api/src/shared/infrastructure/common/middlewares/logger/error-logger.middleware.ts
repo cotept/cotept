@@ -25,6 +25,7 @@ export class ErrorLoggerMiddleware implements NestMiddleware {
           method: req.method,
           path: req.originalUrl,
           statusCode,
+          message: res.statusMessage,
           timestamp: new Date().toISOString(),
         })
       }

@@ -16,26 +16,23 @@ import {
   type ProfileSetupFormData,
   ProfileSetupFormRules,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { useProfileStore } from "@/features/user-profile/store/useProfileStore"
 import { AuthErrorHandler } from "@/shared/auth/errors/handler"
 import { useGetUploadUrl } from "@/shared/hooks/useStorage"
 import { uploadFileToOCIObjectStorage } from "@/shared/utils"
 
 export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetupData) => void }) => {
-  const { profile, setProfile } = useProfileStore()
+  // const { profile, setProfile } = useProfileStore()
   const { data: session } = useSession()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(profile.profileImageUrl || null)
-
   const form = useForm<ProfileSetupFormData>({
     resolver: zodResolver(ProfileSetupFormRules),
-    defaultValues: { nickname: profile.nickname || "", profileImage: profile.profileImageUrl || "" },
+    defaultValues: { nickname: "", profileImage: undefined },
     mode: "onChange",
   })
-
   const nickname = form.watch("nickname")
   const profileImage = form.watch("profileImage")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | File | null | undefined>(profileImage || null)
 
   const validationChecks: ValidationCheck[] = useMemo(() => {
     const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
@@ -59,8 +56,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         toast.error("프로필 생성에 실패했습니다. 다시 시도해주세요.")
         return
       }
-      const { userId, nickname, profileImageUrl } = response
-      setProfile({ userId, nickname, profileImageUrl })
+      const { nickname, profileImageUrl } = response
       toast.success("프로필이 저장되었습니다.")
       onComplete({ nickname, profileImageUrl: profileImageUrl ?? undefined })
     },
@@ -156,7 +152,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         return
       }
 
-      const userId = session?.member?.idx.toString() || null
+      const userId = session?.member.userId
       if (!userId) {
         toast.error("사용자 ID를 찾을 수 없습니다.")
         return

@@ -56,6 +56,24 @@ export const ProfileSetupRules = z.object({
  * - 새 이미지 업로드 시: File 객체 (5MB 제한, JPG/PNG/WebP)
  * - File 객체는 업로드 후 URL로 변환되어 API로 전송
  */
+// export const ProfileSetupFormRules = z.object({
+//   nickname: FieldRules.nickname(),
+//   profileImage: z
+//     .union([
+//       z.string().url("올바른 이미지 URL 형식이 아닙니다"),
+//       z
+//         .instanceof(File)
+//         .refine(
+//           (file) => file.size <= PROFILE_IMAGE_MAX_SIZE,
+//           `이미지 크기는 ${PROFILE_IMAGE_MAX_SIZE / (1024 * 1024)}MB 이하여야 합니다`,
+//         )
+//         .refine(
+//           (file) => PROFILE_IMAGE_ACCEPTED_TYPES.includes(file.type as any),
+//           "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
+//         ),
+//     ])
+//     .optional(),
+// })
 export const ProfileSetupFormRules = z.object({
   nickname: FieldRules.nickname(),
   profileImage: z
@@ -72,7 +90,16 @@ export const ProfileSetupFormRules = z.object({
           "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
         ),
     ])
-    .optional(),
+    .optional()
+    .refine(
+      (val) => {
+        // undefined, null, 빈 문자열은 모두 허용
+        if (!val || val === "") return true
+        // 값이 있으면 URL이거나 File이어야 함
+        return typeof val === "string" || val instanceof File
+      },
+      { message: "올바른 형식이 아닙니다" },
+    ),
 })
 
 /**

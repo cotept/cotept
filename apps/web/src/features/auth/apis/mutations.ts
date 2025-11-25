@@ -7,7 +7,6 @@ import type {
   AuthApiConfirmSocialLinkRequest,
   AuthApiExchangeAuthCodeRequest,
   AuthApiFindIdRequest,
-  AuthApiLoginRequest,
   AuthApiRefreshTokenRequest,
   AuthApiResetPasswordRequest,
   AuthApiSendVerificationCodeRequest,
@@ -26,21 +25,21 @@ import { authApiService } from "@/shared/api/services/auth-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
 
 // 로그인
-export function useLogin(options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiLoginRequest>) {
-  return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiLoginRequest>({
-    mutationFn: (data) => authApiService.login(data),
-    invalidateKeys: [authKeys.all.queryKey],
-    successMessage: "로그인에 성공했습니다.",
-    onSuccess: async (response) => {
-      // NextAuth 세션 업데이트
-      if (response.data) {
-        // 토큰 정보로 세션 업데이트 (구체적인 구현은 NextAuth 설정에 따라 다름)
-        // const { signIn } = await import("next-auth/react")
-      }
-    },
-    ...options, // Fat Hook의 onSuccess도 실행됨
-  })
-}
+// export function useLogin(options?: UseMutationOptions<TokenResponseWrapper, ApiError, AuthApiLoginRequest>) {
+//   return useBaseMutation<TokenResponseWrapper, ApiError, AuthApiLoginRequest>({
+//     mutationFn: (data) => authApiService.login(data),
+//     invalidateKeys: [authKeys.all.queryKey],
+//     successMessage: "로그인에 성공했습니다.",
+//     onSuccess: async (response) => {
+//       // NextAuth 세션 업데이트
+//       if (response.data) {
+//         // 토큰 정보로 세션 업데이트 (구체적인 구현은 NextAuth 설정에 따라 다름)
+//         // const { signIn } = await import("next-auth/react")
+//       }
+//     },
+//     ...options, // Fat Hook의 onSuccess도 실행됨
+//   })
+// }
 
 // 로그아웃
 export function useLogout(options?: UseMutationOptions<LogoutResponseWrapper, ApiError, void>) {

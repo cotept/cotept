@@ -6068,6 +6068,10 @@ components:
           type: number
           example: 1
           description: 사용자 고유 ID (idx)
+        userId:
+          type: string
+          example: dudtod1596
+          description: 사용자 고유 ID (userId)
         email:
           type: string
           example: user@example.com
@@ -6083,6 +6087,7 @@ components:
         - tokenType
         - expiresIn
         - idx
+        - userId
         - email
         - role
     LoginRequestDto:

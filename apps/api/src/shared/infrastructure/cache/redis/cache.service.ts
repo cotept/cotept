@@ -162,7 +162,7 @@ export class CacheService {
    */
   getClient(): any {
     try {
-      const client = (this.cache as any).secondary?.store?.client
+      const client = (this.cache as any).secondary?.opts.store.client
       if (!client) {
         throw new Error("Redis 클라이언트에 접근할 수 없습니다. 캐시 구성을 확인하세요.")
       }

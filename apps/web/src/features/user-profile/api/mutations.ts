@@ -11,132 +11,126 @@ import {
   UserProfileUpsertResponseWrapper,
 } from "@repo/api-client"
 
-import { type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { userProfileKeys, userProfileQueryUtils } from "./queryKey"
 
 import { ApiError } from "@/shared/api/core/types"
 import { userProfileApiService } from "@/shared/api/services/user-profile-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
+import { MutationOptions } from "@/shared/types/basic-types"
+import { createChainedCallbacks } from "@/shared/utils"
 
 // 프로필 생성
-export function useCreateUserProfile(
-  options?: UseMutationOptions<UserProfileCreationResponseWrapper, ApiError, UserProfileApiCreateUserProfileRequest>,
-) {
+export function useCreateUserProfile({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserProfileCreationResponseWrapper, UserProfileApiCreateUserProfileRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileCreationResponseWrapper, ApiError, UserProfileApiCreateUserProfileRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userProfileApiService.createUserProfile({ ...data }),
     invalidateKeys: [userProfileKeys.all.queryKey],
-    successMessage: "프로필이 성공적으로 생성되었습니다.",
-    onSuccess: (response, variables, context) => {
-      // 관련 쿼리들 무효화
-      userProfileQueryUtils.invalidateAll(queryClient)
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        userProfileQueryUtils.invalidateAll(queryClient)
 
-      // 생성된 프로필의 userId가 있다면 해당 프로필 쿼리도 무효화
-      if (variables?.createUserProfileRequestDto?.userId) {
-        userProfileQueryUtils.invalidateProfile(queryClient, variables.createUserProfileRequestDto.userId)
-        userProfileQueryUtils.invalidateCompleteness(queryClient, variables.createUserProfileRequestDto.userId)
-      }
-
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+        if (variables?.createUserProfileRequestDto?.userId) {
+          const userId = variables.createUserProfileRequestDto.userId
+          userProfileQueryUtils.invalidateProfile(queryClient, userId)
+          userProfileQueryUtils.invalidateCompleteness(queryClient, userId)
+        }
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
 
 // 프로필 수정
-export function useUpdateUserProfile(
-  options?: UseMutationOptions<UserProfileUpdateResponseWrapper, ApiError, UserProfileApiUpdateUserProfileRequest>,
-) {
+export function useUpdateUserProfile({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserProfileUpdateResponseWrapper, UserProfileApiUpdateUserProfileRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileUpdateResponseWrapper, ApiError, UserProfileApiUpdateUserProfileRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userProfileApiService.updateUserProfile({ ...data }),
     invalidateKeys: [userProfileKeys.all.queryKey],
-    successMessage: "프로필이 성공적으로 수정되었습니다.",
-    onSuccess: (response, variables, context) => {
-      // 수정된 프로필 관련 쿼리 무효화
-      const userId = variables?.userId
-      if (userId) {
-        userProfileQueryUtils.invalidateProfileRelated(queryClient, userId)
-      } else {
-        userProfileQueryUtils.invalidateAll(queryClient)
-      }
-
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        const userId = variables?.userId
+        if (userId) {
+          userProfileQueryUtils.invalidateProfileRelated(queryClient, userId)
+        } else {
+          userProfileQueryUtils.invalidateAll(queryClient)
+        }
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
 
 // 프로필 삭제
-export function useDeleteUserProfile(
-  options?: UseMutationOptions<UserProfileDeletionResponseWrapper, ApiError, UserProfileApiDeleteUserProfileRequest>,
-) {
+export function useDeleteUserProfile({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserProfileDeletionResponseWrapper, UserProfileApiDeleteUserProfileRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileDeletionResponseWrapper, ApiError, UserProfileApiDeleteUserProfileRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userProfileApiService.deleteUserProfile({ ...data }),
     invalidateKeys: [userProfileKeys.all.queryKey],
-    successMessage: "프로필이 성공적으로 삭제되었습니다.",
-    onSuccess: (response, variables, context) => {
-      // 삭제된 프로필 관련 쿼리 클리어
-      const userId = variables?.userId
-      if (userId) {
-        userProfileQueryUtils.clearUserProfileQueries(queryClient, userId)
-      }
-
-      // 전체 프로필 목록 쿼리 무효화
-      userProfileQueryUtils.invalidateAll(queryClient)
-
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        const userId = variables?.userId
+        if (userId) {
+          userProfileQueryUtils.clearUserProfileQueries(queryClient, userId)
+        }
+        userProfileQueryUtils.invalidateAll(queryClient)
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
 
-// 프로필 생성 또는 업데이트 (upsert)
-export function useUpsertUserProfile(
-  options?: UseMutationOptions<UserProfileUpsertResponseWrapper, ApiError, UserProfileApiUpsertUserProfileRequest>,
-) {
+// 프로필 upsert
+export function useUpsertUserProfile({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserProfileUpsertResponseWrapper, UserProfileApiUpsertUserProfileRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserProfileUpsertResponseWrapper, ApiError, UserProfileApiUpsertUserProfileRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userProfileApiService.upsertUserProfile({ ...data }),
     invalidateKeys: [userProfileKeys.all.queryKey],
-    successMessage: "프로필이 성공적으로 처리되었습니다.",
-    onSuccess: (response, variables, context) => {
-      // upsert된 프로필 관련 쿼리 무효화
-      const userId = variables?.userId
-      if (userId) {
-        userProfileQueryUtils.invalidateProfileRelated(queryClient, userId)
-      } else {
-        userProfileQueryUtils.invalidateAll(queryClient)
-      }
-
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        const userId = variables?.userId
+        if (userId) {
+          userProfileQueryUtils.invalidateProfileRelated(queryClient, userId)
+        } else {
+          userProfileQueryUtils.invalidateAll(queryClient)
+        }
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
 
 // 회원가입용 기본 프로필 생성
-export function useCreateBasicProfileForSignup(
-  options?: UseMutationOptions<
-    BasicProfileCreationResponseWrapper,
-    ApiError,
-    UserProfileApiCreateBasicProfileForSignupRequest
-  >,
-) {
+export function useCreateBasicProfileForSignup({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<BasicProfileCreationResponseWrapper, UserProfileApiCreateBasicProfileForSignupRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<
@@ -144,18 +138,15 @@ export function useCreateBasicProfileForSignup(
     ApiError,
     UserProfileApiCreateBasicProfileForSignupRequest
   >({
+    ...mutationOptions,
     mutationFn: (data) => userProfileApiService.createBasicProfileForSignup({ ...data }),
     invalidateKeys: [userProfileKeys.basicProfile().queryKey],
-    successMessage: "기본 프로필이 생성되었습니다.",
-    onSuccess: (response, variables, context) => {
-      // 기본 프로필 관련 쿼리 무효화
-      userProfileQueryUtils.invalidateBasicProfile(queryClient)
-      userProfileQueryUtils.invalidateAll(queryClient)
-
-      options?.onSuccess?.(response, variables, context)
-    },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context)
-    },
+    ...createChainedCallbacks({
+      domainLogic: async () => {
+        userProfileQueryUtils.invalidateBasicProfile(queryClient)
+        userProfileQueryUtils.invalidateAll(queryClient)
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }

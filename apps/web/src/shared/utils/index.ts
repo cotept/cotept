@@ -8,6 +8,8 @@ import { toast } from "sonner"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 
 import { handleApiError } from "@/shared/api/core/errors/handlers"
+import { ApiError } from "@/shared/api/core/types"
+import { MutationCallbacks } from "@/shared/types/basic-types"
 
 /**
  * Immer를 사용하여 T 형태의 캐시 데이터를 부분적으로 업데이트하기 위한
@@ -227,5 +229,29 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   } catch (error) {
     console.error("copyToClipboard error:", error)
     return false
+  }
+}
+
+/**
+ * mutations.ts 로직 + 커스텀훅 콜백 체이닝
+ */
+export function createChainedCallbacks<TData, TRequest>({
+  domainLogic,
+  domainErrorLogic,
+  callbacks,
+}: {
+  domainLogic?: (_response: TData, variables: TRequest, context: unknown) => void | Promise<void>
+  domainErrorLogic?: (error: ApiError, variables: TRequest, context: unknown) => void | Promise<void>
+  callbacks?: MutationCallbacks<TData, TRequest>
+}) {
+  return {
+    onSuccess: async (_response: TData, variables: TRequest, context: unknown) => {
+      if (domainLogic) await domainLogic(_response, variables, context)
+      callbacks?.onSuccess?.(_response, variables, context)
+    },
+    onError: async (error: ApiError, variables: TRequest, context: unknown) => {
+      if (domainErrorLogic) await domainErrorLogic(error, variables, context)
+      callbacks?.onError?.(error, variables, context)
+    },
   }
 }

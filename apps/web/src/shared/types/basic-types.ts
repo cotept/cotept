@@ -1,3 +1,7 @@
+import { UseMutationOptions } from "@tanstack/react-query"
+
+import { ApiError } from "@/shared/api/core/types"
+
 // 표준 회원가입 플로우 순서: 약관 → 이메일 → 인증 → ID → 비밀번호 → 완료
 export const SIGNUP_STEPS = {
   TERMS_AGREEMENT: "terms-agreement",
@@ -163,3 +167,15 @@ export const TIER_COLORS = {
   RubyI: "#FF0062",
   Master: "#B491FF",
 } as const
+
+export type MutationOptions<TData, TRequest, TContext = unknown> = UseMutationOptions<
+  TData,
+  ApiError,
+  TRequest,
+  TContext
+>
+
+export type MutationCallbacks<TData, TRequest> = {
+  onSuccess?: (_response: TData, variables: TRequest, context: unknown) => void
+  onError?: (error: ApiError, variables: TRequest, context: unknown) => void
+}

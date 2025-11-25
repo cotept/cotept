@@ -16,12 +16,11 @@ import {
   type ProfileSetupFormData,
   ProfileSetupFormRules,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { AuthErrorHandler } from "@/shared/auth/errors/handler"
+import { handleApiError } from "@/shared/api/core/errors/handlers"
 import { useGetUploadUrl } from "@/shared/hooks/useStorage"
 import { uploadFileToOCIObjectStorage } from "@/shared/utils"
 
 export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetupData) => void }) => {
-  // const { profile, setProfile } = useProfileStore()
   const { data: session } = useSession()
   const form = useForm<ProfileSetupFormData>({
     resolver: zodResolver(ProfileSetupFormRules),
@@ -52,16 +51,13 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
 
   const { mutate: createProfile, isPending: isCreating } = useCreateBasicProfile({
     onSuccess: ({ data: response }) => {
-      if (!response) {
-        toast.error("프로필 생성에 실패했습니다. 다시 시도해주세요.")
-        return
-      }
+      if (!response) return
       const { nickname, profileImageUrl } = response
       toast.success("프로필이 저장되었습니다.")
       onComplete({ nickname, profileImageUrl: profileImageUrl ?? undefined })
     },
     onError: (error) => {
-      const handledError = AuthErrorHandler.handle(error)
+      const handledError = handleApiError(error)
       toast.error(handledError.message)
     },
     onSettled: () => {
@@ -108,7 +104,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
           },
         })
       } catch (error) {
-        const handledError = AuthErrorHandler.handle(error)
+        const handledError = handleApiError(error)
         setUploadError(handledError.message)
         toast.error(handledError.message)
         setIsSubmitting(false)

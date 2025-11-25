@@ -6,137 +6,86 @@ import {
   type UserResponse,
 } from "@repo/api-client"
 
-import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { userKeys } from "./queryKey"
 
 import { ApiError } from "@/shared/api/core/types"
 import { userApiService } from "@/shared/api/services/user-api-service"
 import { useBaseMutation } from "@/shared/hooks/useBaseMutation"
+import { MutationOptions } from "@/shared/types/basic-types"
+import { createChainedCallbacks } from "@/shared/utils"
 
 // 회원가입 (토스트 없음 - Fat Hook에서 처리)
-export function useSignupUser(options?: UseMutationOptions<UserResponse, ApiError, UserApiCreateUserRequest>) {
+export function useSignupUser({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserResponse, UserApiCreateUserRequest> = {}) {
   return useMutation<UserResponse, ApiError, UserApiCreateUserRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userApiService.createUser({ ...data }),
-    ...options,
+    ...createChainedCallbacks({ domainLogic: () => {}, callbacks: { onSuccess, onError } }),
   })
 }
 
 // 사용자 생성 (관리자용)
-export function useCreateUser(options?: UseMutationOptions<UserResponse, ApiError, UserApiCreateUserRequest>) {
+export function useCreateUser({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserResponse, UserApiCreateUserRequest> = {}) {
   return useBaseMutation<UserResponse, ApiError, UserApiCreateUserRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userApiService.createUser({ ...data }),
     invalidateKeys: [userKeys.lists().queryKey],
-    successMessage: "사용자가 성공적으로 생성되었습니다.",
-    ...options,
+    ...createChainedCallbacks({ domainLogic: () => {}, callbacks: { onSuccess, onError } }),
   })
 }
 
-// 사용자 정보 수정 (Optimistic Update)
+// 사용자 정보 수정
 export function useUpdateUser(
   id: string,
-  options?: UseMutationOptions<UserResponse, ApiError, UserApiUpdateUserRequest, { previousData?: UserResponse }>,
+  { onSuccess, onError, ...mutationOptions }: MutationOptions<UserResponse, UserApiUpdateUserRequest> = {},
 ) {
   const queryClient = useQueryClient()
 
-  return useBaseMutation<UserResponse, ApiError, UserApiUpdateUserRequest, { previousData?: UserResponse }>({
+  return useBaseMutation<UserResponse, ApiError, UserApiUpdateUserRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userApiService.updateUser({ ...data }),
     invalidateKeys: [userKeys.detail(id).queryKey, userKeys.lists().queryKey],
-    successMessage: "사용자 정보가 성공적으로 수정되었습니다.",
-    onMutate: async (variables) => {
-      // 기존 쿼리 취소
-      await queryClient.cancelQueries({ queryKey: userKeys.detail(id).queryKey })
-
-      // 이전 데이터 스냅샷
-      const previousData = queryClient.getQueryData<UserResponse>(userKeys.detail(id).queryKey)
-
-      // 낙관적 업데이트 (updateUserRequestDto의 필드만 업데이트)
-      if (previousData?.data) {
-        queryClient.setQueryData<UserResponse>(userKeys.detail(id).queryKey, {
-          ...previousData,
-          data: {
-            ...previousData.data,
-            ...variables.updateUserRequestDto,
-          },
-        })
-      }
-
-      return { previousData }
-    },
-    onError: (_err, _variables, context) => {
-      // 롤백
-      if (context?.previousData) {
-        queryClient.setQueryData(userKeys.detail(id).queryKey, context.previousData)
-      }
-    },
-    ...options,
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        // Invalidate specific user detail query and general user lists
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(id).queryKey })
+        queryClient.invalidateQueries({ queryKey: userKeys.lists().queryKey })
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
 
 // 사용자 삭제
-export function useDeleteUser(
-  options?: UseMutationOptions<UserDeletionResponseWrapper, ApiError, UserApiDeleteUserRequest>,
-) {
+export function useDeleteUser({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<UserDeletionResponseWrapper, UserApiDeleteUserRequest> = {}) {
   const queryClient = useQueryClient()
 
   return useBaseMutation<UserDeletionResponseWrapper, ApiError, UserApiDeleteUserRequest>({
+    ...mutationOptions,
     mutationFn: (data) => userApiService.deleteUser({ ...data }),
     invalidateKeys: [
       userKeys.lists().queryKey,
       // 삭제된 사용자의 detail도 무효화 (onSuccess에서 idx 접근 가능)
     ],
-    successMessage: "사용자가 성공적으로 삭제되었습니다.",
-    onSuccess: (_response, variables) => {
-      // 특정 사용자 detail 쿼리도 무효화
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.idx.toString()).queryKey })
-    },
-    ...options,
+    ...createChainedCallbacks({
+      domainLogic: async (_response, variables) => {
+        // 특정 사용자 detail 쿼리도 무효화
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.idx.toString()).queryKey })
+      },
+      callbacks: { onSuccess, onError },
+    }),
   })
 }
-
-// // 프로필 업데이트 (현재 사용자)
-// export function useUpdateProfile(config?: MutationConfig) {
-//   const queryClient = useQueryClient()
-//   const optimisticUpdate = createOptimisticUpdate<UpdateUserResponse, UpdateUserRequestData>(queryClient)
-
-//   return useBaseMutation<UpdateUserResponse, ApiError, UpdateUserParams>({
-//     mutationFn: (data) => userApiService.updateUser(...data),
-//     queryKey: userKeys.profile("me").queryKey,
-//     successMessage: "프로필이 성공적으로 수정되었습니다.",
-//     onMutate: (data, previousData) => {
-//       optimisticUpdate(userKeys.profile("me").queryKey, data[0].updateUserRequestDto, previousData)
-//       return { previousData }
-//     },
-//     onSuccess: (response) => {
-//       config?.onSuccess?.(response.data)
-//     },
-//     onError: (error) => {
-//       config?.onError?.(error)
-//     },
-//   })
-// }
-
-// // 사용자 활성화/비활성화
-// export function useToggleUserStatus(config?: MutationConfig) {
-//   const queryClient = useQueryClient()
-
-//   return useBaseMutation<
-//     UserApiServiceMethodReturnType<"updateUser">,
-//     ApiError,
-//     UserApiServiceMethodParameters<"updateUser">
-//   >({
-//     mutationFn: (data) => userApiService.updateUser(...data),
-//     queryKey: userKeys.all.queryKey,
-//     onSuccess: (response, data) => {
-//       const status = data[0].updateUserRequestDto.status
-//       const statusText = status === "ACTIVE" ? "활성화" : "비활성화"
-//       toast.success(`사용자가 성공적으로 ${statusText}되었습니다.`)
-//       userQueryUtils.invalidateLists(queryClient)
-//       userQueryUtils.invalidateDetail(queryClient, data[0].id)
-//       config?.onSuccess?.(response.data)
-//     },
-//     onError: (error) => {
-//       config?.onError?.(error)
-//     },
-//   })
-// }

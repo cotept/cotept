@@ -27,6 +27,7 @@ packages/
 ## Essential Commands
 
 ### Development Workflow
+
 ```bash
 # Infrastructure (run first)
 pnpm infra:up         # Start Oracle DB, Redis, NoSQL (Docker)
@@ -45,6 +46,7 @@ pnpm test             # Run all tests
 ```
 
 ### Backend Commands (apps/api)
+
 ```bash
 cd apps/api
 
@@ -69,6 +71,7 @@ pnpm test:module <name>       # Test specific module
 ```
 
 ### Frontend Commands (apps/web)
+
 ```bash
 cd apps/web
 
@@ -85,6 +88,7 @@ pnpm build-storybook          # Build Storybook
 ```
 
 ### API Client Generation
+
 ```bash
 # From root - regenerate API client after backend changes
 pnpm gen:api                  # Export OpenAPI spec → Generate TypeScript client
@@ -97,6 +101,7 @@ pnpm gen:api                  # Export OpenAPI spec → Generate TypeScript clie
 All backend modules strictly follow hexagonal architecture with clear layer separation.
 
 ### Module Structure
+
 ```
 modules/<domain>/
 ├── domain/
@@ -124,6 +129,7 @@ modules/<domain>/
 - **Infrastructure Layer**: Implements ports, handles I/O (HTTP, DB, external APIs)
 
 **Critical Rules**:
+
 1. Domain NEVER imports from Application or Infrastructure
 2. Application NEVER imports from Infrastructure
 3. Infrastructure depends on both Application (ports) and Domain (entities)
@@ -166,6 +172,7 @@ pnpm gen:api
 The frontend follows FSD-inspired organization with strict dependency rules.
 
 ### Directory Structure (apps/web/src)
+
 ```
 app/               # Next.js App Router (routes only)
 ├── (auth)/        # Auth route group
@@ -190,6 +197,7 @@ shared/            # Reusable components & utilities
 ```
 
 ### Feature Structure Pattern
+
 ```
 features/<domain>/
 ├── api/
@@ -225,9 +233,9 @@ Use query-key-factory for type-safe query keys:
 
 ```typescript
 // features/user/api/queries.ts
-import { createQueryKeys } from '@lukemorales/query-key-factory'
+import { createQueryKeys } from "@lukemorales/query-key-factory"
 
-export const userQueries = createQueryKeys('user', {
+export const userQueries = createQueryKeys("user", {
   detail: (id: string) => ({
     queryKey: [id],
     queryFn: () => userApi.getUser(id),
@@ -245,6 +253,7 @@ const { data } = useQuery(userQueries.detail(userId))
 ESM module with shared UI components, hooks, and utilities.
 
 **Exports**:
+
 - `@repo/shared/globals.css` - Global styles
 - `@repo/shared/lib/*` - Utility functions
 - `@repo/shared/components/*` - Reusable UI components
@@ -252,6 +261,7 @@ ESM module with shared UI components, hooks, and utilities.
 - `@repo/shared/types/*` - Shared types
 
 **Key Features**:
+
 - shadcn/ui component library (unstyled, accessible Radix UI primitives)
 - TipTap rich text editor
 - Form components with React Hook Form + Zod
@@ -262,6 +272,7 @@ ESM module with shared UI components, hooks, and utilities.
 Auto-generated OpenAPI TypeScript Axios client.
 
 **Generation Process**:
+
 1. Backend exports OpenAPI spec (`openapi-spec.yaml`)
 2. OpenAPI Generator creates TypeScript Axios client
 3. Custom script extracts enums
@@ -293,12 +304,14 @@ pnpm migration:revert
 ## Authentication
 
 ### Backend (NestJS + Passport)
+
 - **Strategies**: Local (username/password), Google OAuth2, GitHub OAuth2
 - **JWT**: Token-based authentication with configurable expiry
 - **Guards**: JWT guards protect routes
 - **Module**: `apps/api/src/modules/auth/`
 
 ### Frontend (NextAuth.js)
+
 - **Version**: 5.0.0-beta.29
 - **Providers**: Credentials, Google, GitHub
 - **Session**: JWT-based sessions
@@ -307,12 +320,14 @@ pnpm migration:revert
 ## Real-Time Features
 
 ### Technologies
+
 - **WebRTC**: LiveKit SFU for audio/video
 - **WebSocket**: Socket.IO for signaling
 - **Collaborative Editing**: Y.js for code editor synchronization
 - **Streaming**: HLS.js for VOD playback (multi-bitrate)
 
 ### Media Pipeline
+
 1. LiveKit captures session (audio/video/screen)
 2. LiveKit Egress exports to OCI Object Storage
 3. OCI Functions (ffmpeg) transcodes to HLS (1080p/720p/480p)
@@ -321,6 +336,7 @@ pnpm migration:revert
 ## Code Style
 
 ### Prettier (enforced)
+
 - Print width: 120
 - No semicolons
 - Double quotes
@@ -328,12 +344,14 @@ pnpm migration:revert
 - Tailwind CSS class sorting enabled
 
 ### TypeScript
+
 - Strict mode enabled
 - Path aliases:
   - `@/*` → `./src/*` (api & web)
   - `@repo/*` → `../../packages/*` (web)
 
 ### ESLint
+
 - Boundaries plugin enforces layer dependencies
 - Import sorting
 - Unused imports detection
@@ -342,12 +360,14 @@ pnpm migration:revert
 ## Testing Strategy
 
 ### Backend (Jest)
+
 - **Unit Tests**: Alongside source files (`*.spec.ts`)
 - **E2E Tests**: `apps/api/test/` directory
 - **Coverage**: `pnpm test:cov` generates report
 - **Mocking**: Use Jest mocks for external dependencies
 
 ### Frontend (Vitest + Playwright)
+
 - **Unit/Integration**: Vitest + React Testing Library
 - **E2E**: Playwright for browser automation
 - **Storybook**: Component documentation and visual testing
@@ -355,12 +375,14 @@ pnpm migration:revert
 ## Key Integrations
 
 ### External APIs
+
 - **Baekjoon**: Korean coding platform integration (`modules/baekjoon/`)
 - **Google OAuth2**: Social authentication
 - **GitHub OAuth2**: Social authentication
 - **LiveKit**: WebRTC SFU (audio/video/screen sharing)
 
 ### Cloud Services (OCI)
+
 - **Autonomous Database**: Primary RDBMS (Oracle)
 - **NoSQL Database**: Session storage
 - **Object Storage**: VOD media files
@@ -371,6 +393,7 @@ pnpm migration:revert
 ### Required Environment Variables
 
 **Backend** (`apps/api/.env`):
+
 - Database connection (Oracle)
 - Redis connection
 - JWT secrets
@@ -380,6 +403,7 @@ pnpm migration:revert
 - Mail service (SMTP)
 
 **Frontend** (`apps/web/.env.local`):
+
 - NextAuth secrets
 - API base URL
 - OAuth2 client IDs
@@ -389,6 +413,7 @@ pnpm migration:revert
 ## Turborepo Task Pipeline
 
 **Key Tasks** (defined in `turbo.json`):
+
 - `build`: Builds projects with dependency graph
 - `dev`: Watch mode (persistent, no cache)
 - `test`: Unit/integration tests
@@ -410,6 +435,7 @@ pnpm migration:revert
    - Add Swagger decorators for OpenAPI
 
 2. **Generate Client**:
+
    ```bash
    pnpm gen:api
    ```
@@ -422,10 +448,12 @@ pnpm migration:revert
 ### Adding a New Feature
 
 1. **Backend Module**:
+
    ```bash
    cd apps/api
    pnpm create:module <feature-name>
    ```
+
    - Implement hexagonal layers
    - Add database migrations if needed
    - Write tests
@@ -443,12 +471,14 @@ pnpm migration:revert
 ## Architecture Principles
 
 ### Backend
+
 - **Hexagonal Architecture**: Strict layer separation (domain → application → infrastructure)
 - **Domain-Driven Design**: Rich domain models with business logic
 - **Dependency Inversion**: Depend on interfaces (ports), not implementations
 - **Explicit Mapping**: Never expose domain entities to controllers
 
 ### Frontend
+
 - **Feature-Sliced Design**: Features are isolated, composable domains
 - **Server State**: React Query for all server state management
 - **Client State**: Zustand for UI state (minimal)
@@ -456,6 +486,7 @@ pnpm migration:revert
 - **Accessibility**: shadcn/ui components are WCAG compliant
 
 ### Monorepo
+
 - **Workspace Isolation**: Packages are independent, reusable
 - **Shared Configuration**: Centralized ESLint, TypeScript, Prettier configs
 - **Task Orchestration**: Turbo handles parallel builds and caching
@@ -466,6 +497,7 @@ pnpm migration:revert
 **Active Branch**: `feat/onboarding`
 
 **Status**:
+
 - ✅ Authentication (local + OAuth2)
 - ✅ Onboarding flow
 - 🚧 Real-time mentoring sessions (~30% complete)
@@ -474,6 +506,7 @@ pnpm migration:revert
   - Collaborative code editor (Y.js)
 
 **Next Steps**:
+
 - Complete real-time session features
 - VOD recording pipeline
 - Payment integration
@@ -481,6 +514,7 @@ pnpm migration:revert
 ## Troubleshooting
 
 ### Database Connection Issues
+
 ```bash
 # Ensure infrastructure is running
 pnpm infra:up
@@ -491,12 +525,14 @@ pnpm migration:run
 ```
 
 ### API Client Out of Sync
+
 ```bash
 # Regenerate after backend changes
 pnpm gen:api
 ```
 
 ### Type Errors After Package Updates
+
 ```bash
 # Clean and rebuild
 pnpm clean
@@ -504,6 +540,7 @@ pnpm build
 ```
 
 ### Port Already in Use
+
 ```bash
 # API (3001) or Web (3000) ports in use
 lsof -ti:3001 | xargs kill -9  # Kill API
@@ -511,8 +548,17 @@ lsof -ti:3000 | xargs kill -9  # Kill Web
 ```
 
 ### pnpm Lock File Issues
+
 ```bash
 # Regenerate lockfile
 rm pnpm-lock.yaml
 pnpm install
 ```
+
+## Engeering Guide
+
+@ENGINEERING_GUIDE.md
+
+## Business Rule
+
+@docs/business-rules.md

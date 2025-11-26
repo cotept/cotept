@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
 
+import type { RedisClientType } from "@keyv/redis"
 import type { Cacheable } from "cacheable"
 
 import { ErrorUtils } from "@/shared/utils/error.util"
@@ -102,15 +103,8 @@ export class CacheService {
       if (keys.length === 0) return
 
       const client = this.getClient()
-      if (client.del) {
-        // Redis 클라이언트에 직접 del 명령어 사용
-        await client.del(...keys)
-      } else {
-        // 대체 방법으로 키를 하나씩 삭제
-        for (const key of keys) {
-          await this.delete(key)
-        }
-      }
+      // Redis 클라이언트에 직접 del 명령어 사용
+      await client.del(keys)
     } catch (error) {
       this.logger.error(
         `다중 키 삭제 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -159,10 +153,11 @@ export class CacheService {
    * Redis 클라이언트 직접 접근
    * 복잡한 Redis 작업을 위한 저수준 클라이언트 반환
    * @throws {Error} Redis 클라이언트를 찾을 수 없는 경우
+   * @returns {RedisClientType} redis 패키지의 클라이언트 인스턴스
    */
-  getClient(): any {
+  getClient(): RedisClientType {
     try {
-      const client = (this.cache as any).secondary?.opts.store.client
+      const client = (this.cache as any).secondary?.store?.client
       if (!client) {
         throw new Error("Redis 클라이언트에 접근할 수 없습니다. 캐시 구성을 확인하세요.")
       }

@@ -17,15 +17,15 @@ import {
 
 @Injectable()
 export class BaekjoonResponseMapper {
-  toVerificationStatusResponse(dto: StartVerificationOutputDto, handle: string): VerificationStatusResponseDto {
+  toVerificationStatusResponse(dto: StartVerificationOutputDto): VerificationStatusResponseDto {
     return {
       sessionId: dto.sessionId,
-      handle,
+      handle: dto.handle,
       verificationString: dto.verificationString,
-      status: VerificationStatusType.PENDING,
-      attempts: 0,
-      maxAttempts: 3,
-      createdAt: new Date().toISOString(),
+      status: dto.status,
+      attempts: dto.attempts,
+      maxAttempts: dto.maxAttempts,
+      createdAt: dto.createdAt.toISOString(),
       expiresAt: dto.expiresAt.toISOString(),
     }
   }

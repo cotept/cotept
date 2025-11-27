@@ -41,7 +41,7 @@ export class BaekjoonFacadeService {
    */
   async startVerification(inputDto: StartVerificationInputDto): Promise<VerificationStatusResponseDto> {
     const result = await this.startVerificationUseCase.execute(inputDto)
-    return this.responseMapper.toVerificationStatusResponse(result, inputDto.handle)
+    return this.responseMapper.toVerificationStatusResponse(result)
   }
 
   /**

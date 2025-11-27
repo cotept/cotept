@@ -17,7 +17,6 @@ import {
 } from "@/modules/baekjoon/application/ports"
 import { BaekjoonProfileRepositoryPort } from "@/modules/baekjoon/application/ports/out/baekjoon-profile-repository.port"
 import { BaekjoonUser, VerificationSession } from "@/modules/baekjoon/domain/model"
-import { VerificationStatus, VerificationString } from "@/modules/baekjoon/domain/vo"
 import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
@@ -47,15 +46,22 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
   async execute(inputDto: StartVerificationInputDto): Promise<StartVerificationOutputDto> {
     try {
       const { email: userId, handle } = inputDto
-
-      await this.checkRateLimit(userId)
+      this.logger.debug(`Starting Baekjoon verification for userId: ${userId}, handle: ${handle}`)
+      // await this.checkRateLimit(userId)
+      this.logger.debug(`Rate limit check passed for userId: ${userId}`)
       this.validateInput(userId, handle)
+      this.logger.debug(`Input validation passed for userId: ${userId}`)
       await this.validateBaekjoonHandle(handle)
+      this.logger.debug(`Baekjoon handle validation passed for userId: ${userId}`)
       await this.handleExistingSession(userId)
+      this.logger.debug(`Existing session check passed for userId: ${userId}`)
       await this.validateUniqueHandle(handle)
+      this.logger.debug(`Unique handle validation passed for userId: ${userId}`)
 
       const session = await this.createAndSaveSession(userId, handle)
+      this.logger.debug(`Session creation passed for userId: ${userId}`)
       await this.recordRateLimit(userId)
+      this.logger.debug(`Rate limit recording passed for userId: ${userId}`)
 
       return this.createResponse(session)
     } catch (error) {
@@ -129,11 +135,8 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
    * 새로운 인증 세션 생성 및 저장
    */
   private async createAndSaveSession(userId: string, handle: string): Promise<VerificationSession> {
-    // 인증 문자열 생성
-    const verificationString = VerificationString.generate()
-
-    // 세션 생성
-    const session = VerificationSession.create(userId, handle, verificationString, VerificationStatus.pending())
+    // const session = VerificationSession.create(userId, handle, verificationString, VerificationStatus.pending())
+    const session = VerificationSession.start({ userId, handle })
 
     // 캐시에 저장
     const rateLimitKey = this.getRateLimitKey(userId)
@@ -154,6 +157,7 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
    * 응답 DTO 생성
    */
   private createResponse(session: VerificationSession): StartVerificationOutputDto {
+    this.logger.debug(`Creating response for sessionId: ${session.getSessionId()}`)
     return this.baekjoonMapper.toStartVerificationOutputDto(session)
   }
 

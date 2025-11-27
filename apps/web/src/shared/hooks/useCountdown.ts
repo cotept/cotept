@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 /**
  * 만료 시간까지 카운트다운 커스텀 훅
@@ -26,12 +26,27 @@ import { useEffect, useState } from "react"
 export function useCountdown(expiresAt: string | null, onExpire?: () => void): number {
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
 
+  // onExpire 콜백을 useRef로 저장하여 무한 루프 방지
+  const onExpireRef = useRef(onExpire)
+
+  // onExpire가 변경될 때마다 ref 업데이트 (의존성 배열에서 제외)
+  useEffect(() => {
+    onExpireRef.current = onExpire
+  }, [onExpire])
+
+  // 만료 플래그 (중복 실행 방지)
+  const hasExpiredRef = useRef(false)
+
   useEffect(() => {
     // 만료 시간이 없으면 타이머 미실행
     if (!expiresAt) {
       setTimeRemaining(0)
+      hasExpiredRef.current = false
       return
     }
+
+    // expiresAt 변경 시 만료 플래그 리셋
+    hasExpiredRef.current = false
 
     // 초기 남은 시간 계산
     const calculateTimeRemaining = (): number => {
@@ -46,9 +61,10 @@ export function useCountdown(expiresAt: string | null, onExpire?: () => void): n
     const initialTime = calculateTimeRemaining()
     setTimeRemaining(initialTime)
 
-    // 이미 만료된 경우
-    if (initialTime <= 0) {
-      onExpire?.()
+    // 이미 만료된 경우 (중복 실행 방지)
+    if (initialTime <= 0 && !hasExpiredRef.current) {
+      hasExpiredRef.current = true
+      onExpireRef.current?.()
       return
     }
 
@@ -57,10 +73,11 @@ export function useCountdown(expiresAt: string | null, onExpire?: () => void): n
       const remaining = calculateTimeRemaining()
       setTimeRemaining(remaining)
 
-      // 만료 시 콜백 실행 및 타이머 정리
-      if (remaining <= 0) {
+      // 만료 시 콜백 실행 및 타이머 정리 (중복 실행 방지)
+      if (remaining <= 0 && !hasExpiredRef.current) {
+        hasExpiredRef.current = true
         clearInterval(interval)
-        onExpire?.()
+        onExpireRef.current?.()
       }
     }, 1000)
 
@@ -68,7 +85,7 @@ export function useCountdown(expiresAt: string | null, onExpire?: () => void): n
     return () => {
       clearInterval(interval)
     }
-  }, [expiresAt, onExpire])
+  }, [expiresAt]) // onExpire 제거!
 
   return timeRemaining
 }

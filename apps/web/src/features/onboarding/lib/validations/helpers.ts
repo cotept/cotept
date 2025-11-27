@@ -120,7 +120,7 @@ export function createBaekjoonValidationChecks(handle: string): ValidationCheck[
  * window.open(url, '_blank')
  */
 export function getSolvedAcProfileUrl(): string {
-  return "https://solved.ac/settings/profile"
+  return "https://solved.ac/settings"
 }
 
 /**

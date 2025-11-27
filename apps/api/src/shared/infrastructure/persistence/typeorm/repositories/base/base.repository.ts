@@ -38,6 +38,13 @@ export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<
 
   // DB error handler
   protected handleDBError(error: unknown, prefix: string = ""): never {
+    // NotFoundException은 정상적인 조회 실패이므로 DEBUG 레벨로 로깅
+    if (error instanceof NotFoundException) {
+      this.logger.debug(`${prefix} Entity not found (expected behavior)`)
+      throw error
+    }
+
+    // 실제 DB 오류는 ERROR 레벨로 로깅
     this.logger.error(`${prefix} Database operation failed`, error)
 
     // 타입 가드 및 단언

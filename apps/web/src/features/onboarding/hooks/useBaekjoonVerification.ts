@@ -21,7 +21,6 @@ import {
   BaekjoonVerifyStartFormRules,
   BaekjoonVerifyStepData,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { handleApiError } from "@/shared/api/core/errors/handlers"
 import { formatCountdownTime, useCountdown } from "@/shared/hooks/useCountdown"
 import { copyToClipboard } from "@/shared/utils"
 
@@ -84,15 +83,15 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
       toast.success("인증 코드가 발급되었습니다. solved.ac 프로필에 입력해주세요.")
     },
     onError: (error) => {
-      const handledError = handleApiError(error)
-      toast.error(handledError.message)
+      // useBaseMutation에서 이미 처리된 ProcessedError를 받으므로 재처리 불필요
+      toast.error(error.message)
 
       // 에러 발생 시 상태 업데이트
       if (verificationSession) {
         setVerificationSession({
           ...verificationSession,
           status: VerificationStatusType.FAILED,
-          errorReason: handledError.message,
+          errorReason: error.message,
         })
       }
     },
@@ -147,15 +146,15 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
       })
     },
     onError: (error) => {
-      const handledError = handleApiError(error)
-      toast.error(handledError.message)
+      // useBaseMutation에서 이미 처리된 ProcessedError를 받으므로 재처리 불필요
+      toast.error(error.message)
 
       // 에러 발생 시 상태 업데이트
       if (verificationSession) {
         setVerificationSession({
           ...verificationSession,
           status: VerificationStatusType.FAILED,
-          errorReason: handledError.message,
+          errorReason: error.message,
         })
       }
     },

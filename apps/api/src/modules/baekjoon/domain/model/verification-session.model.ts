@@ -33,43 +33,65 @@ export class VerificationSession {
   constructor(params: {
     sessionId?: string
     userId: string
-    handle: BaekjoonHandle | string
-    verificationString: VerificationString | string
-    status?: VerificationStatus | VerificationStatusType
+    handle: BaekjoonHandle | string | { _value: string }
+    verificationString: VerificationString | string | { value: string }
+    status?: VerificationStatus | VerificationStatusType | { status: VerificationStatusType; updatedAt: string }
     attemptCount?: number
-    lastAttemptAt?: Date
-    expiresAt?: Date
-    createdAt?: Date
-    updatedAt?: Date
+    lastAttemptAt?: Date | string
+    expiresAt?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }) {
     this.sessionId = params.sessionId || crypto.randomUUID()
     this.userId = params.userId
 
-    // 핸들 설정 (값 객체 또는 문자열)
-    this.handle = params.handle instanceof BaekjoonHandle ? params.handle : BaekjoonHandle.of(params.handle)
+    // --- 핸들 설정 (Redis 데이터 대응) ---
+    const handleSource = params.handle
+    if (handleSource instanceof BaekjoonHandle) {
+      this.handle = handleSource
+    } else if (typeof handleSource === "object" && handleSource !== null && "_value" in handleSource) {
+      this.handle = BaekjoonHandle.of((handleSource as { _value: string })._value)
+    } else {
+      this.handle = BaekjoonHandle.of(handleSource as string)
+    }
 
-    // 인증 문자열 설정
-    this.verificationString =
-      params.verificationString instanceof VerificationString
-        ? params.verificationString
-        : VerificationString.of(params.verificationString)
+    // --- 인증 문자열 설정 (Redis 데이터 대응) ---
+    const verificationStringSource = params.verificationString
+    if (verificationStringSource instanceof VerificationString) {
+      this.verificationString = verificationStringSource
+    } else if (
+      typeof verificationStringSource === "object" &&
+      verificationStringSource !== null &&
+      "value" in verificationStringSource
+    ) {
+      this.verificationString = VerificationString.of((verificationStringSource as { value: string }).value)
+    } else {
+      this.verificationString = VerificationString.of(verificationStringSource as string)
+    }
 
-    // 상태 설정
-    this.status =
-      params.status instanceof VerificationStatus
-        ? params.status
-        : params.status
-          ? VerificationStatus.of(params.status)
-          : VerificationStatus.inProgress()
+    // --- 상태 설정 (Redis 데이터 대응) ---
+    const statusSource = params.status
+    if (statusSource instanceof VerificationStatus) {
+      this.status = statusSource
+    } else if (typeof statusSource === "object" && statusSource !== null && "status" in statusSource) {
+      this.status = VerificationStatus.of(
+        (statusSource as { status: VerificationStatusType; updatedAt: string }).status,
+      )
+    } else if (statusSource) {
+      this.status = VerificationStatus.of(statusSource as VerificationStatusType)
+    } else {
+      this.status = VerificationStatus.inProgress()
+    }
 
     this.attemptCount = params.attemptCount || 0
-    this.lastAttemptAt = params.lastAttemptAt
+    this.lastAttemptAt = params.lastAttemptAt ? new Date(params.lastAttemptAt) : undefined
 
-    // 만료 시간 설정 (기본: 1시간 후)
-    this.expiresAt = params.expiresAt || new Date(Date.now() + VerificationSession.DEFAULT_EXPIRATION_TIME)
+    // 만료 시간 설정 (기본: 5분 후)
+    this.expiresAt =
+      params.expiresAt ? new Date(params.expiresAt) : new Date(Date.now() + VerificationSession.DEFAULT_EXPIRATION_TIME)
 
-    this.createdAt = params.createdAt || new Date()
-    this.updatedAt = params.updatedAt || new Date()
+    this.createdAt = params.createdAt ? new Date(params.createdAt) : new Date()
+    this.updatedAt = params.updatedAt ? new Date(params.updatedAt) : new Date()
   }
 
   /**

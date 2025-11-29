@@ -81,8 +81,11 @@ export class BaekjoonProfileRepository
     try {
       const entity = await this.findOne({ userId })
       return this.mapper.toDomainModel(entity)
-    } catch {
-      return null
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return null
+      }
+      throw error
     }
   }
 
@@ -90,8 +93,11 @@ export class BaekjoonProfileRepository
     try {
       const entity = await this.findOne({ baekjoonId })
       return this.mapper.toDomainModel(entity)
-    } catch {
-      return null
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return null
+      }
+      throw error
     }
   }
 

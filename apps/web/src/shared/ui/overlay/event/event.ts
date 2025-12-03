@@ -9,6 +9,7 @@ import { createUseExternalEvents } from "../utils/createUseExternalEvents"
 import { randomId } from "../utils/randomId"
 
 import type {
+  OpenOverlayAsyncOptions,
   OpenOverlayOptions,
   OverlayAPI,
   OverlayAsyncControllerComponent,
@@ -77,23 +78,35 @@ export function createOverlay(overlayId: string): OverlayAPI {
    */
   const openAsync = async <T>(
     controller: OverlayAsyncControllerComponent<T>,
-    options?: OpenOverlayOptions,
+    options?: OpenOverlayAsyncOptions<T>,
   ): Promise<T> => {
     console.log(`[Overlay Debug] openAsync: Creating promise-wrapped overlay.`)
     return new Promise<T>((resolve, reject) => {
       let isSettled = false
+      const { rejectOnDismiss = true, dismissValue, onDismiss } = options ?? {}
 
       // 비동기 Controller를 일반 Controller로 래핑
       const WrappedController: OverlayControllerComponent = (overlayProps) => {
+        // StrictMode double invoke 대비
+        const shouldSkipNextCleanupRef = React.useRef(process.env.NODE_ENV === "development")
         // 오버레이가 unmount될 때 Promise가 완료되지 않았으면 reject 처리
         React.useEffect(
           () => () => {
+            if (shouldSkipNextCleanupRef.current) {
+              shouldSkipNextCleanupRef.current = false
+              return
+            }
             if (!isSettled) {
               isSettled = true
               console.log(
                 `[Overlay Debug] openAsync: Promise rejected due to dismissal for overlayId: ${overlayProps.overlayId}`,
               )
-              reject(new Error("Overlay was dismissed."))
+              onDismiss?.()
+              if (rejectOnDismiss) {
+                reject(new Error("Overlay was dismissed."))
+              } else {
+                resolve(dismissValue as T)
+              }
             }
           },
           // eslint-disable-next-line react-hooks/exhaustive-deps

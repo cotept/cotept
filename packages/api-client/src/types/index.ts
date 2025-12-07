@@ -12,7 +12,6 @@ export * from './basic-profile-creation-response-wrapper';
 export * from './boolean-response';
 export * from './change-password-request-dto';
 export * from './check-email-availability-request-dto';
-export * from './check-mentor-eligibility-dto';
 export * from './check-user-id-availability-request-dto';
 export * from './complete-baekjoon-verification-dto';
 export * from './complete-onboarding-dto';

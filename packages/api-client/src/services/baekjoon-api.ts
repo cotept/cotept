@@ -92,14 +92,14 @@ export const BaekjoonApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 사용자의 백준 프로필 정보를 조회합니다. handle을 제공하지 않으면 현재 사용자의 프로필을 조회합니다.
          * @summary 백준 프로필 조회
-         * @param {string} email 사용자 이메일
+         * @param {string} userId 사용자 ID
          * @param {string} handle 백준 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProfile: async (email: string, handle: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'email' is not null or undefined
-            assertParamExists('getProfile', 'email', email)
+        getProfile: async (userId: string, handle: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getProfile', 'userId', userId)
             // verify required parameter 'handle' is not null or undefined
             assertParamExists('getProfile', 'handle', handle)
             const localVarPath = `/api/v1/baekjoon/profile`;
@@ -114,8 +114,8 @@ export const BaekjoonApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (email !== undefined) {
-                localVarQueryParameter['email'] = email;
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
             }
 
             if (handle !== undefined) {
@@ -136,14 +136,14 @@ export const BaekjoonApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 사용자의 백준 태그별 문제 해결 통계를 조회합니다.
          * @summary 백준 태그 통계 조회
-         * @param {string} email 사용자 이메일
+         * @param {string} userId 사용자 ID
          * @param {string} handle 백준 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatistics: async (email: string, handle: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'email' is not null or undefined
-            assertParamExists('getStatistics', 'email', email)
+        getStatistics: async (userId: string, handle: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getStatistics', 'userId', userId)
             // verify required parameter 'handle' is not null or undefined
             assertParamExists('getStatistics', 'handle', handle)
             const localVarPath = `/api/v1/baekjoon/statistics`;
@@ -158,8 +158,8 @@ export const BaekjoonApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (email !== undefined) {
-                localVarQueryParameter['email'] = email;
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
             }
 
             if (handle !== undefined) {
@@ -273,13 +273,13 @@ export const BaekjoonApiFp = function(configuration?: Configuration) {
         /**
          * 사용자의 백준 프로필 정보를 조회합니다. handle을 제공하지 않으면 현재 사용자의 프로필을 조회합니다.
          * @summary 백준 프로필 조회
-         * @param {string} email 사용자 이메일
+         * @param {string} userId 사용자 ID
          * @param {string} handle 백준 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProfile(email: string, handle: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaekjoonProfileResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProfile(email, handle, options);
+        async getProfile(userId: string, handle: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaekjoonProfileResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProfile(userId, handle, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BaekjoonApi.getProfile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -287,13 +287,13 @@ export const BaekjoonApiFp = function(configuration?: Configuration) {
         /**
          * 사용자의 백준 태그별 문제 해결 통계를 조회합니다.
          * @summary 백준 태그 통계 조회
-         * @param {string} email 사용자 이메일
+         * @param {string} userId 사용자 ID
          * @param {string} handle 백준 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatistics(email: string, handle: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TagStatisticsResponseWrapper>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatistics(email, handle, options);
+        async getStatistics(userId: string, handle: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TagStatisticsResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatistics(userId, handle, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BaekjoonApi.getStatistics']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -352,7 +352,7 @@ export const BaekjoonApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getProfile(requestParameters: BaekjoonApiGetProfileRequest, options?: RawAxiosRequestConfig): AxiosPromise<BaekjoonProfileResponseWrapper> {
-            return localVarFp.getProfile(requestParameters.email, requestParameters.handle, options).then((request) => request(axios, basePath));
+            return localVarFp.getProfile(requestParameters.userId, requestParameters.handle, options).then((request) => request(axios, basePath));
         },
         /**
          * 사용자의 백준 태그별 문제 해결 통계를 조회합니다.
@@ -362,7 +362,7 @@ export const BaekjoonApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getStatistics(requestParameters: BaekjoonApiGetStatisticsRequest, options?: RawAxiosRequestConfig): AxiosPromise<TagStatisticsResponseWrapper> {
-            return localVarFp.getStatistics(requestParameters.email, requestParameters.handle, options).then((request) => request(axios, basePath));
+            return localVarFp.getStatistics(requestParameters.userId, requestParameters.handle, options).then((request) => request(axios, basePath));
         },
         /**
          * 진행 중인 인증 세션의 상태를 조회합니다.
@@ -466,11 +466,11 @@ export interface BaekjoonApiCompleteVerificationRequest {
  */
 export interface BaekjoonApiGetProfileRequest {
     /**
-     * 사용자 이메일
+     * 사용자 ID
      * @type {string}
      * @memberof BaekjoonApiGetProfile
      */
-    readonly email: string
+    readonly userId: string
 
     /**
      * 백준 ID
@@ -487,11 +487,11 @@ export interface BaekjoonApiGetProfileRequest {
  */
 export interface BaekjoonApiGetStatisticsRequest {
     /**
-     * 사용자 이메일
+     * 사용자 ID
      * @type {string}
      * @memberof BaekjoonApiGetStatistics
      */
-    readonly email: string
+    readonly userId: string
 
     /**
      * 백준 ID
@@ -557,7 +557,7 @@ export class BaekjoonApi extends BaseAPI implements BaekjoonApiInterface {
      * @memberof BaekjoonApi
      */
     public getProfile(requestParameters: BaekjoonApiGetProfileRequest, options?: RawAxiosRequestConfig) {
-        return BaekjoonApiFp(this.configuration).getProfile(requestParameters.email, requestParameters.handle, options).then((request) => request(this.axios, this.basePath));
+        return BaekjoonApiFp(this.configuration).getProfile(requestParameters.userId, requestParameters.handle, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -569,7 +569,7 @@ export class BaekjoonApi extends BaseAPI implements BaekjoonApiInterface {
      * @memberof BaekjoonApi
      */
     public getStatistics(requestParameters: BaekjoonApiGetStatisticsRequest, options?: RawAxiosRequestConfig) {
-        return BaekjoonApiFp(this.configuration).getStatistics(requestParameters.email, requestParameters.handle, options).then((request) => request(this.axios, this.basePath));
+        return BaekjoonApiFp(this.configuration).getStatistics(requestParameters.userId, requestParameters.handle, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

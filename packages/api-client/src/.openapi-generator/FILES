@@ -37,7 +37,6 @@ types/basic-profile-creation-response-wrapper.ts
 types/boolean-response.ts
 types/change-password-request-dto.ts
 types/check-email-availability-request-dto.ts
-types/check-mentor-eligibility-dto.ts
 types/check-user-id-availability-request-dto.ts
 types/complete-baekjoon-verification-dto.ts
 types/complete-onboarding-dto.ts

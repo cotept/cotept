@@ -4102,13 +4102,14 @@ paths:
   /api/v1/onboarding/mentor/eligibility:
     get:
       operationId: checkMentorEligibility
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CheckMentorEligibilityDto'
+      parameters:
+        - name: userId
+          required: true
+          in: query
+          description: 사용자 ID
+          schema:
+            example: user123
+            type: string
       responses:
         '200':
           description: 멘토 자격 요건을 성공적으로 확인했습니다.
@@ -4911,12 +4912,12 @@ paths:
       description: 사용자의 백준 프로필 정보를 조회합니다. handle을 제공하지 않으면 현재 사용자의 프로필을 조회합니다.
       operationId: getProfile
       parameters:
-        - name: email
+        - name: userId
           required: true
           in: query
-          description: 사용자 이메일
+          description: 사용자 ID
           schema:
-            example: user@example.com
+            example: user123
             type: string
         - name: handle
           required: true
@@ -5061,12 +5062,12 @@ paths:
       description: 사용자의 백준 태그별 문제 해결 통계를 조회합니다.
       operationId: getStatistics
       parameters:
-        - name: email
+        - name: userId
           required: true
           in: query
-          description: 사용자 이메일
+          description: 사용자 ID
           schema:
-            example: user@example.com
+            example: user123
             type: string
         - name: handle
           required: true
@@ -5529,7 +5530,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         introduce:
           type: string
@@ -5592,7 +5593,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         introduce:
           type: string
@@ -6521,7 +6522,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         profileImageUrl:
           type: string
@@ -6783,15 +6784,6 @@ components:
         - isEligible
         - currentTier
         - requirement
-    CheckMentorEligibilityDto:
-      type: object
-      properties:
-        userId:
-          type: string
-          description: 사용자 ID
-          example: user123
-      required:
-        - userId
     ApiResponseMentorTagsResponseDto:
       type: object
       properties: {}
@@ -6883,16 +6875,16 @@ components:
     StartVerificationRequestDto:
       type: object
       properties:
-        email:
+        userId:
           type: string
-          description: 사용자 이메일
-          example: user@example.com
+          description: 사용자 ID
+          example: user123
         handle:
           type: string
           description: 백준 ID (사용자명)
           example: solved_user123
       required:
-        - email
+        - userId
         - handle
     CompleteVerificationRequestDto:
       type: object
@@ -6902,17 +6894,17 @@ components:
           description: 인증 세션 ID
           example: 550e8400-e29b-41d4-a716-446655440000
           format: uuid
-        email:
+        userId:
           type: string
-          description: 사용자 이메일
-          example: user@example.com
+          description: 사용자 ID
+          example: user123
         handle:
           type: string
           description: 백준 ID (사용자명)
           example: solved_user123
       required:
         - sessionId
-        - email
+        - userId
         - handle
     ApiResponseBaekjoonProfileResponseDto:
       type: object

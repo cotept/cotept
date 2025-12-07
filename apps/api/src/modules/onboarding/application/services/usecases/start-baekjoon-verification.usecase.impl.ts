@@ -25,7 +25,7 @@ export class StartBaekjoonVerificationUseCaseImpl implements StartBaekjoonVerifi
 
     // 기존 baekjoon 모듈의 유스케이스 호출
     return this.baekjoonService.startVerification({
-      email: user.email,
+      userId: user.userId,
       handle: dto.baekjoonHandle,
     })
   }

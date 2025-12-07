@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common"
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common"
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
@@ -94,7 +94,7 @@ export class OnboardingController {
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
-  async checkMentorEligibility(@Body() dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
+  async checkMentorEligibility(@Query() dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
     return this.facadeService.checkMentorEligibility(dto)
   }
 

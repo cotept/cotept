@@ -26,7 +26,7 @@ export class CompleteBaekjoonVerificationUseCaseImpl implements CompleteBaekjoon
 
     // 기존 baekjoon 모듈의 유스케이스 호출
     const result = await this.baekjoonService.completeVerification({
-      email: user.email,
+      userId: user.userId,
       handle: dto.baekjoonHandle,
       sessionId: dto.verificationSessionId,
     })

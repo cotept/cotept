@@ -45,9 +45,9 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
 
   async execute(inputDto: StartVerificationInputDto): Promise<StartVerificationOutputDto> {
     try {
-      const { email: userId, handle } = inputDto
+      const { userId, handle } = inputDto
       this.logger.debug(`Starting Baekjoon verification for userId: ${userId}, handle: ${handle}`)
-      // await this.checkRateLimit(userId)
+      // await this.checkRateLimit(userId) // 디버그할 때 주석 처리하기
       this.logger.debug(`Rate limit check passed for userId: ${userId}`)
       this.validateInput(userId, handle)
       this.logger.debug(`Input validation passed for userId: ${userId}`)
@@ -113,17 +113,17 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
 
     // 2단계: sessionId로 실제 세션 데이터 조회
     const sessionKey = this.getSessionKey(existingSessionId)
-    const existingSession = await this.cacheAdapter.get<VerificationSession>(sessionKey)
-
-    if (!existingSession) {
+    const sessionData = await this.cacheAdapter.get<any>(sessionKey)
+    this.logger.debug(
+      `Found existing session for userId: ${userId}, sessionId: ${existingSessionId} sessionData:${JSON.stringify(sessionData)}`,
+    )
+    if (!sessionData) {
       // 매핑은 있지만 세션 데이터가 없는 경우 (정합성 오류)
       // 이론상 발생하면 안 되지만, 매핑만 삭제하고 정상 진행
       await this.cacheAdapter.delete(userSessionKey)
-      this.logger.warn(
-        `Session mapping exists but session data not found. SessionId: ${existingSessionId}, cleaning up mapping.`,
-      )
       return
     }
+    const existingSession = new VerificationSession(sessionData)
 
     if (existingSession.isExpired()) {
       // 만료된 세션 정리 (두 키 모두 삭제)

@@ -49,7 +49,7 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
 
   async execute(inputDto: CompleteVerificationInputDto): Promise<CompleteVerificationOutputDto> {
     try {
-      const { email: userId, handle, sessionId } = inputDto
+      const { userId, handle, sessionId } = inputDto
 
       // 1단계: Rate limit 확인
       await this.checkRateLimit(userId)

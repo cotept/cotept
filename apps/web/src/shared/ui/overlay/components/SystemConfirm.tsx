@@ -19,6 +19,8 @@ import {
 
 import { AlertTriangle, HelpCircle, Info } from "lucide-react"
 
+import { OVERLAY_EXIT_ANIMATION_MS } from "../utils/constants"
+
 import type { OverlayAsyncControllerProps } from "../types/overlay.types"
 
 export interface SystemConfirmProps extends OverlayAsyncControllerProps<boolean> {
@@ -48,6 +50,7 @@ const confirmIcons = {
 export const SystemConfirm = ({
   isOpen,
   close,
+  dismiss,
   overlayId,
   unmount,
   title,
@@ -60,22 +63,24 @@ export const SystemConfirm = ({
 }: SystemConfirmProps) => {
   const Icon = confirmIcons[variant]
 
+  const exitWithDelay = (action: () => void) => {
+    action()
+    setTimeout(() => unmount(), OVERLAY_EXIT_ANIMATION_MS)
+  }
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      // 외부 클릭이나 ESC로 닫힌 경우 false 반환
-      close(false)
-      setTimeout(() => unmount(), 150)
+      // 외부 클릭이나 ESC로 닫힌 경우 dismiss 처리
+      exitWithDelay(dismiss)
     }
   }
 
   const handleConfirm = () => {
-    close(true)
-    setTimeout(() => unmount(), 150)
+    exitWithDelay(() => close(true))
   }
 
   const handleCancel = () => {
-    close(false)
-    setTimeout(() => unmount(), 150)
+    exitWithDelay(() => close(false))
   }
 
   return (

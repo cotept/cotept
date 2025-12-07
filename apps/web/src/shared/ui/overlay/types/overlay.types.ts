@@ -18,6 +18,8 @@ export interface OverlayControllerProps {
   isOpen: boolean;
   /** 오버레이 닫기 */
   close: () => void;
+  /** Promise를 해결하지 않고 단순 dismiss */
+  dismiss: () => void;
   /** 오버레이 언마운트 (DOM에서 완전 제거) */
   unmount: () => void;
 }

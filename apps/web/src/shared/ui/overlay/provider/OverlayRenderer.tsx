@@ -11,6 +11,8 @@ import { createPortal } from "react-dom"
 
 import { ContentOverlayController } from "./ContentOverlayController"
 
+import { OVERLAY_ERROR_CODES, OverlayError } from "../types/overlay.types"
+
 import type { OverlayRendererProps } from "../types/overlay.types"
 
 /**
@@ -28,17 +30,29 @@ import type { OverlayRendererProps } from "../types/overlay.types"
 export function OverlayRenderer({ overlayState, dispatch }: OverlayRendererProps) {
   // SSR 안전한 Portal 루트 요소 관리
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null)
+  const [portalError, setPortalError] = useState<Error | null>(null)
 
   useEffect(() => {
     // 클라이언트 사이드에서만 DOM 요소 접근
+    if (typeof document === "undefined") {
+      return
+    }
     const root = document.getElementById("overlay-root")
     if (!root) {
-      console.warn(
-        "[Overlay] Portal root element not found. " + 'Make sure to add <div id="overlay-root"></div> to your HTML.',
+      setPortalError(
+        new OverlayError(
+          "#overlay-root element is required to render overlays.",
+          OVERLAY_ERROR_CODES.PORTAL_ROOT_NOT_FOUND,
+        ),
       )
+      return
     }
     setPortalRoot(root)
   }, [])
+
+  if (portalError) {
+    throw portalError
+  }
 
   // SSR 중이거나 portal root가 없으면 렌더링하지 않음
   if (!portalRoot) {

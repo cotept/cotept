@@ -66,26 +66,16 @@ export function createOverlayHelper<TProps, TResult = boolean>(
 
 /**
  * overlay-kit 스타일의 React 훅
- * 컴포넌트 내부에서 사용하며, React의 훅 규칙을 따릅니다.
- *
- * @example
- * const overlay = useOverlay()
- *
- * // SystemConfirm 사용
- * const confirmed = await overlay.open(SystemConfirm, {
- *   title: "확인",
- *   description: "진행하시겠습니까?"
- * })
- *
- * // 커스텀 컴포넌트 사용
- * const result = await overlay.open(MyCustomDialog, {
- *   userId: "123",
- *   data: { ... }
- * })
+ * Provider 내부에서 overlay API와 선언형 helper를 모두 제공합니다.
  */
 export function useOverlay() {
   return {
-    open: openOverlay,
+    ...overlay,
+    /**
+     * JSX 없이 선언적으로 오버레이를 여는 helper
+     * (기존 useOverlay().open 시그니처와 호환)
+     */
+    openDeclarative: openOverlay,
   }
 }
 
@@ -163,8 +153,9 @@ export const overlayPresets = {
       autoClose: 3000,
     }
     const finalProps = deepMerge(defaultProps, overrides ?? {})
-    // description은 항상 message 인자로 제어
-    finalProps.description = message
+    if (overrides?.description == null) {
+      finalProps.description = message
+    }
     return alert(finalProps)
   },
 }

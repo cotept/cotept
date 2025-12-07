@@ -125,8 +125,24 @@ export function createOverlay(overlayId: string): OverlayAPI {
           }
         }) as OverlayAsyncControllerProps<T>["close"]
 
+        const dismiss = () => {
+          if (!isSettled) {
+            isSettled = true
+            console.log(
+              `[Overlay Debug] openAsync: Promise dismissed for overlayId: ${overlayProps.overlayId}`,
+            )
+            onDismiss?.()
+            if (rejectOnDismiss) {
+              reject(new Error("Overlay was dismissed."))
+            } else {
+              resolve(dismissValue as T)
+            }
+          }
+          overlayProps.dismiss()
+        }
+
         // 오버라이드된 props 전달
-        const asyncProps: OverlayAsyncControllerProps<T> = { ...overlayProps, close }
+        const asyncProps: OverlayAsyncControllerProps<T> = { ...overlayProps, close, dismiss }
         return controller(asyncProps)
       }
 

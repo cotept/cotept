@@ -5,12 +5,13 @@ import { FormStep } from "@repo/shared/src/components/form-step"
 import { StepDots } from "@repo/shared/src/components/step-dots"
 import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
 
-import { BarChart3, BookOpen, CheckCircle, FileText, Tags, User } from "lucide-react"
+import { BookOpen, CheckCircle, FileText, User } from "lucide-react"
 
 import type { BaekjoonVerifyStepData, ProfileSetupData } from "@/features/onboarding/lib/validations/onboarding-rules"
 
 import { BaekjoonVerifyStep } from "@/features/onboarding/components/BaekjoonVerifyStep"
 import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
+import { useMentorProposal } from "@/features/onboarding/hooks/useMentorProposal"
 import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
 import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
 import Logo from "@/shared/ui/Logo"
@@ -31,20 +32,9 @@ const STEP_CONFIGS: Record<OnboardingStep, StepConfig> = {
   },
   [ONBOARDING_STEPS.BAEKJOON_VERIFY]: {
     title: "백준 인증",
-    description: "백준 계정을 연동하여 실력을 분석합니다",
     icon: <BookOpen className="h-6 w-6 text-purple-400" />,
   },
-  [ONBOARDING_STEPS.SKILL_ANALYSIS]: {
-    title: "실력 분석",
-    description: "해결한 문제를 분석하여 실력을 평가합니다",
-    icon: <BarChart3 className="h-6 w-6 text-purple-400" />,
-  },
-  [ONBOARDING_STEPS.MENTOR_TAGS]: {
-    title: "멘토링 태그",
-    description: "멘토링 가능한 분야를 선택해주세요",
-    icon: <Tags className="h-6 w-6 text-purple-400" />,
-  },
-  [ONBOARDING_STEPS.MENTOR_INTRO]: {
+  [ONBOARDING_STEPS.MENTOR_SETUP]: {
     title: "멘토 소개",
     description: "멘토 프로필을 작성해주세요",
     icon: <FileText className="h-6 w-6 text-purple-400" />,
@@ -57,14 +47,25 @@ const STEP_CONFIGS: Record<OnboardingStep, StepConfig> = {
 }
 
 const OnBoardingContainer = () => {
-  const { currentStep, currentStepIndex, updateAndGoNext, isStepCompleted, totalSteps } = useOnboardingSteps()
+  const { currentStep, currentStepIndex, updateAndGoNext, isStepCompleted, totalSteps, handleMentorProposal } =
+    useOnboardingSteps()
+
+  // 멘토 제안 훅
+  const { checkEligibility } = useMentorProposal({
+    onAccept: () => handleMentorProposal(true),
+    onDecline: () => handleMentorProposal(false),
+  })
 
   const handleProfileSetupComplete = (data: ProfileSetupData) => {
     updateAndGoNext("profile", data, ONBOARDING_STEPS.BAEKJOON_VERIFY)
   }
 
   const handleBaekjoonVerifyComplete = (data: BaekjoonVerifyStepData) => {
-    updateAndGoNext("baekjoonVerification", data, ONBOARDING_STEPS.SKILL_ANALYSIS)
+    // 백준 인증 데이터 저장
+    checkEligibility(data.baekjoonHandle)
+    // 멘토 자격 체크 및 제안 모달 표시
+    updateAndGoNext("baekjoonVerification", data, ONBOARDING_STEPS.BAEKJOON_VERIFY)
+
   }
 
   // 스텝별 컴포넌트 렌더링
@@ -76,13 +77,7 @@ const OnBoardingContainer = () => {
       case ONBOARDING_STEPS.BAEKJOON_VERIFY:
         return <BaekjoonVerifyStep onComplete={handleBaekjoonVerifyComplete} />
 
-      case ONBOARDING_STEPS.SKILL_ANALYSIS:
-        return <div className="text-muted-foreground text-center">실력 분석 단계 (구현 예정)</div>
-
-      case ONBOARDING_STEPS.MENTOR_TAGS:
-        return <div className="text-muted-foreground text-center">멘토링 태그 단계 (구현 예정)</div>
-
-      case ONBOARDING_STEPS.MENTOR_INTRO:
+      case ONBOARDING_STEPS.MENTOR_SETUP:
         return <div className="text-muted-foreground text-center">멘토 소개 단계 (구현 예정)</div>
 
       case ONBOARDING_STEPS.COMPLETE:

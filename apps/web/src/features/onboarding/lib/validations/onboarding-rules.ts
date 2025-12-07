@@ -239,16 +239,33 @@ export type MentorProfileData = z.infer<typeof MentorProfileRules>
 
 /**
  * 온보딩 전체 플로우 데이터
+ *
+ * ★ Insight:
+ * - profile: 1단계 기본 프로필 설정
+ * - baekjoonVerification: 2단계 백준 인증
+ * - mentorProfile: 3단계 멘토 정보 입력 (조건부)
+ * - isMentorEligible: 백준 인증 후 멘토 자격 여부 (Platinum III+)
+ * - wantsToBeMentor: 사용자가 멘토 전환을 수락했는지 여부
  */
 export type OnboardingData = {
   profile?: ProfileSetupData
   baekjoonVerification?: BaekjoonVerifyStepData
-  mentorTags?: MentorTagsData
-  mentorIntro?: MentorIntroData
+  mentorProfile?: {
+    tags: MentorTagsData
+    intro: MentorIntroData
+  }
+  // 멘토 전환 플로우 제어
+  isMentorEligible?: boolean  // Platinum III+ 여부
+  wantsToBeMentor?: boolean   // 멘토 전환 수락 여부
 }
 
 /**
- * 멘토 태그 데이터 → API DTO 변환 헬퍼
+ * 멘토 프로필 데이터 → API DTO 변환 헬퍼
+ *
+ * ★ Insight:
+ * - OnboardingData.mentorProfile → MentorProfileData (API DTO)
+ * - userId는 세션에서 주입
+ * - 태그 3개(직무, 연차, 회사)를 배열로 변환
  */
 export function transformToMentorProfileDto(
   userId: string,
@@ -261,4 +278,26 @@ export function transformToMentorProfileDto(
     introductionTitle: introData.introductionTitle,
     introductionContent: introData.introductionContent,
   }
+}
+
+/**
+ * OnboardingData에서 멘토 프로필 DTO 추출 헬퍼
+ *
+ * ★ Insight:
+ * - 온보딩 완료 시 mentorProfile 데이터를 API DTO로 변환
+ * - mentorProfile이 없으면 undefined 반환 (멘티 플로우)
+ */
+export function extractMentorProfileDto(
+  userId: string,
+  onboardingData: OnboardingData,
+): MentorProfileData | undefined {
+  if (!onboardingData.mentorProfile) {
+    return undefined
+  }
+
+  return transformToMentorProfileDto(
+    userId,
+    onboardingData.mentorProfile.tags,
+    onboardingData.mentorProfile.intro,
+  )
 }

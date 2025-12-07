@@ -93,7 +93,6 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
       <div className="flex flex-col items-center space-y-6">
         {/* 안내 메시지 */}
         <div className="w-full space-y-2 text-center">
-          <h3 className="text-lg font-semibold">백준 아이디 인증 진행</h3>
           <p className="text-muted-foreground text-sm">solved.ac 프로필 이름을 아래 문자열로 변경해주세요</p>
         </div>
 

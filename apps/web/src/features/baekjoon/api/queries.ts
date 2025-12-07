@@ -13,13 +13,13 @@ import { baekjoonApiService } from "@/shared/api/services/baekjoon-api-service"
 
 // 백준 프로필 조회
 export function useGetBaekjoonProfile(
-  email: string,
+  userId: string,
   handle: string,
   options?: UseQueryOptions<BaekjoonProfileResponseWrapper, ApiError, BaekjoonProfileResponseWrapper>,
 ) {
   return useQuery({
     queryKey: baekjoonKeys.profile(handle).queryKey,
-    queryFn: () => baekjoonApiService.getProfile({ email, handle }),
+    queryFn: () => baekjoonApiService.getProfile({ userId, handle }),
     staleTime: 10 * 60 * 1000, // 10분 (백준 프로필은 자주 변경되지 않음)
     gcTime: 30 * 60 * 1000, // 30분
     enabled: !!handle,
@@ -29,13 +29,13 @@ export function useGetBaekjoonProfile(
 
 // 백준 통계 조회
 export function useGetBaekjoonStatistics(
-  email: string,
+  userId: string,
   handle: string,
   options?: UseQueryOptions<TagStatisticsResponseWrapper, ApiError, TagStatisticsResponseWrapper>,
 ) {
   return useQuery({
     queryKey: baekjoonKeys.statisticsById(handle).queryKey,
-    queryFn: () => baekjoonApiService.getStatistics({ email, handle }),
+    queryFn: () => baekjoonApiService.getStatistics({ userId, handle }),
     staleTime: 5 * 60 * 1000, // 5분 (통계는 프로필보다 자주 업데이트)
     gcTime: 15 * 60 * 1000, // 15분
     enabled: !!handle,

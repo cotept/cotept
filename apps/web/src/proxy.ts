@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 
 const protectedRoutes = ["/protected"]
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const session = await auth()
   console.log("Session:", session)
   const pathname = req.nextUrl.pathname

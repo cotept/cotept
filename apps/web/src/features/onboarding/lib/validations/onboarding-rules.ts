@@ -15,6 +15,7 @@ import type {
 } from "@repo/api-client"
 
 import { FieldRules } from "@/shared/lib/validations/field-rules"
+import { url, imageFile } from "@repo/shared/src/rules/common-rules"
 
 /**
  * 프로필 이미지 허용 파일 타입
@@ -29,7 +30,7 @@ export const PROFILE_IMAGE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/w
 /**
  * 프로필 이미지 최대 파일 크기 (바이트)
  */
-export const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024 // 5MB
+export const PROFILE_IMAGE_MAX_SIZE = 5 // 5MB
 
 /**
  * HTML input accept 속성용 문자열
@@ -45,7 +46,7 @@ export const PROFILE_IMAGE_ACCEPT_STRING = PROFILE_IMAGE_ACCEPTED_TYPES.join(", 
  */
 export const ProfileSetupRules = z.object({
   nickname: FieldRules.nickname(),
-  profileImageUrl: z.string().url("올바른 이미지 URL 형식이 아닙니다").optional(),
+  profileImageUrl: url("올바른 이미지 URL 형식이 아닙니다").optional(),
 }) satisfies z.ZodType<Pick<CreateBasicProfileDto, "nickname" | "profileImageUrl">>
 
 /**
@@ -56,46 +57,17 @@ export const ProfileSetupRules = z.object({
  * - 새 이미지 업로드 시: File 객체 (5MB 제한, JPG/PNG/WebP)
  * - File 객체는 업로드 후 URL로 변환되어 API로 전송
  */
-// export const ProfileSetupFormRules = z.object({
-//   nickname: FieldRules.nickname(),
-//   profileImage: z
-//     .union([
-//       z.string().url("올바른 이미지 URL 형식이 아닙니다"),
-//       z
-//         .instanceof(File)
-//         .refine(
-//           (file) => file.size <= PROFILE_IMAGE_MAX_SIZE,
-//           `이미지 크기는 ${PROFILE_IMAGE_MAX_SIZE / (1024 * 1024)}MB 이하여야 합니다`,
-//         )
-//         .refine(
-//           (file) => PROFILE_IMAGE_ACCEPTED_TYPES.includes(file.type as any),
-//           "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
-//         ),
-//     ])
-//     .optional(),
-// })
 export const ProfileSetupFormRules = z.object({
   nickname: FieldRules.nickname(),
   profileImage: z
     .union([
-      z.string().url("올바른 이미지 URL 형식이 아닙니다"),
-      z
-        .instanceof(File)
-        .refine(
-          (file) => file.size <= PROFILE_IMAGE_MAX_SIZE,
-          `이미지 크기는 ${PROFILE_IMAGE_MAX_SIZE / (1024 * 1024)}MB 이하여야 합니다`,
-        )
-        .refine(
-          (file) => PROFILE_IMAGE_ACCEPTED_TYPES.includes(file.type as any),
-          "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
-        ),
+      url("올바른 이미지 URL 형식이 아닙니다"),
+      imageFile(PROFILE_IMAGE_MAX_SIZE, [...PROFILE_IMAGE_ACCEPTED_TYPES]),
     ])
     .optional()
     .refine(
       (val) => {
-        // undefined, null, 빈 문자열은 모두 허용
         if (!val || val === "") return true
-        // 값이 있으면 URL이거나 File이어야 함
         return typeof val === "string" || val instanceof File
       },
       { message: "올바른 형식이 아닙니다" },
@@ -255,8 +227,8 @@ export type OnboardingData = {
     intro: MentorIntroData
   }
   // 멘토 전환 플로우 제어
-  isMentorEligible?: boolean  // Platinum III+ 여부
-  wantsToBeMentor?: boolean   // 멘토 전환 수락 여부
+  isMentorEligible?: boolean // Platinum III+ 여부
+  wantsToBeMentor?: boolean // 멘토 전환 수락 여부
 }
 
 /**
@@ -287,17 +259,10 @@ export function transformToMentorProfileDto(
  * - 온보딩 완료 시 mentorProfile 데이터를 API DTO로 변환
  * - mentorProfile이 없으면 undefined 반환 (멘티 플로우)
  */
-export function extractMentorProfileDto(
-  userId: string,
-  onboardingData: OnboardingData,
-): MentorProfileData | undefined {
+export function extractMentorProfileDto(userId: string, onboardingData: OnboardingData): MentorProfileData | undefined {
   if (!onboardingData.mentorProfile) {
     return undefined
   }
 
-  return transformToMentorProfileDto(
-    userId,
-    onboardingData.mentorProfile.tags,
-    onboardingData.mentorProfile.intro,
-  )
+  return transformToMentorProfileDto(userId, onboardingData.mentorProfile.tags, onboardingData.mentorProfile.intro)
 }

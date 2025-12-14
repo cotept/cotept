@@ -1,9 +1,174 @@
+// /**
+//  * @fileoverview CotePT 프로젝트 공통 필드 검증 규칙들
+//  * @description 재사용 가능한 Zod 필드 검증 로직 모음
+//  */
+
+// import { z } from "zod"
+
+// /**
+//  * 프로젝트 전체에서 사용하는 공통 필드 검증 규칙들
+//  */
+// export const FieldRules = {
+//   /**
+//    * 이메일 주소 검증
+//    */
+//   email: () =>
+//     z
+//       .string({
+//         required_error: "이메일을 입력해주세요",
+//         invalid_type_error: "이메일은 문자열이어야 합니다",
+//       })
+//       .min(1, "이메일을 입력해주세요")
+//       .email("올바른 이메일 형식이 아닙니다")
+//       .max(254, "이메일이 너무 깁니다")
+//       .transform((email) => email.toLowerCase().trim()),
+
+//   /**
+//    * userId 검증 (6-20자, 영문+숫자, 특수문자 불가)
+//    */
+//   userId: () =>
+//     z
+//       .string({
+//         required_error: "사용자 ID를 입력해주세요",
+//         invalid_type_error: "사용자 ID는 문자열이어야 합니다",
+//       })
+//       .superRefine((val, ctx) => {
+//         if (val.length < 6) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.too_small,
+//             minimum: 6,
+//             type: "string",
+//             inclusive: true,
+//             message: "사용자 ID는 6자 이상이어야 합니다",
+//           })
+//         }
+//         if (val.length > 20) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.too_big,
+//             maximum: 20,
+//             type: "string",
+//             inclusive: true,
+//             message: "사용자 ID는 20자 이하여야 합니다",
+//           })
+//         }
+//         if (!/^[A-Za-z0-9]+$/.test(val)) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.custom,
+//             path: [...ctx.path, "format"],
+//             message: "영문과 숫자만 사용할 수 있습니다",
+//           })
+//         }
+//         if (!/^(?=.*[A-Za-z])(?=.*\d)/.test(val)) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.custom,
+//             path: [...ctx.path, "composition"],
+//             message: "영문과 숫자를 모두 포함해야 합니다",
+//           })
+//         }
+//       }),
+
+//   /**
+//    * 비밀번호 검증 (8자 이상, 영문+숫자+특수문자)
+//    */
+//   password: () =>
+//     z
+//       .string({
+//         required_error: "비밀번호를 입력해주세요",
+//         invalid_type_error: "비밀번호는 문자열이어야 합니다",
+//       })
+//       .superRefine((val, ctx) => {
+//         if (val.length < 8) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.too_small,
+//             minimum: 8,
+//             type: "string",
+//             inclusive: true,
+//             message: "비밀번호는 8자 이상이어야 합니다",
+//           })
+//         }
+//         if (val.length > 32) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.too_big,
+//             maximum: 32,
+//             type: "string",
+//             inclusive: true,
+//             message: "비밀번호는 32자 이하여야 합니다",
+//           })
+//         }
+//         if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])/.test(val)) {
+//           ctx.addIssue({
+//             code: z.ZodIssueCode.custom,
+//             path: [...ctx.path, "composition"],
+//             message: "영문, 숫자, 특수문자를 모두 포함해야 합니다",
+//           })
+//         }
+//       }),
+
+//   /**
+//    * 닉네임 검증 (2-20자, 한글/영문만)
+//    */
+//   nickname: () =>
+//     z
+//       .string({
+//         required_error: "닉네임을 입력해주세요",
+//         invalid_type_error: "닉네임은 문자열이어야 합니다",
+//       })
+//       .trim()
+//       .min(2, "닉네임은 2자 이상이어야 합니다")
+//       .max(20, "닉네임은 20자 이하여야 합니다")
+//       .regex(/^[가-힣a-zA-Z]+$/, "닉네임은 한글과 영문만 사용할 수 있습니다"),
+
+//   /**
+//    * 인증 코드 검증 (6자리 숫자)
+//    */
+//   verificationCode: () =>
+//     z
+//       .string({
+//         required_error: "인증 코드를 입력해주세요",
+//         invalid_type_error: "인증 코드는 문자열이어야 합니다",
+//       })
+//       .length(6, "인증 코드는 6자리입니다")
+//       .regex(/^\d{6}$/, "인증 코드는 숫자만 입력할 수 있습니다"),
+
+//   /**
+//    * 필수 약관 동의 검증
+//    */
+//   requiredAgreement: () =>
+//     z
+//       .boolean({
+//         required_error: "필수 약관에 동의해야 합니다",
+//       })
+//       .refine((val) => val === true, "필수 약관에 동의해야 합니다"),
+
+//   /**
+//    * 선택 약관 동의 검증
+//    */
+//   optionalAgreement: () => z.boolean().optional().default(false),
+
+//   /**
+//    * 프로필 이미지 파일 검증 (선택사항)
+//    */
+//   profileImage: () =>
+//     z
+//       .instanceof(File)
+//       .refine(
+//         (file) => file.size <= 5 * 1024 * 1024, // 5MB
+//         "이미지 크기는 5MB 이하여야 합니다",
+//       )
+//       .refine(
+//         (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+//         "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
+//       )
+//       .optional(),
+// } as const
+
 /**
  * @fileoverview CotePT 프로젝트 공통 필드 검증 규칙들
  * @description 재사용 가능한 Zod 필드 검증 로직 모음
  */
 
 import { z } from "zod"
+import { email, imageFile, requiredAgreement, optionalAgreement, REGEX } from "@repo/shared/src/rules"
 
 /**
  * 프로젝트 전체에서 사용하는 공통 필드 검증 규칙들
@@ -12,16 +177,7 @@ export const FieldRules = {
   /**
    * 이메일 주소 검증
    */
-  email: () =>
-    z
-      .string({
-        required_error: "이메일을 입력해주세요",
-        invalid_type_error: "이메일은 문자열이어야 합니다",
-      })
-      .min(1, "이메일을 입력해주세요")
-      .email("올바른 이메일 형식이 아닙니다")
-      .max(254, "이메일이 너무 깁니다")
-      .transform((email) => email.toLowerCase().trim()),
+  email: () => email("이메일을 입력해주세요"),
 
   /**
    * userId 검증 (6-20자, 영문+숫자, 특수문자 불가)
@@ -51,7 +207,7 @@ export const FieldRules = {
             message: "사용자 ID는 20자 이하여야 합니다",
           })
         }
-        if (!/^[A-Za-z0-9]+$/.test(val)) {
+        if (!REGEX.ALPHANUMERIC.test(val)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: [...ctx.path, "format"],
@@ -68,7 +224,7 @@ export const FieldRules = {
       }),
 
   /**
-   * 비밀번호 검증 (8자 이상, 영문+숫자+특수문자)
+   * 비밀번호 검증 (8-32자, 영문+숫자+특수문자)
    */
   password: () =>
     z
@@ -95,7 +251,7 @@ export const FieldRules = {
             message: "비밀번호는 32자 이하여야 합니다",
           })
         }
-        if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])/.test(val)) {
+        if (!REGEX.PASSWORD_STRONG.test(val)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: [...ctx.path, "composition"],
@@ -116,7 +272,7 @@ export const FieldRules = {
       .trim()
       .min(2, "닉네임은 2자 이상이어야 합니다")
       .max(20, "닉네임은 20자 이하여야 합니다")
-      .regex(/^[가-힣a-zA-Z]+$/, "닉네임은 한글과 영문만 사용할 수 있습니다"),
+      .regex(REGEX.KOREAN_ENGLISH, "닉네임은 한글과 영문만 사용할 수 있습니다"),
 
   /**
    * 인증 코드 검증 (6자리 숫자)
@@ -133,31 +289,16 @@ export const FieldRules = {
   /**
    * 필수 약관 동의 검증
    */
-  requiredAgreement: () =>
-    z
-      .boolean({
-        required_error: "필수 약관에 동의해야 합니다",
-      })
-      .refine((val) => val === true, "필수 약관에 동의해야 합니다"),
+  requiredAgreement: () => requiredAgreement(),
 
   /**
    * 선택 약관 동의 검증
    */
-  optionalAgreement: () => z.boolean().optional().default(false),
+  optionalAgreement: () => optionalAgreement(),
 
   /**
    * 프로필 이미지 파일 검증 (선택사항)
+   * common-rules의 imageFile 헬퍼 사용
    */
-  profileImage: () =>
-    z
-      .instanceof(File)
-      .refine(
-        (file) => file.size <= 5 * 1024 * 1024, // 5MB
-        "이미지 크기는 5MB 이하여야 합니다",
-      )
-      .refine(
-        (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
-        "JPG, PNG, WebP 형식의 이미지만 업로드할 수 있습니다",
-      )
-      .optional(),
+  profileImage: () => imageFile(5, ["image/jpeg", "image/png", "image/webp"]).optional(),
 } as const

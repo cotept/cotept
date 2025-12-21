@@ -6,8 +6,5 @@
 // 기본 공통 규칙
 export * from "./common-rules"
 
-// 도메인별 규칙
-export * from "./user-profile-rules"
-
 // 유틸리티
 export * from "./rule-helper"

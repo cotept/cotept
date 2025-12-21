@@ -31,7 +31,9 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
   const profileImage = form.watch("profileImage")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | File | null | undefined>(profileImage || null)
+  const [imagePreview, setImagePreview] = useState<string | null>(() =>
+    typeof profileImage === "string" ? profileImage : null,
+  )
 
   const validationChecks: ValidationCheck[] = useMemo(() => {
     const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
@@ -124,14 +126,19 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
     uploadAndCreateProfile(data, imageFile, userId)
   }, [form, session, uploadAndCreateProfile])
 
-  const handleImageSelect = (file: File) => {
-    if (!file) return
+  const handleImageSelect = (file?: File | null) => {
+    if (!file) {
+      setImagePreview(null)
+      form.setValue("profileImage", undefined, { shouldValidate: true })
+      return
+    }
 
     const fieldValidation = validateField(ProfileSetupFormRules.shape.profileImage, file)
 
     if (!fieldValidation.isValid) {
       toast.error(fieldValidation.errorMessage || "유효하지 않은 파일입니다.")
       form.setError("profileImage", { type: "manual", message: fieldValidation.errorMessage })
+      form.setValue("profileImage", undefined, { shouldValidate: true })
       return
     }
 

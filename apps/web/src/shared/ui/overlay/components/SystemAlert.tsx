@@ -39,6 +39,7 @@ const alertIcons = {
 export const SystemAlert = ({
   isOpen,
   close,
+  dismiss,
   overlayId,
   unmount,
   title,

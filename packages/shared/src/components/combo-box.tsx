@@ -51,10 +51,14 @@ export function ComboBox({
 
   const selected = useMemo(() => options.find((option) => option.value === value), [options, value])
 
-  const handleSelect = (nextValue: string) => {
+  const handleSelect = (selectedLabel: string) => {
     if (disabled) return
-    const shouldClear = nextValue === value
-    onChange?.(shouldClear ? undefined : nextValue)
+    // CommandItem의 value는 label이므로, label로 원본 option을 찾아야 함
+    const selectedOption = options.find((opt) => opt.label.toLowerCase() === selectedLabel.toLowerCase())
+    if (!selectedOption) return
+
+    const shouldClear = selectedOption.value === value
+    onChange?.(shouldClear ? undefined : selectedOption.value)
     setOpen(false)
   }
 
@@ -80,7 +84,7 @@ export function ComboBox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.value}
+                  value={option.label}
                   disabled={option.disabled}
                   onSelect={(currentValue) => handleSelect(currentValue)}>
                   {option.label}

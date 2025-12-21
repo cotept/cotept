@@ -48,7 +48,7 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
                     type="file"
                     className="hidden"
                     accept={PROFILE_IMAGE_ACCEPT_STRING}
-                    onChange={(e) => e.target.files?.[0] && handleImageSelect(e.target.files[0])}
+                    onChange={(e) => handleImageSelect(e.target.files?.[0] ?? null)}
                     disabled={isPending}
                   />
                 </label>

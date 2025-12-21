@@ -1,11 +1,12 @@
 /**
  * 멘토 태그 카테고리 열거형
- * 직무, 연차, 회사 정보를 분류하는 카테고리
+ * 직무, 연차, 회사 규모, 회사 유형 정보를 분류하는 카테고리
  */
 export enum MentorTagCategory {
   JOB = "job",
   EXPERIENCE = "experience",
-  COMPANY = "company",
+  COMPANY_SIZE = "company_size",
+  COMPANY_TYPE = "company_type",
 }
 
 /**

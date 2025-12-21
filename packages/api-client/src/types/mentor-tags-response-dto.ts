@@ -36,10 +36,16 @@ export interface MentorTagsResponseDto {
      */
     'experienceTags': Array<MentorTagDto>;
     /**
-     * 회사 태그 목록
+     * 회사 규모 태그 목록
      * @type {Array<MentorTagDto>}
      * @memberof MentorTagsResponseDto
      */
-    'companyTags': Array<MentorTagDto>;
+    'companySizeTags': Array<MentorTagDto>;
+    /**
+     * 회사 유형 태그 목록
+     * @type {Array<MentorTagDto>}
+     * @memberof MentorTagsResponseDto
+     */
+    'companyTypeTags': Array<MentorTagDto>;
 }
 

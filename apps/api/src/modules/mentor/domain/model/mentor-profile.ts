@@ -167,11 +167,13 @@ export default class MentorProfile {
     // 태그 완성도 (60%)
     const hasJobTag = this.tags.some((tag) => tag.category === MentorTagCategory.JOB)
     const hasExperienceTag = this.tags.some((tag) => tag.category === MentorTagCategory.EXPERIENCE)
-    const hasCompanyTag = this.tags.some((tag) => tag.category === MentorTagCategory.COMPANY)
+    const hasCompanySizeTag = this.tags.some((tag) => tag.category === MentorTagCategory.COMPANY_SIZE)
+    const hasCompanyTypeTag = this.tags.some((tag) => tag.category === MentorTagCategory.COMPANY_TYPE)
 
-    if (hasJobTag) completion += 20
-    if (hasExperienceTag) completion += 20
-    if (hasCompanyTag) completion += 20
+    if (hasJobTag) completion += 15
+    if (hasExperienceTag) completion += 15
+    if (hasCompanySizeTag) completion += 15
+    if (hasCompanyTypeTag) completion += 15
 
     this.profileCompletion = Math.min(completion, 100)
   }

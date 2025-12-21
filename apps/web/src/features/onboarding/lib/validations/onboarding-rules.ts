@@ -14,8 +14,9 @@ import type {
   StartBaekjoonVerificationDto,
 } from "@repo/api-client"
 
+import { sanitizeToPlainText } from "@repo/shared/lib/sanitize"
 import { FieldRules } from "@/shared/lib/validations/field-rules"
-import { url, imageFile } from "@repo/shared/src/rules/common-rules"
+import { imageFile, url } from "@repo/shared/src/rules"
 
 /**
  * 프로필 이미지 허용 파일 타입
@@ -40,6 +41,20 @@ export const PROFILE_IMAGE_MAX_SIZE = 5 // 5MB
  * // => accept="image/jpeg, image/png, image/webp"
  */
 export const PROFILE_IMAGE_ACCEPT_STRING = PROFILE_IMAGE_ACCEPTED_TYPES.join(", ")
+
+const PERSONAL_EMAIL_DOMAINS = [
+  "gmail.com",
+  "naver.com",
+  "daum.net",
+  "hanmail.net",
+  "outlook.com",
+  "hotmail.com",
+  "icloud.com",
+] as const
+
+const COMPANY_EMAIL_ERROR = "회사 이메일을 입력해주세요 (개인 이메일은 사용할 수 없습니다)"
+
+const isCorporateEmail = (email: string) => !PERSONAL_EMAIL_DOMAINS.some((domain) => email.endsWith(`@${domain}`))
 
 /**
  * 온보딩 1단계: 기본 프로필 설정
@@ -150,20 +165,24 @@ export const BaekjoonVerifyStepRules = z.object({
 >
 
 /**
- * 멘토 프로필 F4: 태그 선택 (직무/연차/회사)
+ * 멘토 프로필 F4: 태그 선택 (직무/연차/회사 규모/회사 유형)
  */
 export const MentorTagsRules = z.object({
   jobTagId: z.number({
-    required_error: "직무를 선택해주세요",
-    invalid_type_error: "직무는 숫자여야 합니다",
+    required_error: "직무 태그를 선택해주세요",
+    invalid_type_error: "직무 태그를 선택해주세요",
   }),
   levelTagId: z.number({
-    required_error: "연차를 선택해주세요",
-    invalid_type_error: "연차는 숫자여야 합니다",
+    required_error: "연차 태그를 선택해주세요",
+    invalid_type_error: "연차 태그를 선택해주세요",
   }),
-  companyTagId: z.number({
-    required_error: "회사 유형을 선택해주세요",
-    invalid_type_error: "회사 유형은 숫자여야 합니다",
+  companySizeTagId: z.number({
+    required_error: "회사 규모 태그를 선택해주세요",
+    invalid_type_error: "회사 규모 태그를 선택해주세요",
+  }),
+  companyTypeTagId: z.number({
+    required_error: "회사 유형 태그를 선택해주세요",
+    invalid_type_error: "회사 유형 태그를 선택해주세요",
   }),
 })
 
@@ -176,8 +195,23 @@ export const MentorIntroRules = z.object({
     .string({
       required_error: "멘토 소개를 작성해주세요",
     })
-    .min(50, "멘토 소개는 50자 이상 작성해주세요")
-    .max(5000, "멘토 소개는 5000자 이하로 작성해주세요"),
+    .refine(
+      (value) => sanitizeToPlainText(value).trim().length >= 10,
+      "멘토 소개는 10자 이상 작성해주세요",
+    )
+    .refine(
+      (value) => sanitizeToPlainText(value).trim().length <= 1000,
+      "멘토 소개는 1000자 이하로 작성해주세요",
+    ),
+})
+
+/**
+ * 멘토 프로필 셋업 폼 (태그 + 소개 + 회사 이메일)
+ */
+export const MentorProfileSetupFormRules = MentorTagsRules.extend({
+  introductionTitle: MentorIntroRules.shape.introductionTitle,
+  introductionContent: MentorIntroRules.shape.introductionContent,
+  // companyEmail: FieldRules.email().refine(isCorporateEmail, COMPANY_EMAIL_ERROR),
 })
 
 /**
@@ -187,15 +221,11 @@ export const MentorProfileRules = z.object({
   userId: z.string(),
   tagIds: z
     .array(z.number())
-    .length(3, "직무, 연차, 회사 태그를 모두 선택해주세요")
+    .length(4, "직무, 연차, 회사 규모, 회사 유형 태그를 모두 선택해주세요")
     .refine((ids) => ids.every((id) => id > 0), "올바른 태그를 선택해주세요"),
-  introductionTitle: z.string().max(100, "소개 제목은 100자 이하여야 합니다").optional(),
-  introductionContent: z
-    .string({
-      required_error: "멘토 소개를 작성해주세요",
-    })
-    .min(50, "멘토 소개는 50자 이상 작성해주세요")
-    .max(5000, "멘토 소개는 5000자 이하로 작성해주세요"),
+  introductionTitle: MentorIntroRules.shape.introductionTitle,
+  introductionContent: MentorIntroRules.shape.introductionContent,
+  // companyEmail: FieldRules.email().refine(isCorporateEmail, COMPANY_EMAIL_ERROR),
 }) satisfies z.ZodType<OnboardingCreateMentorProfileDto>
 
 // 타입 추출
@@ -208,6 +238,7 @@ export type BaekjoonVerifyStepData = z.infer<typeof BaekjoonVerifyStepRules>
 export type MentorTagsData = z.infer<typeof MentorTagsRules>
 export type MentorIntroData = z.infer<typeof MentorIntroRules>
 export type MentorProfileData = z.infer<typeof MentorProfileRules>
+export type MentorProfileSetupFormData = z.infer<typeof MentorProfileSetupFormRules>
 
 /**
  * 온보딩 전체 플로우 데이터
@@ -237,7 +268,7 @@ export type OnboardingData = {
  * ★ Insight:
  * - OnboardingData.mentorProfile → MentorProfileData (API DTO)
  * - userId는 세션에서 주입
- * - 태그 3개(직무, 연차, 회사)를 배열로 변환
+ * - 태그 4개(직무, 연차, 회사 규모, 회사 유형)를 배열로 변환
  */
 export function transformToMentorProfileDto(
   userId: string,
@@ -246,7 +277,7 @@ export function transformToMentorProfileDto(
 ): MentorProfileData {
   return {
     userId,
-    tagIds: [tagsData.jobTagId, tagsData.levelTagId, tagsData.companyTagId],
+    tagIds: [tagsData.jobTagId, tagsData.levelTagId, tagsData.companySizeTagId, tagsData.companyTypeTagId],
     introductionTitle: introData.introductionTitle,
     introductionContent: introData.introductionContent,
   }

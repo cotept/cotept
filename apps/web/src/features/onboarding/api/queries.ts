@@ -40,7 +40,7 @@ export function useCheckMentorEligibility(
 }
 
 // 멘토 태그 조회
-export function useGetMentorTags(options?: UseQueryOptions<MentorTagsResponseWrapper, ApiError>) {
+export function useGetMentorTags(options?: Partial<UseQueryOptions<MentorTagsResponseWrapper, ApiError>>) {
   return useQuery({
     queryKey: onboardingKeys.mentorTags().queryKey,
     queryFn: () => onboardingApiService.getMentorTags(),

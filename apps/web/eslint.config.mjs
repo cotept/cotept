@@ -1,5 +1,4 @@
-import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-import nextTypescript from "eslint-config-next/typescript";
+import nextTypescript from "eslint-config-next/typescript"
 import baseConfig from "@repo/eslint-config/next"
 
 import boundariesPlugin from "eslint-plugin-boundaries"
@@ -12,7 +11,6 @@ const __dirname = dirname(__filename)
 
 const eslintConfig = [
   ...baseConfig,
-  ...nextCoreWebVitals,
   ...nextTypescript,
   // Override typescript-eslint rules
   {
@@ -122,7 +120,7 @@ const eslintConfig = [
   // ignore
   {
     ignores: ["**/node_modules", "**/dist", "**/.next"],
-  }
+  },
 ]
 
 export default eslintConfig

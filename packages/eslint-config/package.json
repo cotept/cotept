@@ -35,6 +35,15 @@
       "import": "./base.mjs",
       "require": "./base.cjs"
     },
+    "./imports": {
+      "import": "./imports.mjs"
+    },
+    "./imports-rules": {
+      "import": "./imports-rules.mjs"
+    },
+    "./library": {
+      "import": "./library.mjs"
+    },
     "./next": {
       "import": "./next.mjs"
     },

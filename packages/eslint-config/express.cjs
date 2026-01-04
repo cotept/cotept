@@ -1,32 +1,52 @@
-module.exports = {
-  root: true,
-  extends: ["./base.cjs"],
-  parserOptions: {
-    project: "tsconfig.json",
-    tsconfigRootDir: __dirname,
-    sourceType: "module",
-  },
-  env: {
-    node: true,
-    jest: true,
-  },
-  ignorePatterns: [".eslintrc.js"],
-  rules: {
-    "simple-import-sort/imports": [
-      "error",
-      {
-        groups: [
-          ["^node:"],
-          ["^@?\\w"],
-          ["^src/"],
-          ["^\\.\\.(?!/?$)", "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
-          ["^.+\\.types$"],
-        ],
+const simpleImportSort = require("eslint-plugin-simple-import-sort")
+const importPlugin = require("eslint-plugin-import")
+const baseConfig = require("./base.cjs")
+
+module.exports = [
+  ...baseConfig.map(config => ({
+    ...config,
+    languageOptions: {
+      ...config.languageOptions,
+      globals: {
+        ...config.languageOptions?.globals,
+        ...require("globals").node,
+        ...require("globals").jest,
       },
-    ],
-    "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-explicit-any": "off",
+    },
+  })),
+  {
+    name: "express/import-plugins",
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+      import: importPlugin,
+    },
+    rules: {
+      "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+    },
   },
-}
+  {
+    name: "express/overrides",
+    files: ["**/*.{ts,js}"],
+    rules: {
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            ["^node:"],
+            ["^@?\w"],
+            ["^src/"],
+            ["^\\..(?!/?$)", "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+            ["^.+\\.types$"]
+          ],
+        },
+      ],
+      "@typescript-eslint/interface-name-prefix": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+]

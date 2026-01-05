@@ -4102,13 +4102,14 @@ paths:
   /api/v1/onboarding/mentor/eligibility:
     get:
       operationId: checkMentorEligibility
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CheckMentorEligibilityDto'
+      parameters:
+        - name: userId
+          required: true
+          in: query
+          description: 사용자 ID
+          schema:
+            example: user123
+            type: string
       responses:
         '200':
           description: 멘토 자격 요건을 성공적으로 확인했습니다.
@@ -4911,12 +4912,12 @@ paths:
       description: 사용자의 백준 프로필 정보를 조회합니다. handle을 제공하지 않으면 현재 사용자의 프로필을 조회합니다.
       operationId: getProfile
       parameters:
-        - name: email
+        - name: userId
           required: true
           in: query
-          description: 사용자 이메일
+          description: 사용자 ID
           schema:
-            example: user@example.com
+            example: user123
             type: string
         - name: handle
           required: true
@@ -5061,12 +5062,12 @@ paths:
       description: 사용자의 백준 태그별 문제 해결 통계를 조회합니다.
       operationId: getStatistics
       parameters:
-        - name: email
+        - name: userId
           required: true
           in: query
-          description: 사용자 이메일
+          description: 사용자 ID
           schema:
-            example: user@example.com
+            example: user123
             type: string
         - name: handle
           required: true
@@ -5529,7 +5530,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         introduce:
           type: string
@@ -5592,7 +5593,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         introduce:
           type: string
@@ -5904,7 +5905,8 @@ components:
           enum:
             - job
             - experience
-            - company
+            - company_size
+            - company_type
           example: job
         displayOrder:
           type: number
@@ -6064,11 +6066,32 @@ components:
           type: number
           example: 1800
           description: 액세스 토큰 만료 시간(초)
+        idx:
+          type: number
+          example: 1
+          description: 사용자 고유 ID (idx)
+        userId:
+          type: string
+          example: dudtod1596
+          description: 사용자 고유 ID (userId)
+        email:
+          type: string
+          example: user@example.com
+          description: 사용자 이메일
+        role:
+          example: MENTEE
+          description: 사용자 역할
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
       required:
         - accessToken
         - refreshToken
         - tokenType
         - expiresIn
+        - idx
+        - userId
+        - email
+        - role
     LoginRequestDto:
       type: object
       properties:
@@ -6500,7 +6523,7 @@ components:
           example: dudtod1596
         nickname:
           type: string
-          description: 닉네임 (2~50자, 한글/영문만 허용)
+          description: 닉네임 (2~20자, 한글/영문만 허용)
           example: 코딩마스터
         profileImageUrl:
           type: string
@@ -6762,15 +6785,6 @@ components:
         - isEligible
         - currentTier
         - requirement
-    CheckMentorEligibilityDto:
-      type: object
-      properties:
-        userId:
-          type: string
-          description: 사용자 ID
-          example: user123
-      required:
-        - userId
     ApiResponseMentorTagsResponseDto:
       type: object
       properties: {}
@@ -6787,15 +6801,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MentorTagDto'
-        companyTags:
-          description: 회사 태그 목록
+        companySizeTags:
+          description: 회사 규모 태그 목록
+          type: array
+          items:
+            $ref: '#/components/schemas/MentorTagDto'
+        companyTypeTags:
+          description: 회사 유형 태그 목록
           type: array
           items:
             $ref: '#/components/schemas/MentorTagDto'
       required:
         - jobTags
         - experienceTags
-        - companyTags
+        - companySizeTags
+        - companyTypeTags
     ApiResponseMentorProfileDto:
       type: object
       properties: {}
@@ -6862,16 +6882,16 @@ components:
     StartVerificationRequestDto:
       type: object
       properties:
-        email:
+        userId:
           type: string
-          description: 사용자 이메일
-          example: user@example.com
+          description: 사용자 ID
+          example: user123
         handle:
           type: string
           description: 백준 ID (사용자명)
           example: solved_user123
       required:
-        - email
+        - userId
         - handle
     CompleteVerificationRequestDto:
       type: object
@@ -6881,17 +6901,17 @@ components:
           description: 인증 세션 ID
           example: 550e8400-e29b-41d4-a716-446655440000
           format: uuid
-        email:
+        userId:
           type: string
-          description: 사용자 이메일
-          example: user@example.com
+          description: 사용자 ID
+          example: user123
         handle:
           type: string
           description: 백준 ID (사용자명)
           example: solved_user123
       required:
         - sessionId
-        - email
+        - userId
         - handle
     ApiResponseBaekjoonProfileResponseDto:
       type: object
@@ -7043,13 +7063,32 @@ components:
       properties:
         uploadUrl:
           type: string
-          description: 파일을 업로드할 수 있는 Pre-signed URL
+          description: 파일을 업로드할 수 있는 Pre-signed URL (1분 유효)
         fileUrl:
           type: string
           description: 업로드 성공 후 파일에 접근할 수 있는 최종 URL
+        maxSize:
+          type: number
+          description: 업로드 가능한 최대 파일 크기 (바이트)
+          example: 5242880
+        expiresAt:
+          format: date-time
+          type: string
+          description: PAR 만료 시간 (ISO 8601 형식)
+          example: '2025-11-06T12:34:56.789Z'
+        visibility:
+          type: string
+          description: '파일 가시성 (public: CDN 접근 가능, private: 인증 필요)'
+          enum:
+            - public
+            - private
+          example: public
       required:
         - uploadUrl
         - fileUrl
+        - maxSize
+        - expiresAt
+        - visibility
     GenerateUploadUrlRequestDto:
       type: object
       properties:
@@ -7061,9 +7100,21 @@ components:
           type: string
           description: 파일의 Content-Type (MIME 타입)
           example: image/jpeg
+        uploadType:
+          type: string
+          description: 업로드 파일의 용도 (타입)
+          enum:
+            - USER_PROFILE
+            - MENTOR_PROFILE
+            - PORTFOLIO_IMAGE
+            - SESSION_RECORDING
+            - SESSION_DOCUMENT
+            - USER_DOCUMENT
+          example: USER_PROFILE
       required:
         - fileName
         - contentType
+        - uploadType
     TierColor:
       type: string
       enum:

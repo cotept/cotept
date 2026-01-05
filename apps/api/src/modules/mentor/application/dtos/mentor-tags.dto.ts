@@ -15,8 +15,13 @@ export class MentorTagsResponseDto {
   @Type(() => MentorTagDto)
   experienceTags: MentorTagDto[]
 
-  @ApiProperty({ description: "회사 태그 목록", type: [MentorTagDto] })
+  @ApiProperty({ description: "회사 규모 태그 목록", type: [MentorTagDto] })
   @Expose()
   @Type(() => MentorTagDto)
-  companyTags: MentorTagDto[]
+  companySizeTags: MentorTagDto[]
+
+  @ApiProperty({ description: "회사 유형 태그 목록", type: [MentorTagDto] })
+  @Expose()
+  @Type(() => MentorTagDto)
+  companyTypeTags: MentorTagDto[]
 }

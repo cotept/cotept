@@ -43,9 +43,15 @@ export class BaekjoonDomainMapper {
    */
   toStartVerificationOutputDto(session: VerificationSession): StartVerificationOutputDto {
     const plainDto = {
+      sessionId: session.getSessionId(),
+      handle: session.getHandleString(),
       verificationString: session.getVerificationStringValue(),
       profileEditUrl: "https://solved.ac/settings/profile",
       message: "프로필 이름을 다음 문자열로 수정해주세요",
+      status: session.getStatus().getStatus(),
+      attempts: session.getAttemptCount(),
+      maxAttempts: 3, // 프론트엔드와 동일한 최대 시도 횟수
+      createdAt: session.getCreatedAt(),
       expiresAt: session.getExpiresAt(),
     }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common"
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common"
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
@@ -41,11 +41,7 @@ export class OnboardingController {
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiConflictResponse({ description: "닉네임이 중복되거나 이미 프로필이 존재합니다." })
-  async createBasicProfile(
-    @CurrentUserId() userId: string,
-    @Body() dto: CreateBasicProfileDto,
-  ): Promise<UserProfileDto> {
-    dto.userId = userId // userId 주입
+  async createBasicProfile(@Body() dto: CreateBasicProfileDto): Promise<UserProfileDto> {
     return this.facadeService.createBasicProfile(dto)
   }
 
@@ -59,10 +55,9 @@ export class OnboardingController {
   @ApiConflictResponse({ description: "이미 진행 중인 인증이 있거나, 다른 사용자가 사용중인 핸들입니다." })
   @ApiExternalServiceErrors()
   async startBaekjoonVerification(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Body() dto: StartBaekjoonVerificationDto,
   ): Promise<VerificationStatusResponseDto> {
-    dto.userId = userId // userId 주입
     return this.facadeService.startBaekjoonVerification(dto)
   }
 
@@ -75,10 +70,8 @@ export class OnboardingController {
   @ApiNotFoundResponse({ description: "진행 중인 인증 세션을 찾을 수 없습니다." })
   @ApiExternalServiceErrors()
   async completeBaekjoonVerification(
-    @CurrentUserId() userId: string,
     @Body() dto: CompleteBaekjoonVerificationDto,
   ): Promise<BaekjoonVerificationResultResponseDto> {
-    dto.userId = userId // userId 주입
     return this.facadeService.completeBaekjoonVerification(dto)
   }
 
@@ -101,7 +94,7 @@ export class OnboardingController {
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
-  async checkMentorEligibility(@Body() dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
+  async checkMentorEligibility(@Query() dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
     return this.facadeService.checkMentorEligibility(dto)
   }
 

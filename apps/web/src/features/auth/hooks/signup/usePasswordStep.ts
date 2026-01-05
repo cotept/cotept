@@ -7,7 +7,8 @@
 
 import { useMemo, useState } from "react"
 
-import { ValidationCheck } from "@repo/shared/src/components/validation-indicator"
+import { ValidationCheck } from "@repo/shared/components/validation-indicator"
+import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -28,54 +29,54 @@ export const usePasswordStep = ({ onComplete }: UsePasswordStepProps) => {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   })
 
   // 실시간 비밀번호 감시
   const password = form.watch("password")
   const confirmPassword = form.watch("confirmPassword")
 
-  const passwordChecks = useMemo(() => {
+  // 비밀번호 검증 결과 (배열 + 객체 형태 동시 생성)
+  const { validationChecks, passwordChecks } = useMemo(() => {
     if (!password) {
-      return { lengthValid: false, compositionValid: false }
+      const checks = [
+        { id: "length", label: "8자 이상 32자 이하", isValid: false },
+        { id: "composition", label: "영문, 숫자, 특수문자 포함", isValid: false },
+      ] as const
+
+      return {
+        validationChecks: checks as unknown as ValidationCheck[],
+        passwordChecks: { lengthValid: false, compositionValid: false },
+      }
     }
 
-    const passwordOnlyCheckResult = PasswordStepBaseRules.pick({ password: true }).safeParse({ password })
-
-    if (passwordOnlyCheckResult.success) {
-      return { lengthValid: true, compositionValid: true }
-    }
-
-    const _error = passwordOnlyCheckResult.error.flatten().fieldErrors.password || []
-
-    const lengthValid = !_error.some((error) => error.includes("8자 이상") || error.includes("32자 이하"))
-    const compositionValid = !_error.some((error) => error.includes("영문, 숫자, 특수문자를 모두 포함해야 합니다"))
-
-    return {
-      lengthValid,
-      compositionValid,
-    }
-  }, [password])
-
-  // ValidationIndicator용 체크 배열 생성
-  const validationChecks: ValidationCheck[] = useMemo(
-    () => [
+    const fieldValidation = validateField(PasswordStepBaseRules.shape.password, password)
+    const checks = createValidationChecks(fieldValidation, [
       {
         id: "length",
         label: "8자 이상 32자 이하",
-        isValid: passwordChecks.lengthValid,
+        isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big"),
       },
       {
         id: "composition",
         label: "영문, 숫자, 특수문자 포함",
-        isValid: passwordChecks.compositionValid,
+        isIssuePresent: (issues) => issues.some((i) => i.path.includes("composition")),
       },
-    ],
-    [passwordChecks],
-  )
+    ])
+
+    return {
+      validationChecks: checks,
+      passwordChecks: {
+        lengthValid: checks[0].isValid,
+        compositionValid: checks[1].isValid,
+      },
+    }
+  }, [password])
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
   }
+
   const passwordsMatch = useMemo(() => {
     return password && confirmPassword && password === confirmPassword
   }, [password, confirmPassword])

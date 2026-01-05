@@ -1,0 +1,79 @@
+/* === CotePT Animation Engine === */
+/* 
+   Separated for better maintainability and modularity.
+   Contains Keyframes, Animation Utilities, and Interaction Utilities.
+*/
+
+@layer utilities {
+  /* 
+     1. Keyframes (키프레임): 애니메이션의 '과정' 정의 
+     [Animation&Effect.md: Keyframe Animation]
+  */
+  
+  /* 아래에서 위로 떠오르는 효과 (Fade + Slide) */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 회전 로딩 효과 */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* 
+     2. Animation Utilities: 정의된 키프레임을 클래스로 제공 
+     [Animation&Effect.md: UI 전환 효과 / 로딩]
+  */
+  
+  /* 진입 애니메이션 (cubic-bezier 가속도 곡선 학습용) */
+  .anim-fade-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* 무한 회전 (로딩용) */
+  .anim-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* 
+     3. Interaction Utilities: 상태 변화(Transition) 제어 
+     [Animation&Effect.md: 인터랙션 애니메이션 - Hover/Press]
+  */
+
+  /* 클릭 시 눌리는 효과 (Push) */
+  .interaction-push {
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+  }
+  .interaction-push:active {
+    transform: scale(0.95);
+  }
+
+  /* 호버 시 살짝 떠오르는 효과 (Lift) */
+  .interaction-lift {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .interaction-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* 
+     4. Stagger Delay Helpers (순차 지연) 
+     [Animation&Effect.md: Stagger Animation]
+     사용법: anim-fade-up + delay-100
+  */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+}

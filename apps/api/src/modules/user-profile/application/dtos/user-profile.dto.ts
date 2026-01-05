@@ -28,14 +28,14 @@ export class UserProfileDto {
   userId: string
 
   @ApiProperty({
-    description: "닉네임 (2~50자, 한글/영문만 허용)",
+    description: "닉네임 (2~20자, 한글/영문만 허용)",
     example: "코딩마스터",
   })
   @Expose()
   @IsString({ message: "닉네임은 문자열이어야 합니다." })
   @IsNotEmpty({ message: "닉네임은 필수 값입니다." })
   @Transform(({ value }) => value?.trim())
-  @Length(2, 50, { message: "닉네임은 2자 이상 50자 이하여야 합니다." })
+  @Length(2, 20, { message: "닉네임은 2자 이상 20자 이하여야 합니다." })
   @Matches(/^[가-힣a-zA-Z]+$/, {
     message: "닉네임은 한글, 영문자만 허용됩니다. (특수문자, 숫자, 공백 제외)",
   })

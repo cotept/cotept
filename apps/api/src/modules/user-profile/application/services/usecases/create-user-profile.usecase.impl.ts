@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common"
+import { ConflictException, Injectable, Logger, NotFoundException } from "@nestjs/common"
 
 import { CreateUserProfileRequestDto, UserProfileDto } from "../../dtos/user-profile.dto"
 import { UserProfileMapper } from "../../mappers/user-profile.mapper"
@@ -9,6 +9,7 @@ import { UserRepositoryPort } from "@/modules/user/application/ports/out/user-re
 
 @Injectable()
 export class CreateUserProfileUseCaseImpl implements CreateUserProfileUseCase {
+  private readonly logger = new Logger(CreateUserProfileUseCaseImpl.name)
   constructor(
     private readonly userProfileRepository: UserProfileRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
@@ -24,13 +25,15 @@ export class CreateUserProfileUseCaseImpl implements CreateUserProfileUseCase {
    */
   async execute(createDto: CreateUserProfileRequestDto): Promise<UserProfileDto> {
     // 1. 사용자 존재 여부 확인
+    // const userExists = await this.userRepository.findByUserId(createDto.userId)
+    this.logger.log(`CreateUserProfileUseCaseImpl: ${createDto}`)
     const userExists = await this.userRepository.findByUserId(createDto.userId)
     if (!userExists) {
       throw new NotFoundException(`사용자 ${createDto.userId}을(를) 찾을 수 없습니다.`)
     }
 
     // 2. 이미 프로필이 존재하는지 확인
-    const existingProfile = await this.userProfileRepository.existsByUserId(createDto.userId)
+    const existingProfile = await this.userProfileRepository.existsByUserId(userExists.userId)
     if (existingProfile) {
       throw new ConflictException(`사용자 ${createDto.userId}의 프로필이 이미 존재합니다.`)
     }

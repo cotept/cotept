@@ -1,6 +1,6 @@
+import nextTypescript from "eslint-config-next/typescript"
 import baseConfig from "@repo/eslint-config/next"
 
-import { FlatCompat } from "@eslint/eslintrc"
 import boundariesPlugin from "eslint-plugin-boundaries"
 import storybookPlugin from "eslint-plugin-storybook"
 import { dirname } from "path"
@@ -8,18 +8,10 @@ import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-/**
- * eslint 8 -> 9 버전 이상부터는 FlatCompat를 사용하여
- * 레거시 eslint 설정(8버전)의 extends, plugins, configs를 호환.
- */
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
 
 const eslintConfig = [
   ...baseConfig,
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-
+  ...nextTypescript,
   // Override typescript-eslint rules
   {
     rules: {
@@ -27,7 +19,6 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": "warn", // error -> warn으로 변경
     },
   },
-
   // file dependencies boundaries
   {
     plugins: {

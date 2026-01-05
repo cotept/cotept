@@ -8,6 +8,8 @@ import { toast } from "sonner"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 
 import { handleApiError } from "@/shared/api/core/errors/handlers"
+import { ApiError } from "@/shared/api/core/types"
+import { MutationCallbacks } from "@/shared/types/basic-types"
 
 /**
  * Immer를 사용하여 T 형태의 캐시 데이터를 부분적으로 업데이트하기 위한
@@ -168,5 +170,88 @@ export async function uploadFileToOCIObjectStorage(uploadUrl: string, file: File
     toast.error("파일 업로드에 실패했습니다.")
     console.error(error)
     return null
+  }
+}
+
+/**
+ * 클립보드에 텍스트 복사
+ *
+ * ★ Insight:
+ * - 최신 Clipboard API 우선 사용 (보안 컨텍스트 HTTPS 필요)
+ * - 구형 브라우저는 execCommand 폴백
+ * - 브라우저 환경에서만 작동 (SSR 환경 안전)
+ *
+ * @param text 복사할 텍스트
+ * @returns 복사 성공 여부
+ *
+ * @example
+ * ```typescript
+ * const success = await copyToClipboard("ABC123")
+ * if (success) {
+ *   toast.success("복사되었습니다")
+ * } else {
+ *   toast.error("복사 실패")
+ * }
+ * ```
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // SSR 환경 체크
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    console.warn("copyToClipboard: 브라우저 환경에서만 사용 가능합니다.")
+    return false
+  }
+
+  try {
+    // 최신 Clipboard API 사용 (HTTPS 환경에서만 작동)
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    } else {
+      // 폴백: execCommand 방식 (구형 브라우저)
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      textArea.style.position = "fixed"
+      textArea.style.left = "-999999px"
+      textArea.style.top = "-999999px"
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      try {
+        const successful = document.execCommand("copy")
+        document.body.removeChild(textArea)
+        return successful
+      } catch {
+        document.body.removeChild(textArea)
+        return false
+      }
+    }
+  } catch (error) {
+    console.error("copyToClipboard error:", error)
+    return false
+  }
+}
+
+/**
+ * mutations.ts 로직 + 커스텀훅 콜백 체이닝
+ */
+export function createChainedCallbacks<TData, TRequest>({
+  domainLogic,
+  domainErrorLogic,
+  callbacks,
+}: {
+  domainLogic?: (_response: TData, variables: TRequest, context: unknown) => void | Promise<void>
+  domainErrorLogic?: (error: ApiError, variables: TRequest, context: unknown) => void | Promise<void>
+  callbacks?: MutationCallbacks<TData, TRequest>
+}) {
+  return {
+    onSuccess: async (_response: TData, variables: TRequest, context: unknown) => {
+      if (domainLogic) await domainLogic(_response, variables, context)
+      callbacks?.onSuccess?.(_response, variables, context)
+    },
+    onError: async (error: ApiError, variables: TRequest, context: unknown) => {
+      if (domainErrorLogic) await domainErrorLogic(error, variables, context)
+      callbacks?.onError?.(error, variables, context)
+    },
   }
 }

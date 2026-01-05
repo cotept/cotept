@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 
 import { CreateBasicProfileDto } from "../../dtos/create-basic-profile.dto"
 
@@ -10,12 +10,14 @@ import { UserProfileDto } from "@/modules/user-profile/application/dtos"
 
 @Injectable()
 export class CreateBasicProfileUseCaseImpl implements CreateBasicProfileUseCase {
+  private readonly logger = new Logger(CreateBasicProfileUseCaseImpl.name)
   constructor(
     private readonly userProfileService: UserProfileFacadeService,
     private readonly onboardingStateRepository: OnboardingStateRepositoryPort,
   ) {}
 
   async execute(dto: CreateBasicProfileDto): Promise<UserProfileDto> {
+    this.logger.debug(`CreateBasicProfileUseCaseImpl.dto: ${JSON.stringify(dto)}`)
     // 1. 기존 user-profile 모듈을 사용해 프로필 생성
     const userProfile = await this.userProfileService.createProfile({
       userId: dto.userId,

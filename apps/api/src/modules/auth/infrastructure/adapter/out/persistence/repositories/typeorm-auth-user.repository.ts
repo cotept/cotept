@@ -374,6 +374,14 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
    * @returns AuthUser 객체
    */
   private mapToAuthUser(entity: UserEntity): AuthUser {
-    return new AuthUser(entity.idx, entity.email, entity.passwordHash, entity.salt, entity.role, entity.status)
+    return new AuthUser(
+      entity.idx,
+      entity.userId,
+      entity.email,
+      entity.passwordHash,
+      entity.salt,
+      entity.role,
+      entity.status,
+    )
   }
 }

@@ -17,13 +17,15 @@ export class StartBaekjoonVerificationUseCaseImpl implements StartBaekjoonVerifi
   ) {}
 
   async execute(dto: StartBaekjoonVerificationDto): Promise<VerificationStatusResponseDto> {
+    // const user = await this.userService.getUserByUserId(dto.userId)
+    console.log({ dto })
     const user = await this.userService.getUserByUserId(dto.userId)
 
-    await this.userProfileService.getProfileByUserIdOrThrow(dto.userId)
+    await this.userProfileService.getProfileByUserIdOrThrow(user.userId)
 
     // 기존 baekjoon 모듈의 유스케이스 호출
     return this.baekjoonService.startVerification({
-      email: user.email,
+      userId: user.userId,
       handle: dto.baekjoonHandle,
     })
   }

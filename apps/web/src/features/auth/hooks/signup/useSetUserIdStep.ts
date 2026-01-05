@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { type ValidationCheck } from "@repo/shared/src/components/validation-indicator"
+import { type ValidationCheck } from "@repo/shared/components/validation-indicator"
+import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -18,8 +19,6 @@ type userIdCheckPhase =
   | "checking" // 중복 확인 중
   | "verified" // 중복 확인 완료 (사용 가능)
   | "error" // 에러 발생
-
-const isValidUserId = (userId: string): boolean => SetUserIdRules.safeParse({ userId }).success
 
 /** 중복 확인 가능 여부 */
 const canCheckUserId = (isAllBasicChecksValid: boolean, phase: userIdCheckPhase, isLoading: boolean): boolean => {
@@ -54,68 +53,40 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
     defaultValues: {
       userId: "",
     },
+    mode: "onChange",
   })
 
   const userId = form.watch("userId")
-  const isUserIdValid = isValidUserId(userId)
 
-  // 실시간 유효성 검사 - Zod 기반
-  const userIdChecks = useMemo(() => {
+  const validationChecks: ValidationCheck[] = useMemo(() => {
     if (!userId) {
-      return {
-        lengthValid: false,
-        formatValid: false,
-        compositionValid: false,
-      }
+      return [
+        { id: "length", label: "6자 이상 20자 이하", isValid: false },
+        { id: "format", label: "영문과 숫자만 사용", isValid: false },
+        { id: "composition", label: "영문과 숫자 모두 포함", isValid: false },
+      ]
     }
-
-    const userIdOnlyCheckResult = SetUserIdRules.pick({ userId: true }).safeParse({ userId })
-
-    if (userIdOnlyCheckResult.success) {
-      return {
-        lengthValid: true,
-        formatValid: true,
-        compositionValid: true,
-      }
-    }
-
-    const _error = userIdOnlyCheckResult.error.flatten().fieldErrors.userId || []
-
-    const lengthValid = !_error.some((error) => error.includes("6자 이상") || error.includes("20자 이하"))
-    const formatValid = !_error.some((error) => error.includes("영문과 숫자만 사용할 수 있습니다"))
-    const compositionValid = !_error.some((error) => error.includes("영문과 숫자를 모두 포함해야 합니다"))
-
-    return {
-      lengthValid,
-      formatValid,
-      compositionValid,
-    }
-  }, [userId])
-
-  // 모든 기본 규칙이 통과되어야 중복 확인 가능
-  const isAllBasicChecksValid = userIdChecks.lengthValid && userIdChecks.formatValid && userIdChecks.compositionValid
-
-  // ValidationIndicator용 체크 배열 생성 (비즈니스 로직)
-  const validationChecks: ValidationCheck[] = useMemo(
-    () => [
+    const fieldValidation = validateField(SetUserIdRules.shape.userId, userId)
+    return createValidationChecks(fieldValidation, [
       {
         id: "length",
         label: "6자 이상 20자 이하",
-        isValid: userIdChecks.lengthValid,
+        isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big"),
       },
       {
         id: "format",
         label: "영문과 숫자만 사용",
-        isValid: userIdChecks.formatValid,
+        isIssuePresent: (issues) => issues.some((i) => i.path.includes("format")),
       },
       {
         id: "composition",
         label: "영문과 숫자 모두 포함",
-        isValid: userIdChecks.compositionValid,
+        isIssuePresent: (issues) => issues.some((i) => i.path.includes("composition")),
       },
-    ],
-    [userIdChecks],
-  )
+    ])
+  }, [userId])
+
+  const isAllBasicChecksValid = useMemo(() => validationChecks.every((check) => check.isValid), [validationChecks])
 
   // RHF의 isDirty 상태 가져오기
   const { isDirty } = form.formState
@@ -177,12 +148,11 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
     phase,
     isLoading: checkUserIdMutation.isPending,
     userId,
-    isUserIdValid,
+    isUserIdValid: isAllBasicChecksValid,
     isUserIdVerified: phase === "verified",
     hasError: phase === "error",
 
     // 실시간 유효성 검사
-    userIdChecks,
     isAllBasicChecksValid,
 
     // ValidationIndicator 관련 (비즈니스 로직)

@@ -28,8 +28,6 @@ import type { BaekjoonVerificationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { BooleanResponse } from '../types';
 // @ts-ignore
-import type { CheckMentorEligibilityDto } from '../types';
-// @ts-ignore
 import type { CompleteBaekjoonVerificationDto } from '../types';
 // @ts-ignore
 import type { CompleteOnboardingDto } from '../types';
@@ -112,13 +110,13 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
         /**
          * 
          * @summary 온보딩 - 멘토 자격 요건 확인
-         * @param {CheckMentorEligibilityDto} checkMentorEligibilityDto 
+         * @param {string} userId 사용자 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkMentorEligibility: async (checkMentorEligibilityDto: CheckMentorEligibilityDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'checkMentorEligibilityDto' is not null or undefined
-            assertParamExists('checkMentorEligibility', 'checkMentorEligibilityDto', checkMentorEligibilityDto)
+        checkMentorEligibility: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('checkMentorEligibility', 'userId', userId)
             const localVarPath = `/api/v1/onboarding/mentor/eligibility`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -131,14 +129,15 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
 
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(checkMentorEligibilityDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -411,12 +410,12 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 온보딩 - 멘토 자격 요건 확인
-         * @param {CheckMentorEligibilityDto} checkMentorEligibilityDto 
+         * @param {string} userId 사용자 ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async checkMentorEligibility(checkMentorEligibilityDto: CheckMentorEligibilityDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorEligibilityResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.checkMentorEligibility(checkMentorEligibilityDto, options);
+        async checkMentorEligibility(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MentorEligibilityResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkMentorEligibility(userId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OnboardingApi.checkMentorEligibility']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -538,7 +537,7 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
          * @throws {RequiredError}
          */
         checkMentorEligibility(requestParameters: OnboardingApiCheckMentorEligibilityRequest, options?: RawAxiosRequestConfig): AxiosPromise<MentorEligibilityResponse> {
-            return localVarFp.checkMentorEligibility(requestParameters.checkMentorEligibilityDto, options).then((request) => request(axios, basePath));
+            return localVarFp.checkMentorEligibility(requestParameters.userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -728,11 +727,11 @@ export interface OnboardingApiAnalyzeSkillsRequest {
  */
 export interface OnboardingApiCheckMentorEligibilityRequest {
     /**
-     * 
-     * @type {CheckMentorEligibilityDto}
+     * 사용자 ID
+     * @type {string}
      * @memberof OnboardingApiCheckMentorEligibility
      */
-    readonly checkMentorEligibilityDto: CheckMentorEligibilityDto
+    readonly userId: string
 }
 
 /**
@@ -833,7 +832,7 @@ export class OnboardingApi extends BaseAPI implements OnboardingApiInterface {
      * @memberof OnboardingApi
      */
     public checkMentorEligibility(requestParameters: OnboardingApiCheckMentorEligibilityRequest, options?: RawAxiosRequestConfig) {
-        return OnboardingApiFp(this.configuration).checkMentorEligibility(requestParameters.checkMentorEligibilityDto, options).then((request) => request(this.axios, this.basePath));
+        return OnboardingApiFp(this.configuration).checkMentorEligibility(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

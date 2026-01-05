@@ -38,6 +38,7 @@ export const ContentOverlayController = memo<ContentOverlayControllerProps>(
         isOpen={isOpen}
         overlayId={overlayId}
         close={() => overlayDispatch({ type: "CLOSE", overlayId })}
+        dismiss={() => overlayDispatch({ type: "CLOSE", overlayId })}
         unmount={() => overlayDispatch({ type: "REMOVE", overlayId })}
       />
     )

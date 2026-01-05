@@ -316,7 +316,8 @@ export class Tier {
    * 멘토 자격을 충족하는지 확인 (Platinum 3 이상)
    */
   public isMentorEligible(): boolean {
-    return this.level >= TierLevelEnum.PlatinumIII
+    return this.level >= TierLevelEnum.GoldV
+    // return this.level >= TierLevelEnum.PlatinumIII
   }
 
   /**

@@ -17,14 +17,14 @@ import {
 export class BaekjoonRequestMapper {
   toStartVerificationInput(request: StartVerificationRequestDto): StartVerificationInputDto {
     return {
-      email: request.email,
+      userId: request.userId,
       handle: request.handle,
     }
   }
 
   toCompleteVerificationInput(request: CompleteVerificationRequestDto): CompleteVerificationInputDto {
     return {
-      email: request.email,
+      userId: request.userId,
       handle: request.handle,
       sessionId: request.sessionId,
     }
@@ -32,14 +32,14 @@ export class BaekjoonRequestMapper {
 
   toGetProfileInput(request: GetProfileRequestDto): GetProfileInputDto {
     return {
-      userId: request.email,
+      userId: request.userId,
       handle: request.handle,
     }
   }
 
   toGetStatisticsInput(request: GetTagStatisticsRequestDto): GetStatisticsInputDto {
     return {
-      userId: request.email,
+      userId: request.userId,
       handle: request.handle,
     }
   }

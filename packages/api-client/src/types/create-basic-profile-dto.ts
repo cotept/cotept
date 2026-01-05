@@ -27,7 +27,7 @@ export interface CreateBasicProfileDto {
      */
     'userId': string;
     /**
-     * 닉네임 (2~50자, 한글/영문만 허용)
+     * 닉네임 (2~20자, 한글/영문만 허용)
      * @type {string}
      * @memberof CreateBasicProfileDto
      */

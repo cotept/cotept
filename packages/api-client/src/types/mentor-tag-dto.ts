@@ -71,7 +71,8 @@ export interface MentorTagDto {
 export enum Category {
     job = 'job',
     experience = 'experience',
-    company = 'company'
+    company_size = 'company_size',
+    company_type = 'company_type'
 }
 
 

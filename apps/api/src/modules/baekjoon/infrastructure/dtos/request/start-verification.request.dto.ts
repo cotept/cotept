@@ -1,18 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
+import { IsNotEmpty, IsString } from "class-validator"
 
 /**
  * 인증 시작 요청 DTO
  */
 export class StartVerificationRequestDto {
   @ApiProperty({
-    description: "사용자 이메일",
-    example: "user@example.com",
+    description: "사용자 ID",
+    example: "user123",
   })
-  @IsEmail({}, { message: "유효한 이메일 형식이 아닙니다." })
-  @IsNotEmpty({ message: "이메일은 필수 값입니다." })
-  email: string
+  @IsString({ message: "사용자 ID는 문자열이어야 합니다" })
+  @IsNotEmpty({ message: "사용자 ID는 필수 값입니다." })
+  userId: string
 
   @ApiProperty({
     description: "백준 ID (사용자명)",

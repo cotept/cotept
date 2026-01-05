@@ -15,27 +15,9 @@ import { randomId } from "../utils/randomId"
 
 import { OverlayRenderer } from "./OverlayRenderer"
 
-import type { OverlayEvent, OverlayProviderResult } from "../types/overlay.types"
+import { OVERLAY_ERROR_CODES, OverlayError } from "../types/overlay.types"
 
-// HMR (Hot Module Replacement) 환경에서 싱글턴 인스턴스를 유지하기 위한 전역 캐시
-const DEV_GLOBAL_KEY = "__cotept_overlay_provider__"
-
-interface GlobalWithOverlay {
-  [DEV_GLOBAL_KEY]?: OverlayProviderResult
-}
-
-function getDevSafeInstance(): OverlayProviderResult | undefined {
-  if (process.env.NODE_ENV === "development") {
-    return (global as GlobalWithOverlay)[DEV_GLOBAL_KEY]
-  }
-  return undefined
-}
-
-function setDevSafeInstance(instance: OverlayProviderResult) {
-  if (process.env.NODE_ENV === "development") {
-    ;(global as GlobalWithOverlay)[DEV_GLOBAL_KEY] = instance
-  }
-}
+import type { OverlayAPI, OverlayEvent, OverlayProviderResult } from "../types/overlay.types"
 
 /**
  * createOverlayProvider
@@ -57,16 +39,48 @@ function setDevSafeInstance(instance: OverlayProviderResult) {
  * ```
  */
 export function createOverlayProvider(): OverlayProviderResult {
-  const existingInstance = getDevSafeInstance()
-  if (existingInstance) {
-    return existingInstance
-  }
-
   // 고유한 overlay 인스턴스 ID 생성
   const overlayId = randomId()
 
   // External Events API와 Context 생성
   const overlayAPI = createOverlay(overlayId)
+  let hasMountedProvider = false
+
+  const assertProviderMounted = (action: keyof OverlayAPI) => {
+    if (!hasMountedProvider) {
+      throw new OverlayError(
+        `You must mount <OverlayProvider> before calling overlay.${action}.`,
+        OVERLAY_ERROR_CODES.PROVIDER_NOT_FOUND,
+      )
+    }
+  }
+
+  const guardedOverlayAPI: OverlayAPI = {
+    open(controller, options) {
+      assertProviderMounted("open")
+      return overlayAPI.open(controller, options)
+    },
+    openAsync(controller, options) {
+      assertProviderMounted("openAsync")
+      return overlayAPI.openAsync(controller, options)
+    },
+    close(overlayIdToClose) {
+      assertProviderMounted("close")
+      overlayAPI.close(overlayIdToClose)
+    },
+    unmount(overlayIdToUnmount) {
+      assertProviderMounted("unmount")
+      overlayAPI.unmount(overlayIdToUnmount)
+    },
+    closeAll() {
+      assertProviderMounted("closeAll")
+      overlayAPI.closeAll()
+    },
+    unmountAll() {
+      assertProviderMounted("unmountAll")
+      overlayAPI.unmountAll()
+    },
+  }
 
   // 내부적으로만 사용할 useOverlayEvent 추출
   const [useOverlayEvent] = createUseExternalEvents<OverlayEvent>(`${overlayId}/overlay-kit`)
@@ -158,7 +172,9 @@ export function createOverlayProvider(): OverlayProviderResult {
 
     // 컴포넌트 언마운트 시 모든 오버레이 정리
     useEffect(() => {
+      hasMountedProvider = true
       return () => {
+        hasMountedProvider = false
         overlayDispatch({ type: "REMOVE_ALL" })
       }
     }, [])
@@ -174,13 +190,11 @@ export function createOverlayProvider(): OverlayProviderResult {
   }
 
   const instance: OverlayProviderResult = {
-    overlay: overlayAPI,
+    overlay: guardedOverlayAPI,
     OverlayProvider,
     useCurrentOverlay,
     useOverlayData,
   }
-
-  setDevSafeInstance(instance)
 
   return instance
 }

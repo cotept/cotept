@@ -1,5 +1,5 @@
 import { isEmpty, typedEntries, typedFromEntries } from "@repo/shared/lib/utils"
-import { z, ZodError, ZodObject, ZodRawShape, ZodSchema, ZodTypeAny } from "zod"
+import { z, ZodError, ZodIssue, ZodObject, ZodRawShape, ZodSchema, ZodTypeAny } from "zod"
 
 /**
  * Zod 스키마 매핑 타입
@@ -14,8 +14,7 @@ export type RuleMap<T> = {
  */
 export interface FieldValidation {
   isValid: boolean
-  errors: string[]
-  errorCodes: string[]
+  issues: ZodIssue[]
   errorMessage?: string
 }
 
@@ -82,20 +81,15 @@ export function validateField<T>(fieldSchema: ZodSchema<T>, value: unknown): Fie
   if (result.success) {
     return {
       isValid: true,
-      errors: [],
-      errorCodes: [],
+      issues: [],
       errorMessage: undefined,
     }
   }
 
-  const errors = result.error.errors.map((e) => e.message)
-  const errorCodes = result.error.errors.map((e) => e.code)
-
   return {
     isValid: false,
-    errors,
-    errorCodes,
-    errorMessage: errors[0] || "유효하지 않은 값입니다", // ✅ 추가
+    issues: result.error.issues,
+    errorMessage: result.error.issues[0]?.message || "유효하지 않은 값입니다",
   }
 }
 
@@ -104,13 +98,16 @@ export function validateField<T>(fieldSchema: ZodSchema<T>, value: unknown): Fie
  */
 export function createValidationChecks(
   validation: FieldValidation,
-  checks: Array<{ id: string; label: string; errorCodes: string[] }>,
+  checks: Array<{
+    id: string
+    label: string
+    isIssuePresent: (issues: ZodIssue[]) => boolean
+  }>,
 ): ValidationCheckItem[] {
-  return checks.map(({ id, label, errorCodes }) => ({
+  return checks.map(({ id, label, isIssuePresent }) => ({
     id,
     label,
-    isValid: !validation.errorCodes.some((code) => errorCodes.includes(code)),
-    errorCode: validation.errorCodes.find((code) => errorCodes.includes(code)),
+    isValid: !isIssuePresent(validation.issues),
   }))
 }
 
@@ -198,8 +195,7 @@ export function validateFieldWithEmpty<T>(
   if (isEmpty(value)) {
     return {
       isValid: false,
-      errors: [emptyMessage],
-      errorCodes: [],
+      issues: [{ code: "custom", message: emptyMessage, path: [] }],
       errorMessage: emptyMessage,
     }
   }

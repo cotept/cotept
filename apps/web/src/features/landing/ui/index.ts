@@ -1,0 +1,7 @@
+export * from "./LandingHeader"
+export * from "./LandingHero"
+export * from "./LandingPainPoints"
+export * from "./LandingFeatures"
+export * from "./LandingVerification"
+export * from "./LandingCTA"
+export * from "./LandingFooter"

@@ -4,7 +4,6 @@ import { CompleteBaekjoonVerificationDto } from "../../dtos/complete-baekjoon-ve
 import { CompleteBaekjoonVerificationUseCase } from "../../ports/in/complete-baekjoon-verification.usecase"
 import { OnboardingStateRepositoryPort } from "../../ports/out/onboarding-state.repository.port"
 
-import { CompleteVerificationUseCase } from "@/modules/baekjoon/application/ports/in"
 import { BaekjoonFacadeService } from "@/modules/baekjoon/application/services"
 import { BaekjoonVerificationResultResponseDto } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { UserFacadeService } from "@/modules/user/application/services"
@@ -13,7 +12,7 @@ import { UserProfileFacadeService } from "@/modules/user-profile/application"
 @Injectable()
 export class CompleteBaekjoonVerificationUseCaseImpl implements CompleteBaekjoonVerificationUseCase {
   constructor(
-    @Inject(CompleteVerificationUseCase)
+    @Inject(OnboardingStateRepositoryPort)
     private readonly onboardingStateRepository: OnboardingStateRepositoryPort,
     private readonly baekjoonService: BaekjoonFacadeService,
     private readonly userProfileService: UserProfileFacadeService,
@@ -27,7 +26,7 @@ export class CompleteBaekjoonVerificationUseCaseImpl implements CompleteBaekjoon
 
     // 기존 baekjoon 모듈의 유스케이스 호출
     const result = await this.baekjoonService.completeVerification({
-      email: user.email,
+      userId: user.userId,
       handle: dto.baekjoonHandle,
       sessionId: dto.verificationSessionId,
     })

@@ -41,28 +41,28 @@ export class BaekjoonRateLimitService extends RateLimitPort {
     try {
       const rateLimitKey = this.createRateLimitKey(key)
       const infoKey = this.createRateLimitInfoKey(key)
-      
+
       const client = this.cacheService.getClient()
       const now = Date.now()
       const windowStart = now - windowSeconds * 1000
 
-      // Sliding window 방식으로 구현
-      const pipeline = client.pipeline()
-      
-      // 만료된 항목들 제거
-      pipeline.zremrangebyscore(rateLimitKey, 0, windowStart)
-      
-      // 현재 시간 추가
-      pipeline.zadd(rateLimitKey, now, `${now}-${Math.random()}`)
-      
-      // 현재 요청 수 조회
-      pipeline.zcard(rateLimitKey)
-      
-      // TTL 설정
-      pipeline.expire(rateLimitKey, windowSeconds)
+      // Sliding window 방식으로 구현 (redis v4 multi 사용)
+      const multi = client.multi()
 
-      const results = await pipeline.exec()
-      const currentCount = results[2][1] as number
+      // 만료된 항목들 제거
+      multi.zRemRangeByScore(rateLimitKey, 0, windowStart)
+
+      // 현재 시간 추가
+      multi.zAdd(rateLimitKey, { score: now, value: `${now}-${Math.random()}` })
+
+      // 현재 요청 수 조회
+      multi.zCard(rateLimitKey)
+
+      // TTL 설정
+      multi.expire(rateLimitKey, windowSeconds)
+
+      const results = await multi.exec()
+      const currentCount = results[2] as number
 
       const isAllowed = currentCount <= limit
       const remaining = Math.max(0, limit - currentCount)
@@ -73,9 +73,7 @@ export class BaekjoonRateLimitService extends RateLimitPort {
       await this.cacheService.setObject(infoKey, rateLimitInfo, windowSeconds)
 
       if (!isAllowed) {
-        this.logger.warn(
-          `Rate limit exceeded for key: ${key}, limit: ${limit}, current: ${currentCount}`
-        )
+        this.logger.warn(`Rate limit exceeded for key: ${key}, limit: ${limit}, current: ${currentCount}`)
       }
 
       return isAllowed
@@ -100,7 +98,7 @@ ${ErrorUtils.getErrorStack(error)}`,
     try {
       const infoKey = this.createRateLimitInfoKey(key)
       const info = await this.cacheService.getObject<RateLimitInfo>(infoKey)
-      
+
       if (info) {
         return new RateLimitInfo(info.limit, info.remaining, new Date(info.resetTime), info.isBlocked)
       }
@@ -126,11 +124,8 @@ ${ErrorUtils.getErrorStack(error)}`,
     try {
       const rateLimitKey = this.createRateLimitKey(key)
       const infoKey = this.createRateLimitInfoKey(key)
-      
-      await Promise.all([
-        this.cacheService.delete(rateLimitKey),
-        this.cacheService.delete(infoKey)
-      ])
+
+      await Promise.all([this.cacheService.delete(rateLimitKey), this.cacheService.delete(infoKey)])
     } catch (error) {
       this.logger.error(
         `baekjoon.rateLimit.${BaekjoonRateLimitService.name}
@@ -151,9 +146,9 @@ ${ErrorUtils.getErrorStack(error)}`,
       const attemptKey = `attempts:baekjoon:${key}`
       const client = this.cacheService.getClient()
       const now = Date.now()
-      
+
       // 시도 기록 (24시간 보관)
-      await client.zadd(attemptKey, now, `${now}-${Math.random()}`)
+      await client.zAdd(attemptKey, { score: now, value: `${now}-${Math.random()}` })
       await client.expire(attemptKey, 24 * 60 * 60) // 24시간
     } catch (error) {
       this.logger.error(

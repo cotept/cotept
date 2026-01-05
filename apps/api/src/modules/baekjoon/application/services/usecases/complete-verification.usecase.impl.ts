@@ -49,7 +49,7 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
 
   async execute(inputDto: CompleteVerificationInputDto): Promise<CompleteVerificationOutputDto> {
     try {
-      const { email: userId, handle, sessionId } = inputDto
+      const { userId, handle, sessionId } = inputDto
 
       // 1단계: Rate limit 확인
       await this.checkRateLimit(userId)
@@ -140,15 +140,19 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
 
   /**
    * 세션 조회
+   * sessionId 기반으로 Redis에서 직접 조회
    */
   private async getSession(sessionId: string): Promise<VerificationSession> {
-    const session = await this.cacheAdapter.get<VerificationSession>(sessionId)
+    // sessionId로 세션 키 생성 (start와 동일한 키 형식 사용)
+    const sessionKey = this.getSessionKey(sessionId)
+    const plainObject = await this.cacheAdapter.get<any>(sessionKey)
 
-    if (!session) {
+    if (!plainObject) {
       throw new NotFoundException("진행 중인 인증 세션이 없습니다. 먼저 인증을 시작해주세요.")
     }
 
-    return session
+    // Redis에서 조회한 plain object를 VerificationSession 인스턴스로 변환
+    return new VerificationSession(plainObject)
   }
 
   /**
@@ -179,11 +183,19 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
 
   /**
    * 만료된 세션 처리
+   * 세션 키와 매핑 키 모두 삭제
    */
   private async handleExpiredSession(session: VerificationSession): Promise<never> {
     session.expire()
-    const rateLimitKey = this.getRateLimitKey(session.getUserId())
-    await this.cacheAdapter.delete(rateLimitKey)
+
+    // 세션 데이터 삭제
+    const sessionKey = this.getSessionKey(session.getSessionId())
+    await this.cacheAdapter.delete(sessionKey)
+
+    // 매핑 데이터 삭제
+    const userSessionKey = this.getUserSessionKey(session.getUserId())
+    await this.cacheAdapter.delete(userSessionKey)
+
     throw new RequestTimeoutException("인증 세션이 만료되었습니다. 다시 시도해주세요.")
   }
 
@@ -376,6 +388,22 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
   }
 
   /**
+   * 세션 키 생성 (start와 동일)
+   * 형식: baekjoon_session:{sessionId}
+   */
+  private getSessionKey(sessionId: string): string {
+    return `baekjoon_session:${sessionId}`
+  }
+
+  /**
+   * 사용자 세션 매핑 키 생성 (start와 동일)
+   * 형식: baekjoon_user_session:{userId}
+   */
+  private getUserSessionKey(userId: string): string {
+    return `baekjoon_user_session:${userId}`
+  }
+
+  /**
    * 에러 처리 및 로깅
    */
   private handleError(error: unknown): never {
@@ -398,11 +426,13 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
   }
 
   /**
-   * 세션을 캐시에 업데이트 (새로 추가)
+   * 세션을 캐시에 업데이트
+   * sessionKey를 사용하여 업데이트
    */
   private async updateSessionInCache(session: VerificationSession): Promise<void> {
     try {
-      await this.cacheAdapter.set(session.getSessionId(), session, 300) // 5분 TTL
+      const sessionKey = this.getSessionKey(session.getSessionId())
+      await this.cacheAdapter.set(sessionKey, session, 5 * 60 * 1000) // 5분 TTL (밀리초)
     } catch (error) {
       this.logger.error(`Failed to update session ${session.getSessionId()} in cache:`, error)
       // 캐시 업데이트 실패는 로그만 남기고 에러 던지지 않음

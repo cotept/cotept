@@ -18,6 +18,8 @@ export interface OverlayControllerProps {
   isOpen: boolean;
   /** 오버레이 닫기 */
   close: () => void;
+  /** Promise를 해결하지 않고 단순 dismiss */
+  dismiss: () => void;
   /** 오버레이 언마운트 (DOM에서 완전 제거) */
   unmount: () => void;
 }
@@ -28,7 +30,7 @@ export interface OverlayControllerProps {
  */
 export interface OverlayAsyncControllerProps<T> extends Omit<OverlayControllerProps, 'close'> {
   /** 결과값과 함께 오버레이 닫기 */
-  close: (param: T) => void;
+  close: [T] extends [void] ? () => void : (param: T) => void;
 }
 
 /**
@@ -105,6 +107,18 @@ export interface OpenOverlayOptions {
 }
 
 /**
+ * overlay.openAsync() 옵션 타입
+ */
+export interface OpenOverlayAsyncOptions<T = unknown> extends OpenOverlayOptions {
+  /** dismiss 시 Promise를 reject할지 여부 (기본 true) */
+  rejectOnDismiss?: boolean;
+  /** dismiss 시 resolve할 기본값 (rejectOnDismiss가 false일 때 사용) */
+  dismissValue?: T;
+  /** dismiss 발생 시 호출되는 콜백 */
+  onDismiss?: () => void;
+}
+
+/**
  * overlay-kit 메인 API 인터페이스
  */
 export interface OverlayAPI {
@@ -125,7 +139,7 @@ export interface OverlayAPI {
    * @param options - 옵션 설정
    * @returns Promise<T> - close로 전달된 결과값
    */
-  openAsync<T>(controller: OverlayAsyncControllerComponent<T>, options?: OpenOverlayOptions): Promise<T>;
+  openAsync<T>(controller: OverlayAsyncControllerComponent<T>, options?: OpenOverlayAsyncOptions<T>): Promise<T>;
 
   /**
    * 특정 오버레이 닫기

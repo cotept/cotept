@@ -1,6 +1,4 @@
 import tsParser from "@typescript-eslint/parser"
-import importPlugin from "eslint-plugin-import"
-import simpleImportSort from "eslint-plugin-simple-import-sort"
 import unusedImports from "eslint-plugin-unused-imports"
 
 /** @type {import("eslint").FlatConfig[]} */
@@ -21,8 +19,6 @@ export default [
       },
     },
     plugins: {
-      "simple-import-sort": simpleImportSort,
-      import: importPlugin,
       "unused-imports": unusedImports,
     },
     rules: {
@@ -38,11 +34,6 @@ export default [
           argsIgnorePattern: "^_",
         },
       ],
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-      "import/first": "error",
-      "import/newline-after-import": "error",
-      "import/no-duplicates": "error",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/interface-name-prefix": "off",
       "@typescript-eslint/explicit-function-return-type": "off",

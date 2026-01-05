@@ -27,11 +27,11 @@ export interface CompleteVerificationRequestDto {
      */
     'sessionId': string;
     /**
-     * 사용자 이메일
+     * 사용자 ID
      * @type {string}
      * @memberof CompleteVerificationRequestDto
      */
-    'email': string;
+    'userId': string;
     /**
      * 백준 ID (사용자명)
      * @type {string}

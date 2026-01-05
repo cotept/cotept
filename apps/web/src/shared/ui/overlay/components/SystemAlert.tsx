@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@repo/shared/components/ale
 import { CheckCircle, Info, XCircle } from "lucide-react"
 
 import type { OverlayControllerProps } from "../types/overlay.types"
+import { OVERLAY_EXIT_ANIMATION_MS } from "../utils/constants"
 
 export interface SystemAlertProps extends OverlayControllerProps {
   /** 알림 제목 */
@@ -38,6 +39,7 @@ const alertIcons = {
 export const SystemAlert = ({
   isOpen,
   close,
+  dismiss,
   overlayId,
   unmount,
   title,
@@ -53,7 +55,7 @@ export const SystemAlert = ({
     if (isOpen && autoClose > 0) {
       const timer = setTimeout(() => {
         close()
-        setTimeout(() => unmount(), 150) // 애니메이션 완료 후 언마운트
+        setTimeout(() => unmount(), OVERLAY_EXIT_ANIMATION_MS) // 애니메이션 완료 후 언마운트
       }, autoClose)
 
       return () => clearTimeout(timer)

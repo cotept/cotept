@@ -24,6 +24,7 @@ import { VerifyCodeUseCase } from "@/modules/auth/application/ports/in/verify-co
 import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { PasswordHasherPort } from "@/modules/auth/application/ports/out/password-hasher.port"
+import { TokenGeneratorPort } from "@/modules/auth/application/ports/out/token-generator.port"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { AuthRequestMapper } from "@/modules/auth/infrastructure/adapter/in/mappers/auth-request.mapper"
 import { CookieManagerAdapter } from "@/modules/auth/infrastructure/adapter/out/services/cookie-manager.adapter"
@@ -43,8 +44,8 @@ import {
 } from "@/modules/auth/infrastructure/dtos/request"
 import {
   AvailabilityResponseDto,
-  FindIdResponseDto,
   EmailVerificationResultResponseDto,
+  FindIdResponseDto,
   LogoutResponseDto,
   ResetPasswordResponseDto,
   SocialLinkConfirmationResponseDto,
@@ -85,6 +86,7 @@ export class AuthFacadeService {
     private readonly authUserRepository: AuthUserRepositoryPort,
     private readonly passwordHasher: PasswordHasherPort,
     private readonly authCache: AuthCachePort,
+    private readonly tokenGenerator: TokenGeneratorPort,
   ) {}
 
   /**
@@ -101,19 +103,22 @@ export class AuthFacadeService {
 
       const tokenPair = await this.loginUseCase.execute(loginDto)
 
+      // 사용자 정보 조회 (응답 DTO에 포함하기 위함)
+      const user = await this.getAuthUser(loginRequestDto.id)
+
       // 응답 객체가 있는 경우 쿠키에 리프레시 토큰 설정
       if (res && tokenPair.refreshToken) {
         const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
-        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair, user)
         tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
         return tokenResponse
       }
 
       // 응답 객체가 없는 경우 모든 정보 반환
-      return this.authResponseMapper.toTokenResponse(tokenPair)
+      return this.authResponseMapper.toTokenResponse(tokenPair, user)
     } catch (error) {
       this.logger.error(`로그인 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -155,19 +160,27 @@ export class AuthFacadeService {
 
       const tokenPair = await this.refreshTokenUseCase.execute(refreshTokenDto)
 
+      // JWT에서 userId 추출하여 사용자 정보 조회 (응답 DTO에 포함하기 위함)
+      const payload = this.tokenGenerator.verifyAccessToken(tokenPair.accessToken)
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException("유효하지 않은 토큰입니다.")
+      }
+      const userId = parseInt(payload.sub, 10)
+      const user = await this.getAuthUser(userId)
+
       // 응답 객체가 있는 경우 쿠키에 리프레시 토큰 설정
       if (res && tokenPair.refreshToken) {
         const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초 단위)
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
-        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair, user)
         tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
         return tokenResponse
       }
 
       // 응답 객체가 없는 경우 모든 정보 반환
-      return this.authResponseMapper.toTokenResponse(tokenPair)
+      return this.authResponseMapper.toTokenResponse(tokenPair, user)
     } catch (error) {
       this.logger.error(`토큰 갱신 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`, ErrorUtils.getErrorStack(error))
       throw error
@@ -345,13 +358,7 @@ export class AuthFacadeService {
       }
 
       // 사용자 정보 조회
-      const userId = validationResult.userId
-      const numericUserId = convertJwtUserIdToNumber(userId, "ExchangeAuthCode userId 변환")
-      const user = await this.authUserRepository.findById(numericUserId)
-
-      if (!user) {
-        throw new UnauthorizedException("사용자를 찾을 수 없습니다.")
-      }
+      const user = await this.getAuthUser(validationResult.userId)
 
       // 토큰 생성을 위해 LoginDto 생성
       const loginDto = new LoginDto()
@@ -369,13 +376,13 @@ export class AuthFacadeService {
         this.cookieManager.setRefreshTokenCookie(res, tokenPair.refreshToken, refreshTokenExpiresIn)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
-        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair, user)
         tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
         return tokenResponse
       }
 
       // 응답 객체가 없는 경우 모든 정보 반환
-      return this.authResponseMapper.toTokenResponse(tokenPair)
+      return this.authResponseMapper.toTokenResponse(tokenPair, user)
     } catch (error) {
       this.logger.error(
         `인증 코드 교환 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -500,7 +507,7 @@ export class AuthFacadeService {
         await this.authCache.deletePendingLinkInfo(confirmSocialLinkRequestDto.token)
 
         // 리프레시 토큰을 응답에서 제외한 토큰 응답 생성
-        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair)
+        const tokenResponse = this.authResponseMapper.toTokenResponse(tokenPair, user)
         if (res) {
           tokenResponse.refreshToken = "" // 쿠키로 설정되므로 응답에서 제외
         }
@@ -573,12 +580,12 @@ export class AuthFacadeService {
     try {
       // Request DTO를 Application DTO로 변환
       const selectProfileDto = this.authRequestMapper.toSelectProfileDto(selectProfileRequestDto)
-
+      const user = await this.getAuthUser(selectProfileRequestDto.userId)
       // UseCase 실행 (TokenPair 반환)
       const tokenPair = await this.selectProfileUseCase.execute(selectProfileDto)
 
       // TokenPair를 TokenResponseDto로 변환하여 반환
-      return this.authResponseMapper.toTokenResponse(tokenPair)
+      return this.authResponseMapper.toTokenResponse(tokenPair, user)
     } catch (error) {
       this.logger.error(
         `프로필 선택 처리 중 오류 발생: ${ErrorUtils.getErrorMessage(error)}`,
@@ -586,5 +593,19 @@ export class AuthFacadeService {
       )
       throw error
     }
+  }
+
+  private async getAuthUser(handle: string | number): Promise<AuthUser> {
+    let user: AuthUser | null = null
+    if (typeof handle === "string") {
+      user = await this.authUserRepository.findByUserId(handle)
+    }
+    if (typeof handle === "number") {
+      user = await this.authUserRepository.findById(handle)
+    }
+    if (!user) {
+      throw new UnauthorizedException("사용자를 찾을 수 없습니다.")
+    }
+    return user
   }
 }

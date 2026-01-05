@@ -1,3 +1,5 @@
+const simpleImportSort = require("eslint-plugin-simple-import-sort")
+const importPlugin = require("eslint-plugin-import")
 const baseConfig = require("./base.cjs")
 
 module.exports = [
@@ -13,6 +15,19 @@ module.exports = [
     },
   })),
   {
+    name: "nest/import-plugins",
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+      import: importPlugin,
+    },
+    rules: {
+      "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+    },
+  },
+  {
     name: "nest/overrides",
     files: ["**/*.{ts,js}"],
     rules: {
@@ -25,7 +40,7 @@ module.exports = [
             ["^@?\\w"],
             ["^@app/", "^@configs/", "^@modules/", "^@shared/", "^@libs/"],
             ["^src/"],
-            ["^\\.\\.(?!/?$)", "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+            ["^\\\\..(?!/?$)", "^\\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\\./?$"],
             ["^.+\\.s?css$"],
             ["^.+\\.types$"],
           ],

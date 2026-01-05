@@ -2,7 +2,9 @@ import { useCallback, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
 
+import { UploadType } from "@repo/api-client/src"
 import { ValidationCheck } from "@repo/shared/components/validation-indicator"
+import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -10,76 +12,54 @@ import { toast } from "sonner"
 
 import { useCreateBasicProfile } from "@/features/onboarding/api/mutations"
 import {
+  type ProfileSetupData,
   type ProfileSetupFormData,
   ProfileSetupFormRules,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { useOnboardingFlowStore } from "@/features/onboarding/store/useOnboardingFlowStore"
-import { useProfileStore } from "@/features/user-profile/store/useProfileStore"
-import { AuthErrorHandler } from "@/shared/auth/errors/handler"
+import { handleApiError } from "@/shared/api/core/errors/handlers"
 import { useGetUploadUrl } from "@/shared/hooks/useStorage"
 import { uploadFileToOCIObjectStorage } from "@/shared/utils"
 
-function getNicknameValidationState(nickname: string) {
-  if (!nickname) return { lengthValid: false, charsValid: false }
-
-  const result = ProfileSetupFormRules.pick({ nickname: true }).safeParse({ nickname })
-  if (result.success) return { lengthValid: true, charsValid: true }
-
-  const errors = result.error.flatten().fieldErrors.nickname || []
-  const lengthValid = !errors.some((e) => e.includes("2자 이상") || e.includes("20자 이하"))
-  const charsValid = !errors.some((e) => e.includes("한글, 영문, 숫자"))
-
-  return { lengthValid, charsValid }
-}
-
-function getImageValidationState(image: File | string | null | undefined) {
-  if (!image || !(image instanceof File)) return { isValid: true, errors: [] }
-
-  const result = ProfileSetupFormRules.pick({ profileImage: true }).safeParse({ profileImage: image })
-  if (result.success) return { isValid: true, errors: [] }
-
-  return { isValid: false, errors: result.error.flatten().fieldErrors.profileImage || [] }
-}
-
-export const useProfileSetup = () => {
-  const { profile, setProfile } = useProfileStore()
-  const { goToNextStep } = useOnboardingFlowStore()
+export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetupData) => void }) => {
   const { data: session } = useSession()
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(profile.profileImageUrl || null)
-
   const form = useForm<ProfileSetupFormData>({
     resolver: zodResolver(ProfileSetupFormRules),
-    defaultValues: { nickname: profile.nickname || "", profileImage: profile.profileImageUrl || "" },
+    defaultValues: { nickname: "", profileImage: undefined },
     mode: "onChange",
   })
-
   const nickname = form.watch("nickname")
   const profileImage = form.watch("profileImage")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(() =>
+    typeof profileImage === "string" ? profileImage : null,
+  )
 
   const validationChecks: ValidationCheck[] = useMemo(() => {
-    const { lengthValid, charsValid } = getNicknameValidationState(nickname)
-    return [
-      { id: "length", label: "2자 이상 20자 이하", isValid: lengthValid },
-      { id: "chars", label: "한글, 영문, 숫자만 사용", isValid: charsValid },
-    ]
+    const fieldValidation = validateField(ProfileSetupFormRules.shape.nickname, nickname)
+    return createValidationChecks(fieldValidation, [
+      {
+        id: "length",
+        label: "2자 이상 20자 이하",
+        isIssuePresent: (issues) => issues.some((i) => i.code === "too_small" || i.code === "too_big"),
+      },
+      {
+        id: "chars",
+        label: "한글과 영문만 사용",
+        isIssuePresent: (issues) => issues.some((i) => i.code === "invalid_string"),
+      },
+    ])
   }, [nickname])
 
   const { mutate: createProfile, isPending: isCreating } = useCreateBasicProfile({
     onSuccess: ({ data: response }) => {
-      if (!response) {
-        toast.error("프로필 생성에 실패했습니다. 다시 시도해주세요.")
-        return
-      }
-      const { userId, nickname, profileImageUrl } = response
-      setProfile({ userId, nickname, profileImageUrl })
+      if (!response) return
+      const { nickname, profileImageUrl } = response
       toast.success("프로필이 저장되었습니다.")
-      goToNextStep()
+      onComplete({ nickname, profileImageUrl: profileImageUrl ?? undefined })
     },
     onError: (error) => {
-      const handledError = AuthErrorHandler.handle(error)
+      const handledError = handleApiError(error)
       toast.error(handledError.message)
     },
     onSettled: () => {
@@ -96,7 +76,11 @@ export const useProfileSetup = () => {
 
       try {
         const { data: uploadData } = await getUploadUrlAsync({
-          generateUploadUrlRequestDto: { fileName: imageFile.name, contentType: imageFile.type },
+          generateUploadUrlRequestDto: {
+            fileName: imageFile.name,
+            contentType: imageFile.type,
+            uploadType: UploadType.USER_PROFILE,
+          },
         })
 
         if (!uploadData) {
@@ -122,7 +106,7 @@ export const useProfileSetup = () => {
           },
         })
       } catch (error) {
-        const handledError = AuthErrorHandler.handle(error)
+        const handledError = handleApiError(error)
         setUploadError(handledError.message)
         toast.error(handledError.message)
         setIsSubmitting(false)
@@ -134,7 +118,7 @@ export const useProfileSetup = () => {
   const retryUploadAndCreateProfile = useCallback(() => {
     const data = form.getValues()
     const imageFile = data.profileImage
-    const userId = session?.user?.id
+    const userId = session?.member?.idx.toString() || null
     if (!imageFile || !(imageFile instanceof File) || !userId) {
       toast.error("재시도할 수 없습니다. 사용자 정보 또는 이미지가 유효하지 않습니다.")
       return
@@ -142,13 +126,19 @@ export const useProfileSetup = () => {
     uploadAndCreateProfile(data, imageFile, userId)
   }, [form, session, uploadAndCreateProfile])
 
-  const handleImageSelect = (file: File) => {
-    if (!file) return
+  const handleImageSelect = (file?: File | null) => {
+    if (!file) {
+      setImagePreview(null)
+      form.setValue("profileImage", undefined, { shouldValidate: true })
+      return
+    }
 
-    const { isValid, errors } = getImageValidationState(file)
-    if (!isValid) {
-      toast.error(errors[0] || "유효하지 않은 파일입니다.")
-      form.setError("profileImage", { type: "manual", message: errors[0] })
+    const fieldValidation = validateField(ProfileSetupFormRules.shape.profileImage, file)
+
+    if (!fieldValidation.isValid) {
+      toast.error(fieldValidation.errorMessage || "유효하지 않은 파일입니다.")
+      form.setError("profileImage", { type: "manual", message: fieldValidation.errorMessage })
+      form.setValue("profileImage", undefined, { shouldValidate: true })
       return
     }
 
@@ -156,12 +146,16 @@ export const useProfileSetup = () => {
     const tempPreviewUrl = URL.createObjectURL(file)
     setImagePreview(tempPreviewUrl)
     form.setValue("profileImage", file, { shouldValidate: true })
-    getUploadUrlAsync({ generateUploadUrlRequestDto: { fileName: file.name, contentType: file.type } })
   }
 
   const handleSubmit = useCallback(
     (data: ProfileSetupFormData) => {
-      const userId = session?.user?.id
+      // 🔧 중복 제출 방지: 이미 제출 중이면 무시
+      if (isSubmitting || isCreating) {
+        return
+      }
+
+      const userId = session?.member.userId
       if (!userId) {
         toast.error("사용자 ID를 찾을 수 없습니다.")
         return
@@ -180,7 +174,7 @@ export const useProfileSetup = () => {
         })
       }
     },
-    [session, createProfile, uploadAndCreateProfile],
+    [session, createProfile, uploadAndCreateProfile, isSubmitting, isCreating],
   )
 
   return {

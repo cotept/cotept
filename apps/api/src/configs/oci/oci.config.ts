@@ -19,6 +19,7 @@ export interface OCIAuthConfig {
 export interface OCIObjectStorageConfig {
   namespace: string
   bucketName: string
+  cdnBaseUrl: string // Cloudflare CDN 기본 URL (읽기 전용 PAR을 통해 접근)
 }
 
 /**
@@ -30,9 +31,11 @@ export interface OciConfig extends OCIAuthConfig {
 
 // OCI 프라이빗 키 로드 (파일 또는 환경변수)
 const loadPrivateKey = (): string => {
-  if (process.env.OCI_PRIVATE_KEY) {
-    return process.env.OCI_PRIVATE_KEY.replace(/\\n/g, "\n")
-  } else if (process.env.OCI_PRIVATE_KEY_PATH && fs.existsSync(process.env.OCI_PRIVATE_KEY_PATH)) {
+  // if (process.env.OCI_PRIVATE_KEY) {
+  //   return process.env.OCI_PRIVATE_KEY.replace(/\\n/g, "\n")
+  // } else
+
+  if (process.env.OCI_PRIVATE_KEY_PATH && fs.existsSync(process.env.OCI_PRIVATE_KEY_PATH)) {
     return fs.readFileSync(process.env.OCI_PRIVATE_KEY_PATH, "utf8")
   } else {
     console.warn("OCI private key not found, using dummy value")
@@ -56,6 +59,7 @@ export default registerAs(
     objectStorage: {
       namespace: process.env.OCI_OBJECT_STORAGE_NAMESPACE || "",
       bucketName: process.env.OCI_BUCKET_NAME || "",
+      cdnBaseUrl: process.env.OCI_CDN_BASE_URL || "",
     },
   }),
 )

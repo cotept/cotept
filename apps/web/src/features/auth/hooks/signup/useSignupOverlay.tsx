@@ -7,7 +7,7 @@ import { useCallback } from "react"
 
 import { useRouter } from "next/navigation"
 
-import { SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
+import { SIGNUP_STEPS, type SignupStep } from "@/shared/types/basic-types"
 import { SystemAlert } from "@/shared/ui/overlay/components/SystemAlert"
 import { SystemConfirm } from "@/shared/ui/overlay/components/SystemConfirm"
 import { overlay } from "@/shared/ui/overlay/createOverlayContext"
@@ -56,10 +56,11 @@ export function useSignupOverlay() {
       const { autoClose = 3000, navigateToStep } = options
 
       await overlay
-        .openAsync<void>(({ isOpen, close, overlayId, unmount }) => (
+        .openAsync<void>(({ isOpen, close, dismiss, overlayId, unmount }) => (
           <SystemAlert
             isOpen={isOpen}
             close={close}
+            dismiss={dismiss}
             overlayId={overlayId}
             unmount={unmount}
             title="성공"
@@ -88,10 +89,11 @@ export function useSignupOverlay() {
       const message = customMessage || STEP_ERROR_MESSAGES[step]
 
       await overlay
-        .openAsync<void>(({ isOpen, close, overlayId, unmount }) => (
+        .openAsync<void>(({ isOpen, close, dismiss, overlayId, unmount }) => (
           <SystemAlert
             isOpen={isOpen}
             close={close}
+            dismiss={dismiss}
             overlayId={overlayId}
             unmount={unmount}
             title="오류"
@@ -115,10 +117,11 @@ export function useSignupOverlay() {
    * 경고 알림 표시 (자동 닫기 없음)
    */
   const showWarning = useCallback(async (message: string) => {
-    await overlay.open(({ isOpen, close, overlayId, unmount }) => (
+    await overlay.open(({ isOpen, close, dismiss, overlayId, unmount }) => (
       <SystemAlert
         isOpen={isOpen}
         close={close}
+        dismiss={dismiss}
         overlayId={overlayId}
         unmount={unmount}
         title="확인 필요"
@@ -145,10 +148,11 @@ export function useSignupOverlay() {
     ): Promise<boolean> => {
       const { confirmText = "확인", cancelText = "취소", variant = "default" } = options
 
-      return await overlay.openAsync<boolean>(({ isOpen, close, overlayId, unmount }) => (
+      return await overlay.openAsync<boolean>(({ isOpen, close, dismiss, overlayId, unmount }) => (
         <SystemConfirm
           isOpen={isOpen}
           close={close}
+          dismiss={dismiss}
           overlayId={overlayId}
           unmount={unmount}
           title={title}
@@ -204,10 +208,11 @@ export function useSignupOverlay() {
       const message = errorMessages.join(" ")
 
       await overlay
-        .openAsync<void>(({ isOpen, close, overlayId, unmount }) => (
+        .openAsync<void>(({ isOpen, close, dismiss, overlayId, unmount }) => (
           <SystemAlert
             isOpen={isOpen}
             close={close}
+            dismiss={dismiss}
             overlayId={overlayId}
             unmount={unmount}
             title="입력 정보 확인"
@@ -232,10 +237,11 @@ export function useSignupOverlay() {
 
   const showFinalSuccess = useCallback(async () => {
     console.log("showFinalSuccess called")
-    const isSelectOnBoarding = await overlay.openAsync<boolean>(({ isOpen, close, overlayId, unmount }) => (
+    const isSelectOnBoarding = await overlay.openAsync<boolean>(({ isOpen, close, dismiss, overlayId, unmount }) => (
       <SystemConfirm
         isOpen={isOpen}
         close={close}
+        dismiss={dismiss}
         overlayId={overlayId}
         unmount={unmount}
         title="🎉 회원가입 완료!"

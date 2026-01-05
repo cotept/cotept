@@ -165,6 +165,7 @@ export class BaekjoonUser {
    */
   public markAsVerified(): BaekjoonUser {
     this.verified = true
+    this.verificationStatus = BaekjoonProfileVerificationStatus.VERIFIED
     this.verifiedAt = new Date()
     this.updatedAt = new Date()
     return this

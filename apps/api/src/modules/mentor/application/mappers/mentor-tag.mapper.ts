@@ -61,12 +61,13 @@ export class MentorTagMapper {
   toDtoTagsList(mentorTags: MentorTag[]): MentorTagsResponseDto {
     const jobTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.JOB)
     const experienceTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.EXPERIENCE)
-    const companyTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.COMPANY)
-
+    const companySizeTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.COMPANY_SIZE)
+    const companyTypeTags = mentorTags.filter((tag) => tag.category === MentorTagCategory.COMPANY_TYPE)
     return {
       jobTags: this.toDtoList(jobTags),
       experienceTags: this.toDtoList(experienceTags),
-      companyTags: this.toDtoList(companyTags),
+      companySizeTags: this.toDtoList(companySizeTags),
+      companyTypeTags: this.toDtoList(companyTypeTags),
     }
   }
 }

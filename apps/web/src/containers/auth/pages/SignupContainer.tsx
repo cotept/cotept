@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
-
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
 
-// UI 컴포넌트 import
+import { StepDots } from "@repo/shared/components/step-dots"
 import { FormStep } from "@repo/shared/src/components/form-step"
+import FormStepContent from "@repo/shared/src/components/form-step-content"
+import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
 
 import { Sparkles } from "lucide-react"
 
@@ -14,21 +13,20 @@ import type {
   EmailStepData,
   PasswordStepData,
   SetUserIdData,
-  SignupData,
   TermsStepData,
   VerificationStepData,
 } from "@/features/auth/lib/validations/auth-rules"
 
-// Step 컴포넌트들 import
 import EmailStep from "@/features/auth/components/signup/EmailStep"
 import PasswordStep from "@/features/auth/components/signup/PasswordStep"
 import SetUserIdStep from "@/features/auth/components/signup/SetUserIdStep"
 import SignupCompleteStep from "@/features/auth/components/signup/SignupCompleteStep"
 import TermsStep from "@/features/auth/components/signup/TermsStep"
 import VerificationStep from "@/features/auth/components/signup/VerificationStep"
-import { SIGNUP_STEPS, type SignupStep } from "@/shared/constants/basic-types"
+import { useSignupSteps } from "@/features/auth/hooks/signup/useSignupSteps"
+import { SIGNUP_STEP_ORDER, SIGNUP_STEPS, type SignupStep } from "@/shared/types/basic-types"
+import Logo from "@/shared/ui/Logo"
 
-// 단계별 설정 타입
 interface StepConfig {
   title: string
   description?: string
@@ -37,7 +35,6 @@ interface StepConfig {
   align?: "left" | "center"
 }
 
-// 단계별 제목 및 설명 설정
 const STEP_CONFIGS: Record<SignupStep, StepConfig> = {
   [SIGNUP_STEPS.TERMS_AGREEMENT]: {
     title: "약관 동의",
@@ -65,46 +62,33 @@ const STEP_CONFIGS: Record<SignupStep, StepConfig> = {
 }
 
 export default function SignupContainer() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // URL에서 현재 단계 읽기, 기본값은 약관 동의 단계
-  const currentStep = (searchParams.get("step") as SignupStep) || SIGNUP_STEPS.TERMS_AGREEMENT
-
-  // 각 단계별 데이터 상태
-  const [signupData, setSignupData] = useState<SignupData>({})
+  const { currentStep, currentStepIndex, signupData, updateAndGoNext, isStepCompleted, totalSteps } = useSignupSteps()
 
   /**
-   * 단계별 완료 핸들러들 (새로운 순서: 약관 → 이메일 → 인증 → ID → 비밀번호 → 완료)
+   * 단계별 완료 핸들러 - 중복 코드 제거
    */
   const handleTermsComplete = (data: TermsStepData) => {
-    setSignupData((prev) => ({ ...prev, terms: data }))
-    router.push(`/auth/signup?step=${SIGNUP_STEPS.ENTER_EMAIL}`)
+    updateAndGoNext("terms", data, SIGNUP_STEPS.ENTER_EMAIL)
   }
 
   const handleEmailComplete = (data: EmailStepData) => {
-    setSignupData((prev) => ({ ...prev, email: data }))
-    router.push(`/auth/signup?step=${SIGNUP_STEPS.VERIFY_EMAIL}`)
+    updateAndGoNext("email", data, SIGNUP_STEPS.VERIFY_EMAIL)
   }
 
   const handleVerificationComplete = (data: VerificationStepData) => {
-    setSignupData((prev) => ({ ...prev, verification: data }))
-    router.push(`/auth/signup?step=${SIGNUP_STEPS.SET_USERID}`)
+    updateAndGoNext("verification", data, SIGNUP_STEPS.SET_USERID)
   }
 
   const handleSetUserIdComplete = (data: SetUserIdData) => {
-    setSignupData((prev) => ({ ...prev, userId: data }))
-    router.push(`/auth/signup?step=${SIGNUP_STEPS.SET_PASSWORD}`)
+    updateAndGoNext("userId", data, SIGNUP_STEPS.SET_PASSWORD)
   }
 
   const handlePasswordComplete = (data: PasswordStepData) => {
-    setSignupData((prev) => ({ ...prev, password: data }))
-    router.push(`/auth/signup?step=${SIGNUP_STEPS.SIGNUP_COMPLETE}`)
+    updateAndGoNext("password", data, SIGNUP_STEPS.SIGNUP_COMPLETE)
   }
 
   const handleSignupComplete = async () => {
-    // 필수 데이터 검증
-    // await showFinalSuccess()
+    // 최종 회원가입 처리
   }
 
   /**
@@ -141,58 +125,37 @@ export default function SignupContainer() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black p-4">
-      <div className="w-full max-w-md">
+    <StepFlowLayout>
+      <div className="mb-8">
         {/* 스텝 인디케이터 */}
-        <div className="mb-8">
-          <div className="mb-4 flex justify-center space-x-2">
-            {Object.values(SIGNUP_STEPS).map((step, index) => (
-              <div
-                key={step}
-                className={`h-2 w-2 rounded-full ${
-                  step === currentStep
-                    ? "bg-purple-400"
-                    : Object.values(SIGNUP_STEPS).indexOf(currentStep) > index
-                      ? "bg-gray-400"
-                      : "bg-gray-600"
-                }`}
-              />
-            ))}
-          </div>
-          {/* 로고 영역 */}
-          <div className="mb-8 text-center">
-            <h1 className="mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-3xl font-bold text-transparent">
-              COTEPT
-            </h1>
-          </div>
-        </div>
-        <div className="mx-auto w-full max-w-md">
-          {/* 메인 카드 */}
-          <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-7">
-            {/* FormStep 래퍼로 현재 단계 컴포넌트 감싸기 */}
-            <FormStep
-              title={STEP_CONFIGS[currentStep].title}
-              description={STEP_CONFIGS[currentStep].description}
-              subDescription={STEP_CONFIGS[currentStep].subDescription}
-              icon={STEP_CONFIGS[currentStep].icon}
-              align={STEP_CONFIGS[currentStep].align}>
-              {renderCurrentStep()}
-            </FormStep>
-          </div>
-          {/* 하단 로그인 링크 */}
-
-          {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
-            <div className="pt-4 text-center">
-              <p className="space-x-1 text-sm text-zinc-400">
-                <span className="">이미 코테피티의 회원이신가요?</span>
-                <Link href="/auth/signin" className="text-purple-400 underline hover:text-purple-300">
-                  로그인 하러가기
-                </Link>
-              </p>
-            </div>
-          )}
-        </div>
+        <StepDots
+          totalSteps={totalSteps}
+          currentStepIndex={currentStepIndex}
+          isStepCompleted={isStepCompleted}
+          stepOrder={SIGNUP_STEP_ORDER}
+        />
+        <Logo />
       </div>
-    </div>
+      <FormStepContent>
+        <FormStep
+          title={STEP_CONFIGS[currentStep].title}
+          description={STEP_CONFIGS[currentStep].description}
+          subDescription={STEP_CONFIGS[currentStep].subDescription}
+          icon={STEP_CONFIGS[currentStep].icon}
+          align={STEP_CONFIGS[currentStep].align}>
+          {renderCurrentStep()}
+        </FormStep>
+      </FormStepContent>
+      {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
+        <div className="pt-4 text-center">
+          <p className="space-x-1 text-sm text-zinc-400">
+            <span className="">이미 코테피티의 회원이신가요?</span>
+            <Link href="/auth/signin" className="text-purple-400 underline hover:text-purple-300">
+              로그인 하러가기
+            </Link>
+          </p>
+        </div>
+      )}
+    </StepFlowLayout>
   )
 }

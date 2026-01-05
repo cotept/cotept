@@ -5,41 +5,44 @@ import React from "react"
 
 import { cn } from "../lib/utils"
 
-const statusMessageVariants = cva(
-  "rounded-lg border p-4 text-center",
-  {
-    variants: {
-      variant: {
-        success: "border-green-500/20 bg-green-500/10",
-        error: "border-red-500/20 bg-red-500/10", 
-        warning: "border-yellow-500/20 bg-yellow-500/10",
-        info: "border-blue-500/20 bg-blue-500/10",
-        processing: "border-purple-500/20 bg-purple-500/10",
-      },
+const statusMessageVariants = cva("rounded-lg border p-4 text-center", {
+  variants: {
+    variant: {
+      success: "border-green-500/20 bg-green-500/10",
+      compelete: "border-green-500/20 bg-gradient-to-b from-green-500/10 to-transparent",
+      error: "border-red-500/20 bg-red-500/10",
+      warning: "border-yellow-500/20 bg-yellow-500/10",
+      info: "border-blue-500/20 bg-blue-500/10",
+      processing: "border-purple-500/20 bg-purple-500/10",
+      transparent: "bg-transparent",
     },
-    defaultVariants: {
-      variant: "info",
+    shape: {
+      fill: "",
+      outline: "bg-transparent",
     },
-  }
-)
+  },
+  defaultVariants: {
+    variant: "info",
+    shape: "fill",
+  },
+})
 
-const statusMessageTextVariants = cva(
-  "text-sm",
-  {
-    variants: {
-      variant: {
-        success: "text-green-400",
-        error: "text-red-400",
-        warning: "text-yellow-400", 
-        info: "text-blue-400",
-        processing: "text-purple-400",
-      },
+const statusMessageTextVariants = cva("text-sm", {
+  variants: {
+    variant: {
+      success: "text-green-400",
+      compelete: "text-green-400",
+      error: "text-red-400",
+      warning: "text-yellow-400",
+      info: "text-blue-400",
+      processing: "text-purple-400",
+      transparent: "text-white",
     },
-    defaultVariants: {
-      variant: "info",
-    },
-  }
-)
+  },
+  defaultVariants: {
+    variant: "info",
+  },
+})
 
 export interface StatusMessageProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -56,27 +59,17 @@ export interface StatusMessageProps
 }
 
 const StatusMessage = React.forwardRef<HTMLDivElement, StatusMessageProps>(
-  ({ className, variant, message, icon, children, ...props }, ref) => {
+  ({ className, variant, shape, message, icon, children, ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={cn(statusMessageVariants({ variant }), className)}
-        {...props}
-      >
+      <div ref={ref} className={cn(statusMessageVariants({ variant, shape }), className)} {...props}>
         <div className="flex items-center justify-center gap-2">
           {icon && <span className="shrink-0">{icon}</span>}
-          <p className={cn(statusMessageTextVariants({ variant }))}>
-            {message}
-          </p>
+          <p className={cn(statusMessageTextVariants({ variant }))}>{message}</p>
         </div>
-        {children && (
-          <div className="mt-3">
-            {children}
-          </div>
-        )}
+        {children && <div className="mt-3">{children}</div>}
       </div>
     )
-  }
+  },
 )
 
 StatusMessage.displayName = "StatusMessage"

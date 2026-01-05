@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
+
 import FormStepContent from "@repo/shared/components/form-step-content"
-import { Skeleton } from "@repo/shared/components/skeleton"
 import { FormStep } from "@repo/shared/src/components/form-step"
 import { StepDots } from "@repo/shared/src/components/step-dots"
 import StepFlowLayout from "@repo/shared/src/components/step-flow-layout"
@@ -16,11 +17,15 @@ import type {
 } from "@/features/onboarding/lib/validations/onboarding-rules"
 
 import { BaekjoonVerifyStep } from "@/features/onboarding/components/BaekjoonVerifyStep"
+import { OnboardingCompleteStep } from "@/features/onboarding/components/OnboardingCompleteStep"
 import { MentorProfileSetupStep } from "@/features/onboarding/components/MentorProfileSetupStep"
 import { MentorProfileSetupSkeleton } from "@/features/onboarding/components/MentorProfileSetupSkeleton"
 import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
+import { OnboardingDebugPanel } from "@/features/onboarding/components/OnboardingDebugPanel"
 import { useMentorProposal } from "@/features/onboarding/hooks/useMentorProposal"
+import { useOnboardingFlowPersistence } from "@/features/onboarding/hooks/useOnboardingFlowPersistence"
 import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
+import { useOnboardingStepGuard } from "@/features/onboarding/hooks/useOnboardingStepGuard"
 import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
 import Logo from "@/shared/ui/Logo"
 import { ClientOnly } from "@/shared/ui/client-only/ClientOnly"
@@ -59,11 +64,25 @@ const OnBoardingContainer = () => {
     currentStep,
     currentStepIndex,
     onboardingData,
+    setOnboardingData,
+    goToStep,
     updateAndGoNext,
     isStepCompleted,
     totalSteps,
     handleMentorProposal,
   } = useOnboardingSteps()
+
+  useOnboardingStepGuard({ currentStep, onboardingData, goToStep })
+  const { clearPersistedFlow } = useOnboardingFlowPersistence({
+    onboardingData,
+    setOnboardingData,
+  })
+
+  useEffect(() => {
+    if (currentStep === ONBOARDING_STEPS.COMPLETE) {
+      clearPersistedFlow()
+    }
+  }, [currentStep, clearPersistedFlow])
 
   // 멘토 제안 훅
   const { checkEligibility } = useMentorProposal({
@@ -107,7 +126,7 @@ const OnBoardingContainer = () => {
         )
 
       case ONBOARDING_STEPS.COMPLETE:
-        return <div className="text-muted-foreground text-center">온보딩 완료 단계 (구현 예정)</div>
+        return <OnboardingCompleteStep onboardingData={onboardingData} />
 
       default:
         return (
@@ -141,6 +160,11 @@ const OnBoardingContainer = () => {
           {renderCurrentStep()}
         </FormStep>
       </FormStepContent>
+      <OnboardingDebugPanel
+        setOnboardingData={setOnboardingData}
+        goToStep={goToStep}
+        clearPersistedFlow={clearPersistedFlow}
+      />
     </StepFlowLayout>
   )
 }

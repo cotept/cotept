@@ -6,7 +6,7 @@ import Link from "next/link"
 
 import { Button } from "@repo/shared/components/button"
 
-import { Terminal } from "lucide-react"
+import Logo from "@/shared/ui/Logo"
 
 export const LandingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -25,11 +25,8 @@ export const LandingHeader = () => {
         isScrolled ? "bg-background/80 h-16 border-white/10 backdrop-blur-md" : "h-20 border-transparent bg-transparent"
       }`}>
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="group flex cursor-pointer items-center gap-2">
-          <div className="bg-brand-primary shadow-primary/30 flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-transform group-hover:scale-105">
-            <Terminal className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-black tracking-tight text-white">CotePT</span>
+        <Link href="/" className="group flex cursor-pointer items-center justify-center gap-2">
+          <Logo size={"sm"} variant={"primary"} margin={false} />
         </Link>
 
         <div className="flex items-center gap-2">

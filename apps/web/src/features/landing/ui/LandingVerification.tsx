@@ -39,7 +39,7 @@ export const LandingVerification = () => {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
           <h2 className="mb-6 text-4xl font-black text-white">실력이 검증된 멘토</h2>
-          <p className="mx-auto max-w-2xl text-lg font-medium text-zinc-400">
+          <p className="mx-auto max-w-2xl text-lg font-semibold text-zinc-400">
             코테피티의 모든 멘토는 엄격한 검증 과정을 거칩니다.
           </p>
         </div>
@@ -57,7 +57,7 @@ export const LandingVerification = () => {
                 iconClassName="h-8 w-8"
               />
               <FeatureCardTitle>{step.title}</FeatureCardTitle>
-              <FeatureCardDescription className="text-xs text-zinc-500">{step.desc}</FeatureCardDescription>
+              <FeatureCardDescription className="text-xs">{step.desc}</FeatureCardDescription>
             </FeatureCard>
           ))}
         </div>

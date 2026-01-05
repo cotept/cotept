@@ -14,7 +14,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 const logoVariants = cva("text-center font-bold transition-opacity duration-200", {
   variants: {
     size: {
-      sm: "text-xl",
+      xs: "text-xl",
+      sm: "text-2xl",
       md: "text-3xl",
       lg: "text-4xl xl:text-5xl",
     },

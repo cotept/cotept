@@ -14,17 +14,17 @@ export const LandingPainPoints = () => {
     {
       icon: Signpost,
       title: "어디서부터 시작해야 할지 모르겠어요",
-      desc: "알고리즘 공부, 막막하게 느껴지시나요?",
+      desc: "자료는 많은데 나에게 맞는 학습 로드맵을 찾기 어려워요. 내 수준에 딱 맞는 시작점이 필요해요.",
     },
     {
       icon: HelpCircle,
       title: "많이 풀어보세요... 그 다음은?",
-      desc: "구체적인 피드백 없이 혼자 헤매고 계신가요?",
+      desc: "문제 풀이 양치기만으로 실력이 늘지 않는 기분이에요. 효율적인 문제 해결 전략이 궁금하지 않나요?",
     },
     {
       icon: Brain,
       title: "내가 성장하고 있는 걸까요?",
-      desc: "내 실력이 늘고 있는지 확신이 서지 않으시나요?",
+      desc: "피드백 없이 혼자 공부하다 보니 확신이 없어요. 전문가의 코드 리뷰와 객관적인 평가가 필요해요.",
     },
   ]
 
@@ -33,7 +33,9 @@ export const LandingPainPoints = () => {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-black text-white">이런 고민, 하고 계신가요?</h2>
-          <p className="mx-auto max-w-lg text-zinc-400">열심히는 하고 있는데 잘 하고 있는 지는 모르겠어요</p>
+          <p className="mx-auto max-w-lg font-semibold text-zinc-400">
+            혼자 준비하는 코딩 테스트, 막막함의 이유를 찾아보세요.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">

@@ -14,17 +14,17 @@ export const LandingFeatures = () => {
     {
       icon: Code,
       title: "실시간으로 함께 코드를 작성해요",
-      desc: "Monaco 에디터로 코드를 공유하고, WebRTC 음성으로 즉시 소통하세요.",
+      desc: "강력한 동시 편집 에디터와 음성 대화로 마치 옆에 있는 것처럼 소통하세요.",
     },
     {
       icon: BadgeCheck,
       title: "백준 플래티넘 이상, 검증된 실력",
-      desc: "solved.ac 티어로 인증된 전문 멘토가 여러분을 기다립니다.",
+      desc: "solved.ac 티어로 인증된 검증된 멘토들이 여러분을 기다립니다.",
     },
     {
       icon: MonitorPlay,
       title: "멘토링을 언제든 다시 볼 수 있어요",
-      desc: "녹화된 세션으로 복습하고, 놓친 부분을 다시 확인하세요.",
+      desc: "모든 멘토링 세션은 자동 녹화되어 언제든지 다시 보며 복습할 수 있습니다.",
     },
   ]
 
@@ -35,8 +35,8 @@ export const LandingFeatures = () => {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-black text-white">코테피티가 해결해드립니다</h2>
-          <p className="mx-auto max-w-2xl text-zinc-400">
-            개발자 성장을 위해 만들어진 최고의 1:1 실시간 멘토링 솔루션을 경험하세요.
+          <p className="mx-auto max-w-2xl font-semibold text-zinc-400">
+            개발자 성장을 위한 최고의 1:1 실시간 멘토링 솔루션을 경험하세요.
           </p>
         </div>
 

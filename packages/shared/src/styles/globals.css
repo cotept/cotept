@@ -4,6 +4,7 @@
 @source "../**/*.{ts,tsx}";
 
 @import "tw-animate-css";
+@import "./animations.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -14,26 +15,167 @@
   --color-brand-pink: oklch(0.769 0.188 70.08);
   --color-brand-blue: oklch(0.398 0.07 227.392);
 
-  /* === CotePT Auth Palette === */
-  --color-auth-surface: rgb(39 39 42 / 0.5);      /* bg-zinc-800/50 */
-  --color-auth-border: rgb(63 63 70 / 0.5);       /* border-zinc-700/50 */
-  --color-auth-input: rgb(55 65 81 / 0.5);        /* bg-zinc-700/50 */
+  /* === CotePT Auth Palette (Legacy - to be migrated) === */
+  --color-auth-surface: rgb(39 39 42 / 0.5); /* bg-zinc-800/50 */
+  --color-auth-border: rgb(63 63 70 / 0.5); /* border-zinc-700/50 */
+  --color-auth-input: rgb(55 65 81 / 0.5); /* bg-zinc-700/50 */
+
+  /* === Semantic Tokens (New Design System) === */
+  /* Backgrounds */
+  --color-surface-primary: var(--bg-background-primary);
+  --color-surface-secondary: var(--bg-background-secondary);
+  --color-surface-tertiary: var(--bg-background-tertiary);
+  --color-surface-inverse: var(--bg-background-inverse);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Borders */
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  /* Brand */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-highlight: var(--brand-highlight);
+
+  /* === Extended Palette (Base, Tint, Shade) === */
+  /* Primary */
+  --color-primary-base: var(--primary-base);
+  --color-primary-tint: var(--primary-tint);
+  --color-primary-shade: var(--primary-shade);
+
+  /* Secondary */
+  --color-secondary-base: var(--secondary-base);
+  --color-secondary-tint: var(--secondary-tint);
+  --color-secondary-shade: var(--secondary-shade);
+
+  /* Tertiary */
+  --color-tertiary-base: var(--tertiary-base);
+  --color-tertiary-tint: var(--tertiary-tint);
+  --color-tertiary-shade: var(--tertiary-shade);
+
+  /* Success */
+  --color-success-base: var(--success-base);
+  --color-success-tint: var(--success-tint);
+  --color-success-shade: var(--success-shade);
+
+  /* Warning */
+  --color-warning-base: var(--warning-base);
+  --color-warning-tint: var(--warning-tint);
+  --color-warning-shade: var(--warning-shade);
+
+  /* Danger */
+  --color-danger-base: var(--danger-base);
+  --color-danger-tint: var(--danger-tint);
+  --color-danger-shade: var(--danger-shade);
+
+  /* Gray */
+  --color-gray-base: var(--gray-base);
+  --color-gray-tint: var(--gray-tint);
+  --color-gray-shade: var(--gray-shade);
+
+  /* Static/Neutral */
+  --color-static-white: var(--static-white);
+  --color-static-black: var(--static-black);
+  --color-light: var(--light);
+  --color-dark: var(--dark);
+
+  /* Status (Legacy mapping) */
+  --color-status-error: var(--status-error);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-info: var(--status-info);
 
   /* === Component Sizing === */
-  --size-auth-input: 2.75rem;                     /* h-11 */
-  --size-auth-button: 3rem;                       /* h-12 */
-  --size-auth-card: 28rem;                        /* max-w-md */
+  --size-auth-input: 2.75rem; /* h-11 */
+  --size-auth-button: 3rem; /* h-12 */
+  --size-auth-card: 28rem; /* max-w-md */
 
   /* === Spacing === */
-  --spacing-auth-gap: 1rem;                       /* space-y-4 */
-  --spacing-auth-container: 1.5rem;               /* space-y-6 */
-  --spacing-auth-padding: 1.75rem;                /* p-7 */
+  --spacing-auth-gap: 1rem; /* space-y-4 */
+  --spacing-auth-container: 1.5rem; /* space-y-6 */
+  --spacing-auth-padding: 1.75rem; /* p-7 */
 
   /* === Typography === */
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
+  /* --- Semantic Tokens: Light Mode --- */
+  /* Backgrounds */
+  --bg-background-primary: #ffffff; /* white */
+  --bg-background-secondary: #fafafa; /* zinc-50 */
+  --bg-background-tertiary: #f4f4f5; /* zinc-100 */
+  --bg-background-inverse: #18181b; /* zinc-900 */
+
+  /* Text */
+  --text-primary: #18181b; /* zinc-900 */
+  --text-secondary: #71717a; /* zinc-500 */
+  --text-tertiary: #a1a1aa; /* zinc-400 */
+  --text-inverse: #ffffff; /* white */
+
+  /* Borders */
+  --border-default: #e4e4e7; /* zinc-200 */
+  --border-strong: #d4d4d8; /* zinc-300 */
+
+  /* Brand */
+  --brand-primary: #9333ea; /* purple-600 */
+  --brand-secondary: #7e22ce; /* purple-700 */
+  --brand-highlight: #a855f7; /* purple-500 */
+
+  /* --- Extended Palette: Light Mode --- */
+  /* Primary (Purple) */
+  --primary-base: #9333ea; /* purple-600 */
+  --primary-tint: #c084fc; /* purple-400 */
+  --primary-shade: #7e22ce; /* purple-700 */
+
+  /* Secondary (Blue) */
+  --secondary-base: #2563eb; /* blue-600 */
+  --secondary-tint: #60a5fa; /* blue-400 */
+  --secondary-shade: #1d4ed8; /* blue-700 */
+
+  /* Tertiary (Pink) */
+  --tertiary-base: #db2777; /* pink-600 */
+  --tertiary-tint: #f472b6; /* pink-400 */
+  --tertiary-shade: #be185d; /* pink-700 */
+
+  /* Success (Green) */
+  --success-base: #16a34a; /* green-600 */
+  --success-tint: #4ade80; /* green-400 (Matches SignupCompleteStep) */
+  --success-shade: #15803d; /* green-700 */
+
+  /* Warning (Orange) */
+  --warning-base: #f97316; /* orange-500 */
+  --warning-tint: #fb923c; /* orange-400 */
+  --warning-shade: #c2410c; /* orange-700 */
+
+  /* Danger (Red) */
+  --danger-base: #dc2626; /* red-600 */
+  --danger-tint: #fca5a5; /* red-300 (Matches SignupCompleteStep) */
+  --danger-shade: #b91c1c; /* red-700 */
+
+  /* Gray (Zinc) */
+  --gray-base: #71717a; /* zinc-500 */
+  --gray-tint: #a1a1aa; /* zinc-400 */
+  --gray-shade: #52525b; /* zinc-600 */
+
+  /* Static & Neutral */
+  --static-white: #ffffff;
+  --static-black: #000000;
+  --light: #ffffff;
+  --dark: #000000;
+
+  /* Status (Legacy) */
+  --status-error: var(--danger-base);
+  --status-success: var(--success-base);
+  --status-warning: var(--warning-base);
+  --status-info: var(--secondary-base);
+
+  /* --- Shadcn UI Variables (Preserved) --- */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -70,6 +212,75 @@
 }
 
 .dark {
+  /* --- Semantic Tokens: Dark Mode --- */
+  /* Backgrounds */
+  --bg-background-primary: #000000; /* black (Project default) */
+  --bg-background-secondary: #09090b; /* zinc-950 */
+  --bg-background-tertiary: #18181b; /* zinc-900 */
+  --bg-background-inverse: #ffffff; /* white */
+
+  /* Text */
+  --text-primary: #ffffff; /* white */
+  --text-secondary: #a1a1aa; /* zinc-400 */
+  --text-tertiary: #71717a; /* zinc-500 */
+  --text-inverse: #18181b; /* zinc-900 */
+
+  /* Borders */
+  --border-default: #27272a; /* zinc-800 */
+  --border-strong: #3f3f46; /* zinc-700 */
+
+  /* Brand */
+  --brand-primary: #9333ea; /* purple-600 */
+  --brand-secondary: #7e22ce; /* purple-700 */
+  --brand-highlight: #c084fc; /* purple-400 (Lighter for dark mode) */
+
+  /* --- Extended Palette: Dark Mode --- */
+  /* Primary (Purple) */
+  --primary-base: #9333ea; /* purple-600 */
+  --primary-tint: #d8b4fe; /* purple-300 (Lighter for dark bg) */
+  --primary-shade: #7e22ce; /* purple-700 */
+
+  /* Secondary (Blue) */
+  --secondary-base: #3b82f6; /* blue-500 */
+  --secondary-tint: #60a5fa; /* blue-400 */
+  --secondary-shade: #1d4ed8; /* blue-700 */
+
+  /* Tertiary (Pink) */
+  --tertiary-base: #ec4899; /* pink-500 */
+  --tertiary-tint: #f472b6; /* pink-400 */
+  --tertiary-shade: #be185d; /* pink-700 */
+
+  /* Success (Green) */
+  --success-base: #22c55e; /* green-500 */
+  --success-tint: #4ade80; /* green-400 */
+  --success-shade: #15803d; /* green-700 */
+
+  /* Warning (Orange) */
+  --warning-base: #fb923c; /* orange-400 */
+  --warning-tint: #fdba74; /* orange-300 */
+  --warning-shade: #ea580c; /* orange-600 */
+
+  /* Danger (Red) */
+  --danger-base: #ef4444; /* red-500 */
+  --danger-tint: #fca5a5; /* red-300 */
+  --danger-shade: #7f1d1d; /* red-900 (Darker shade for error bg) */
+
+  /* Gray (Zinc) */
+  --gray-base: #a1a1aa; /* zinc-400 */
+  --gray-tint: #d4d4d8; /* zinc-300 */
+  --gray-shade: #52525b; /* zinc-600 */
+
+  /* Static & Neutral */
+  --light: #18181b; /* zinc-900 (Inverted) */
+  --dark: #ffffff; /* white (Inverted) */
+
+  /* Status (Legacy) */
+  --status-error: var(--danger-base);
+  --status-success: var(--success-base);
+  --status-warning: var(--warning-base);
+  --status-info: var(--secondary-base);
+
+  /* --- Shadcn UI Variables (Preserved) --- */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);

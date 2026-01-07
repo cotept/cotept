@@ -111,7 +111,7 @@ export const LandingHero = () => {
                       loop={true}
                       showCursor={true}
                       cursorCharacter="|"
-                      className="text-zinc-600"
+                      className="text-zinc-400"
                       cursorClassName="text-blue-500 bg-blue-500"
                     />
                     {/* Mentee Cursor */}

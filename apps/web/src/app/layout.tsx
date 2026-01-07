@@ -1,8 +1,8 @@
+import localFont from "next/font/local"
+
 import { Toaster } from "@repo/shared/components/sonner"
 
 import "@repo/shared/globals.css"
-
-import localFont from "next/font/local"
 
 import Providers from "@/app/_provider/Providers"
 

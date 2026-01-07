@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **CotePT** is a 1:1 mentoring platform with real-time collaboration features built as a Turborepo monorepo.
 
 - **Backend**: NestJS with hexagonal architecture + TypeORM + Oracle DB
-- **Frontend**: Next.js 15 (App Router) + React 19 + React Query + Tailwind CSS
+- **Frontend**: Next.js 16 (App Router) + React 19 + React Query + Tailwind CSS
 - **Package Manager**: pnpm 8.15.6 (enforced)
 - **Node.js**: >= 18
 

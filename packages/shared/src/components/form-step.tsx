@@ -26,7 +26,7 @@ const formStepVariants = cva(
   },
 )
 
-const formStepTitleVariants = cva("font-semibold text-white", {
+const formStepTitleVariants = cva("font-semibold text-foreground", {
   variants: {
     size: {
       sm: "text-lg",
@@ -39,7 +39,7 @@ const formStepTitleVariants = cva("font-semibold text-white", {
   },
 })
 
-const formStepDescriptionVariants = cva("text-zinc-400", {
+const formStepDescriptionVariants = cva("text-muted-foreground", {
   variants: {
     size: {
       sm: "text-xs",
@@ -79,19 +79,22 @@ export interface FormStepProps
 }
 
 const FormStep = React.forwardRef<HTMLDivElement, FormStepProps>(
-  ({ 
-    className, 
-    spacing, 
-    align,
-    size, 
-    title, 
-    description, 
-    subDescription,
-    icon,
-    headerSpacing = "normal", 
-    children, 
-    ...props 
-  }, ref) => {
+  (
+    {
+      className,
+      spacing,
+      align,
+      size,
+      title,
+      description,
+      subDescription,
+      icon,
+      headerSpacing = "normal",
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <div ref={ref} className={cn(formStepVariants({ spacing, align }), className)} {...props}>
         {/* 제목 및 설명 헤더 */}
@@ -101,19 +104,13 @@ const FormStep = React.forwardRef<HTMLDivElement, FormStepProps>(
             {icon && <span className="shrink-0">{icon}</span>}
             <h2 className={cn(formStepTitleVariants({ size }))}>{title}</h2>
           </div>
-          
+
           {/* 주 설명 */}
-          {description && (
-            <p className={cn(formStepDescriptionVariants({ size }))}>
-              {description}
-            </p>
-          )}
-          
+          {description && <p className={cn(formStepDescriptionVariants({ size }))}>{description}</p>}
+
           {/* 부 설명 */}
           {subDescription && (
-            <p className={cn(formStepDescriptionVariants({ size }), "text-zinc-500")}>
-              {subDescription}
-            </p>
+            <p className={cn(formStepDescriptionVariants({ size }), "text-zinc-500")}>{subDescription}</p>
           )}
         </div>
 

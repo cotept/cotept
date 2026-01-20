@@ -7,7 +7,7 @@ export interface FormStepContentProps {
 const FormStepContent = ({ children }: FormStepContentProps) => {
   return (
     <div className="mx-auto w-full max-w-md">
-      <div className="space-y-6 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-7">{children}</div>
+      <div className="border-border/50 bg-card/50 space-y-6 rounded-xl border p-7 shadow-lg">{children}</div>
     </div>
   )
 }

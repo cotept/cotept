@@ -6,10 +6,13 @@ import * as React from "react"
 const pulseBadgeVariants = cva("inline-flex items-center gap-2 rounded-full border px-3 py-1", {
   variants: {
     variant: {
-      default: "border-white/10 bg-white/5",
+      default: "border-border bg-muted/50",
       primary: "border-primary/20 bg-primary/10",
-      success: "border-green-500/20 bg-green-500/10",
-      info: "border-blue-500/20 bg-blue-500/10",
+      secondary: "border-secondary/20 bg-secondary/10",
+      tertiary: "border-tertiary/20 bg-tertiary/10",
+      success: "border-success/20 bg-success/10",
+      warning: "border-warning/20 bg-warning/10",
+      info: "border-info/20 bg-info/10",
       destructive: "border-destructive/20 bg-destructive/10",
     },
   },
@@ -21,10 +24,13 @@ const pulseBadgeVariants = cva("inline-flex items-center gap-2 rounded-full bord
 const pulseDotVariants = cva("h-2 w-2 rounded-full", {
   variants: {
     variant: {
-      default: "bg-green-400",
+      default: "bg-success",
       primary: "bg-primary",
-      success: "bg-green-400",
-      info: "bg-blue-400",
+      secondary: "bg-secondary",
+      tertiary: "bg-tertiary",
+      success: "bg-success",
+      warning: "bg-warning",
+      info: "bg-info",
       destructive: "bg-destructive",
     },
     pulse: {
@@ -41,10 +47,13 @@ const pulseDotVariants = cva("h-2 w-2 rounded-full", {
 const pulseTextVariants = cva("text-xs font-semibold uppercase tracking-widest", {
   variants: {
     variant: {
-      default: "text-zinc-300",
+      default: "text-accent-foreground",
       primary: "text-primary",
-      success: "text-green-400",
-      info: "text-blue-400",
+      secondary: "text-secondary",
+      tertiary: "text-tertiary",
+      success: "text-success",
+      warning: "text-warning",
+      info: "text-info",
       destructive: "text-destructive",
     },
   },

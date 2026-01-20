@@ -8,28 +8,31 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 ",
+        default: "bg-primary/80 text-primary-foreground shadow-xs hover:bg-primary-shade",
+        secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80", // Pink Button
+        tertiary: "bg-tertiary text-tertiary-foreground shadow-xs hover:bg-tertiary/80", // Blue Button
+        outline: "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        destructive:
+          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20",
+
+        // Custom Auth Variants
         "auth-primary":
-          "bg-purple-600 text-white shadow-xs hover:bg-purple-700 focus-visible:ring-purple-600/20 disabled:bg-zinc-800 disabled:text-zinc-500",
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary-shade focus-visible:ring-primary/20 disabled:bg-muted disabled:text-muted-foreground",
         "auth-secondary":
-          "bg-zinc-700 text-white shadow-xs hover:bg-zinc-600 focus-visible:ring-zinc-600/20 disabled:bg-zinc-800 disabled:text-zinc-500",
+          "bg-muted text-muted-foreground shadow-xs hover:bg-muted/80 focus-visible:ring-ring/20 disabled:opacity-50", // Gray Button
         "auth-special":
-          "bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xs hover:from-purple-700 hover:to-pink-700 focus-visible:ring-purple-600/20 disabled:from-zinc-800 disabled:to-zinc-800 disabled:text-zinc-500",
-        "onboarding-complete":
-          "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:scale-[1.02] active:scale-95 transition-transform",
+          "bg-gradient-to-r from-primary to-secondary text-static-white font-semibold shadow-xs hover:from-primary-shade hover:to-secondary-shade focus-visible:ring-primary/20 disabled:from-muted disabled:to-muted disabled:text-muted-foreground", // Purple -> Pink
+        "cta-primary":
+          "bg-gradient-to-r from-primary to-tertiary text-static-white shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.01] active:scale-95 transition-all", // Purple -> Blue
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         xl: "h-12 rounded-md px-6 has-[>svg]:px-4",
+        "2xl": "h-14 rounded-md px-8 text-base has-[>svg]:px-6",
         icon: "size-9",
       },
     },

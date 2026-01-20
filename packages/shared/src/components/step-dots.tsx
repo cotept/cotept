@@ -22,6 +22,7 @@ export function StepDots<TStep extends string>({
             "bg-purple-400": index === currentStepIndex,
             "bg-gray-400": index !== currentStepIndex && isStepCompleted(stepOrder[index]),
             "bg-gray-600": index !== currentStepIndex && !isStepCompleted(stepOrder[index]),
+            // "bg-gray-600": index !== currentStepIndex && !isStepCompleted(stepOrder[index]),
           })}
         />
       ))}

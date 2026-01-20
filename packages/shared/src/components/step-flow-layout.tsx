@@ -1,14 +1,16 @@
+import { cn } from "@repo/shared/lib/utils"
 import React from "react"
 
 export interface StepFlowLayoutProps {
   children: React.ReactNode
+  className?: string
 }
 
-const StepFlowLayout = ({ children }: StepFlowLayoutProps) => {
+const StepFlowLayout = ({ children, className }: StepFlowLayoutProps) => {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-black p-4">
-      <div className="w-full">{children}</div>
-    </div>
+    <section className="animate-in fade-in slide-in-from-bottom-4 relative flex min-h-screen w-full items-center justify-center p-4 duration-700">
+      <div className={cn("w-full", className)}>{children}</div>
+    </section>
   )
 }
 

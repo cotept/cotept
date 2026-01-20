@@ -1,12 +1,9 @@
 # <type>(<scope>): <subject>
 # |<----  제목은 최대 50자까지만  ---->|
-
+#
 # 본문 (선택사항): 변경한 이유를 설명
 # |<----   본문은 한 줄에 최대 72자까지만   ---->|
-
-# 꼬리말 (선택사항): 이슈 번호 참조
-# 예: Closes #123, Refs #456
-
+#
 # --- 커밋 타입 ---
 # feat     : 새 기능 추가
 # fix      : 버그 수정
@@ -17,6 +14,8 @@
 # test     : 테스트 코드 추가/수정
 # chore    : 빌드 스크립트, 패키지 매니저 설정 등
 # perf     : 성능 개선
+# ci       : CI/CD 설정
+# revert   : 버전 되돌리기
 #
 # --- 스코프 ---
 # project      : 프로젝트 설정/구성
@@ -24,14 +23,9 @@
 # api          : 백엔드
 # shared       : 공통 컴포넌트/유틸
 # api-client   : API 클라이언트
-#
-# web 하위 스코프:
-# web/auth     : 인증 관련
-# web/profile  : 프로필 페이지
-# web/session  : 멘토링 세션
-# web/onboarding : 온보딩
-# web/ui       : UI 컴포넌트
-# web/config   : 프론트 설정/구성
+# eslint-config: ESLint 설정
+# typescript-config: TypeScript 설정
+# infra        : 인프라 설정
 #
 # --- 예시 ---
 # feat(web/auth): 소셜 로그인 UI 컴포넌트 추가

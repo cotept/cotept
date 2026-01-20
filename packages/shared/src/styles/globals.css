@@ -1,357 +1,305 @@
 @import "tailwindcss";
-@source "../../../apps/**/*.{ts,tsx}";
-@source "../../../components/**/*.{ts,tsx}";
-@source "../**/*.{ts,tsx}";
-
 @import "tw-animate-css";
 @import "./animations.css";
 
+@source "../../../../apps*.{ts,tsx}";
+@source "../../../../components/**/*.{ts,tsx}";
+@source "../../**/*.{ts,tsx}";
+
 @custom-variant dark (&:is(.dark *));
 
-/* === CotePT Tailwind v4 Design Tokens === */
+/* ============================================================================
+  CotePT Design System v3 - Semantic & Concise
+  - Primary: Purple (Brand Main)
+  - Secondary: Pink (Brand Sub)
+  - Tertiary: Blue (Brand Accent)
+  - Status: Success, Warning, Destructive, Info
+============================================================================ */
+
 @theme {
-  /* === Brand Colors (기존 OKLCH 유지) === */
-  --color-brand-purple: oklch(0.646 0.222 41.116);
-  --color-brand-pink: oklch(0.769 0.188 70.08);
-  --color-brand-blue: oklch(0.398 0.07 227.392);
-
-  /* === CotePT Auth Palette (Legacy - to be migrated) === */
-  --color-auth-surface: rgb(39 39 42 / 0.5); /* bg-zinc-800/50 */
-  --color-auth-border: rgb(63 63 70 / 0.5); /* border-zinc-700/50 */
-  --color-auth-input: rgb(55 65 81 / 0.5); /* bg-zinc-700/50 */
-
-  /* === Semantic Tokens (New Design System) === */
-  /* Backgrounds */
-  --color-surface-primary: var(--bg-background-primary);
-  --color-surface-secondary: var(--bg-background-secondary);
-  --color-surface-tertiary: var(--bg-background-tertiary);
-  --color-surface-inverse: var(--bg-background-inverse);
-
-  /* Text */
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-tertiary: var(--text-tertiary);
-  --color-text-inverse: var(--text-inverse);
-
-  /* Borders */
-  --color-border-default: var(--border-default);
-  --color-border-strong: var(--border-strong);
-
-  /* Brand */
-  --color-brand-primary: var(--brand-primary);
-  --color-brand-secondary: var(--brand-secondary);
-  --color-brand-highlight: var(--brand-highlight);
-
-  /* === Extended Palette (Base, Tint, Shade) === */
-  /* Primary */
-  --color-primary-base: var(--primary-base);
+  /* === Main Brand Palette === */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-primary-tint: var(--primary-tint);
   --color-primary-shade: var(--primary-shade);
 
-  /* Secondary */
-  --color-secondary-base: var(--secondary-base);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary-tint: var(--secondary-tint);
   --color-secondary-shade: var(--secondary-shade);
 
-  /* Tertiary */
-  --color-tertiary-base: var(--tertiary-base);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
   --color-tertiary-tint: var(--tertiary-tint);
   --color-tertiary-shade: var(--tertiary-shade);
 
-  /* Success */
-  --color-success-base: var(--success-base);
+  /* === Status Colors (Functional) === */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-success-tint: var(--success-tint);
   --color-success-shade: var(--success-shade);
 
-  /* Warning */
-  --color-warning-base: var(--warning-base);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-warning-tint: var(--warning-tint);
   --color-warning-shade: var(--warning-shade);
 
-  /* Danger */
-  --color-danger-base: var(--danger-base);
-  --color-danger-tint: var(--danger-tint);
-  --color-danger-shade: var(--danger-shade);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-tint: var(--destructive-tint);
+  --color-destructive-shade: var(--destructive-shade);
 
-  /* Gray */
-  --color-gray-base: var(--gray-base);
-  --color-gray-tint: var(--gray-tint);
-  --color-gray-shade: var(--gray-shade);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
-  /* Static/Neutral */
-  --color-static-white: var(--static-white);
-  --color-static-black: var(--static-black);
-  --color-light: var(--light);
-  --color-dark: var(--dark);
-
-  /* Status (Legacy mapping) */
-  --color-status-error: var(--status-error);
-  --color-status-success: var(--status-success);
-  --color-status-warning: var(--status-warning);
-  --color-status-info: var(--status-info);
-
-  /* === Component Sizing === */
-  --size-auth-input: 2.75rem; /* h-11 */
-  --size-auth-button: 3rem; /* h-12 */
-  --size-auth-card: 28rem; /* max-w-md */
-
-  /* === Spacing === */
-  --spacing-auth-gap: 1rem; /* space-y-4 */
-  --spacing-auth-container: 1.5rem; /* space-y-6 */
-  --spacing-auth-padding: 1.75rem; /* p-7 */
-
-  /* === Typography === */
-  --font-display: var(--font-pretendard), "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", "Malgun Gothic", sans-serif;
-}
-
-:root {
-  /* --- Semantic Tokens: Light Mode --- */
-  /* Backgrounds */
-  --bg-background-primary: #ffffff; /* white */
-  --bg-background-secondary: #fafafa; /* zinc-50 */
-  --bg-background-tertiary: #f4f4f5; /* zinc-100 */
-  --bg-background-inverse: #18181b; /* zinc-900 */
-
-  /* Text */
-  --text-primary: #18181b; /* zinc-900 */
-  --text-secondary: #71717a; /* zinc-500 */
-  --text-tertiary: #a1a1aa; /* zinc-400 */
-  --text-inverse: #ffffff; /* white */
-
-  /* Borders */
-  --border-default: #e4e4e7; /* zinc-200 */
-  --border-strong: #d4d4d8; /* zinc-300 */
-
-  /* Brand */
-  --brand-primary: #9333ea; /* purple-600 */
-  --brand-secondary: #7e22ce; /* purple-700 */
-  --brand-highlight: #a855f7; /* purple-500 */
-
-  /* --- Extended Palette: Light Mode --- */
-  /* Primary (Purple) */
-  --primary-base: #9333ea; /* purple-600 */
-  --primary-tint: #c084fc; /* purple-400 */
-  --primary-shade: #7e22ce; /* purple-700 */
-
-  /* Secondary (Blue) */
-  --secondary-base: #2563eb; /* blue-600 */
-  --secondary-tint: #60a5fa; /* blue-400 */
-  --secondary-shade: #1d4ed8; /* blue-700 */
-
-  /* Tertiary (Pink) */
-  --tertiary-base: #db2777; /* pink-600 */
-  --tertiary-tint: #f472b6; /* pink-400 */
-  --tertiary-shade: #be185d; /* pink-700 */
-
-  /* Success (Green) */
-  --success-base: #16a34a; /* green-600 */
-  --success-tint: #4ade80; /* green-400 (Matches SignupCompleteStep) */
-  --success-shade: #15803d; /* green-700 */
-
-  /* Warning (Orange) */
-  --warning-base: #f97316; /* orange-500 */
-  --warning-tint: #fb923c; /* orange-400 */
-  --warning-shade: #c2410c; /* orange-700 */
-
-  /* Danger (Red) */
-  --danger-base: #dc2626; /* red-600 */
-  --danger-tint: #fca5a5; /* red-300 (Matches SignupCompleteStep) */
-  --danger-shade: #b91c1c; /* red-700 */
-
-  /* Gray (Zinc) */
-  --gray-base: #71717a; /* zinc-500 */
-  --gray-tint: #a1a1aa; /* zinc-400 */
-  --gray-shade: #52525b; /* zinc-600 */
-
-  /* Static & Neutral */
-  --static-white: #ffffff;
-  --static-black: #000000;
-  --light: #ffffff;
-  --dark: #000000;
-
-  /* Status (Legacy) */
-  --status-error: var(--danger-base);
-  --status-success: var(--success-base);
-  --status-warning: var(--warning-base);
-  --status-info: var(--secondary-base);
-
-  /* --- Shadcn UI Variables (Preserved) --- */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  /* --- Semantic Tokens: Dark Mode --- */
-  /* Backgrounds */
-  --bg-background-primary: #000000; /* black (Project default) */
-  --bg-background-secondary: #09090b; /* zinc-950 */
-  --bg-background-tertiary: #18181b; /* zinc-900 */
-  --bg-background-inverse: #ffffff; /* white */
-
-  /* Text */
-  --text-primary: #ffffff; /* white */
-  --text-secondary: #a1a1aa; /* zinc-400 */
-  --text-tertiary: #71717a; /* zinc-500 */
-  --text-inverse: #18181b; /* zinc-900 */
-
-  /* Borders */
-  --border-default: #27272a; /* zinc-800 */
-  --border-strong: #3f3f46; /* zinc-700 */
-
-  /* Brand */
-  --brand-primary: #9333ea; /* purple-600 */
-  --brand-secondary: #7e22ce; /* purple-700 */
-  --brand-highlight: #c084fc; /* purple-400 (Lighter for dark mode) */
-
-  /* --- Extended Palette: Dark Mode --- */
-  /* Primary (Purple) */
-  --primary-base: #9333ea; /* purple-600 */
-  --primary-tint: #d8b4fe; /* purple-300 (Lighter for dark bg) */
-  --primary-shade: #7e22ce; /* purple-700 */
-
-  /* Secondary (Blue) */
-  --secondary-base: #3b82f6; /* blue-500 */
-  --secondary-tint: #60a5fa; /* blue-400 */
-  --secondary-shade: #1d4ed8; /* blue-700 */
-
-  /* Tertiary (Pink) */
-  --tertiary-base: #ec4899; /* pink-500 */
-  --tertiary-tint: #f472b6; /* pink-400 */
-  --tertiary-shade: #be185d; /* pink-700 */
-
-  /* Success (Green) */
-  --success-base: #22c55e; /* green-500 */
-  --success-tint: #4ade80; /* green-400 */
-  --success-shade: #15803d; /* green-700 */
-
-  /* Warning (Orange) */
-  --warning-base: #fb923c; /* orange-400 */
-  --warning-tint: #fdba74; /* orange-300 */
-  --warning-shade: #ea580c; /* orange-600 */
-
-  /* Danger (Red) */
-  --danger-base: #ef4444; /* red-500 */
-  --danger-tint: #fca5a5; /* red-300 */
-  --danger-shade: #7f1d1d; /* red-900 (Darker shade for error bg) */
-
-  /* Gray (Zinc) */
-  --gray-base: #a1a1aa; /* zinc-400 */
-  --gray-tint: #d4d4d8; /* zinc-300 */
-  --gray-shade: #52525b; /* zinc-600 */
-
-  /* Static & Neutral */
-  --light: #18181b; /* zinc-900 (Inverted) */
-  --dark: #ffffff; /* white (Inverted) */
-
-  /* Status (Legacy) */
-  --status-error: var(--danger-base);
-  --status-success: var(--success-base);
-  --status-warning: var(--warning-base);
-  --status-info: var(--secondary-base);
-
-  /* --- Shadcn UI Variables (Preserved) --- */
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
-
-@theme inline {
+  /* === Neutrals & Surfaces === */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
+
+  /* === Component Sizing === */
+  /* === Generic Functional Tokens (Layout/Sizing) === */
+  --spacing-carousel-height-sm: 18.75rem;
+  --spacing-carousel-height-md: 28.125rem;
+  --spacing-carousel-height-lg: 31.25rem;
+
+  /* === Static Tokens (Always Fixed Color) === */
+  --color-static-white: #ffffff;
+  --color-static-black: #000000;
+  --color-static-editor-bg: #1e1e1e;
+  --color-static-editor-code-bg: #09090b;
+  --color-static-editor-border: rgba(255, 255, 255, 0.1);
+
+  /* === solved.ac Tier Colors === */
+  --color-tier-unrated: #2d2d2d;
+  --color-tier-bronze: #ad5600;
+  --color-tier-silver: #435f7a;
+  --color-tier-gold: #ec9a00;
+  --color-tier-platinum: #27e2a4;
+  --color-tier-diamond: #00b4fc;
+  --color-tier-ruby: #ff0062;
+
+  /* === Radius === */
+  --radius-sm: calc(var(--radius) - 2px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* === Shadows (Adaptive) === */
+  --shadow-sm: var(--shadow-sm-value);
+  --shadow-md: var(--shadow-md-value);
+  --shadow-lg: var(--shadow-lg-value);
+  --shadow-xl: var(--shadow-xl-value);
+
+  /* === Typography === */
+  --font-display:
+    var(--font-pretendard), "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+
+  /* === Extended Tokens === */
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-3: var(--bg-3);
+  --color-bg-4: var(--bg-4);
+  --color-bg-5: var(--bg-5);
+
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-fg-4: var(--fg-4);
+
+  --color-border-1: var(--border-1);
+  --color-border-2: var(--border-2);
+  --color-border-3: var(--border-3);
+}
+
+:root {
+  /* ========================================================================
+     Extended Tokens (Source of Truth) - Light Mode
+     - Base: Pure White
+     ======================================================================== */
+
+  /* --- Background Levels (Brightness/Depth) --- */
+  --bg-1: #ffffff; /* Default Background */
+  --bg-2: var(--color-zinc-50); /* Zinc-50 (Subtle) */
+  --bg-3: var(--color-zinc-100); /* Zinc-100 (Muted/Accent) */
+  --bg-4: var(--color-zinc-200); /* Zinc-200 (Input/Strong) */
+  --bg-5: var(--color-zinc-300); /* Zinc-300 (Darker) */
+
+  /* --- Text Levels (Importance) --- */
+  --fg-1: var(--color-zinc-950); /* Main Text */
+  --fg-2: var(--color-zinc-800); /* Zinc-800 (Card Foreground) */
+  --fg-3: var(--color-zinc-500); /* Zinc-500 (Muted) */
+  --fg-4: var(--color-zinc-400); /* Zinc-400 (Subtle) */
+
+  /* --- Border Levels (Strength) --- */
+  --border-1: var(--color-zinc-200); /* Default Border */
+  --border-2: var(--color-zinc-300); /* Stronger */
+  --border-3: var(--color-zinc-400); /* Heavy */
+
+  /* --- Primary: Purple --- */
+  --primary: #7c3bed;
+  --primary-foreground: #ffffff;
+  --primary-tint: #a78bfa;
+  --primary-shade: #5b21b6;
+
+  /* --- Secondary: Pink --- */
+  --secondary: #ec4899;
+  --secondary-foreground: #ffffff;
+  --secondary-tint: #f472b6;
+  --secondary-shade: #be185d;
+
+  /* --- Tertiary: Blue --- */
+  --tertiary: #3b82f6;
+  --tertiary-foreground: #ffffff;
+  --tertiary-tint: #60a5fa;
+  --tertiary-shade: #1d4ed8;
+
+  /* --- Status Colors --- */
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --success-tint: #4ade80;
+  --success-shade: #15803d;
+
+  --warning: #f97316;
+  --warning-foreground: #ffffff;
+  --warning-tint: #fb923c;
+  --warning-shade: #c2410c;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --destructive-tint: #fca5a5;
+  --destructive-shade: #b91c1c;
+
+  --info: #0ea5e9;
+  --info-foreground: #ffffff;
+
+  --background: var(--bg-1);
+  --foreground: var(--fg-1);
+
+  --card: var(--bg-3) / 50;
+  --card-foreground: var(--fg-2);
+
+  --popover: var(--bg-1);
+  --popover-foreground: var(--fg-1);
+
+  --muted: var(--bg-3);
+  --muted-foreground: var(--fg-3);
+
+  --accent: var(--bg-3);
+  --accent-foreground: var(--color-zinc-900);
+
+  --border: var(--border-1);
+  --input: var(--border-1);
+  --ring: var(--tertiary-tint);
+
+  /* --- Shadows (Light Mode) --- */
+  --shadow-sm-value: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md-value: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg-value: 0 8px 30px rgb(0 0 0 / 0.04);
+  --shadow-xl-value: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* ========================================================================
+     Extended Tokens (Source of Truth) - Dark Mode
+     - Base: Zinc-950
+     ======================================================================== */
+
+  /* --- Background Levels (Brightness/Depth) --- */
+  --bg-1: var(--color-zinc-950); /* #09090b (Base) */
+  --bg-2: var(--color-zinc-900); /* #18181b */
+  --bg-3: var(--color-zinc-800); /* Zinc-800 (Card/Muted) */
+  --bg-4: var(--color-zinc-700); /* Zinc-700 (Input/Strong) */
+  --bg-5: var(--color-zinc-600); /* Zinc-600 (Hover) */
+
+  /* --- Text Levels (Importance) --- */
+  --fg-1: var(--color-zinc-50); /* Zinc-50 (Main) */
+  --fg-2: var(--color-zinc-300); /* Zinc-300 (Label/Strong) */
+  --fg-3: var(--color-zinc-400); /* Zinc-400 (Muted) */
+  --fg-4: var(--color-zinc-500); /* Zinc-500 (Subtle) */
+
+  /* --- Border Levels (Strength) --- */
+  --border-1: var(--color-zinc-800); /* Zinc-800 (Subtle/Input) */
+  --border-2: var(--color-zinc-700); /* Zinc-700 (Default Border) */
+  --border-3: var(--color-zinc-600); /* Zinc-600 (Strong) */
+
+  /* --- Primary: Purple --- */
+  --primary: #7c3bed;
+  --primary-foreground: #ffffff;
+  --primary-tint: #a78bfa;
+  --primary-shade: #5b21b6;
+
+  /* --- Secondary: Pink --- */
+  --secondary: #ec4899;
+  --secondary-foreground: #09090b;
+  --secondary-tint: #f472b6;
+  --secondary-shade: #be185d;
+
+  /* --- Tertiary: Blue --- */
+  --tertiary: #3b82f6;
+  --tertiary-foreground: #09090b;
+  --tertiary-tint: #60a5fa;
+  --tertiary-shade: #1d4ed8;
+
+  /* --- Status Colors --- */
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --success-tint: #4ade80;
+  --success-shade: #15803d;
+
+  --warning: #f97316;
+  --warning-foreground: #ffffff;
+  --warning-tint: #fb923c;
+  --warning-shade: #c2410c;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --destructive-tint: #f87171;
+  --destructive-shade: #991b1b;
+
+  --info: #0ea5e9;
+  --info-foreground: #ffffff;
+
+  /* --- Neutrals (Mapped to Layers) --- */
+  --background: var(--bg-1);
+  --foreground: var(--fg-1);
+
+  --card: var(--bg-3); /* Zinc-800 (Not 900) */
+  --card-foreground: var(--fg-1);
+
+  --popover: var(--bg-1);
+  --popover-foreground: var(--fg-1);
+
+  --muted: var(--bg-3); /* Zinc-800 */
+  --muted-foreground: var(--fg-3); /* Zinc-400 */
+
+  --accent: var(--bg-3); /* Zinc-800 */
+  --accent-foreground: var(--fg-1);
+
+  --border: var(--border-2); /* Zinc-700 */
+  --input: var(--bg-3); /* Zinc-800 (Input has darker border than layout border in legacy) */
+  --ring: var(--tertiary-tint);
+
+  /* --- Shadows (Dark Mode) --- */
+  --shadow-sm-value: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md-value: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg-value: 0 8px 30px rgb(0 0 0 / 0.2);
+  --shadow-xl-value: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
 }
 
 @layer base {
@@ -360,5 +308,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }

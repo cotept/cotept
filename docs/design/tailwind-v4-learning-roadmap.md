@@ -7,10 +7,12 @@ CotePT 프로젝트를 위한 Tailwind CSS v4 디자인 토큰 시스템 학습 
 ### A. Tailwind v4 핵심 변화 이해
 
 **📖 학습 자료:**
+
 - [Tailwind CSS v4 공식 문서](https://tailwindcss.com/blog/tailwindcss-v4)
 - [v3 vs v4 차이점 정리](https://tailwindcss.com/docs/theme)
 
 **핵심 개념:**
+
 - ✅ **CSS-First 설정**: JavaScript config → CSS @theme
 - ✅ **@theme 디렉티브**: `@theme { --color-primary: red; }`
 - ✅ **자동 유틸리티 생성**: `--color-brand-purple` → `bg-brand-purple`
@@ -42,6 +44,7 @@ oklch(0.7 0.15 180)
 ```
 
 **색조 각도 참고:**
+
 - 🔴 **Red**: 0° ~ 30°
 - 🟠 **Orange**: 30° ~ 60°
 - 🟡 **Yellow**: 60° ~ 120°
@@ -54,15 +57,16 @@ oklch(0.7 0.15 180)
 
 ```css
 /* 현재 CotePT 색상들 */
---color-brand-purple: oklch(0.646 0.222 41.116);  /* 이상한 각도? */
---color-brand-pink: oklch(0.769 0.188 70.08);     /* 이상한 각도? */
+--color-brand-purple: oklch(0.646 0.222 41.116); /* 이상한 각도? */
+--color-brand-pink: oklch(0.769 0.188 70.08); /* 이상한 각도? */
 
 /* 정상적인 Purple/Pink 각도 */
---color-purple-proper: oklch(0.646 0.222 280);    /* 280도 = 보라색 */
---color-pink-proper: oklch(0.769 0.188 340);      /* 340도 = 분홍색 */
+--color-purple-proper: oklch(0.646 0.222 280); /* 280도 = 보라색 */
+--color-pink-proper: oklch(0.769 0.188 340); /* 340도 = 분홍색 */
 ```
 
 **학습 도구:**
+
 - [OKLCH 색상 피커](https://oklch.com/)
 - 색상 팔레트 생성기 사용해보기
 
@@ -75,16 +79,20 @@ oklch(0.7 0.15 180)
 
 /* 기존 방식 (화면 크기 기준) */
 @media (min-width: 768px) {
-  .card { padding: 2rem; }
+  .card {
+    padding: 2rem;
+  }
 }
 
 /* v4 방식 (컨테이너 크기 기준) */
 .container {
-  container-type: inline-size;  /* 컨테이너 쿼리 활성화 */
+  container-type: inline-size; /* 컨테이너 쿼리 활성화 */
 }
 
 @container (min-width: 400px) {
-  .card { padding: 2rem; }
+  .card {
+    padding: 2rem;
+  }
 }
 ```
 
@@ -112,8 +120,7 @@ oklch(0.7 0.15 180)
 ```css
 @layer components {
   .btn-auth {
-    @apply bg-brand-purple text-white px-4 py-2 rounded-lg
-           hover:bg-brand-purple/90 transition-colors;
+    @apply bg-brand-purple hover:bg-brand-purple/90 rounded-lg px-4 py-2 text-white transition-colors;
   }
 }
 
@@ -143,7 +150,7 @@ oklch(0.7 0.15 180)
 
 ```css
 @property --brand-hue {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 280deg;
   inherits: false;
 }
@@ -154,7 +161,9 @@ oklch(0.7 0.15 180)
 }
 
 @keyframes hue-shift {
-  to { --brand-hue: 340deg; }
+  to {
+    --brand-hue: 340deg;
+  }
 }
 ```
 
@@ -170,21 +179,25 @@ oklch(0.7 0.15 180)
 ## 📖 추천 학습 순서 & 자료
 
 ### Week 1-2: 기초
+
 1. Tailwind v4 공식 문서 읽기
 2. @theme 디렉티브로 간단한 토큰 만들어보기
 3. 기존 프로젝트에서 일부 색상을 토큰으로 변환
 
 ### Week 3: OKLCH
+
 1. oklch.com에서 색상 실험
 2. CotePT 브랜드 색상을 OKLCH로 재정의
 3. 명도/채도 변화로 호버 상태 만들기
 
 ### Week 4-5: Container Queries
+
 1. 간단한 카드 컴포넌트로 실습
 2. 반응형 레이아웃을 컨테이너 쿼리로 변환
 3. CotePT auth 카드에 적용해보기
 
 ### Week 6: 커스텀 유틸리티
+
 1. @layer components로 버튼 컴포넌트 만들기
 2. theme() 함수로 토큰 참조하기
 3. 복합 스타일을 유틸리티로 추상화
@@ -192,19 +205,21 @@ oklch(0.7 0.15 180)
 ## 🛠️ 실습 프로젝트 제안
 
 ### 프로젝트 1: 컬러 팔레트 제너레이터
+
 OKLCH 조작 연습을 위한 간단한 도구로, 기준 색상에서 명도/채도를 조절해서 팔레트를 생성하는 프로젝트
 
 ### 프로젝트 2: 반응형 카드 갤러리
+
 Container Queries 연습을 위해 카드 크기에 따라 레이아웃이 자동 변경되는 갤러리 구현
 
 ## 📊 학습 우선순위
 
-| 우선순위 | 기능 | 설명 |
-|---------|------|------|
-| **필수** | @theme 디렉티브, OKLCH 기초 | 기본 토큰 시스템 이해 |
-| **중요** | Container Queries | 모던 반응형 디자인의 핵심 |
+| 우선순위 | 기능                          | 설명                          |
+| -------- | ----------------------------- | ----------------------------- |
+| **필수** | @theme 디렉티브, OKLCH 기초   | 기본 토큰 시스템 이해         |
+| **중요** | Container Queries             | 모던 반응형 디자인의 핵심     |
 | **유용** | 커스텀 유틸리티 (@layer 활용) | 재사용 가능한 컴포넌트 스타일 |
-| **고급** | @property, color-mix() | 당장은 필요 없음, 미래 학습 |
+| **고급** | @property, color-mix()        | 당장은 필요 없음, 미래 학습   |
 
 ## 🔗 유용한 링크
 

@@ -1,0 +1,55 @@
+{
+  "terminal.integrated.fontFamily": "MesloLGS NF",
+  "editor.formatOnSave": true,
+  "eslint.run": "onSave",
+  "eslint.format.enable": true,
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": ["apps/api", "apps/web", "packages/shared"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "files.associations": {
+    ".prettierrc": "json",
+    "*.css": "tailwindcss"
+  },
+  "prettier.configPath": ".prettierrc",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "sqldeveloper.sqlHistory.historyLimit": 500,
+  "sqldeveloper.telemetry.enabled": false,
+  "remote.autoForwardPortsSource": "hybrid",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "database-client.autoSync": true,
+  "editor.minimap.enabled": false,
+  "git.autofetch": true,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true,
+    "/home/hsj95/.aitk/instructions/": true
+  },
+  "gitlens.ai.model": "vscode",
+  "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+  "claudeCode.selectedModel": "default",
+  "claudeCode.preferredLocation": "panel",
+  "chatgpt.runCodexInWindowsSubsystemForLinux": true,
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["(?:cn)\\(([^)]*)\\)", "\"([^\"]*)\""],
+    ["(?:cn)\\(([^)]*)\\)", "'([^']*)'"],
+    ["(?:cn)\\(([^)]*)\\)", "`([^`]*)`"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.files.exclude": ["**/.git/**", "**/node_modules/**", "**/.next/**", "**/.turbo/**"]
+}

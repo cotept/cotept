@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import SignupContainer from "@/containers/auth/pages/SignupContainer"
+import GlobalContainer from "@/shared/ui/layout/GlobalContainer"
 import { FullPageLoading } from "@/shared/ui/loading"
 
 export const metadata = {
@@ -11,7 +12,9 @@ export const metadata = {
 export default function SignupPage() {
   return (
     <Suspense fallback={<FullPageLoading />}>
-      <SignupContainer />
+      <GlobalContainer>
+        <SignupContainer />
+      </GlobalContainer>
     </Suspense>
   )
 }

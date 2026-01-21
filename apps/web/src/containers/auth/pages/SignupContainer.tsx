@@ -148,9 +148,9 @@ export default function SignupContainer() {
       </FormStepContent>
       {currentStep === SIGNUP_STEPS.TERMS_AGREEMENT && (
         <div className="pt-4 text-center">
-          <p className="space-x-1 text-sm text-zinc-400">
+          <p className="text-muted-foreground space-x-1 text-sm">
             <span className="">이미 코테피티의 회원이신가요?</span>
-            <Link href="/auth/signin" className="text-purple-400 underline hover:text-purple-300">
+            <Link href="/auth/signin" className="text-primary hover:text-primary/80 underline">
               로그인 하러가기
             </Link>
           </p>

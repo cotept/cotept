@@ -4,6 +4,7 @@
  * @see https://github.com/uidotdev/usehooks/issues/218
  */
 import React from "react"
+
 import { useIsClient } from "@uidotdev/usehooks"
 
 type ClientOnlyProps = {

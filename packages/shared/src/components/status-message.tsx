@@ -8,12 +8,12 @@ import { cn } from "../lib/utils"
 const statusMessageVariants = cva("rounded-lg border p-4 text-center", {
   variants: {
     variant: {
-      success: "border-green-500/20 bg-green-500/10",
-      compelete: "border-green-500/20 bg-gradient-to-b from-green-500/10 to-transparent",
-      error: "border-red-500/20 bg-red-500/10",
-      warning: "border-yellow-500/20 bg-yellow-500/10",
-      info: "border-blue-500/20 bg-blue-500/10",
-      processing: "border-purple-500/20 bg-purple-500/10",
+      success: "border-success/20 bg-success/10",
+      compelete: "border-success/20 bg-gradient-to-b from-success/10 to-transparent",
+      error: "border-destructive/20 bg-destructive/10",
+      warning: "border-warning/20 bg-warning/10",
+      info: "border-info/20 bg-info/10",
+      processing: "border-primary/20 bg-primary/10",
       transparent: "bg-transparent",
     },
     shape: {
@@ -30,13 +30,13 @@ const statusMessageVariants = cva("rounded-lg border p-4 text-center", {
 const statusMessageTextVariants = cva("text-sm", {
   variants: {
     variant: {
-      success: "text-green-400",
-      compelete: "text-green-400",
-      error: "text-red-400",
-      warning: "text-yellow-400",
-      info: "text-blue-400",
-      processing: "text-purple-400",
-      transparent: "text-white",
+      success: "text-success",
+      compelete: "text-success",
+      error: "text-destructive",
+      warning: "text-warning",
+      info: "text-info",
+      processing: "text-primary",
+      transparent: "text-foreground",
     },
   },
   defaultVariants: {

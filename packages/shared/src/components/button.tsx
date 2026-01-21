@@ -8,18 +8,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary/80 text-primary-foreground shadow-xs hover:bg-primary-shade",
+        default: "bg-primary/90 text-primary-foreground shadow-xs hover:bg-primary",
         secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80", // Pink Button
         tertiary: "bg-tertiary text-tertiary-foreground shadow-xs hover:bg-tertiary/80", // Blue Button
-        outline: "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+        outline:
+          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-accent ",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        inverted: "bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-300 transition-colors duration-150",
         destructive:
           "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20",
 
         // Custom Auth Variants
         "auth-primary":
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary-shade focus-visible:ring-primary/20 disabled:bg-muted disabled:text-muted-foreground",
+          "bg-primary/90 text-primary-foreground shadow-xs hover:bg-primary focus-visible:ring-primary/20 disabled:bg-muted disabled:text-muted-foreground",
         "auth-secondary":
           "bg-muted text-muted-foreground shadow-xs hover:bg-muted/80 focus-visible:ring-ring/20 disabled:opacity-50", // Gray Button
         "auth-special":

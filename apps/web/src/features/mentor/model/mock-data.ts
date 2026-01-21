@@ -1,0 +1,108 @@
+import { Mentor } from "./mentor.types"
+
+export const MOCK_MENTORS: Mentor[] = [
+  {
+    id: "1",
+    name: "김민수 멘토",
+    company: "N사 백엔드 개발자",
+    experience: "5년차",
+    title: "코딩 테스트 입문부터 대기업 합격까지, 확실하게 잡아드립니다.",
+    tags: ["DP", "구현", "DFS/BFS"],
+    rating: 5.0,
+    reviewCount: 42,
+    pricePerHour: 45000,
+    imageUrl: "https://picsum.photos/seed/m1/200/200",
+    tierIndex: 6, // Red 5
+  },
+  {
+    id: "2",
+    name: "이지은 멘토",
+    company: "K사 프론트엔드",
+    experience: "3년차",
+    title: "비전공자도 할 수 있다! 코테 핵심 유형 20선 마스터 과정",
+    tags: ["그리디", "문자열"],
+    rating: 4.9,
+    reviewCount: 28,
+    pricePerHour: 38000,
+    imageUrl: "https://picsum.photos/seed/m2/200/200",
+    tierIndex: 5, // Blue 5
+  },
+  {
+    id: "3",
+    name: "박준호 멘토",
+    company: "L사 AI 엔지니어",
+    experience: "석사 졸업",
+    title: "삼성/현대/LG 코테 전문 대비반, 수학적 사고력 기르기",
+    tags: ["그래프", "최단경로", "트리"],
+    rating: 5.0,
+    reviewCount: 15,
+    pricePerHour: 55000,
+    imageUrl: "https://picsum.photos/seed/m3/200/200",
+    tierIndex: 3, // Gold 5
+  },
+  {
+    id: "4",
+    name: "최수진 멘토",
+    company: "C사 서버 개발",
+    experience: "시니어",
+    title: "카카오 블라인드 채용 대비, 기출 문제 완벽 분석 및 풀이",
+    tags: ["시뮬레이션", "재귀"],
+    rating: 4.8,
+    reviewCount: 56,
+    pricePerHour: 40000,
+    imageUrl: "https://picsum.photos/seed/m4/200/200",
+    tierIndex: 7, // Red 1
+  },
+  {
+    id: "5",
+    name: "김민수 멘토",
+    company: "N사 백엔드 개발자",
+    experience: "5년차",
+    title: "코딩 테스트 입문부터 대기업 합격까지, 확실하게 잡아드립니다.",
+    tags: ["DP", "구현", "DFS/BFS"],
+    rating: 5.0,
+    reviewCount: 42,
+    pricePerHour: 45000,
+    imageUrl: "https://picsum.photos/seed/m1/200/200",
+    tierIndex: 6, // Red 5
+  },
+  {
+    id: "6",
+    name: "이지은 멘토",
+    company: "K사 프론트엔드",
+    experience: "3년차",
+    title: "비전공자도 할 수 있다! 코테 핵심 유형 20선 마스터 과정",
+    tags: ["그리디", "문자열"],
+    rating: 4.9,
+    reviewCount: 28,
+    pricePerHour: 38000,
+    imageUrl: "https://picsum.photos/seed/m2/200/200",
+    tierIndex: 5, // Blue 5
+  },
+  {
+    id: "7",
+    name: "박준호 멘토",
+    company: "L사 AI 엔지니어",
+    experience: "석사 졸업",
+    title: "삼성/현대/LG 코테 전문 대비반, 수학적 사고력 기르기",
+    tags: ["그래프", "최단경로", "트리"],
+    rating: 5.0,
+    reviewCount: 15,
+    pricePerHour: 55000,
+    imageUrl: "https://picsum.photos/seed/m3/200/200",
+    tierIndex: 3, // Gold 5
+  },
+  {
+    id: "8",
+    name: "최수진 멘토",
+    company: "C사 서버 개발",
+    experience: "시니어",
+    title: "카카오 블라인드 채용 대비, 기출 문제 완벽 분석 및 풀이",
+    tags: ["시뮬레이션", "재귀"],
+    rating: 4.8,
+    reviewCount: 56,
+    pricePerHour: 40000,
+    imageUrl: "https://picsum.photos/seed/m4/200/200",
+    tierIndex: 7, // Red 1
+  },
+]

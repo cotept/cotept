@@ -1,16 +1,16 @@
 import {
+  LandingCTA,
+  LandingFeatures,
+  LandingFooter,
   LandingHeader,
   LandingHero,
   LandingPainPoints,
-  LandingFeatures,
   LandingVerification,
-  LandingCTA,
-  LandingFooter,
 } from "@/features/landing/ui"
 
 const LandingContainer = () => {
   return (
-    <div className="bg-background text-foreground selection:bg-brand-primary/30 min-h-screen">
+    <div className="bg-background text-foreground selection:bg-primary/30 min-h-screen">
       <LandingHeader />
       <main>
         <LandingHero />

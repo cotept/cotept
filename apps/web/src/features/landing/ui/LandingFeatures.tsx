@@ -30,12 +30,12 @@ export const LandingFeatures = () => {
 
   return (
     <section className="relative overflow-hidden py-24" id="features">
-      <div className="bg-brand-primary/10 absolute right-0 top-0 -z-10 h-96 w-96 rounded-full blur-[100px]"></div>
+      <div className="bg-primary/10 absolute right-0 top-0 -z-10 h-96 w-96 rounded-full blur-[100px]"></div>
 
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-black text-white">코테피티가 해결해드립니다</h2>
-          <p className="mx-auto max-w-2xl font-semibold text-zinc-400">
+          <h2 className="text-foreground mb-4 text-4xl font-black">코테피티가 해결해드립니다</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl font-semibold">
             개발자 성장을 위한 최고의 1:1 실시간 멘토링 솔루션을 경험하세요.
           </p>
         </div>

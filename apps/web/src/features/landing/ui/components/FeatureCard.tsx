@@ -9,7 +9,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 // -----------------------------------------------------------------------------
 
 const featureCardVariants = cva(
-  "group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-8 transition-all duration-300",
+  "group relative overflow-hidden rounded-2xl border border-foreground/10 bg-linear-to-br from-static-white/[0.07] to-static-white/2 p-8 transition-all duration-300",
   {
     variants: {
       variant: {
@@ -19,7 +19,7 @@ const featureCardVariants = cva(
         simple: "hover:border-primary/50 hover:shadow-primary/5 bg-white/5 hover:shadow-2xl text-left", // PainPoints 스타일 흡수
       },
       active: {
-        true: "shadow-[0_0_30px_rgba(124,59,237,0.1)] border border-primary/50",
+        true: "shadow-primary/10 border border-primary/50",
         false: "",
       },
     },
@@ -40,10 +40,10 @@ export function FeatureCard({ className, variant, active, showGlow = true, child
     <div className={cn(featureCardVariants({ variant, active }), className)} {...props}>
       {/* Background Glow Effect (Feature 스타일) */}
       {showGlow && (
-        <div className="bg-brand-primary/10 group-hover:bg-brand-primary/20 absolute -right-8 -top-8 h-32 w-32 rounded-full blur-2xl transition-all duration-500" />
+        <div className="bg-primary/10 group-hover:bg-primary/20 absolute -right-8 -top-8 h-32 w-32 rounded-full blur-2xl transition-all duration-500" />
       )}
       {/* Active State Background Glow */}
-      {active && <div className="bg-brand-primary/20 absolute inset-0 -z-10 blur-3xl transition-all" />}
+      {active && <div className="bg-primary/20 absolute inset-0 -z-10 blur-3xl transition-all" />}
 
       {children}
     </div>
@@ -61,9 +61,9 @@ const featureIconVariants = cva("flex items-center justify-center transition-all
       circle: "mb-4 h-14 w-14 rounded-full",
     },
     active: {
-      true: "bg-brand-primary text-white",
-      false: "bg-white/10 text-zinc-400",
-      primary: "bg-brand-primary/20 text-brand-primary", // 기본 Feature 스타일
+      true: "bg-primary text-static-white",
+      false: "bg-static-white/10 text-muted-foreground",
+      primary: "bg-primary/20 text-primary", // 기본 Feature 스타일
     },
   },
   defaultVariants: {
@@ -104,7 +104,7 @@ export function FeatureCardIcon({
 
 export function FeatureCardTitle({ className, children, ...props }: React.ComponentProps<"h3">) {
   return (
-    <h3 className={cn("mb-2 text-lg font-bold leading-tight text-white", className)} {...props}>
+    <h3 className={cn("text-foreground mb-2 text-lg font-bold leading-tight", className)} {...props}>
       {children}
     </h3>
   )
@@ -112,7 +112,7 @@ export function FeatureCardTitle({ className, children, ...props }: React.Compon
 
 export function FeatureCardDescription({ className, children, ...props }: React.ComponentProps<"p">) {
   return (
-    <p className={cn("text-sm leading-relaxed text-zinc-400", className)} {...props}>
+    <p className={cn("text-muted-foreground text-sm leading-relaxed", className)} {...props}>
       {children}
     </p>
   )

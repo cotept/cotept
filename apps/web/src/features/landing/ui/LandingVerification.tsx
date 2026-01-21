@@ -38,14 +38,14 @@ export const LandingVerification = () => {
     <section className="bg-background overflow-hidden py-10">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
-          <h2 className="mb-6 text-4xl font-black text-white">실력이 검증된 멘토</h2>
-          <p className="mx-auto max-w-2xl text-lg font-semibold text-zinc-400">
+          <h2 className="text-foreground mb-6 text-4xl font-black">실력이 검증된 멘토</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg font-semibold">
             코테피티의 모든 멘토는 엄격한 검증 과정을 거칩니다.
           </p>
         </div>
 
         <div className="relative mb-20 grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div className="absolute left-0 top-1/2 -z-10 hidden h-0.5 w-full -translate-y-1/2 bg-white/5 md:block"></div>
+          <div className="bg-static-white//5 absolute left-0 top-1/2 -z-10 hidden h-0.5 w-full -translate-y-1/2 md:block"></div>
 
           {steps.map((step, idx) => (
             <FeatureCard key={idx} variant="center" active={step.active}>
@@ -64,7 +64,7 @@ export const LandingVerification = () => {
 
         {/* Highlight Card */}
         {/* <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-8 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 md:flex-row md:p-12">
-          <div className="bg-brand-primary/10 pointer-events-none absolute right-0 top-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full blur-[80px]"></div>
+          <div className="bg-primary/10 pointer-events-none absolute right-0 top-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full blur-[80px]"></div>
 
           <div className="z-10 flex-grow text-center md:text-left">
             <h3 className="mb-4 text-3xl font-black text-white">상위 10% 인재</h3>

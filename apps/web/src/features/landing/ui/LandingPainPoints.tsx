@@ -32,8 +32,8 @@ export const LandingPainPoints = () => {
     <section className="py-10">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-black text-white">이런 고민, 하고 계신가요?</h2>
-          <p className="mx-auto max-w-lg font-semibold text-zinc-400">
+          <h2 className="text-foreground mb-4 text-4xl font-black">이런 고민, 하고 계신가요?</h2>
+          <p className="text-muted-foreground mx-auto max-w-lg font-semibold">
             혼자 준비하는 코딩 테스트, 막막함의 이유를 찾아보세요.
           </p>
         </div>

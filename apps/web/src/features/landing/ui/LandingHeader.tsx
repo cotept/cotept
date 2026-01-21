@@ -32,16 +32,12 @@ export const LandingHeader = () => {
         <div className="flex items-center gap-2">
           <Link href="/auth/signin">
             <Button
-              variant="secondary"
-              className="text-base font-semibold text-white transition-colors hover:text-zinc-300">
+              variant="default"
+              size={"sm"}
+              className="text-static-white text-base font-semibold transition-colors">
               로그인
             </Button>
           </Link>
-          {/* <Link href="/auth/signup">
-            <Button variant="ghost" className="text-sm font-semibold text-white transition-colors hover:text-zinc-300">
-              시작하기
-            </Button>
-          </Link> */}
         </div>
       </div>
     </header>

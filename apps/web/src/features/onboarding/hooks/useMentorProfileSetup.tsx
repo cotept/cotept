@@ -2,14 +2,15 @@ import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useSession } from "next-auth/react"
 
-import type { MentorTagDto } from "@repo/api-client/src/types/mentor-tag-dto"
 import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 import { sanitizeHtml, sanitizeToPlainText } from "@repo/shared/lib/sanitize"
 import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DefaultValues, useForm } from "react-hook-form"
+import { DefaultValues, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
+
+import type { MentorTagDto } from "@repo/api-client/src/types/mentor-tag-dto"
 
 import { useCreateMentorProfileOnboarding } from "@/features/onboarding/api/mutations"
 import { useGetMentorTags } from "@/features/onboarding/api/queries"
@@ -99,13 +100,12 @@ export function useMentorProfileSetup({ initialData, onComplete }: UseMentorProf
     () => mentorTagsResponse?.data?.companyTypeTags ?? [],
     [mentorTagsResponse],
   )
-
-  const jobTagId = form.watch("jobTagId")
-  const levelTagId = form.watch("levelTagId")
-  const companySizeTagId = form.watch("companySizeTagId")
-  const companyTypeTagId = form.watch("companyTypeTagId")
-  const introductionTitle = form.watch("introductionTitle") ?? ""
-  const introductionContent = form.watch("introductionContent") ?? ""
+  const jobTagId = useWatch({ control: form.control, name: "jobTagId" })
+  const levelTagId = useWatch({ control: form.control, name: "levelTagId" })
+  const companySizeTagId = useWatch({ control: form.control, name: "companySizeTagId" })
+  const companyTypeTagId = useWatch({ control: form.control, name: "companyTypeTagId" })
+  const introductionTitle = useWatch({ control: form.control, name: "introductionTitle" })
+  const introductionContent = useWatch({ control: form.control, name: "introductionContent" })
 
   const introductionPlainText = useMemo(() => sanitizeToPlainText(introductionContent), [introductionContent])
   const introductionLength = introductionPlainText.length
@@ -200,9 +200,16 @@ export function useMentorProfileSetup({ initialData, onComplete }: UseMentorProf
     [userId, createMentorProfile],
   )
 
+  const handleSubmit = useCallback(
+    (e?: React.BaseSyntheticEvent) => {
+      return form.handleSubmit(handleFormSubmit)(e)
+    },
+    [form, handleFormSubmit],
+  )
+
   return {
     form,
-    handleSubmit: form.handleSubmit(handleFormSubmit),
+    handleSubmit,
     handleIntroductionChange,
     jobTags,
     experienceTags,

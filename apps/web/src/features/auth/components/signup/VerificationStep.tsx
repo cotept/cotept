@@ -82,8 +82,8 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
       {/* 초기 인증 코드 전송 버튼 렌더링 */}
       {!hasInitialSent && (
         <div className="space-y-4 text-start">
-          <p className="text-sm text-zinc-400">
-            <span className="text-purple-400">{email}</span> 로 인증 코드를 전송해주세요.
+          <p className="text-muted-foreground text-sm">
+            <span className="text-primary">{email}</span> 로 인증 코드를 전송해주세요.
           </p>
 
           <Button
@@ -105,20 +105,20 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
               name="verificationCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-300">인증 코드</FormLabel>
+                  <FormLabel className="text-fg-2">인증 코드</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         {...field}
                         maxLength={6}
                         placeholder="인증 코드 6자리를 입력해주세요."
-                        className="border-zinc-600 bg-zinc-700/50 pr-20 text-start text-sm tracking-widest text-white placeholder:text-zinc-400 focus:border-purple-400"
+                        className="border-border bg-bg-4/50 text-foreground placeholder:text-muted-foreground focus:border-ring pr-20 text-start text-sm tracking-widest"
                         disabled={isLoading || isShowingSuccessState()}
                       />
                       {/* 타이머를 인풋 내부 오른쪽에 표시 */}
                       {isInCooldown() && (
                         <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center align-middle">
-                          <span className="font-mono text-sm text-purple-400">{formatTimeMMSS(cooldownTime)}</span>
+                          <span className="text-primary font-mono text-sm">{formatTimeMMSS(cooldownTime)}</span>
                         </div>
                       )}
                     </div>
@@ -131,18 +131,18 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
             {/* 재전송 버튼 - 타이머가 0일 때만 표시 */}
             {shouldShowTimerAndResend() && !isInCooldown() && (
               <div className="space-y-3 text-center">
-                <p className="text-sm text-zinc-400">
-                  <span className="inline-block text-purple-400">인증 코드를 받지 못하셨나요?</span>
+                <p className="text-muted-foreground text-sm">
+                  <span className="text-primary inline-block">인증 코드를 받지 못하셨나요?</span>
                 </p>
                 <Button
                   type="button"
                   variant={!canResend ? "ghost" : "default"}
                   onClick={resendVerificationCode}
                   disabled={!canResend}
-                  className="h-auto w-full p-0 px-3 py-1 hover:bg-zinc-700/50 hover:text-purple-400 disabled:text-zinc-500">
+                  className="hover:bg-accent hover:text-primary disabled:text-muted-foreground h-auto w-full p-0 px-3 py-1">
                   <span className="flex items-center gap-2">
                     {shouldShowSpinner() && (
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
+                      <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                     )}
                     {getResendButtonText()}
                   </span>
@@ -158,7 +158,7 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
                     type="button"
                     variant="ghost"
                     onClick={clearError}
-                    className="h-auto p-0 px-3 py-1 text-sm text-zinc-400 hover:bg-zinc-700/50 hover:text-purple-300">
+                    className="text-muted-foreground hover:bg-accent hover:text-primary h-auto p-0 px-3 py-1 text-sm">
                     다시 시도
                   </Button>
                 )}
@@ -168,8 +168,8 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
             {isShowingProcessingStatus() && (
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
-                  <p className="text-sm text-purple-400">{getProcessingStatusText()}</p>
+                  <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                  <p className="text-primary text-sm">{getProcessingStatusText()}</p>
                 </div>
               </div>
             )}
@@ -182,8 +182,9 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
                   type="submit"
                   disabled={!isCodeComplete || isVerifying}
                   onClick={proceedToNextStep}
-                  variant={!isCodeComplete || isVerifying ? "ghost" : "default"}
-                  className="h-12 w-full bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-zinc-900">
+                  variant={!isCodeComplete || isVerifying ? "ghost" : "auth-primary"}
+                  size="xl"
+                  className="w-full">
                   다음
                 </Button>
               </div>
@@ -193,7 +194,7 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
             <Button
               type="submit"
               disabled={!isCodeComplete || isVerifying}
-              className="sr-only h-12 bg-zinc-700 text-white hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500">
+              className="bg-secondary hover:bg-secondary/90 disabled:bg-muted disabled:text-muted-foreground sr-only h-12 text-white">
               인증 완료
             </Button>
           </form>
@@ -201,9 +202,9 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ email, onComplete }
       )}
 
       {/* 도움말 */}
-      <div className="border-t border-zinc-700 pt-4 text-center">
-        <p className="text-xs text-zinc-500">
-          <span className="text-zinc-400">메일이 오지 않으면 스팸함을 확인해보세요</span>
+      <div className="border-border border-t pt-4 text-center">
+        <p className="text-muted-foreground text-xs">
+          <span className="text-muted-foreground">메일이 오지 않으면 스팸함을 확인해보세요</span>
         </p>
       </div>
     </>

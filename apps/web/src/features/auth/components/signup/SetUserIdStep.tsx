@@ -55,22 +55,22 @@ const SetUserIdStep = ({ onComplete }: SetUserIdStepProps) => {
             name="userId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">아이디</FormLabel>
+                <FormLabel className="text-fg-2">아이디</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
                     placeholder="아이디를 입력해주세요"
                     disabled={isUserIdVerified}
-                    className="border-zinc-600 bg-zinc-700/50 text-sm text-white placeholder:text-zinc-400 focus:border-purple-400"
+                    className="border-border bg-bg-4/50 text-foreground placeholder:text-muted-foreground focus:border-ring text-sm"
                   />
                 </FormControl>
                 <FormMessage />
 
                 {/* 글자 수 카운터 - 다른 auth 스텝과 일관성 유지 */}
                 <div className="mt-1 flex items-center justify-between">
-                  <p className="text-xs text-zinc-500">영문, 숫자 조합</p>
-                  <p className="text-xs text-zinc-500">{field.value.length}/20</p>
+                  <p className="text-muted-foreground text-xs">영문, 숫자 조합</p>
+                  <p className="text-muted-foreground text-xs">{field.value.length}/20</p>
                 </div>
               </FormItem>
             )}
@@ -91,7 +91,7 @@ const SetUserIdStep = ({ onComplete }: SetUserIdStepProps) => {
               disabled={!canCheckUserId}
               className="w-full">
               {showCheckingSpinner && (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               )}
               {checkButtonText}
             </Button>

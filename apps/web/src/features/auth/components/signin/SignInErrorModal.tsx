@@ -26,25 +26,28 @@ export function SignInErrorModal({
   message,
 }: SignInErrorModalProps) {
   return (
-    <dialog open={isOpen} onClose={onClose} className="max-w-sm">
-      <div className="p-auth-padding space-y-auth-container text-center">
+    <dialog
+      open={isOpen}
+      onClose={onClose}
+      className="bg-background border-border fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg border p-0 shadow-xl backdrop:bg-black/80 backdrop:backdrop-blur-sm">
+      <div className="space-y-6 p-7 text-center">
         {/* 에러 아이콘 */}
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
+          <div className="bg-destructive/10 flex h-12 w-12 items-center justify-center rounded-full">
+            <AlertTriangle className="text-destructive h-6 w-6" />
           </div>
         </div>
 
         {/* 제목 */}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
+          <h3 className="text-foreground text-lg font-semibold">{title}</h3>
 
           {/* 에러 메시지 */}
-          <p className="text-sm leading-relaxed text-zinc-300">{message}</p>
+          <p className="text-muted-foreground text-sm leading-relaxed">{message}</p>
         </div>
 
         {/* 확인 버튼 */}
-        <Button variant="auth-primary" size="xl" className="h-auth-button w-full" onClick={onClose}>
+        <Button variant="auth-primary" size="xl" className="w-full" onClick={onClose}>
           확인
         </Button>
       </div>

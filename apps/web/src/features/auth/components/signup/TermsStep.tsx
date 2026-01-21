@@ -52,15 +52,11 @@ const TermsStep: React.FC<TermsStepProps> = ({ onComplete }) => {
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 전체 동의 체크박스 */}
-          <div className="border-b border-zinc-700 pb-4">
+          <div className="border-border border-b pb-4">
             <div className="flex items-center space-x-3">
-              <Checkbox
-                id="allAgreed"
-                checked={allAgreed}
-                onCheckedChange={toggleAllAgreements}
-                className="data-[state=checked]:border-purple-600 data-[state=checked]:bg-purple-600"
-              />
-              <label htmlFor="allAgreed" className="cursor-pointer font-semibold text-white">
+              <Checkbox id="allAgreed" checked={allAgreed} onCheckedChange={toggleAllAgreements} />
+              {/* <label htmlFor="allAgreed" className="cursor-pointer font-semibold text-white"> */}
+              <label htmlFor="allAgreed" className="text-foreground cursor-pointer font-semibold">
                 전체 동의
               </label>
             </div>
@@ -77,15 +73,11 @@ const TermsStep: React.FC<TermsStepProps> = ({ onComplete }) => {
                   <FormItem>
                     <div className="flex items-center space-x-3">
                       <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="data-[state=checked]:border-purple-600 data-[state=checked]:bg-purple-600"
-                        />
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <FormLabel className="flex flex-1 cursor-pointer items-center justify-between text-zinc-300">
+                      <FormLabel className="text-muted-foreground flex flex-1 cursor-pointer items-center justify-between">
                         <span>{term.label}</span>
-                        <span className={`text-xs ${term.required ? "text-red-400" : "text-zinc-500"}`}>
+                        <span className={`text-xs ${term.required ? "text-destructive" : "text-muted-foreground"}`}>
                           {term.required ? "(필수)" : "(선택)"}
                         </span>
                       </FormLabel>
@@ -100,7 +92,7 @@ const TermsStep: React.FC<TermsStepProps> = ({ onComplete }) => {
           <Button
             type="submit"
             disabled={!requiredTermsAgreed}
-            variant={!requiredTermsAgreed ? "ghost" : "auth-primary"}
+            variant={!requiredTermsAgreed ? "outline" : "auth-primary"}
             size="xl"
             className="w-full">
             다음

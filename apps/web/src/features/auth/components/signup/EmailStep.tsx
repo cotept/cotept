@@ -48,14 +48,14 @@ const EmailStep: React.FC<EmailStepProps> = ({ onComplete }) => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">이메일</FormLabel>
+                <FormLabel className="text-fg-2">이메일</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="email"
                     placeholder="이메일을 입력하세요"
                     disabled={isEmailVerified}
-                    className="border-zinc-600 bg-zinc-700/50 text-white placeholder:text-base placeholder:text-zinc-400 focus:border-purple-400"
+                    className="border-border bg-bg-4/50 text-foreground placeholder:text-muted-foreground focus:border-ring"
                   />
                 </FormControl>
                 <FormMessage />
@@ -67,13 +67,13 @@ const EmailStep: React.FC<EmailStepProps> = ({ onComplete }) => {
           {shouldShowCheckButton() && (
             <Button
               type="button"
-              variant={canCheckEmail ? "auth-secondary" : "ghost"}
+              variant={canCheckEmail ? "default" : "ghost"}
               size="xl"
               onClick={handleCheckEmail}
               disabled={!canCheckEmail}
               className="w-full">
               {showCheckingSpinner && (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               )}
               {checkButtonText}
             </Button>

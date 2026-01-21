@@ -45,19 +45,19 @@ const PasswordStep: React.FC<PasswordStepProps> = ({ onComplete }) => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">비밀번호</FormLabel>
+                <FormLabel className="text-fg-2">비밀번호</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       {...field}
                       type={showPassword ? "text" : "password"}
                       placeholder="비밀번호를 입력하세요"
-                      className="border-zinc-600 bg-zinc-700/50 pr-10 text-white placeholder:text-zinc-400 focus:border-purple-400"
+                      className="border-border bg-bg-4/50 text-foreground placeholder:text-muted-foreground focus:border-ring pr-10"
                     />
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                      className="text-muted-foreground hover:text-fg-2 absolute right-3 top-1/2 -translate-y-1/2"
                       aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}>
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -77,19 +77,19 @@ const PasswordStep: React.FC<PasswordStepProps> = ({ onComplete }) => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">비밀번호 확인</FormLabel>
+                <FormLabel className="text-fg-2">비밀번호 확인</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       {...field}
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="비밀번호를 다시 입력하세요"
-                      className="border-zinc-600 bg-zinc-700/50 text-white placeholder:text-zinc-400 focus:border-purple-400"
+                      className="border-border bg-bg-4/50 text-foreground placeholder:text-muted-foreground focus:border-ring"
                     />
                     <button
                       type="button"
                       onClick={toggleConfirmPasswordVisibility}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                      className="text-muted-foreground hover:text-fg-2 absolute right-3 top-1/2 -translate-y-1/2"
                       aria-label={showConfirmPassword ? "비밀번호 확인 숨기기" : "비밀번호 확인 보기"}>
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>

@@ -46,7 +46,7 @@ export function OnboardingCompleteStep({ onboardingData }: OnboardingCompleteSte
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <Button asChild variant="onboarding-complete" size="xl" className="w-full">
+        <Button asChild variant="cta-primary" size="xl" className="w-full">
           <Link href={primaryHref}>{primaryLabel}</Link>
         </Button>
         <Button asChild variant="ghost" className="h-12 w-full text-zinc-300 hover:bg-white/5 hover:text-zinc-100">

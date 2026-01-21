@@ -9,13 +9,12 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "reac
 
 import { overlayReducer } from "../context/reducer"
 import { createOverlay } from "../event/event"
+import { OVERLAY_ERROR_CODES, OverlayError } from "../types/overlay.types"
 import { createOverlaySafeContext } from "../utils/createSafeContext"
 import { createUseExternalEvents } from "../utils/createUseExternalEvents"
 import { randomId } from "../utils/randomId"
 
 import { OverlayRenderer } from "./OverlayRenderer"
-
-import { OVERLAY_ERROR_CODES, OverlayError } from "../types/overlay.types"
 
 import type { OverlayAPI, OverlayEvent, OverlayProviderResult } from "../types/overlay.types"
 

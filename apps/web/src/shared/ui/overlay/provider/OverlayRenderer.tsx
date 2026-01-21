@@ -9,9 +9,9 @@ import React, { useEffect, useState } from "react"
 
 import { createPortal } from "react-dom"
 
-import { ContentOverlayController } from "./ContentOverlayController"
-
 import { OVERLAY_ERROR_CODES, OverlayError } from "../types/overlay.types"
+
+import { ContentOverlayController } from "./ContentOverlayController"
 
 import type { OverlayRendererProps } from "../types/overlay.types"
 

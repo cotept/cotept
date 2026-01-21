@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 
-import { HelpCircle } from "lucide-react"
-
 import { Button } from "@repo/shared/components/button"
 import { ComboBox, type ComboBoxOption } from "@repo/shared/components/combo-box"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@repo/shared/components/form"
@@ -15,15 +13,17 @@ import { ValidationIndicator } from "@repo/shared/components/validation-indicato
 import { cn } from "@repo/shared/lib/utils"
 import { StatusMessage } from "@repo/shared/src/components/status-message"
 
+import { HelpCircle } from "lucide-react"
+
+import { MentorProfilePreviewCard } from "@/features/onboarding/components/MentorProfilePreviewCard"
 import { useMentorProfileSetup } from "@/features/onboarding/hooks/useMentorProfileSetup"
 import {
   type MentorIntroData,
   type MentorTagsData,
   type ProfileSetupData,
 } from "@/features/onboarding/lib/validations/onboarding-rules"
-import { MentorProfilePreviewCard } from "@/features/onboarding/components/MentorProfilePreviewCard"
-import { InlineLoading } from "@/shared/ui/loading"
 import useViewportSize from "@/shared/hooks/useViewportSize"
+import { InlineLoading } from "@/shared/ui/loading"
 
 type MentorProfileSnapshot = {
   tags: MentorTagsData
@@ -100,7 +100,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
                   searchPlaceholder={`${label} 검색...`}
                   emptyText="검색 결과가 없습니다."
                   disabled={isLoadingTags || isPending}
-                  buttonClassName="w-full border-border-default bg-surface-primary text-muted-foreground hover:bg-surface-secondary/80"
+                  buttonClassName="w-full border-border bg-background text-muted-foreground hover:bg-muted/80"
                   popoverClassName="w-[var(--radix-popover-trigger-width)]"
                 />
               </FormControl>
@@ -133,7 +133,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
             <FormControl>
               <select
                 className={cn(
-                  "w-full rounded-md border border-border-default bg-surface-primary px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50",
+                  "border-border bg-background w-full rounded-md border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50",
                   field.value ? "text-foreground" : "text-muted-foreground",
                 )}
                 value={field.value ?? ""}
@@ -216,7 +216,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
                   placeholder="예: 7년차 백엔드 개발자, 대규모 서비스 리더"
                   {...field}
                   disabled={isPending}
-                  className="bg-surface-primary"
+                  className="bg-background"
                 />
               </FormControl>
               <FormMessage />
@@ -294,7 +294,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
             introductionTitle={previewData.introTitle}
             introductionContent={previewData.introContent}
             isSubmitted={false}
-            className="border-border-default bg-surface-primary"
+            className="border-border bg-background"
           />
         </div>
 
@@ -308,7 +308,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
           <SheetContent
             side={isLgUp ? "right" : "bottom"}
             className={cn(
-              "border-border-default bg-zinc-950",
+              "border-border bg-zinc-950",
               isLgUp
                 ? "lg:w-md p-4 lg:inset-y-0 lg:right-0 lg:h-auto lg:max-w-md lg:border-l lg:shadow-2xl"
                 : "h-[90vh] border-t",
@@ -319,7 +319,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
             <div className="custom-scrollbar overflow-y-auto pr-1">
               <Form {...form}>{formContent}</Form>
             </div>
-            <div className="shrink-0 border-t border-border-default pt-4">{submitButton}</div>
+            <div className="border-border shrink-0 border-t pt-4">{submitButton}</div>
           </SheetContent>
         </Sheet>
       </div>

@@ -3,6 +3,8 @@
  * @description 온보딩 단계별 검증 로직 (프로필 설정, 백준 인증, 멘토 프로필)
  */
 
+import { sanitizeToPlainText } from "@repo/shared/lib/sanitize"
+import { imageFile, url } from "@repo/shared/src/rules"
 import { DeepPartial } from "@repo/shared/src/types/types"
 
 import { z } from "zod"
@@ -14,9 +16,7 @@ import type {
   StartBaekjoonVerificationDto,
 } from "@repo/api-client"
 
-import { sanitizeToPlainText } from "@repo/shared/lib/sanitize"
 import { FieldRules } from "@/shared/lib/validations/field-rules"
-import { imageFile, url } from "@repo/shared/src/rules"
 
 /**
  * 프로필 이미지 허용 파일 타입

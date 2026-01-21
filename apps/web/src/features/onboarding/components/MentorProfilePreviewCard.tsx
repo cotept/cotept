@@ -2,12 +2,13 @@
 
 import { useMemo } from "react"
 
-import type { MentorTagDto } from "@repo/api-client/src/types/mentor-tag-dto"
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/shared/components/avatar"
 import { Badge } from "@repo/shared/components/badge"
 import { Card, CardContent, CardHeader } from "@repo/shared/components/card"
-import { cn } from "@repo/shared/lib/utils"
 import { sanitizeHtml } from "@repo/shared/lib/sanitize"
+import { cn } from "@repo/shared/lib/utils"
+
+import type { MentorTagDto } from "@repo/api-client/src/types/mentor-tag-dto"
 
 type MentorProfilePreviewCardProps = {
   nickname?: string

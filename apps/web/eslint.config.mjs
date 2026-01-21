@@ -1,6 +1,6 @@
-import nextTypescript from "eslint-config-next/typescript"
 import baseConfig from "@repo/eslint-config/next"
 
+import nextTypescript from "eslint-config-next/typescript"
 import boundariesPlugin from "eslint-plugin-boundaries"
 import storybookPlugin from "eslint-plugin-storybook"
 import { dirname } from "path"

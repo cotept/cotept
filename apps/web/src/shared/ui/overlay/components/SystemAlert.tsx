@@ -11,8 +11,9 @@ import { Alert, AlertDescription, AlertTitle } from "@repo/shared/components/ale
 
 import { CheckCircle, Info, XCircle } from "lucide-react"
 
-import type { OverlayControllerProps } from "../types/overlay.types"
 import { OVERLAY_EXIT_ANIMATION_MS } from "../utils/constants"
+
+import type { OverlayControllerProps } from "../types/overlay.types"
 
 export interface SystemAlertProps extends OverlayControllerProps {
   /** 알림 제목 */

@@ -167,8 +167,9 @@
  * @description 재사용 가능한 Zod 필드 검증 로직 모음
  */
 
+import { email, imageFile, optionalAgreement, REGEX,requiredAgreement } from "@repo/shared/src/rules"
+
 import { z } from "zod"
-import { email, imageFile, requiredAgreement, optionalAgreement, REGEX } from "@repo/shared/src/rules"
 
 /**
  * 프로젝트 전체에서 사용하는 공통 필드 검증 규칙들

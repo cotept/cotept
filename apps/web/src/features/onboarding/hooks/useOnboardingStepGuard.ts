@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 
 import type { OnboardingData } from "@/features/onboarding/lib/validations/onboarding-rules"
+
 import { ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
 
 interface StepGuardOptions {

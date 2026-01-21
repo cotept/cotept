@@ -1,10 +1,10 @@
 "use client"
 
-import type { Dispatch, SetStateAction } from "react"
-
 import { Button } from "@repo/shared/components/button"
 
 import type { OnboardingData } from "@/features/onboarding/lib/validations/onboarding-rules"
+import type { Dispatch, SetStateAction } from "react"
+
 import { ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
 
 const PRESETS: Record<

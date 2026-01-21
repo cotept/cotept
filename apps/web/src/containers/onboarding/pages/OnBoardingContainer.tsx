@@ -17,18 +17,18 @@ import type {
 } from "@/features/onboarding/lib/validations/onboarding-rules"
 
 import { BaekjoonVerifyStep } from "@/features/onboarding/components/BaekjoonVerifyStep"
-import { OnboardingCompleteStep } from "@/features/onboarding/components/OnboardingCompleteStep"
-import { MentorProfileSetupStep } from "@/features/onboarding/components/MentorProfileSetupStep"
 import { MentorProfileSetupSkeleton } from "@/features/onboarding/components/MentorProfileSetupSkeleton"
-import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
+import { MentorProfileSetupStep } from "@/features/onboarding/components/MentorProfileSetupStep"
+import { OnboardingCompleteStep } from "@/features/onboarding/components/OnboardingCompleteStep"
 import { OnboardingDebugPanel } from "@/features/onboarding/components/OnboardingDebugPanel"
+import { ProfileSetupStep } from "@/features/onboarding/components/ProfileSetupStep"
 import { useMentorProposal } from "@/features/onboarding/hooks/useMentorProposal"
 import { useOnboardingFlowPersistence } from "@/features/onboarding/hooks/useOnboardingFlowPersistence"
-import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
 import { useOnboardingStepGuard } from "@/features/onboarding/hooks/useOnboardingStepGuard"
+import { useOnboardingSteps } from "@/features/onboarding/hooks/useOnboardingSteps"
 import { ONBOARDING_STEP_ORDER, ONBOARDING_STEPS, type OnboardingStep } from "@/shared/types/basic-types"
-import Logo from "@/shared/ui/Logo"
 import { ClientOnly } from "@/shared/ui/client-only/ClientOnly"
+import Logo from "@/shared/ui/Logo"
 // 단계별 설정 타입
 interface StepConfig {
   title: string

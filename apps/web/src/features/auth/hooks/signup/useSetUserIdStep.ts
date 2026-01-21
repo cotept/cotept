@@ -4,7 +4,7 @@ import { type ValidationCheck } from "@repo/shared/components/validation-indicat
 import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { useCheckUserIdAvailabilityMutation } from "@/features/auth/apis/mutations"
 import { SetUserIdData, SetUserIdRules } from "@/features/auth/lib/validations/auth-rules"
@@ -56,7 +56,7 @@ export function useSetUserIdStep({ onComplete }: UseSetUserIdStepProps) {
     mode: "onChange",
   })
 
-  const userId = form.watch("userId")
+  const userId = useWatch({ control: form.control, name: "userId", defaultValue: "" })
 
   const validationChecks: ValidationCheck[] = useMemo(() => {
     if (!userId) {

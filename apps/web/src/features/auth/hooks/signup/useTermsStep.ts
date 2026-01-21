@@ -8,7 +8,7 @@
 import { useMemo } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { type TermsStepData, TermsStepRules } from "../../lib/validations/auth-rules"
 
@@ -28,7 +28,7 @@ export const useTermsStep = ({ onComplete }: UseTermsStepProps) => {
   })
 
   // 실시간으로 모든 약관 상태 감시
-  const watchedValues = form.watch()
+  const watchedValues = useWatch({ control: form.control })
 
   // 전체 동의 여부 계산 (실시간)
   const allAgreed = useMemo(() => {

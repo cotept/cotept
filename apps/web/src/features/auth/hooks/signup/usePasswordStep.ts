@@ -11,7 +11,7 @@ import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { PasswordStepBaseRules, type PasswordStepData, PasswordStepRules } from "../../lib/validations/auth-rules"
 
@@ -33,8 +33,8 @@ export const usePasswordStep = ({ onComplete }: UsePasswordStepProps) => {
   })
 
   // 실시간 비밀번호 감시
-  const password = form.watch("password")
-  const confirmPassword = form.watch("confirmPassword")
+  const password = useWatch({ control: form.control, name: "password", defaultValue: "" })
+  const confirmPassword = useWatch({ control: form.control, name: "confirmPassword", defaultValue: "" })
 
   // 비밀번호 검증 결과 (배열 + 객체 형태 동시 생성)
   const { validationChecks, passwordChecks } = useMemo(() => {

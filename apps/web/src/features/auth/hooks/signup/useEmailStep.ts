@@ -8,7 +8,7 @@
 import { useCallback, useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { type EmailStepData, EmailStepRules } from "../../lib/validations/auth-rules"
 
@@ -78,7 +78,7 @@ export function useEmailStep({ onComplete }: UseEmailStepProps) {
     },
   })
 
-  const email = form.watch("email")
+  const email = useWatch({ control: form.control, name: "email", defaultValue: "" })
   const isEmailValid = isValidEmail(email)
 
   const checkEmailMutation = useCheckEmailAvailabilityMutation()

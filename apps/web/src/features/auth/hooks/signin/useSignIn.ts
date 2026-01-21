@@ -2,7 +2,7 @@
 import { useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 
 import { signInAction } from "@/features/auth/actions/signin"
@@ -14,7 +14,6 @@ const isValidPassword = (password: string) => LoginRules.pick({ password: true }
 
 export function useSignIn() {
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [showPasswordField, setShowPasswordField] = useState<boolean>(false)
 
   const form = useForm<LoginData>({
     resolver: zodResolver(LoginRules),
@@ -26,8 +25,8 @@ export function useSignIn() {
 
   const { errors, isValid, isLoading, isSubmitting } = form.formState
 
-  const id = form.watch("id")
-  const password = form.watch("password")
+  const id = useWatch({ control: form.control, name: "id", defaultValue: "" })
+  const password = useWatch({ control: form.control, name: "password", defaultValue: "" })
 
   const isIdValid = isValidId(id)
   const isPasswordValid = isValidPassword(password)
@@ -61,10 +60,6 @@ export function useSignIn() {
     setShowPassword((prev) => !prev)
   }
 
-  const handleShowPasswordField = () => {
-    setShowPasswordField(true)
-  }
-
   const clearInputField = createClearInputField(form)
   const clearIdField = () => clearInputField("id")
   const clearPasswordField = () => clearInputField("password")
@@ -81,9 +76,6 @@ export function useSignIn() {
 
     isIdValid,
     isPasswordValid,
-
-    showPasswordField,
-    handleShowPasswordField,
 
     clearIdField,
     clearPasswordField,

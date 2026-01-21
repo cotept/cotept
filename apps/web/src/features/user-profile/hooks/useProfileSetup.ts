@@ -7,7 +7,7 @@ import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 import { createValidationChecks, validateField } from "@repo/shared/src/rules/rule-helper"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 
 import { useCreateBasicProfile } from "@/features/onboarding/api/mutations"
@@ -27,8 +27,9 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
     defaultValues: { nickname: "", profileImage: undefined },
     mode: "onChange",
   })
-  const nickname = form.watch("nickname")
-  const profileImage = form.watch("profileImage")
+  const nickname = useWatch({ control: form.control, name: "nickname" })
+  const profileImage = useWatch({ control: form.control, name: "profileImage" })
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(() =>

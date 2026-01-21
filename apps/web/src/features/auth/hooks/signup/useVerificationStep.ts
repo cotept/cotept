@@ -11,7 +11,7 @@ import { AuthType } from "@repo/api-client/src/types/auth-type"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { produce } from "immer"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { useSendVerificationCode, useVerifyCode } from "../../apis/mutations"
 import { type VerificationStepData, VerificationStepRules } from "../../lib/validations/auth-rules"
@@ -105,7 +105,7 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
     },
   })
 
-  const code = form.watch("verificationCode")
+  const code = useWatch({ control: form.control, name: "verificationCode", defaultValue: "" })
 
   // API 호출 관리
   const { mutate: sendCode, isPending: isSending } = useSendVerificationCode({
@@ -192,12 +192,7 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
   useEffect(() => {
     if (isValidVerificationCode(code) && state.verificationId !== "" && state.phase === "sent") {
       // sent 상태에서만 자동 검증 실행
-
-      setState(
-        produce((draft) => {
-          draft.phase = "verifying"
-        }),
-      )
+      // isVerifying 상태가 이미 로딩을 추적하므로 별도 phase 업데이트 불필요
       verifyCode({
         verifyCodeRequestDto: {
           verificationId: state.verificationId,
@@ -259,11 +254,7 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
 
   const handleSubmit = form.handleSubmit((data) => {
     if (isValidVerificationCode(data.verificationCode) && state.verificationId) {
-      setState(
-        produce((draft) => {
-          draft.phase = "verifying"
-        }),
-      )
+      // isVerifying 상태가 이미 로딩을 추적하므로 별도 phase 업데이트 불필요
       verifyCode({
         verifyCodeRequestDto: {
           verificationId: state.verificationId,
@@ -313,8 +304,8 @@ export function useVerificationStep({ email, onComplete }: UseVerificationStepPr
     // 레거시 호환성 (컴포넌트에서 사용 중)
     isSending,
     isVerifying,
-    isProcessing: state.phase === "verifying",
-    isPendingVerification: state.phase === "verifying",
+    isProcessing: isVerifying,
+    isPendingVerification: isVerifying,
     hasInitialSent: state.phase !== "initial",
   }
 }

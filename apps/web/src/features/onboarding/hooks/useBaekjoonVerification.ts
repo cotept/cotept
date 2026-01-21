@@ -6,7 +6,7 @@ import { VerificationStatusResponseDto, VerificationStatusType } from "@repo/api
 import { ValidationCheck } from "@repo/shared/components/validation-indicator"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 
 import { useCompleteBaekjoonVerification, useStartBaekjoonVerification } from "@/features/onboarding/api/mutations"
@@ -51,7 +51,7 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
     mode: "onChange",
   })
 
-  const baekjoonHandle = form.watch("baekjoonHandle")
+  const baekjoonHandle = useWatch({ control: form.control, name: "baekjoonHandle", defaultValue: "" })
 
   // 실시간 검증 체크 생성
   const validationChecks: ValidationCheck[] = useMemo(() => {
@@ -128,7 +128,7 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
     } else {
       toast.error("복사에 실패했습니다.")
     }
-  }, [verificationSession?.verificationString])
+  }, [verificationSession])
 
   // solved.ac 프로필 페이지 열기
   const handleOpenSolvedAc = useCallback(() => {
@@ -179,7 +179,7 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
         verificationSessionId: verificationSession.sessionId,
       },
     })
-  }, [userId, verificationSession?.sessionId, completeVerification, form])
+  }, [userId, verificationSession, completeVerification, form])
 
   // 재시도 핸들러
   const handleRetry = useCallback(() => {

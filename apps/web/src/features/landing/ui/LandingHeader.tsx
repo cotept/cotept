@@ -32,9 +32,9 @@ export const LandingHeader = () => {
         <div className="flex items-center gap-2">
           <Link href="/auth/signin">
             <Button
-              variant="default"
+              variant="outline"
               size={"sm"}
-              className="text-static-white text-base font-semibold transition-colors">
+              className="text-accent-foreground text-base font-semibold transition-colors">
               로그인
             </Button>
           </Link>

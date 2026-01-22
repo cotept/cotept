@@ -45,7 +45,8 @@ export const LandingHero = () => {
               </Button>
             </Link>
             <Link href="/main">
-              <Button variant="inverted" size="xl" className="flex items-center gap-2 px-8 text-base font-bold">
+              {/* <Button variant="inverted" size="xl" className="flex items-center gap-2 px-8 text-base font-bold"> */}
+              <Button variant="outline" size="xl" className="flex items-center gap-2 px-8 text-base font-bold">
                 <span className="relative z-10 flex items-center gap-2">
                   둘러 보기
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />

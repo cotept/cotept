@@ -12,7 +12,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80", // Pink Button
         tertiary: "bg-tertiary text-tertiary-foreground shadow-xs hover:bg-tertiary/80", // Blue Button
         outline:
-          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-accent ",
+          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-accent dark:hover:bg-accent/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         inverted: "bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-300 transition-colors duration-150",

@@ -12,7 +12,11 @@ import { createClearInputField } from "@/shared/utils"
 const isValidId = (id: string) => LoginRules.pick({ id: true }).safeParse({ id }).success
 const isValidPassword = (password: string) => LoginRules.pick({ password: true }).safeParse({ password }).success
 
-export function useSignIn() {
+interface UseSignInProps {
+  onSuccess?: () => void
+}
+
+export function useSignIn(props?: UseSignInProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const form = useForm<LoginData>({
@@ -45,6 +49,9 @@ export function useSignIn() {
         return
       }
       // 성공 시에는 서버 액션에서 자동으로 리다이렉트됨
+      if (props?.onSuccess) {
+        props.onSuccess()
+      }
     } catch (error) {
       // 운영 환경에서는 sentry 추가 예정
       console.error("로그인 오류:", error)

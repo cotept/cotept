@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@repo/shared/components/button"
 import { Input } from "@repo/shared/components/input"
@@ -17,6 +18,10 @@ import { InlineLoading } from "@/shared/ui/loading/LoadingSpinner"
 import Logo from "@/shared/ui/Logo"
 
 export function SignInForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/"
+
   const {
     form,
     id,
@@ -29,7 +34,9 @@ export function SignInForm() {
     isIdValid,
     isPasswordValid,
     clearIdField,
-  } = useSignIn()
+  } = useSignIn({
+    onSuccess: () => router.push(callbackUrl),
+  })
   return (
     <StepFlowLayout className="space-y-8">
       <div className="space-y-2 text-center">

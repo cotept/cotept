@@ -1,20 +1,54 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
 
 import { auth } from "@/auth"
+import { createRedirect, isAuthRoute, isProtectedRoute, isPublicRoute } from "@/proxy/lib/helpers"
 
-const protectedRoutes = ["/protected"]
+/**
+ * Main Proxy (Middleware) Implementation
+ * - Adheres to standard Next.js Middleware signature
+ * - Wraps NextAuth logic internally
+ */
+export default async function proxy(request: NextRequest) {
+  // 1. NextAuth 세션 확인 (auth 함수를 미들웨어처럼 호출)
+  // auth() returns a Session or null/undefined, or acts as a middleware if passed args
+  // V5 pattern: Standard middleware signature
 
-export default async function proxy(req: NextRequest) {
   const session = await auth()
-  console.log("Session:", session)
-  const pathname = req.nextUrl.pathname
-  const { nextUrl } = req
-  console.log(nextUrl.pathname)
-  if (protectedRoutes.includes(pathname) && !session) {
-    return NextResponse.redirect(new URL("/", req.url))
+  const isLoggedIn = !!session?.user
+  const pathName = request.nextUrl.pathname
+
+  console.log({ session, isLoggedIn, pathName })
+
+  // 2. Skip Public Routes & Static Files
+  if (isPublicRoute(pathName)) {
+    return NextResponse.next()
   }
+
+  // 3. Handle Auth Routes
+  if (isAuthRoute(pathName)) {
+    if (isLoggedIn) {
+      return createRedirect(request, "/")
+    }
+    return NextResponse.next()
+  }
+
+  // 4. Handle Protected Routes
+  if (isProtectedRoute(pathName)) {
+    if (!isLoggedIn) {
+      return createRedirect(request, "/auth/signin", {
+        callbackUrl: pathName, // pathName (e.g., /onboarding)만 저장
+      })
+    }
+    return NextResponse.next()
+  }
+
+  return NextResponse.next()
 }
 
+/**
+ * Matcher Configuration
+ */
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|images).*)"],
 }

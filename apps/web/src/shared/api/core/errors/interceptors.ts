@@ -29,6 +29,8 @@ function isErrorType(error: AxiosError, expectedType: ErrorType) {
 }
 
 // 네트워크 에러 핸들러
+// 💡 전략: 네트워크 에러는 사용자가 어쩔 수 없는 시스템 레벨의 문제이므로,
+// 글로벌에서 강제로 알림을 띄워 인지시킵니다.
 export const handleNetworkError: ErrorHandler = async (error, originalRequest) => {
   const processedError = isErrorType(error, ErrorType.NETWORK_ERROR)
   if (!processedError) return null
@@ -104,6 +106,7 @@ export const handleServerError: ErrorHandler = async (error, originalRequest, ax
     return axiosInstance(originalRequest)
   }
 
+  // 재시도 실패 시 글로벌 토스트 표시 (시스템 에러)
   showErrorToast(processedError.message, originalRequest)
   throw error
 }
@@ -118,14 +121,15 @@ export const handleForbiddenError: ErrorHandler = async (error, originalRequest)
 }
 
 // 4xx 클라이언트 에러 핸들러
-export const handleClientError: ErrorHandler = async (error, originalRequest) => {
+// 💡 전략: 4xx 에러는 '비즈니스 로직'과 밀접하므로, 글로벌에서 처리하지 않고
+// hook이나 component 레벨에서 구체적인 메시지로 처리하도록 넘겨줍니다.
+export const handleClientError: ErrorHandler = async (error) => {
   const processedError = ApiErrorHandler.process(error)
 
   if (processedError.type !== ErrorType.VALIDATION_ERROR && processedError.type !== ErrorType.CLIENT_ERROR) {
     return null
   }
 
-  showErrorToast(processedError.message, originalRequest)
   throw error
 }
 

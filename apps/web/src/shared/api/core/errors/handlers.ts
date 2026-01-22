@@ -19,10 +19,23 @@ export class ApiErrorHandler {
       }
     }
 
+    // 객체 형태의 에러 처리 (message나 error 프로퍼티 확인)
+    if (typeof error === "object" && error !== null) {
+      const customMessage = (error as any).message || (error as any).error
+      if (customMessage) {
+        return {
+          type: ErrorType.UNKNOWN_ERROR, // 혹은 상황에 따라 타입 추론 가능
+          message: customMessage,
+          originalError: error as Error,
+          retryable: false,
+        }
+      }
+    }
+
     return {
       type: ErrorType.UNKNOWN_ERROR,
       message: getApiErrorMessage(ErrorType.UNKNOWN_ERROR).message,
-      originalError: new Error(String(error)),
+      originalError: new Error(typeof error === "string" ? error : JSON.stringify(error)),
       retryable: false,
     }
   }
@@ -107,10 +120,10 @@ export class ApiErrorHandler {
   }
 
   static logError(error: ProcessedError, context?: string) {
-    console.error(`[ApiError${context ? ` - ${context}` : ""}]:`, {
+    console.error(`[ApiError${context ? ` - ${context}` : ""}]: ${error.message}`, {
       type: error.type,
-      message: error.message,
       statusCode: error.statusCode,
+      originalError: error.originalError,
       stack: error.originalError.stack,
     })
   }

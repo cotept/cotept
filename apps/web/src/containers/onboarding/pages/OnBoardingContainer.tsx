@@ -2,6 +2,8 @@
 
 import { useEffect } from "react"
 
+import Link from "next/link"
+
 import FormStepContent from "@repo/shared/components/form-step-content"
 import { FormStep } from "@repo/shared/src/components/form-step"
 import { StepDots } from "@repo/shared/src/components/step-dots"
@@ -41,21 +43,21 @@ const STEP_CONFIGS: Record<OnboardingStep, StepConfig> = {
   [ONBOARDING_STEPS.PROFILE_SETUP]: {
     title: "프로필 설정",
     description: "기본 프로필 정보를 입력해주세요",
-    icon: <User className="h-6 w-6 text-purple-400" />,
+    icon: <User className="text-primary h-6 w-6" />,
   },
   [ONBOARDING_STEPS.BAEKJOON_VERIFY]: {
     title: "백준 인증",
-    icon: <BookOpen className="h-6 w-6 text-purple-400" />,
+    icon: <BookOpen className="text-primary h-6 w-6" />,
   },
   [ONBOARDING_STEPS.MENTOR_SETUP]: {
     title: "멘토 프로필 작성",
     // description: "멘토 프로필을 작성해주세요",
-    icon: <FileText className="h-6 w-6 text-purple-400" />,
+    icon: <FileText className="text-primary h-6 w-6" />,
   },
   [ONBOARDING_STEPS.COMPLETE]: {
     title: "온보딩 완료",
     description: "CotePT와 함께 코딩 테스트 실력을 향상시켜보세요!",
-    icon: <CheckCircle className="h-6 w-6 text-purple-400" />,
+    icon: <CheckCircle className="text-primary h-6 w-6" />,
   },
 }
 
@@ -149,7 +151,9 @@ const OnBoardingContainer = () => {
           stepOrder={ONBOARDING_STEP_ORDER}
         />
         {/* 로고 영역 */}
-        <Logo />
+        <Link href="/" className="cursor-pointer">
+          <Logo size={"lg"} variant={"primary"} margin={false} />
+        </Link>
       </div>
       {/* 메인 카드 */}
       <FormStepContent>

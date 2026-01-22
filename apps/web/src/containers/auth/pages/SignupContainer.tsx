@@ -134,7 +134,9 @@ export default function SignupContainer() {
           isStepCompleted={isStepCompleted}
           stepOrder={SIGNUP_STEP_ORDER}
         />
-        <Logo />
+        <Link href="/" className="cursor-pointer">
+          <Logo size={"lg"} variant={"primary"} margin={false} />
+        </Link>
       </div>
       <FormStepContent>
         <FormStep

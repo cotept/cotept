@@ -1,5 +1,6 @@
-import { SocialProvider } from "@/modules/auth/domain/model"
 import { IsEnum, IsObject, IsOptional, IsString } from "class-validator"
+
+import { SocialProvider } from "@/modules/auth/domain/model"
 
 /**
  * 소셜 인증 콜백 처리를 위한 DTO

@@ -1,0 +1,28 @@
+"use server"
+
+import { AuthError } from "next-auth"
+
+import { signIn } from "@/auth"
+
+export async function signInAction(formData: FormData) {
+  try {
+    await signIn("credentials", {
+      id: formData.get("id"),
+      password: formData.get("password"),
+      redirect: false, // 서버에서 리다이렉트하지 않음 → 클라이언트에서 router.refresh() 후 리다이렉트
+    })
+
+    // 로그인 성공
+    return { success: true, redirectTo: process.env.NEXT_SERVER_SIGNIN_REDIRECT_PATH || "/main" }
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "아이디 또는 비밀번호가 올바르지 않습니다." }
+        default:
+          return { error: "로그인 중 오류가 발생했습니다." }
+      }
+    }
+    throw error
+  }
+}

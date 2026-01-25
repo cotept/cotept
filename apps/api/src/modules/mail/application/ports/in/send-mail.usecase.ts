@@ -1,5 +1,6 @@
-import { SendMailDto } from "@/modules/mail/application/dtos/send-mail.dto"
 import { TemplateNames } from "@/modules/mail/domain/types/template.types"
+
+import { SendMailDto } from "@/modules/mail/application/dtos/send-mail.dto"
 
 /**
  * 메일 전송 유스케이스 추상 클래스

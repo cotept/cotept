@@ -6,11 +6,20 @@ const appEnvironment = process.env["NODE_ENV"]
 const isProduction = appEnvironment === "production"
 const appName = "CotePT"
 
+// 메타데이터 추가 포맷 (런타임에 버전 정보 추가)
+const addMetadata = winston.format((info) => {
+  info.service = appName;
+  info.environment = appEnvironment;
+  info.version = process.env.API_VERSION || "unknown";
+  return info;
+});
+
 // 개발 환경을 위한 사람이 읽기 쉬운 로그 포맷
 // 컬러 하이라이팅과 들여쓰기가 적용된 깔끔한 형태로 출력됩니다
 const developmentFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.ms(),
+  addMetadata(),
   nestWinstonModuleUtilities.format.nestLike(`${appName}[${appEnvironment}]`, {
     colors: true,
     prettyPrint: true,
@@ -19,7 +28,12 @@ const developmentFormat = winston.format.combine(
 
 // 운영 환경을 위한 JSON 형식의 로그 포맷
 // OCI Logging Service에서 쉽게 파싱하고 검색할 수 있는 구조화된 형태로 출력됩니다
-const productionFormat = winston.format.combine(winston.format.timestamp(), winston.format.ms(), winston.format.json())
+const productionFormat = winston.format.combine(
+  winston.format.timestamp(), 
+  winston.format.ms(), 
+  addMetadata(),
+  winston.format.json()
+)
 
 // winston 로거 설정
 export const winstonLogger = WinstonModule.createLogger({
@@ -32,13 +46,6 @@ export const winstonLogger = WinstonModule.createLogger({
 
   // 단일 콘솔 transport 사용 (Container Instance가 자동으로 수집)
   transports: [new winston.transports.Console()],
-
-  // 모든 로그에 기본적으로 포함될 메타데이터
-  defaultMeta: {
-    service: appName,
-    environment: appEnvironment,
-    version: process.env.APP_VERSION || "unknown", // 배포 버전 추적용
-  },
 })
 
 // debug: 상세한 디버깅 정보 (개발 환경에서만 수집)

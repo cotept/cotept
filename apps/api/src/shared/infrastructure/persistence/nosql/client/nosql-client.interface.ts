@@ -16,8 +16,11 @@ export interface NoSQLClientOptions {
   // 컴파트먼트 ID
   compartment?: string
 
-  // 인증 설정
-  auth: {
+  // 서비스 타입 (온프레미스용)
+  serviceType?: string
+
+  // 인증 설정 (클라우드용 - 온프레미스에서는 선택사항)
+  auth?: {
     iam: {
       // IAM 인증 제공자 설정
       configProvider: any

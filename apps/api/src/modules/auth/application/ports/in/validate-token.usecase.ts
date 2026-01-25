@@ -1,5 +1,5 @@
-import { TokenPayload } from '@/modules/auth/domain/model';
 import { ValidateTokenDto } from '@/modules/auth/application/dtos/validate-token.dto';
+import { TokenPayload } from '@/modules/auth/domain/model';
 
 /**
  * 토큰 검증 유스케이스 인터페이스

@@ -1,7 +1,10 @@
-import { SendMailDto } from "@/modules/mail/application/dtos"
-import { TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
 import { plainToInstance } from "class-transformer"
+
 import { MailRequestDto } from "../../../dtos/request/mail-request.dto"
+
+import { TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
+
+import { SendMailDto } from "@/modules/mail/application/dtos"
 
 /**
  * MailRequestDto를 SendMailDto로 변환하는 매퍼 클래스

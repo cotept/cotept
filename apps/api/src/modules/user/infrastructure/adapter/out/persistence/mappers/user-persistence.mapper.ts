@@ -1,94 +1,92 @@
-import User, { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { Email } from "@/modules/user/domain/vo/email.vo"
-import { Name } from "@/modules/user/domain/vo/name.vo"
-import { PhoneNumber } from "@/modules/user/domain/vo/phone-number.vo"
-import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
 import { Injectable } from "@nestjs/common"
-import { instanceToPlain, plainToInstance } from "class-transformer"
 
-/**
- * 아웃바운드 어댑터 매퍼
- * 도메인 객체와 데이터베이스 엔티티 간의 변환을 담당
- * class-transformer를 활용하여 변환 효율성 향상
- */
+import User from "@/modules/user/domain/model/user"
+import { UserEntity } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
+import { EntityMapper } from "@/shared/infrastructure/mappers/entity.mapper"
+
 @Injectable()
-export class UserPersistenceMapper {
+export class UserPersistenceMapper extends EntityMapper<User, UserEntity> {
   /**
-   * 도메인 엔티티 -> 영속성 엔티티 변환
-   */
-  toEntity(user: User): UserEntity {
-    // 도메인 엔티티를 일반 객체로 변환
-    const plainData = {
-      id: user.id,
-      email: user.getEmailString(),
-      passwordHash: user.passwordHash,
-      salt: user.salt,
-      role: user.role,
-      status: user.status,
-      name: user.getNameString(),
-      phoneNumber: user.getPhoneNumberString(),
-      phoneVerified: user.isPhoneVerified() ? 1 : 0,
-      ciHash: user.ciHash,
-      diHash: user.diHash,
-      birthDate: user.birthDate,
-      gender: user.gender,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      lastLoginAt: user.lastLoginAt,
-    }
-
-    // plainToInstance를 사용하여 영속성 엔티티로 변환
-    return plainToInstance(UserEntity, plainData)
-  }
-
-  /**
-   * 영속성 엔티티 -> 도메인 엔티티 변환
+   * Entity → Domain 변환
+   * User 생성자의 자동 변환 기능을 최대한 활용
    */
   toDomain(entity: UserEntity): User {
-    // 영속성 엔티티를 일반 객체로 변환
-    const plainData = instanceToPlain(entity)
+    return new User({
+      idx: entity.idx,
+      userId: entity.userId,
 
-    // 값 객체 생성 (도메인 규칙 준수를 위한 필수 작업)
-    const email = Email.of(plainData.email)
-    const name = plainData.name ? Name.of(plainData.name) : undefined
-    const phoneNumber = plainData.phoneNumber
-      ? PhoneNumber.of(plainData.phoneNumber, plainData.phoneVerified === 1)
-      : undefined
+      // ✅ User 생성자가 string → Email 자동 변환
+      email: entity.email,
 
-    // 도메인 객체 생성 - 생성자 직접 사용
-    const user = new User({
-      id: plainData.id,
-      email,
-      passwordHash: plainData.passwordHash,
-      salt: plainData.salt,
-      role: plainData.role as UserRole,
-      status: plainData.status as UserStatus,
-      name,
-      phoneNumber,
-      phoneVerified: plainData.phoneVerified === 1,
-      ciHash: plainData.ciHash,
-      diHash: plainData.diHash,
-      birthDate: plainData.birthDate,
-      gender: plainData.gender,
-      createdAt: plainData.createdAt,
-      updatedAt: plainData.updatedAt,
-      lastLoginAt: plainData.lastLoginAt,
+      passwordHash: entity.passwordHash,
+      salt: entity.salt,
+      role: entity.role,
+      status: entity.status,
+
+      // ✅ User 생성자가 string → Name 자동 변환 (null-safe)
+      name: entity.name,
+
+      // ✅ User 생성자가 string → PhoneNumber 자동 변환 + 인증 상태 설정
+      phoneNumber: entity.phoneNumber,
+      phoneVerified: EntityMapper.numberToBoolean(entity.phoneVerified),
+
+      ciHash: entity.ciHash,
+      diHash: entity.diHash,
+      birthDate: entity.birthDate,
+      gender: entity.gender,
+
+      // BaseEntity에서 상속된 시간 필드
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      lastLoginAt: entity.lastLoginAt,
     })
-
-    return user
   }
 
   /**
-   * 영속성 엔티티 목록 -> 도메인 엔티티 목록 변환
+   * Domain → Entity 변환
+   * 값 객체를 원시 타입으로 평면화
    */
-  toDomainList(entities: UserEntity[]): User[] {
-    return entities.map((entity) => this.toDomain(entity))
+  toEntity(domain: User): UserEntity {
+    const entity = new UserEntity()
+
+    // ✅ idx는 자동생성 필드이므로 조건부 할당
+    if (domain.idx !== undefined) {
+      entity.idx = domain.idx
+    }
+
+    entity.userId = domain.userId
+
+    // ✅ 값 객체 → 원시값 변환 (도메인 모델의 getter 활용)
+    entity.email = domain.getEmailString()
+    entity.passwordHash = domain.passwordHash
+    entity.salt = domain.salt
+    entity.role = domain.role
+    entity.status = domain.status
+
+    // ✅ Optional 값 객체들 안전 변환
+    entity.name = domain.getNameString()
+    entity.phoneNumber = domain.getPhoneNumberString()
+    entity.phoneVerified = EntityMapper.booleanToNumber(domain.isPhoneVerified())
+
+    entity.ciHash = domain.ciHash
+    entity.diHash = domain.diHash
+    entity.birthDate = domain.birthDate
+    entity.gender = domain.gender
+
+    // 시간 필드는 BaseEntity가 자동 관리하지만 도메인 값이 있으면 사용
+    entity.createdAt = domain.createdAt
+    entity.updatedAt = domain.updatedAt
+    entity.lastLoginAt = domain.lastLoginAt
+
+    return entity
   }
 
   /**
-   * 도메인 엔티티 목록 -> 영속성 엔티티 목록 변환
+   * 새 사용자 생성용 (idx 제외)
    */
-  toEntityList(users: User[]): UserEntity[] {
-    return users.map((user) => this.toEntity(user))
+  toEntityForCreate(user: User): UserEntity {
+    const entity = this.toEntity(user)
+    // 자동생성 필드는 idx를 undefined로 설정
+    return entity
   }
 }

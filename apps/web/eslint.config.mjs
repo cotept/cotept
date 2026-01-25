@@ -1,33 +1,34 @@
-import { FlatCompat } from "@eslint/eslintrc"
-import js from "@eslint/js"
-import baseConfig from "@repo/eslint-config/base.js"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import baseConfig from "@repo/eslint-config/next"
+
+import nextTypescript from "eslint-config-next/typescript"
+import boundariesPlugin from "eslint-plugin-boundaries"
+import storybookPlugin from "eslint-plugin-storybook"
+import { dirname } from "path"
+import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = dirname(__filename)
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-})
-
-export default [
+const eslintConfig = [
   ...baseConfig,
-
-  // FSD 플러그인 수동 구현
+  ...nextTypescript,
+  // Override typescript-eslint rules
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn", // error -> warn으로 변경
+    },
+  },
+  // file dependencies boundaries
   {
     plugins: {
-      ...compat.plugins("boundaries").reduce((acc, config) => ({ ...acc, ...config.plugins }), {}),
+      boundaries: boundariesPlugin,
     },
     settings: {
       "boundaries/elements": [
         { type: "app", pattern: "src/app/*" },
-        { type: "pages", pattern: "src/pages/*" },
-        { type: "widgets", pattern: "src/widgets/*" },
+        { type: "containers", pattern: "src/containers/*" },
         { type: "features", pattern: "src/features/*" },
-        { type: "entities", pattern: "src/entities/*" },
         { type: "shared", pattern: "src/shared/*" },
       ],
       "boundaries/ignore": ["**/*.d.ts", "**/*.spec.ts", "**/*.test.ts"],
@@ -43,58 +44,83 @@ export default [
               allow: ["shared"],
             },
             {
-              from: "entities",
-              allow: ["shared", "entities"],
-            },
-            {
               from: "features",
-              allow: ["shared", "entities", "features"],
+              allow: ["shared", "features"],
             },
             {
-              from: "widgets",
-              allow: ["shared", "entities", "features", "widgets"],
-            },
-            {
-              from: "pages",
-              allow: ["shared", "entities", "features", "widgets", "pages"],
+              from: "containers",
+              allow: ["shared", "features", "containers"],
             },
             {
               from: "app",
-              allow: ["shared", "entities", "features", "widgets", "pages", "app"],
-            },
-          ],
-        },
-      ],
-      "boundaries/entry-point": [
-        "error",
-        {
-          default: "disallow",
-          rules: [
-            {
-              target: ["**"],
-              allow: ["**/index.js", "**/index.ts", "**/index.jsx", "**/index.tsx"],
+              allow: ["shared", "features", "containers", "app"],
             },
           ],
         },
       ],
     },
   },
+  //import sort - custom rules for this app
+  {
+    rules: {
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            // Side effect imports.
+            ["^\\u0000"],
+            // Node.js builtins prefixed with `node:`.
+            ["^node:"],
+            // 1. React 및 React 관련 패키지 (side effect imports)
+            ["^react$", "^react/.*"],
 
-  // Storybook 규칙은 stories 파일에만 적용
+            // 2. Next.js 관련 패키지
+            ["^next", "^next/.*"],
+
+            // 3. 모노레포 공유 패키지
+            ["^@repo/"],
+
+            // 4. 외부 패키지 (node_modules의 패키지들)
+            ["^@?\\w"],
+
+            // 5. 내부 alias imports
+            ["^@app/", "^@containers/", "^@features/", "^@customs/", "^@shared/"],
+
+            // 6. src 절대경로 import
+            ["^src/"],
+
+            // 7. 상대경로 imports (부모 디렉토리 먼저, 같은 디렉토리 마지막)
+            ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+            ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+
+            // 8. 스타일 파일들
+            ["^.+\\.s?css$"],
+
+            // 9. 타입 전용 imports (TypeScript type imports)
+            ["^.*\\u0000$"],
+          ],
+        },
+      ],
+    },
+  },
+  // storybook
   {
     files: ["**/*.stories.@(js|jsx|ts|tsx)"],
-    ...compat.plugins("storybook"),
-    ...compat.config({
-      rules: {
-        "storybook/default-exports": "error",
-        "storybook/story-exports": "error",
-        "storybook/await-interactions": "error",
-        "storybook/use-storybook-testing-library": "error",
-        "storybook/use-storybook-expect": "error",
-      },
-    }),
+    plugins: {
+      storybook: storybookPlugin,
+    },
+    rules: {
+      "storybook/default-exports": "error",
+      "storybook/story-exports": "error",
+      "storybook/await-interactions": "error",
+      "storybook/use-storybook-testing-library": "error",
+      "storybook/use-storybook-expect": "error",
+    },
   },
+  // ignore
   {
     ignores: ["**/node_modules", "**/dist", "**/.next"],
   },
 ]
+
+export default eslintConfig

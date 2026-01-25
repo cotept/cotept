@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common"
+
 import { LoggerModule } from "./logger-middleware.module"
 
 @Module({

@@ -1,9 +1,11 @@
+import { Injectable, Logger } from "@nestjs/common"
+import { MailerService } from "@nestjs-modules/mailer"
+
+import { TEMPLATE_SUBJECT_MAP } from "@/modules/mail/domain/types/template.types"
+
 import { MailServicePort } from "@/modules/mail/application/ports/out/mail-service.port"
 import { Mail } from "@/modules/mail/domain/model/mail"
-import { TEMPLATE_SUBJECT_MAP } from "@/modules/mail/domain/types/template.types"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { MailerService } from "@nestjs-modules/mailer"
-import { Injectable, Logger } from "@nestjs/common"
 
 @Injectable()
 export class MailService extends MailServicePort {

@@ -559,3 +559,30 @@ cotept/
 ├── pnpm-workspace.yaml                   # pnpm 워크스페이스 정의
 └── docker-compose.yml                    # 로컬 인프라 서비스
 ```
+
+---
+
+## 주요 문서
+
+### 아키텍처
+
+- [프론트엔드 아키텍처 가이드](docs/architecture/frontend-architecture-guide.md)
+- [실시간 프로토콜 서비스](docs/architecture/realtime-protocol-services.md)
+- [인프라 아키텍처](context/INFRASTRUCTURE_ARCHITECTURE.md)
+
+### 인증 시스템
+
+- [인증 시스템 개요](docs/auth/login/auth-system.md)
+- [회원가입 플로우](docs/auth/signup/signup-flow.md)
+
+### 미디어 처리
+
+- [미디어 파이프라인](docs/media/media-pipeline.md)
+
+### 테스트
+
+- [테스트 가이드라인](docs/test/test-guidelines.md)
+
+### 커밋 컨벤션
+
+- [커밋 컨벤션](docs/git_workflow/branch_strategies.md)

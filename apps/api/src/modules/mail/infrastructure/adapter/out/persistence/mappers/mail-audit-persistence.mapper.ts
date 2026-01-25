@@ -1,20 +1,25 @@
-import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
-import { TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
+import { Injectable } from "@nestjs/common"
+
 import { MailAuditEntity } from "../entities/mail-audit.entity"
+
+import { TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
+
+import { MailAudit } from "@/modules/mail/domain/model/mail-audit"
 
 /**
  * 메일 감사 영속성 매퍼
  * 도메인 모델과 엔티티 간의 변환을 담당
  */
+@Injectable()
 export class MailAuditPersistenceMapper {
   /**
    * 도메인 모델을 엔티티로 변환
    */
-  static toEntity(domainModel: MailAudit): MailAuditEntity {
+  toEntity(domainModel: MailAudit): MailAuditEntity {
     const entity = new MailAuditEntity()
     const data = domainModel.toData()
 
-    entity.id = data.id
+    entity.idx = data.idx
     entity.mailId = data.mailId
     entity.template = data.template
     entity.recipients = data.recipients
@@ -32,9 +37,9 @@ export class MailAuditPersistenceMapper {
   /**
    * 엔티티를 도메인 모델로 변환
    */
-  static toDomain(entity: MailAuditEntity): MailAudit {
+  toDomain(entity: MailAuditEntity): MailAudit {
     return MailAudit.create(
-      entity.id,
+      entity.idx,
       entity.mailId,
       entity.template as any,
       entity.recipients,

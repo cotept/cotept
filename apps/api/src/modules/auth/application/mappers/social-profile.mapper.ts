@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import { plainToInstance } from 'class-transformer';
+
 import { SocialProfileDto } from '@/modules/auth/application/dtos/social-profile.dto';
 
 /**

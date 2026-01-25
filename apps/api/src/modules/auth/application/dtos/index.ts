@@ -1,3 +1,4 @@
+export * from "./check-availability.dto"
 export * from "./find-id.dto"
 export * from "./login.dto"
 export * from "./logout.dto"

@@ -1,0 +1,189 @@
+name: API Diff Report
+
+on:
+  pull_request:
+    paths:
+      - "packages/api-client/openapi-spec.yaml"
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      # 1. Head 브랜치(PR 브랜치)의 코드를 checkout
+      - name: Checkout Head Branch
+        uses: actions/checkout@v4
+
+      # 2. Base 브랜치(e.g., main)의 코드를 별도 디렉토리에 checkout
+      - name: Checkout Base Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      # 3. oasdiff 설치
+      - name: Install oasdiff
+        run: go install github.com/oasdiff/oasdiff@latest
+
+      # 4. oasdiff 실행하여 변경점 추출 (Markdown 포맷)
+      - name: Run oasdiff
+        id: diff
+        run: |
+          OAS_BASE_PATH="base/packages/api-client/openapi-spec.yaml"
+          OAS_HEAD_PATH="packages/api-client/openapi-spec.yaml"
+
+          # Base 파일이 존재하지 않는 경우 (새로운 파일)
+          if [ ! -f "$OAS_BASE_PATH" ]; then
+            echo "diff_markdown<<EOF" >> $GITHUB_OUTPUT
+            echo "## 🆕 새로운 OpenAPI 스펙 파일이 추가되었습니다!" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # oasdiff 실행
+            DIFF_OUTPUT=$(oasdiff -base "$OAS_BASE_PATH" -revision "$OAS_HEAD_PATH" -format markdown 2>/dev/null || echo "변경사항을 분석할 수 없습니다.")
+            echo "diff_markdown<<EOF" >> $GITHUB_OUTPUT
+            echo "$DIFF_OUTPUT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      # 5. 메타데이터 수집
+      - name: Collect Metadata
+        id: metadata
+        run: |
+          # API 버전 추출 (openapi-spec.yaml에서)
+          if [ -f "packages/api-client/openapi-spec.yaml" ]; then
+            # info 섹션 아래의 version 추출 (앞에 공백 2개 있음)
+            API_VERSION=$(grep -E "^  version:" packages/api-client/openapi-spec.yaml | awk '{print $2}' | tr -d '"' | tr -d "'" || echo "unknown")
+            # info 섹션 아래의 title 추출 (앞에 공백 2개 있음)  
+            API_TITLE=$(grep -E "^  title:" packages/api-client/openapi-spec.yaml | awk -F': ' '{print $2}' | sed 's/^ *//' | tr -d '"' | tr -d "'" || echo "CotePT API")
+          else
+            API_VERSION="unknown"
+            API_TITLE="CotePT API"
+          fi
+          
+          # 시간 정보 (KST)
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # 커밋 정보
+          SHORT_SHA=${GITHUB_SHA:0:7}
+          
+          # 워크플로우 시작 시간
+          WORKFLOW_START_TIME=$(date +%s)
+          
+          # 결과 출력 (멀티라인 방식으로 안전하게 처리)
+          {
+            echo "api_version<<EOF"
+            echo "$API_VERSION"
+            echo "EOF"
+            echo "api_title<<EOF"
+            echo "$API_TITLE"
+            echo "EOF"
+            echo "current_time<<EOF"
+            echo "$CURRENT_TIME"
+            echo "EOF"
+            echo "short_sha<<EOF"
+            echo "$SHORT_SHA"
+            echo "EOF"
+            echo "workflow_start_time<<EOF"
+            echo "$WORKFLOW_START_TIME"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      # 6. 변경사항이 있는지 확인하고 처리
+      - name: Process API Changes
+        id: analysis
+        run: |
+          DIFF_CONTENT="${{ steps.diff.outputs.diff_markdown }}"
+
+          # 변경사항이 비어있거나 "No changes" 포함 시 스킵
+          if [ -z "$DIFF_CONTENT" ] || [[ "$DIFF_CONTENT" == *"No changes"* ]]; then
+            echo "변경사항이 없습니다."
+            echo "has_changes=false" >> $GITHUB_OUTPUT  
+            exit 0
+          fi
+
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+
+          # PR 코멘트 생성 (변수 치환 가능하도록 따옴표 제거)
+          PR_COMMENT=$(cat <<EOL
+          ## API 변경사항 요약
+
+          ### 관련 PR
+          - **PR**: #${{ github.event.pull_request.number }}
+          - **브랜치**: ${{ github.head_ref }} → ${{ github.base_ref }}
+          - **작성자**: @${{ github.event.pull_request.user.login }}
+
+          ### 변경 내용
+          $DIFF_CONTENT
+
+          ---
+          *자동 생성된 API 변경 리포트*
+          EOL
+          )
+
+          # Slack 메시지 생성  
+          SLACK_MESSAGE=$(cat <<'EOL'
+          🚀 *API 변경사항 감지*
+
+          *PR*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>
+          *브랜치*: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+          *작성자*: ${{ github.event.pull_request.user.login }}
+
+          변경사항을 확인해주세요! 👆
+          EOL
+          )
+
+          # 출력 설정
+          echo "pr_comment<<EOF" >> $GITHUB_OUTPUT
+          echo "$PR_COMMENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "slack_message<<EOF" >> $GITHUB_OUTPUT
+          echo "$SLACK_MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # 6. GitHub PR에 분석 결과 코멘트 작성 (변경사항이 있을 때만)
+      - name: Create or Update PR Comment
+        if: steps.analysis.outputs.has_changes == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.analysis.outputs.pr_comment }}
+
+      # 7. 실행 시간 계산
+      - name: Calculate Workflow Duration
+        if: steps.analysis.outputs.has_changes == 'true'
+        id: timing
+        run: |
+          # 실행 시간 계산
+          WORKFLOW_END_TIME=$(date +%s)
+          WORKFLOW_DURATION=$((WORKFLOW_END_TIME - ${{ steps.metadata.outputs.workflow_start_time }}))
+          
+          # 결과 출력
+          {
+            echo "workflow_duration<<EOF"
+            echo "${WORKFLOW_DURATION}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      # 8. 구조화된 Slack 알림 전송
+      - name: Send Structured Slack Notification
+        if: steps.analysis.outputs.has_changes == 'true'
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: api-changes
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: API 스펙 변경 알림
+          SLACK_MESSAGE: |
+            *변경 시간:* ${{ steps.metadata.outputs.current_time }}
+            *API 버전:* v${{ steps.metadata.outputs.api_version }}
+            *작성자:* ${{ github.event.pull_request.user.login }}
+            *커밋:* ${{ steps.metadata.outputs.short_sha }}
+            *브랜치:* ${{ github.head_ref }} -> ${{ github.base_ref }}
+            
+            oasdiff 분석이 완료되었습니다. PR 코멘트에서 상세 내용을 확인하세요.
+          SLACK_FOOTER: CotePT API 자동화 시스템
+          SLACK_WEBHOOK: ${{ secrets.SLACK_API_CHANGE_LOGS_CHANNEL_WEBHOOK_URL }}

@@ -1,3 +1,6 @@
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
+import { ConfigService } from "@nestjs/config"
+
 import { clentUrlConfig } from "@/configs/token"
 import { GenerateAuthCodeDto } from "@/modules/auth/application/dtos/generate-auth-code.dto"
 import {
@@ -6,14 +9,13 @@ import {
 } from "@/modules/auth/application/dtos/social-auth-callback.dto"
 import { GenerateAuthCodeUseCase } from "@/modules/auth/application/ports/in/generate-auth-code.usecase"
 import { SocialAuthCallbackUseCase } from "@/modules/auth/application/ports/in/social-auth-callback.usecase"
+import { AuthCachePort } from "@/modules/auth/application/ports/out/auth-cache.port"
 import { AuthUserRepositoryPort } from "@/modules/auth/application/ports/out/auth-user-repository.port"
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
-import { TokenStoragePort } from "@/modules/auth/application/ports/out/token-storage.port"
 import { PendingLinkInfo } from "@/modules/auth/domain/model/pending-link-info"
 import { CryptoService } from "@/shared/infrastructure/services/crypto"
+import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common"
-import { ConfigService } from "@nestjs/config"
 
 /**
  * 소셜 인증 콜백 처리 유스케이스 구현체
@@ -26,7 +28,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
   private readonly CLIENT_ERROR_REDIRECT_URL = this.configService.getOrThrow<clentUrlConfig>("clientUrl").clientErrorUrl
 
   constructor(
-    private readonly tokenStorage: TokenStoragePort,
+    private readonly authCache: AuthCachePort,
     private readonly loginSessionRepository: LoginSessionRepositoryPort,
     private readonly generateAuthCodeUseCase: GenerateAuthCodeUseCase,
     private readonly configService: ConfigService,
@@ -68,7 +70,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
 
       if (existingAuthUser) {
         // 기존에 연결된 소셜 계정으로 로그인
-        userId = existingAuthUser.id
+        userId = convertDomainUserIdToString(existingAuthUser.id)
         this.logger.debug(`Found existing user by social ID: ${userId}`)
       } else {
         // 2. 이메일로 기존 사용자 찾기
@@ -80,7 +82,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
 
           // 임시 연결 정보 저장
           const pendingInfo: PendingLinkInfo = {
-            userId: existingUserByEmail.id,
+            userId: convertDomainUserIdToString(existingUserByEmail.id),
             provider,
             socialId: user.socialId,
             email: user.email,
@@ -90,7 +92,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
             profileData: user.profileData,
           }
 
-          await this.tokenStorage.savePendingLinkInfo(pendingLinkToken, pendingInfo, 300) // 5분 유효
+          await this.authCache.savePendingLinkInfo(pendingLinkToken, pendingInfo, 300) // 5분 유효
 
           this.logger.debug(`Created pending link token for existing user: ${existingUserByEmail.id}`)
 
@@ -118,7 +120,7 @@ export class SocialAuthCallbackUseCaseImpl implements SocialAuthCallbackUseCase 
             user.profileImageUrl,
             user.profileData,
           )
-          userId = newUser.id
+          userId = convertDomainUserIdToString(newUser.id)
           this.logger.debug(`Created new user from social profile: ${userId}`)
         }
       }

@@ -1,24 +1,31 @@
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+
+import { EntityManager, IsNull, LessThan, Repository } from "typeorm"
+
 import { LoginSessionRepositoryPort } from "@/modules/auth/application/ports/out/login-session-repository.port"
 import { LoginSession } from "@/modules/auth/domain/model/login-session"
 import { SessionLogEntity } from "@/modules/auth/infrastructure/adapter/out/persistence/entities/session-log.entity"
 import { LoginSessionPersistenceMapper } from "@/modules/auth/infrastructure/adapter/out/persistence/mappers/login-session-persistence.mapper"
+import { BaseRepository } from "@/shared/infrastructure/persistence/typeorm/repositories/base/base.repository"
 import { ErrorUtils } from "@/shared/utils/error.util"
-import { Injectable, Logger } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
-import { IsNull, LessThan, Repository } from "typeorm"
 
 /**
  * TypeORM을 사용한 로그인 세션 레포지토리 구현
  */
 @Injectable()
-export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort {
-  private readonly logger = new Logger(TypeOrmLoginSessionRepository.name)
-
+export class TypeOrmLoginSessionRepository
+  extends BaseRepository<SessionLogEntity>
+  implements LoginSessionRepositoryPort
+{
   constructor(
     @InjectRepository(SessionLogEntity)
-    private readonly sessionLogRepository: Repository<SessionLogEntity>,
+    sessionLogRepository: Repository<SessionLogEntity>,
+    entityManager: EntityManager,
     private readonly loginSessionMapper: LoginSessionPersistenceMapper,
-  ) {}
+  ) {
+    super(sessionLogRepository, entityManager, "LoginSession")
+  }
 
   /**
    * 로그인 세션 저장
@@ -27,19 +34,35 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
    */
   async save(session: LoginSession): Promise<LoginSession> {
     const entity = this.loginSessionMapper.toEntity(session)
-    const savedEntity = await this.sessionLogRepository.save(entity)
+    const savedEntity = await this.create(entity)
     return this.loginSessionMapper.toDomain(savedEntity)
   }
 
   /**
    * ID로 로그인 세션 찾기
-   * @param id 세션 ID
+   * @param idx 세션 ID
    * @returns 로그인 세션 도메인 엔티티 또는 null
    */
-  async findById(id: string): Promise<LoginSession | null> {
-    const entity = await this.sessionLogRepository.findOne({ where: { id } })
-    if (!entity) return null
-    return this.loginSessionMapper.toDomain(entity)
+  async findByIdx(idx: number): Promise<LoginSession | null> {
+    try {
+      const entity = await this.findOne({ idx })
+      return this.loginSessionMapper.toDomain(entity)
+    } catch {
+      return null
+    }
+  }
+  /**
+   * ID로 로그인 세션 찾기
+   * @param idx 세션 ID
+   * @returns 로그인 세션 도메인 엔티티 또는 null
+   */
+  async findByUserIdx(userIdx: number): Promise<LoginSession | null> {
+    try {
+      const entity = await this.findOne({ userIdx })
+      return this.loginSessionMapper.toDomain(entity)
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -48,22 +71,25 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
    * @returns 로그인 세션 도메인 엔티티 또는 null
    */
   async findByToken(token: string): Promise<LoginSession | null> {
-    const entity = await this.sessionLogRepository.findOne({ where: { token } })
-    if (!entity) return null
-    return this.loginSessionMapper.toDomain(entity)
+    try {
+      const entity = await this.findOne({ token })
+      return this.loginSessionMapper.toDomain(entity)
+    } catch {
+      return null
+    }
   }
 
   /**
    * 사용자의 모든 활성 세션 찾기
-   * @param userId 사용자 ID
+   * @param userIdx 사용자 ID
    * @returns 활성 세션 목록
    */
-  async findActiveSessionsByUserId(userId: string): Promise<LoginSession[]> {
+  async findActiveSessionsByUserIdx(userIdx: number): Promise<LoginSession[]> {
     const now = new Date()
 
-    const entities = await this.sessionLogRepository.find({
+    const entities = await this.entityRepository.find({
       where: {
-        userId,
+        userIdx,
         endedAt: IsNull(),
         expiresAt: LessThan(now),
       },
@@ -78,12 +104,8 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
    * @param userId 사용자 ID
    * @returns 전체 세션 목록
    */
-  async findAllByUserId(userId: string): Promise<LoginSession[]> {
-    const entities = await this.sessionLogRepository.find({
-      where: { userId },
-      order: { createdAt: "DESC" },
-    })
-
+  async findAllByUserIdx(userIdx: number): Promise<LoginSession[]> {
+    const entities = await this.findAll({ userIdx })
     return this.loginSessionMapper.toDomainList(entities)
   }
 
@@ -92,14 +114,14 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
    * @param userId 사용자 ID
    * @returns 성공 여부
    */
-  async terminateAllUserSessions(userId: string): Promise<boolean> {
+  async terminateAllUserSessions(userIdx: number): Promise<boolean> {
     try {
       const now = new Date()
 
       // 사용자의 모든 활성 세션 찾기
-      const activeSessionEntities = await this.sessionLogRepository.find({
+      const activeSessionEntities = await this.entityRepository.find({
         where: {
-          userId,
+          userIdx,
           endedAt: IsNull(),
           expiresAt: LessThan(now),
         },
@@ -114,12 +136,12 @@ export class TypeOrmLoginSessionRepository implements LoginSessionRepositoryPort
       const updatePromises = activeSessionEntities.map((session) => {
         session.endedAt = new Date()
         session.endReason = "PASSWORD_CHANGED"
-        return this.sessionLogRepository.save(session)
+        return this.entityRepository.save(session)
       })
 
       await Promise.all(updatePromises)
 
-      this.logger.log(`${userId} 사용자의 세션 ${updatePromises.length}개가 종료되었습니다. (사유: 비밀번호 변경)`)
+      this.logger.log(`${userIdx} 사용자의 세션 ${updatePromises.length}개가 종료되었습니다. (사유: 비밀번호 변경)`)
 
       return true
     } catch (error) {

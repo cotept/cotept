@@ -1,16 +1,15 @@
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
+
 import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 @Entity("AUTH_VERIFICATIONS")
-export class AuthVerificationEntity {
-  @PrimaryColumn({ name: "verification_id", type: "varchar2", length: 36 })
-  id: string
-
-  @Column({ name: "user_id", type: "varchar2", length: 36, nullable: true })
-  userId: string | null
+export class AuthVerificationEntity extends BaseEntity<AuthVerificationEntity> {
+  @Column({ name: "user_idx", type: "number", nullable: true })
+  userId: number | null
 
   @ManyToOne(() => User, { nullable: true, onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_idx", referencedColumnName: "idx" })
   user: User | null
 
   @Column({ name: "auth_type", type: "varchar2", length: 20 })
@@ -19,7 +18,7 @@ export class AuthVerificationEntity {
   @Column({ name: "target", type: "varchar2", length: 100 })
   target: string
 
-  @Column({ name: "verification_code", type: "varchar2", length: 10 })
+  @Column({ name: "verification_code", type: "varchar2", length: 6 })
   verificationCode: string
 
   @Column({ name: "expires_at", type: "timestamp" })
@@ -36,7 +35,4 @@ export class AuthVerificationEntity {
 
   @Column({ name: "ip_address", type: "varchar2", length: 50, nullable: true })
   ipAddress: string | null
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
 }

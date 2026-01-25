@@ -1,5 +1,5 @@
-import { UpdateUserDto } from "@/modules/user/application/dtos/update-user.dto"
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { UpdateUserDto } from "@/modules/user/application/dto/update-user.dto"
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 
 /**
  * 사용자 정보 업데이트 유스케이스 인터페이스
@@ -8,9 +8,9 @@ import { UserDto } from "@/modules/user/application/dtos/user.dto"
 export abstract class UpdateUserUseCase {
   /**
    * 사용자 정보 업데이트
-   * @param id 사용자 ID
+   * @param idx 사용자 IDX
    * @param updateUserDto 업데이트할 사용자 정보
    * @returns 업데이트된 사용자 정보 DTO
    */
-  abstract execute(id: string, updateUserDto: UpdateUserDto): Promise<UserDto>
+  abstract execute(idx: number, updateUserDto: UpdateUserDto): Promise<UserDto>
 }

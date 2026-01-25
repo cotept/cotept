@@ -1,5 +1,5 @@
-import { CreateUserDto } from "@/modules/user/application/dtos/create-user.dto"
-import { UserDto } from "@/modules/user/application/dtos/user.dto"
+import { CreateUserDto } from "@/modules/user/application/dto/create-user.dto"
+import { UserDto } from "@/modules/user/application/dto/user.dto"
 
 /**
  * 사용자 생성 유스케이스 인터페이스

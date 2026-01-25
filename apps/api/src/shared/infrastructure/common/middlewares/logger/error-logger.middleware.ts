@@ -1,4 +1,5 @@
 import { Injectable, Logger, NestMiddleware } from "@nestjs/common"
+
 import { NextFunction, Request, Response } from "express"
 /**
  *- 목적: 에러 상황 모니터링
@@ -24,6 +25,7 @@ export class ErrorLoggerMiddleware implements NestMiddleware {
           method: req.method,
           path: req.originalUrl,
           statusCode,
+          message: res.statusMessage,
           timestamp: new Date().toISOString(),
         })
       }

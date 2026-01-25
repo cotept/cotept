@@ -1,0 +1,5 @@
+/* 현재 위치: apps/web/src/shared/styles/ */
+/* ../ (shared) -> ../ (src) -> ../ (web) -> ../ (apps) -> ../ (cotept 루트) 도착! */
+
+@import "tailwindcss";
+@import "../../../../../packages/shared/src/styles/globals.css"; /* 5번 올라가야 합니다 */

@@ -7,7 +7,7 @@ import * as Joi from "joi"
 export const nosqlSchema = {
   // 필수 설정
   OCI_NOSQL_ENDPOINT: Joi.string()
-    .uri({ scheme: ["https"] })
+    // .uri({ scheme: ["https"] })
     .default("https://nosql.ap-chuncheon-1.oci.oraclecloud.com")
     .description("OCI NoSQL 서비스 엔드포인트 URL"),
 

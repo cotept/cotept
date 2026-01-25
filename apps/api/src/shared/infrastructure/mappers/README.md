@@ -48,11 +48,11 @@ export class User {
 // apps/api/src/modules/user/infrastructure/persistence/entities/user.entity.ts
 @Entity({ schema: "auth", name: "users" })
 export class UserEntity extends BaseEntity<UserEntity> {
-  @Column({ type: "varchar", length: 255, unique: true })
-  email: string;
+  @Column({ type: "varchar2", unique: true })
+  email: string
 
-  @Column({ type: "varchar", length: 20, unique: true, name: "phone_number" })
-  phoneNumber: string;
+  @Column({ type: "varchar2", unique: true, name: "phone_number" })
+  phoneNumber: string
 
   // 기타 필드...
 }
@@ -65,24 +65,24 @@ export class UserEntity extends BaseEntity<UserEntity> {
 @Injectable()
 export class UserMapper {
   toDomain(entity: UserEntity): User {
-    const plainEntity = instanceToPlain(entity);
-    plainEntity.id = String(plainEntity.id);
-    
+    const plainEntity = instanceToPlain(entity)
+    plainEntity.id = String(plainEntity.id)
+
     // null/undefined 처리
     if (plainEntity.lastLoginAt === null) {
-      plainEntity.lastLoginAt = undefined;
+      plainEntity.lastLoginAt = undefined
     }
-    
-    return plainToInstance(User, plainEntity);
+
+    return plainToInstance(User, plainEntity)
   }
 
   toEntity(domain: User): UserEntity {
-    const plainDomain = instanceToPlain(domain);
-    plainDomain.id = Number(plainDomain.id);
-    
-    return plainToInstance(UserEntity, plainDomain);
+    const plainDomain = instanceToPlain(domain)
+    plainDomain.id = Number(plainDomain.id)
+
+    return plainToInstance(UserEntity, plainDomain)
   }
-  
+
   // 기타 유틸리티 메서드...
 }
 ```
@@ -96,35 +96,35 @@ export class UserRepository extends BaseRepository<UserEntity> {
     @InjectRepository(UserEntity)
     entityRepository: Repository<UserEntity>,
     entityManager: EntityManager,
-    private readonly userMapper: UserMapper
+    private readonly userMapper: UserMapper,
   ) {
-    super(entityRepository, entityManager, 'User');
+    super(entityRepository, entityManager, "User")
   }
 
   async findByEmail(email: string): Promise<User | null> {
     return this.executeOperation(async () => {
       const entity = await this.entityRepository.findOne({
         where: { email } as any,
-      });
-      
-      if (!entity) return null;
-      
+      })
+
+      if (!entity) return null
+
       // 엔티티를 도메인 객체로 변환
-      return this.userMapper.toDomain(entity);
-    });
+      return this.userMapper.toDomain(entity)
+    })
   }
 
   async createUser(user: User): Promise<User> {
     return this.executeOperation(async () => {
       // 도메인 객체를 엔티티로 변환
-      const entity = this.userMapper.toEntity(user);
-      
+      const entity = this.userMapper.toEntity(user)
+
       // 저장
-      const savedEntity = await this.entityRepository.save(entity);
-      
+      const savedEntity = await this.entityRepository.save(entity)
+
       // 결과를 도메인 객체로 변환하여 반환
-      return this.userMapper.toDomain(savedEntity);
-    });
+      return this.userMapper.toDomain(savedEntity)
+    })
   }
 }
 ```
@@ -140,11 +140,13 @@ export class UserRepository extends BaseRepository<UserEntity> {
 ## 사용 설정
 
 1. 패키지 설치:
+
 ```bash
 npm install class-transformer reflect-metadata
 ```
 
 2. `tsconfig.json`에 다음 설정 추가:
+
 ```json
 {
   "compilerOptions": {
@@ -155,8 +157,9 @@ npm install class-transformer reflect-metadata
 ```
 
 3. 엔트리 포인트(main.ts)에 추가:
+
 ```typescript
-import 'reflect-metadata';
+import "reflect-metadata"
 ```
 
 ## 고급 사용법
@@ -164,17 +167,17 @@ import 'reflect-metadata';
 ### 1. 데코레이터 활용
 
 ```typescript
-import { Expose, Exclude, Type } from 'class-transformer';
+import { Expose, Exclude, Type } from "class-transformer"
 
 export class UserDTO {
   @Expose() // 명시적으로 포함
-  id: string;
-  
+  id: string
+
   @Exclude() // 변환에서 제외
-  passwordHash: string;
-  
+  passwordHash: string
+
   @Type(() => Date) // 타입 변환
-  createdAt: Date;
+  createdAt: Date
 }
 ```
 
@@ -184,8 +187,8 @@ export class UserDTO {
 plainToInstance(User, plainEntity, {
   excludeExtraneousValues: true, // @Expose가 있는 속성만 포함
   exposeUnsetFields: false, // 정의되지 않은 필드 무시
-  enableImplicitConversion: true // 암시적 타입 변환 활성화
-});
+  enableImplicitConversion: true, // 암시적 타입 변환 활성화
+})
 ```
 
 ### 3. 중첩 객체 변환

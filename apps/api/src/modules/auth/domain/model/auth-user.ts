@@ -4,7 +4,8 @@
  */
 export class AuthUser {
   constructor(
-    public readonly id: string,
+    public readonly id: number,
+    public readonly userId: string,
     public readonly email: string,
     public readonly passwordHash: string,
     public readonly salt: string,
@@ -15,8 +16,15 @@ export class AuthUser {
   /**
    * 사용자 id 반환
    */
-  getId(): string {
+  getId(): number {
     return this.id
+  }
+
+  /**
+   * 사용자 id 반환
+   */
+  getUserId(): string {
+    return this.userId
   }
 
   /**
@@ -70,6 +78,7 @@ export class AuthUser {
   static fromUser(user: any): AuthUser {
     return new AuthUser(
       user.id,
+      user.userId,
       user.email?.toString() || user.getEmailString(), // User 객체의 구조에 따라 적절히 사용
       user.passwordHash,
       user.salt,

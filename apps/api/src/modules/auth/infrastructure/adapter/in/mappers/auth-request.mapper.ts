@@ -1,4 +1,10 @@
+import { Injectable } from "@nestjs/common"
+
+import { plainToInstance } from "class-transformer"
+
 import {
+  CheckEmailAvailabilityDto,
+  CheckUserIdAvailabilityDto,
   FindIdDto,
   LoginDto,
   LogoutDto,
@@ -8,7 +14,10 @@ import {
   ValidateTokenDto,
   VerifyCodeDto,
 } from "@/modules/auth/application/dtos"
+import { SelectProfileDto } from "@/modules/auth/application/dtos/select-profile.dto"
 import {
+  CheckEmailAvailabilityRequestDto,
+  CheckUserIdAvailabilityRequestDto,
   FindIdRequestDto,
   LoginRequestDto,
   RefreshTokenRequestDto,
@@ -17,8 +26,7 @@ import {
   ValidateTokenRequestDto,
   VerifyCodeRequestDto,
 } from "@/modules/auth/infrastructure/dtos/request"
-import { Injectable } from "@nestjs/common"
-import { plainToInstance } from "class-transformer"
+import { SelectProfileRequestDto } from "@/modules/auth/infrastructure/dtos/request/select-profile.request.dto"
 
 /**
  * 인바운드 어댑터 매퍼
@@ -155,5 +163,31 @@ export class AuthRequestMapper {
     )
 
     return dto
+  }
+
+  /**
+   * 이메일 중복 확인 요청 DTO를 내부 DTO로 변환
+   */
+  toCheckEmailAvailabilityDto(request: CheckEmailAvailabilityRequestDto): CheckEmailAvailabilityDto {
+    return plainToInstance(CheckEmailAvailabilityDto, request, {
+      excludeExtraneousValues: true,
+    })
+  }
+
+  /**
+   * 사용자 ID 중복 확인 요청 DTO를 내부 DTO로 변환
+   */
+  toCheckUserIdAvailabilityDto(request: CheckUserIdAvailabilityRequestDto): CheckUserIdAvailabilityDto {
+    return plainToInstance(CheckUserIdAvailabilityDto, request, {
+      excludeExtraneousValues: true,
+    })
+  }
+  /**
+   * 프로필 선택 요청 DTO를 내부 DTO로 변환
+   */
+  toSelectProfileDto(request: SelectProfileRequestDto): SelectProfileDto {
+    return plainToInstance(SelectProfileDto, request, {
+      excludeExtraneousValues: true,
+    })
   }
 }

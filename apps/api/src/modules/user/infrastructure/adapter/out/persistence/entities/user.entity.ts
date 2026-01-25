@@ -1,14 +1,18 @@
+import { Column, Entity, OneToOne } from "typeorm"
+
+import { BaekjoonProfileEntity } from "@/modules/baekjoon/infrastructure/adapter/out/persistence/typeorm/entities"
 import { UserRole, UserStatus } from "@/modules/user/domain/model/user"
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { UserProfileEntity } from "@/modules/user-profile/infrastructure/adapter/out/persistence/entities/user-profile.entity"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 /**
  * User 엔티티
  * USERS 테이블에 매핑되는 TypeORM 엔티티
  */
 @Entity("USERS")
-export class UserEntity {
-  @PrimaryColumn({ name: "user_id", type: "varchar2", length: 36 })
-  id: string
+export class UserEntity extends BaseEntity<UserEntity> {
+  @Column({ name: "userId", type: "varchar2", length: 36, unique: true })
+  userId: string
 
   @Column({ name: "email", type: "varchar2", length: 100, unique: true })
   email: string
@@ -35,6 +39,17 @@ export class UserEntity {
   })
   status: UserStatus
 
+  @OneToOne(() => BaekjoonProfileEntity, (profile) => profile.user)
+  baekjoonProfile?: BaekjoonProfileEntity
+
+  // UserProfile과의 1:1 관계
+  @OneToOne(() => UserProfileEntity, (profile) => profile.user, {
+    cascade: true,
+    eager: true,
+    onDelete: "CASCADE",
+  })
+  userProfile?: UserProfileEntity
+
   @Column({ name: "phone_number", type: "varchar2", length: 20, nullable: true })
   phoneNumber?: string
 
@@ -55,12 +70,6 @@ export class UserEntity {
 
   @Column({ name: "gender", type: "varchar2", length: 1, nullable: true })
   gender?: string
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
-  updatedAt: Date
 
   @Column({ name: "last_login_at", type: "timestamp", nullable: true })
   lastLoginAt?: Date

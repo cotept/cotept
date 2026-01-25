@@ -1,8 +1,10 @@
-import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
-import { createKeyv } from "@keyv/redis"
 import { Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
+
+import { createKeyv } from "@keyv/redis"
 import { Cacheable } from "cacheable"
+
+import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
 
 @Module({
   imports: [ConfigModule],

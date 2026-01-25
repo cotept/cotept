@@ -16,7 +16,7 @@ export const databaseConfig = () => ({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   connectString: process.env.DB_CONNECTION_STRING,
-  synchronize: process.env.NODE_ENV !== "production" && process.env.DB_SYNCHRONIZE?.toLowerCase() === "true", // 프로덕션 환경에서 주석처리
+  // synchronize: process.env.NODE_ENV !== "production" && process.env.DB_SYNCHRONIZE?.toLowerCase() === "true", // 프로덕션 환경에서 주석처리
   // ssl: process.env.NODE_ENV !== "production" && process.env.DB_SSL?.toLowerCase() === "false", // 프로덕션 환경에서 주석처리
   ssl:
     process.env.NODE_ENV === "production"

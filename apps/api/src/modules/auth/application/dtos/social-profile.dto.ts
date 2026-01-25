@@ -1,6 +1,7 @@
-import { SocialProvider } from "@/modules/auth/domain/model"
 import { Expose, Type } from "class-transformer"
 import { IsEmail, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, IsUrl } from "class-validator"
+
+import { SocialProvider } from "@/modules/auth/domain/model"
 
 /**
  * 소셜 프로필 정보 DTO

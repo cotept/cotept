@@ -1,6 +1,8 @@
-import { SocialProvider } from "@/modules/auth/domain/model"
 import { ApiProperty } from "@nestjs/swagger"
+
 import { IsEnum, IsObject, IsOptional, IsString } from "class-validator"
+
+import { SocialProvider } from "@/modules/auth/domain/model"
 
 /**
  * 소셜 인증 콜백 요청 DTO

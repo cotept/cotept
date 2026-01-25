@@ -1,5 +1,7 @@
 import { Provider } from "@nestjs/common"
+
 import { NoSQLClient } from "oracle-nosqldb"
+
 import { NoSQLClientOptions } from "./nosql-client.interface"
 
 export const OCI_NOSQL_CLIENT = "OCI_NOSQL_CLIENT"

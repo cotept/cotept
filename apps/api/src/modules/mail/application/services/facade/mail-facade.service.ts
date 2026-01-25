@@ -1,8 +1,10 @@
-import { TemplateNames } from "@/modules/mail/domain/types/template.types"
-import { MailerService } from "@nestjs-modules/mailer"
 import { Injectable, Logger } from "@nestjs/common"
+import { MailerService } from "@nestjs-modules/mailer"
+
 import { SendMailDto } from "../../dtos/send-mail.dto"
 import { SendMailUseCase } from "../../ports/in/send-mail.usecase"
+
+import { TemplateNames } from "@/modules/mail/domain/types/template.types"
 
 @Injectable()
 export class MailFacadeService {

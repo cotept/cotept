@@ -1,0 +1,24 @@
+{
+  "knowledge_base": {
+    "architecture": {
+      "file": "ARCHITECTURE.md",
+      "description": "The master blueprint of the system architecture, data flow, and core design patterns."
+    },
+    "agent_guidelines": {
+      "file": "AGENTS.md",
+      "description": "The rulebook for AI agents, defining how to behave, what patterns to follow, and what to avoid."
+    },
+    "api_documentation_guide": {
+      "file": "API_DOC.md",
+      "description": "Explains how API documentation is automated and where to find the live, interactive API specs."
+    },
+    "component_workflow": {
+      "file": "docs/development/",
+      "description": "The FSD-based guide for creating and structuring frontend components."
+    },
+    "project_analysis": {
+      "file": "GEMINI.md",
+      "description": "AI-generated summary of the project's structure and technologies. To be updated periodically."
+    }
+  }
+}

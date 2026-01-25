@@ -1,16 +1,16 @@
-import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
+import { Column, Entity } from "typeorm"
+
 import { LocaleType, TemplateContextMap, TemplateNames } from "@/modules/mail/domain/types/template.types"
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+
+import { MailStatus } from "@/modules/mail/domain/model/mail-audit"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
 /**
  * 메일 감사 엔티티
  * 메일 발송 감사 정보를 저장하는 TypeORM 엔티티
  */
 @Entity("MAIL_AUDITS")
-export class MailAuditEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
-
+export class MailAuditEntity extends BaseEntity<MailAuditEntity> {
   @Column({ name: "mail_id", type: "varchar2", nullable: true })
   mailId: string
 
@@ -33,9 +33,6 @@ export class MailAuditEntity {
 
   @Column({ name: "error", type: "varchar2", nullable: true })
   error?: string
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp", nullable: true })
-  createdAt: Date
 
   @Column({ name: "context", type: "clob" })
   context: TemplateContextMap[TemplateNames]

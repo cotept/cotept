@@ -5,13 +5,15 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common"
-import { PaginatedResult, PaginationOptions } from "@repo/shared/src/pagination"
+
 import { EntityManager, FindOptionsWhere, Repository } from "typeorm"
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
 
 import { AbstractRepository } from "../../../base/abstract.repository"
 import { BaseEntity } from "../../../base/base.entity"
+
+import { PaginatedResult, PaginationOptions } from "@/shared/infrastructure/dto/api-response.dto"
 
 export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<T> {
   protected readonly logger: Logger
@@ -36,6 +38,13 @@ export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<
 
   // DB error handler
   protected handleDBError(error: unknown, prefix: string = ""): never {
+    // NotFoundException은 정상적인 조회 실패이므로 DEBUG 레벨로 로깅
+    if (error instanceof NotFoundException) {
+      this.logger.debug(`${prefix} Entity not found (expected behavior)`)
+      throw error
+    }
+
+    // 실제 DB 오류는 ERROR 레벨로 로깅
     this.logger.error(`${prefix} Database operation failed`, error)
 
     // 타입 가드 및 단언
@@ -43,10 +52,12 @@ export class BaseRepository<T extends BaseEntity<T>> extends AbstractRepository<
       const dbError = error as { code: string }
 
       switch (dbError.code) {
-        case "23505": // PostgreSQL unique violation
+        case "ORA-00001": // Oracle unique violation
           throw new ConflictException(`${prefix} Entity already exists`)
-        case "23503": // PostgreSQL foreign key violation
+        case "ORA-02291": // Oracle foreign key violation
           throw new BadRequestException(`${prefix} Related entity not found`)
+        case "ORA-02292": // Oracle foreign key constraint violation (child record exists)
+          throw new BadRequestException(`${prefix} Cannot delete entity - related records exist`)
       }
     }
 

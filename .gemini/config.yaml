@@ -1,0 +1,32 @@
+# CotePT API 변경사항 리뷰 설정
+review:
+  # 최대 코멘트 수 제한
+  max_comments: 10
+  
+  # 리뷰 심각도 임계값 (critical, high, medium, low)
+  severity_threshold: "medium"
+  
+  # 중점 리뷰 영역
+  focus_areas:
+    - api_compatibility        # API 호환성
+    - schema_changes          # 스키마 변경사항
+    - error_handling          # 에러 처리
+    - security               # 보안 관련
+    - performance            # 성능 영향도
+  
+  # 무시할 파일 패턴
+  ignore_patterns:
+    - "*.test.*"             # 테스트 파일
+    - "dist/*"               # 빌드 결과물
+    - "node_modules/*"       # 의존성 모듈
+    - "*.md"                 # 문서 파일 (API 스펙 제외)
+
+# 언어 및 지역 설정
+language:
+  primary: "korean"          # 주 언어: 한국어
+  fallback: "english"        # 대체 언어: 영어
+
+# 알림 설정
+notifications:
+  slack_integration: true    # Slack 연동 활성화
+  mention_reviewers: true    # 리뷰어 멘션

@@ -6,6 +6,19 @@
     "watchAssets": true,
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "tsconfig.app.json"
+    "tsConfigPath": "tsconfig.app.json",
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": true,
+          "introspectComments": true,
+          "dtoFileNameSuffix": [".dto.ts", ".entity.ts", ".model.ts"],
+          "controllerFileNameSuffix": [".controller.ts"],
+          "dtoKeyOfComment": "description",
+          "controllerKeyOfComment": "summary"
+        }
+      }
+    ]
   }
 }

@@ -1,10 +1,12 @@
-import { OAuthGithubConfig } from "@/configs/social-provider"
-import { SocialProvider } from "@/modules/auth/domain/model"
-import { ErrorUtils } from "@/shared/utils/error.util"
 import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { PassportStrategy } from "@nestjs/passport"
+
 import { Strategy } from "passport-github2"
+
+import { OAuthGithubConfig } from "@/configs/social-provider"
+import { SocialProvider } from "@/modules/auth/domain/model"
+import { ErrorUtils } from "@/shared/utils/error.util"
 
 /**
  * 참고: 이 전략을 사용하기 위해서는 다음 패키지를 설치해야 합니다:

@@ -1,5 +1,5 @@
 import { Expose } from "class-transformer"
-import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Length } from "class-validator"
+import { IsIn, IsNotEmpty, IsOptional, IsString, Length } from "class-validator"
 
 /**
  * 아이디 찾기 DTO

@@ -1,35 +1,29 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
-import { PhoneVerificationEntity } from './phone-verification.entity';
+import { Column, Entity, OneToMany } from "typeorm"
 
-@Entity('IDENTITY_PROVIDERS')
-export class IdentityProviderEntity {
-  @PrimaryColumn({ name: 'provider_id', type: 'varchar2', length: 36 })
-  id: string;
+import { PhoneVerificationEntity } from "./phone-verification.entity"
 
-  @Column({ name: 'name', type: 'varchar2', length: 50, unique: true })
-  name: string;
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
-  @Column({ name: 'provider_type', type: 'varchar2', length: 50 })
-  providerType: string;
+@Entity("IDENTITY_PROVIDERS")
+export class IdentityProviderEntity extends BaseEntity<IdentityProviderEntity> {
+  @Column({ name: "name", type: "varchar2", length: 50, unique: true })
+  name: string
 
-  @Column({ name: 'api_key', type: 'varchar2', length: 255 })
-  apiKey: string;
+  @Column({ name: "provider_type", type: "varchar2", length: 50 })
+  providerType: string
 
-  @Column({ name: 'api_secret', type: 'varchar2', length: 255 })
-  apiSecret: string;
+  @Column({ name: "api_key", type: "varchar2", length: 255 })
+  apiKey: string
 
-  @Column({ name: 'config', type: 'clob', nullable: true })
-  config: string | null;
+  @Column({ name: "api_secret", type: "varchar2", length: 255 })
+  apiSecret: string
 
-  @Column({ name: 'active', type: 'number', default: 1 })
-  active: number;
+  @Column({ name: "config", type: "clob", nullable: true })
+  config: string | null
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
+  @Column({ name: "active", type: "number", default: 1 })
+  active: number
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
-  updatedAt: Date | null;
-
-  @OneToMany(() => PhoneVerificationEntity, verification => verification.provider)
-  verifications: PhoneVerificationEntity[];
+  @OneToMany(() => PhoneVerificationEntity, (verification) => verification.provider)
+  verifications: PhoneVerificationEntity[]
 }

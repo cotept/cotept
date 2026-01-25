@@ -1,0 +1,50 @@
+import CredentialsProvider from "next-auth/providers/credentials"
+
+import { z } from "zod"
+
+import type { Provider } from "next-auth/providers"
+
+import { authApiService } from "@/shared/api/services/auth-api-service"
+import { AuthErrorHandler } from "@/shared/auth/errors/handler"
+
+const signInSchema = z.object({
+  id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
+})
+
+export const credentialsProvider: Provider = CredentialsProvider({
+  id: "credentials",
+  name: "credentials",
+  credentials: {
+    id: { label: "id", type: "text" },
+    password: { label: "password", type: "password" },
+  },
+  authorize: async (credentials) => {
+    console.log({ credentials })
+    try {
+      const { id, password } = signInSchema.parse(credentials)
+      console.log({ id, password })
+      const { data: response } = await authApiService.login({
+        loginRequestDto: { id, password },
+      })
+
+      if (!!response) {
+        console.log({ response })
+        return response
+      }
+
+      // 로그인 실패 시 null 반환 (NextAuth가 CredentialsSignin으로 처리)
+      return null
+    } catch (error) {
+      const handledError = AuthErrorHandler.handle(error)
+      AuthErrorHandler.logError(handledError, "Credentials Provider")
+
+      // NextAuth는 null을 반환하면 CredentialsSignin 에러로 처리
+      return null
+    }
+  },
+})

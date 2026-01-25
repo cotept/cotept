@@ -1,0 +1,257 @@
+import { typedKeys } from "@repo/shared/lib/utils"
+
+import { QueryClient, QueryKey } from "@tanstack/react-query"
+import { AxiosPromise } from "axios"
+import { produce } from "immer"
+import { toast } from "sonner"
+
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
+
+import { handleApiError } from "@/shared/api/core/errors/handlers"
+import { ApiError } from "@/shared/api/core/types"
+import { MutationCallbacks } from "@/shared/types/basic-types"
+
+/**
+ * Immer를 사용하여 T 형태의 캐시 데이터를 부분적으로 업데이트하기 위한
+ * `queryClient.setQueryData`용 업데이터 함수를 생성합니다.
+ * 이 함수는 ApiResponse의 `data` 속성 내의 데이터를 업데이트하는 데 특화되어 있습니다.
+ *
+ * @template T - ApiResponse의 `data` 속성 타입 (예: `User`, `Post`)
+ * @template U - 업데이트할 부분 데이터의 타입 (예: `Partial<User>`, `UpdateUserRequest`)
+ *
+ * @param {U} updateData - 캐시의 `data` 속성에 적용할 부분 업데이트 데이터.
+ * @returns {(old: T | undefined) => T | undefined} -
+ *   `queryClient.setQueryData`에 전달될 수 있는 업데이터 함수.
+ *   이 함수는 이전 캐시 상태(`old`)를 받아 새로운 불변 상태를 반환합니다.
+ */
+export const createImmerApiDataUpdater = <T extends object>(updateData: Partial<T>) => {
+  return (old: T | undefined): T | undefined => {
+    if (!old) {
+      return undefined
+    }
+    return produce(old, (draft) => {
+      // draft.data는 T 타입이며, updateData는 Partial<T> 타입입니다.
+      // Object.assign을 사용하여 updateData의 속성들을 draft.data에 병합합니다.
+      Object.assign(draft, updateData)
+    })
+  }
+}
+
+/**
+ * API 메서드를 래핑하여 에러 핸들링과 데이터 추출을 자동화하는 고차 함수입니다.
+ * Axios 응답에서 data 속성을 자동으로 추출하고, 에러 발생 시 standardized error handling을 적용합니다.
+ *
+ * @template T - 래핑할 API 메서드의 타입 (AxiosPromise를 반환하는 함수)
+ * @param {T} fn - 래핑할 원본 API 메서드
+ * @returns {Function} 에러 핸들링과 데이터 추출이 적용된 래핑된 함수
+ * @throws {Error} handleApiError에서 처리된 표준화된 에러
+ */
+export const withErrorHandling = <T extends (...args: any[]) => AxiosPromise<any>>(fn: T) => {
+  return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>["data"]> => {
+    try {
+      const response = await fn(...args)
+      return response.data
+    } catch (err) {
+      throw handleApiError(err)
+    }
+  }
+}
+
+/**
+ * 자동 생성된 API 클라이언트의 모든 메서드를 래핑하여
+ * 에러 핸들링과 데이터 추출 로직이 적용된 서비스 객체를 생성합니다.
+ *
+ * @template T - API 클라이언트 인스턴스의 타입
+ * @param {T} apiInstance - UserApiFactory 등으로 생성된 원본 API 클라이언트 인스턴스
+ * @returns {Object} 모든 메서드가 withErrorHandling으로 래핑된 서비스 객체
+ *
+ * @example
+ * ```typescript
+ * const userApiClient = UserApiFactory(config)
+ * const userService = createApiService(userApiClient)
+ *
+ * // 원본: userApiClient.getUser(id) -> AxiosResponse<ApiResponse<User>>
+ * // 래핑: userService.getUser(id) -> Promise<ApiResponse<User>>
+ * const userData = await userService.getUser(123)
+ * ```
+ */
+export function createApiService<T extends object>(
+  apiInstance: T,
+): {
+  [K in keyof T]: T[K] extends (...args: any[]) => any
+    ? (...args: Parameters<T[K]>) => Promise<Awaited<ReturnType<T[K]>>["data"]>
+    : T[K]
+} {
+  const service = {} as any
+
+  // apiInstance의 모든 키(메서드명)를 순회합니다.
+  for (const key of typedKeys(apiInstance)) {
+    const property = apiInstance[key]
+
+    // 속성이 함수(API 메서드)인 경우에만 래핑을 적용합니다.
+    if (typeof property === "function") {
+      // .bind(apiInstance)를 통해 'this' 컨텍스트를 유지하고, withErrorHandling으로 래핑합니다.
+      service[key] = withErrorHandling(property.bind(apiInstance))
+    }
+  }
+
+  return service
+}
+
+/**
+ * 제네릭 낙관적 업데이트 헬퍼 함수를 생성합니다.
+ * 다양한 도메인의 mutation에서 재사용 가능한 범용 헬퍼입니다.
+ *
+ * @template TData - API 응답 데이터 타입 (예: UserResponseWrapper, PostResponseWrapper)
+ * @template TUpdateData - 업데이트할 데이터 타입 (예: UpdateUserRequestDto, UpdatePostRequestDto)
+ * @param queryClient - React Query의 queryClient 인스턴스
+ * @returns 낙관적 업데이트를 수행하는 함수
+ *
+ * @example
+ * ```typescript
+ * // User 도메인에서 사용
+ * const optimisticUpdate = createOptimisticUpdate<UserResponseWrapper, UpdateUserRequestDto>(queryClient)
+ * optimisticUpdate(queryKey, updateData, previousData)
+ *
+ * // Post 도메인에서 사용
+ * const optimisticUpdate = createOptimisticUpdate<PostResponseWrapper, UpdatePostRequestDto>(queryClient)
+ * optimisticUpdate(queryKey, updateData, previousData)
+ * ```
+ */
+export const createOptimisticUpdate = <TData extends { data?: any }, TUpdateData extends object>(
+  queryClient: QueryClient,
+) => {
+  return (queryKey: QueryKey, updateData: TUpdateData, previousData?: TData) => {
+    if (previousData?.data) {
+      queryClient.setQueryData<TData | undefined>(
+        queryKey,
+        createImmerApiDataUpdater<TData>({
+          data: { ...previousData.data, ...updateData },
+        } as Partial<TData>),
+      )
+    }
+  }
+}
+
+// 시간 포맷팅 함수 (MM:SS)
+export const formatTimeMMSS = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+}
+
+// react-hook-form input clear 함수
+export const createClearInputField =
+  <TFieldValues extends FieldValues>(form: UseFormReturn<TFieldValues>) =>
+  (fieldName: Path<TFieldValues>) => {
+    form.setValue(fieldName, "" as any)
+    form.clearErrors(fieldName)
+  }
+
+/**
+ * OCI Object Storage로 직접 파일을 업로드하는 헬퍼 함수
+ * @param uploadUrl 백엔드에서 받은 1회용 업로드 URL (PAR)
+ * @param file 업로드할 파일 객체
+ * @returns 업로드 성공 시, 최종 파일 URL
+ */
+export async function uploadFileToOCIObjectStorage(uploadUrl: string, file: File) {
+  try {
+    const response = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    })
+    if (!response.ok) {
+      throw new Error("파일 업로드에 실패했습니다.")
+    }
+    // PAR URL에서 쿼리스트링을 제거하여 실제 오브젝트 URL을 얻음
+    return uploadUrl.split("?")[0]
+  } catch (error) {
+    toast.error("파일 업로드에 실패했습니다.")
+    console.error(error)
+    return null
+  }
+}
+
+/**
+ * 클립보드에 텍스트 복사
+ *
+ * ★ Insight:
+ * - 최신 Clipboard API 우선 사용 (보안 컨텍스트 HTTPS 필요)
+ * - 구형 브라우저는 execCommand 폴백
+ * - 브라우저 환경에서만 작동 (SSR 환경 안전)
+ *
+ * @param text 복사할 텍스트
+ * @returns 복사 성공 여부
+ *
+ * @example
+ * ```typescript
+ * const success = await copyToClipboard("ABC123")
+ * if (success) {
+ *   toast.success("복사되었습니다")
+ * } else {
+ *   toast.error("복사 실패")
+ * }
+ * ```
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // SSR 환경 체크
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    console.warn("copyToClipboard: 브라우저 환경에서만 사용 가능합니다.")
+    return false
+  }
+
+  try {
+    // 최신 Clipboard API 사용 (HTTPS 환경에서만 작동)
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    } else {
+      // 폴백: execCommand 방식 (구형 브라우저)
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      textArea.style.position = "fixed"
+      textArea.style.left = "-999999px"
+      textArea.style.top = "-999999px"
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      try {
+        const successful = document.execCommand("copy")
+        document.body.removeChild(textArea)
+        return successful
+      } catch {
+        document.body.removeChild(textArea)
+        return false
+      }
+    }
+  } catch (error) {
+    console.error("copyToClipboard error:", error)
+    return false
+  }
+}
+
+/**
+ * mutations.ts 로직 + 커스텀훅 콜백 체이닝
+ */
+export function createChainedCallbacks<TData, TRequest>({
+  domainLogic,
+  domainErrorLogic,
+  callbacks,
+}: {
+  domainLogic?: (_response: TData, variables: TRequest, context: unknown) => void | Promise<void>
+  domainErrorLogic?: (error: ApiError, variables: TRequest, context: unknown) => void | Promise<void>
+  callbacks?: MutationCallbacks<TData, TRequest>
+}) {
+  return {
+    onSuccess: async (_response: TData, variables: TRequest, context: unknown) => {
+      if (domainLogic) await domainLogic(_response, variables, context)
+      callbacks?.onSuccess?.(_response, variables, context)
+    },
+    onError: async (error: ApiError, variables: TRequest, context: unknown) => {
+      if (domainErrorLogic) await domainErrorLogic(error, variables, context)
+      callbacks?.onError?.(error, variables, context)
+    },
+  }
+}

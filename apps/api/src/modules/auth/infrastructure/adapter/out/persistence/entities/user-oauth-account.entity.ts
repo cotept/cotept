@@ -1,24 +1,24 @@
-import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
+
 import { OAuthProviderEntity } from "./oauth-provider.entity"
 
-@Entity("USER_OAUTH_ACCOUNTS")
-export class UserOAuthAccountEntity {
-  @PrimaryColumn({ name: "oauth_id", type: "varchar2", length: 36 })
-  id: string
+import { UserEntity as User } from "@/modules/user/infrastructure/adapter/out/persistence/entities/user.entity"
+import { BaseEntity } from "@/shared/infrastructure/persistence/base/base.entity"
 
-  @Column({ name: "user_id", type: "varchar2", length: 36 })
-  userId: string
+@Entity("USER_OAUTH_ACCOUNTS")
+export class UserOAuthAccountEntity extends BaseEntity<UserOAuthAccountEntity> {
+  @Column({ name: "user_id", type: "number" })
+  userId: number
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "idx" })
   user: User
 
-  @Column({ name: "provider_id", type: "varchar2", length: 36 })
-  providerId: string
+  @Column({ name: "provider_id", type: "number" })
+  providerId: number
 
   @ManyToOne(() => OAuthProviderEntity)
-  @JoinColumn({ name: "provider_id" })
+  @JoinColumn({ name: "provider_id", referencedColumnName: "idx" })
   provider: OAuthProviderEntity
 
   @Column({ name: "provider_user_id", type: "varchar2", length: 255 })
@@ -35,10 +35,4 @@ export class UserOAuthAccountEntity {
 
   @Column({ name: "profile_data", type: "clob", nullable: true })
   profileData: string | null
-
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true })
-  updatedAt: Date | null
 }

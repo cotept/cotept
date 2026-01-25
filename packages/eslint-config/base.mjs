@@ -1,0 +1,43 @@
+import tsParser from "@typescript-eslint/parser"
+import unusedImports from "eslint-plugin-unused-imports"
+
+/** @type {import("eslint").FlatConfig[]} */
+export default [
+  {
+    name: "base/typescript",
+    files: ["**/*.{ts,tsx,js,jsx,mjs}"],
+    ignores: ["dist/**", ".turbo/**", "node_modules/**"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        // project를 제거하여 타입 체크 비활성화
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      "unused-imports": unusedImports,
+    },
+    rules: {
+      "no-console": "off",
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/interface-name-prefix": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+    },
+  },
+]

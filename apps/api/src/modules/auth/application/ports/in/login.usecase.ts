@@ -1,5 +1,5 @@
-import { TokenPair } from '@/modules/auth/domain/model';
 import { LoginDto } from '@/modules/auth/application/dtos/login.dto';
+import { TokenPair } from '@/modules/auth/domain/model';
 
 /**
  * 로그인 유스케이스 인터페이스

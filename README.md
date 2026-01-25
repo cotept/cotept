@@ -2,6 +2,8 @@
 
 실시간 코드 협업 기반의 1:1 멘토링 플랫폼
 
+![alt text](docs/landing.png)
+![alt text](docs/main.png)
 ![alt text](docs/system_architecture.png)
 
 ## 프로젝트 개요

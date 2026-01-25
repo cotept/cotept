@@ -23,3 +23,11 @@ const onboardingApiFactory = OnboardingApiFactory(config, basePath, axiosInstanc
  * await onboardingApiService.completeOnboarding();
  */
 export const onboardingApiService = createApiService(onboardingApiFactory)
+
+/**
+ * 온보딩 상태 조회
+ */
+export const fetchOnboardingState = async () => {
+  const { data } = await onboardingApiService.getOnboardingState()
+  return data
+}

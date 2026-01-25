@@ -11,11 +11,13 @@ export const PUBLIC_ROUTES = [
   "/auth/signup",
   "/auth/error",
   "/api/auth", // NextAuth API 경로
+  "/main",
 ] as const
 
 export const AUTH_ROUTES = ["/auth/signin", "/auth/signup"] as const
 
 export const PROTECTED_ROUTES = ["/onboarding", "/mentoring", "/my"] as const
+// export const PROTECTED_ROUTES = ["/mentoring", "/my"] as const
 
 /**
  * 경로 패턴 매칭을 위한 설정

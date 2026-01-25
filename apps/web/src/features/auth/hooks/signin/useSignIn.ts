@@ -1,6 +1,9 @@
 "use client"
 import { useState } from "react"
 
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
@@ -17,6 +20,8 @@ interface UseSignInProps {
 }
 
 export function useSignIn(props?: UseSignInProps) {
+  const router = useRouter()
+  const { update } = useSession()
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const form = useForm<LoginData>({
@@ -48,9 +53,11 @@ export function useSignIn(props?: UseSignInProps) {
         toast.error(result.error)
         return
       }
-      // 성공 시에는 서버 액션에서 자동으로 리다이렉트됨
-      if (props?.onSuccess) {
-        props.onSuccess()
+
+      // 로그인 성공: 세션 갱신 후 리다이렉트
+      if (result?.success) {
+        await update() // 서버에서 세션 다시 가져오기
+        router.push(result.redirectTo)
       }
     } catch (error) {
       // 운영 환경에서는 sentry 추가 예정

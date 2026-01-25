@@ -39,7 +39,7 @@ export function SignInForm() {
   })
   return (
     <StepFlowLayout className="space-y-8">
-      <div className="space-y-2 text-center">
+      <div className="flex flex-col items-center justify-between gap-2 space-y-2 text-center">
         <Link href="/" className="group flex cursor-pointer items-center justify-start gap-2">
           <Logo size={"md"} variant={"primary"} margin={false} className="w-full" />
         </Link>

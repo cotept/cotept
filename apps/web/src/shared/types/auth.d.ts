@@ -27,7 +27,10 @@ import { TokenResponseDto } from "@repo/api-client/src"
  * CotePT 사용자 정보 객체
  */
 export type LoginResponse = TokenResponseDto
-export type CotePtUser = Omit<LoginResponse, "accessToken" | "refreshToken">
+export type CotePtUser = Omit<LoginResponse, "accessToken" | "refreshToken"> & {
+  onboardingCompleted?: boolean
+  currentOnboardingStep?: number
+}
 declare module "next-auth" {
   interface Session extends DefaultSession {
     accessToken?: string

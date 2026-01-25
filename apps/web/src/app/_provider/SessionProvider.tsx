@@ -4,6 +4,12 @@ import { PropsWithChildren } from "react"
 
 import { SessionProvider as NextAuthSessionProvider } from "next-auth/react"
 
-export function SessionProvider({ children }: PropsWithChildren) {
-  return <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+import type { Session } from "next-auth"
+
+interface SessionProviderProps extends PropsWithChildren {
+  session: Session | null
+}
+
+export function SessionProvider({ children, session }: SessionProviderProps) {
+  return <NextAuthSessionProvider session={session}>{children}</NextAuthSessionProvider>
 }

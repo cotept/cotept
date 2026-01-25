@@ -1,8 +1,14 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+import { GuardContext, ProxyGuard } from "./proxy/guards/guard.interface"
+import { OnboardingGuard } from "./proxy/guards/onboarding.guard"
+
 import { auth } from "@/auth"
 import { createRedirect, isAuthRoute, isProtectedRoute, isPublicRoute } from "@/proxy/lib/helpers"
+
+// 가드 등록
+const guards: ProxyGuard[] = [new OnboardingGuard()]
 
 /**
  * Main Proxy (Middleware) Implementation
@@ -28,7 +34,7 @@ export default async function proxy(request: NextRequest) {
   // 3. Handle Auth Routes
   if (isAuthRoute(pathName)) {
     if (isLoggedIn) {
-      return createRedirect(request, "/")
+      return createRedirect(request, "/main")
     }
     return NextResponse.next()
   }
@@ -37,9 +43,22 @@ export default async function proxy(request: NextRequest) {
   if (isProtectedRoute(pathName)) {
     if (!isLoggedIn) {
       return createRedirect(request, "/auth/signin", {
-        callbackUrl: pathName, // pathName (e.g., /onboarding)만 저장
+        callbackUrl: pathName,
       })
     }
+
+    // [Refactor] Guard Pattern 적용
+    const context: GuardContext = { request, session, pathName }
+
+    for (const guard of guards) {
+      if (guard.isApplicable(context)) {
+        const response = guard.handle(context)
+        if (response) {
+          return response
+        }
+      }
+    }
+
     return NextResponse.next()
   }
 

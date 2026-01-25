@@ -9,8 +9,11 @@ export async function signInAction(formData: FormData) {
     await signIn("credentials", {
       id: formData.get("id"),
       password: formData.get("password"),
-      redirectTo: process.env.NEXT_SERVER_SIGNIN_REDIRECT_PATH, // 성공 시 리다이렉트할 경로
+      redirect: false, // 서버에서 리다이렉트하지 않음 → 클라이언트에서 router.refresh() 후 리다이렉트
     })
+
+    // 로그인 성공
+    return { success: true, redirectTo: process.env.NEXT_SERVER_SIGNIN_REDIRECT_PATH || "/main" }
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

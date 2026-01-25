@@ -11,7 +11,7 @@ import { cva, type VariantProps } from "class-variance-authority"
  *
  * CVA를 사용하여 타입 안전하게 스타일 변형 관리
  */
-const logoVariants = cva("text-center font-bold transition-opacity duration-200", {
+const logoVariants = cva("text-center font-bold transition-opacity duration-200 w-fit", {
   variants: {
     size: {
       xs: "text-xl",

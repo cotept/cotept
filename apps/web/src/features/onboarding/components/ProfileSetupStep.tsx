@@ -40,8 +40,8 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
                 <label className="relative cursor-pointer">
                   <Avatar className="h-24 w-24">
                     <AvatarImage src={imagePreview ?? undefined} />
-                    <AvatarFallback className="bg-zinc-700">
-                      <Camera className="h-8 w-8 text-zinc-400" />
+                    <AvatarFallback className="bg-muted">
+                      <Camera className="text-muted-foreground h-8 w-8" />
                     </AvatarFallback>
                   </Avatar>
                   <Input
@@ -58,7 +58,7 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
         />
 
         {uploadError && (
-          <div className="text-center text-sm text-red-500">
+          <div className="text-destructive text-center text-sm">
             <p>{uploadError}</p>
             <Button variant="link" size="sm" onClick={retryUploadAndCreateProfile} disabled={isPending}>
               재시도
@@ -73,7 +73,7 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
             <FormItem className="w-full">
               <FormLabel>닉네임 *</FormLabel>
               <FormControl>
-                <Input placeholder="사용하실 닉네임을 입력하세요" {...field} className="bg-zinc-800" />
+                <Input placeholder="사용하실 닉네임을 입력하세요" {...field} className="bg-bg-4/50" />
               </FormControl>
               <div className="pt-2">
                 <ValidationIndicator
@@ -87,7 +87,7 @@ export function ProfileSetupStep({ onComplete }: { onComplete: (data: ProfileSet
           )}
         />
 
-        <Button type="submit" className="w-full bg-purple-600 text-white hover:bg-purple-700" disabled={isPending}>
+        <Button type="submit" className="w-full" variant="auth-primary" disabled={isPending}>
           {isPending ? (
             <>
               <InlineLoading className="mr-2" />

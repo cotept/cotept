@@ -52,7 +52,7 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
               <FormItem className="w-full">
                 <FormLabel>백준 아이디 *</FormLabel>
                 <FormControl>
-                  <Input placeholder="백준 아이디를 입력하세요" {...field} className="bg-zinc-800" />
+                  <Input placeholder="백준 아이디를 입력하세요" {...field} className="bg-bg-4/50" />
                 </FormControl>
                 <div className="pt-2">
                   <ValidationIndicator
@@ -66,7 +66,7 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
             )}
           />
 
-          <Button type="submit" className="w-full bg-purple-600 text-white hover:bg-purple-700" disabled={isStarting}>
+          <Button type="submit" className="w-full" variant="auth-primary" disabled={isStarting}>
             {isStarting ? (
               <>
                 <InlineLoading className="mr-2" />
@@ -99,8 +99,8 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
         {/* 인증 코드 카드 */}
         <div className="border-border bg-card w-full space-y-4 rounded-lg border p-6">
           {/* 인증 코드 표시 */}
-          <div className="rounded-lg bg-zinc-800 p-4 text-center">
-            <p className="break-all font-mono text-lg text-purple-400">{verificationString}</p>
+          <div className="bg-bg-4/50 rounded-lg p-4 text-center">
+            <p className="text-primary break-all font-mono text-lg">{verificationString}</p>
           </div>
 
           {/* 액션 버튼들 */}
@@ -131,10 +131,7 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
         <p className="text-muted-foreground text-center text-xs">프로필 변경 후 아래 버튼을 클릭해주세요</p>
 
         {/* 인증 완료 버튼 */}
-        <Button
-          className="w-full bg-purple-600 text-white hover:bg-purple-700"
-          onClick={handleCompleteVerification}
-          disabled={isCompleting}>
+        <Button className="w-full" variant="auth-primary" onClick={handleCompleteVerification} disabled={isCompleting}>
           {isCompleting ? (
             <>
               <InlineLoading className="mr-2" />
@@ -152,7 +149,7 @@ export function BaekjoonVerifyStep({ onComplete }: BaekjoonVerifyStepProps) {
   if (isCompleted) {
     return (
       <div className="flex flex-col items-center space-y-6">
-        <CheckCircle className="h-16 w-16 text-green-500" />
+        <CheckCircle className="text-success h-16 w-16" />
         <div className="space-y-2 text-center">
           <h3 className="text-lg font-semibold">인증 완료!</h3>
           <p className="text-muted-foreground text-sm">백준 아이디가 성공적으로 인증되었습니다</p>

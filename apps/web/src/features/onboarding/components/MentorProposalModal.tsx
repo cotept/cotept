@@ -16,6 +16,7 @@ import { Button } from "@repo/shared/components/button"
 import { ShieldCheck, Sparkles, Users } from "lucide-react"
 
 import { createOverlayHelper } from "@/shared/hooks/useOverlay"
+import { OVERLAY_ANIMATION_DURATION } from "@/shared/ui/overlay/constants"
 import { type OpenOverlayAsyncOptions, OverlayAsyncControllerProps } from "@/shared/ui/overlay/types/overlay.types"
 
 interface MentorProposalModalProps extends OverlayAsyncControllerProps<boolean> {
@@ -48,9 +49,19 @@ export const MentorProposalModal: React.FC<MentorProposalModalProps> = ({
   tierLabel,
   baekjoonHandle,
 }) => {
+  const timerRef = React.useRef<NodeJS.Timeout>(null)
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+    }
+  }, [])
+
   const dismiss = (accepted: boolean) => {
     close(accepted)
-    setTimeout(() => unmount(), 120)
+    timerRef.current = setTimeout(() => unmount(), OVERLAY_ANIMATION_DURATION)
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -64,7 +75,7 @@ export const MentorProposalModal: React.FC<MentorProposalModalProps> = ({
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader className="space-y-3">
           <AlertDialogTitle className="flex items-center justify-center gap-2 text-2xl font-semibold">
-            <Sparkles className="h-4 w-4 text-purple-400" />
+            <Sparkles className="text-primary h-4 w-4" />
             멘토로 활동해보시겠어요?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground text-base">
@@ -78,7 +89,7 @@ export const MentorProposalModal: React.FC<MentorProposalModalProps> = ({
           <ul className="space-y-3">
             {BENEFITS.map(({ icon: Icon, title, description }) => (
               <li key={title} className="flex gap-3">
-                <div className="mt-1 flex items-start justify-center rounded-full p-2 text-purple-400">
+                <div className="bg-primary/10 text-primary mt-1 flex items-start justify-center rounded-full p-2">
                   <Icon className="h-4 w-4" />
                 </div>
                 <div>

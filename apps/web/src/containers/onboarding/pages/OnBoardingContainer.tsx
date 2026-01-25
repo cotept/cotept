@@ -142,7 +142,7 @@ const OnBoardingContainer = () => {
 
   return (
     <StepFlowLayout>
-      <div className="mb-8">
+      <div className="mb-8 flex flex-col items-center justify-between gap-2">
         {/* 스텝 인디케이터 */}
         <StepDots
           totalSteps={totalSteps}

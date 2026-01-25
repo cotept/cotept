@@ -133,7 +133,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
             <FormControl>
               <select
                 className={cn(
-                  "border-border bg-background w-full rounded-md border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50",
+                  "border-border bg-background focus:ring-ring w-full rounded-md border px-3 py-2 text-sm outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
                   field.value ? "text-foreground" : "text-muted-foreground",
                 )}
                 value={field.value ?? ""}
@@ -159,7 +159,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
 
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <section className="bg-bg-4/50 border-border space-y-4 rounded-xl border p-4">
         <div className="flex items-center justify-between">
           {isLoadingTags && <span className="text-muted-foreground text-[11px]">불러오는 중...</span>}
         </div>
@@ -204,7 +204,7 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <section className="bg-bg-4/50 border-border space-y-4 rounded-xl border p-4">
         <FormField
           control={form.control}
           name="introductionTitle"
@@ -239,8 +239,8 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
                   onChange={handleIntroductionChange}
                   size="lg"
                   className={cn(
-                    "bg-zinc-950",
-                    formState.errors.introductionContent ? "border-red-500" : "border-zinc-800",
+                    "bg-background",
+                    formState.errors.introductionContent ? "border-destructive" : "border-input",
                   )}
                 />
               </FormControl>
@@ -261,7 +261,8 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
     <Button
       type="submit"
       form="mentor-profile-form" // 폼 ID 연결
-      className="w-full bg-purple-700 text-white hover:bg-purple-800"
+      className="w-full"
+      variant="auth-primary"
       disabled={isPending || !form.formState.isValid}>
       {isPending ? (
         <>
@@ -301,20 +302,22 @@ export function MentorProfileSetupStep({ profile, initialData, onComplete }: Men
         <Sheet open={sheetOpen} onOpenChange={handleSheetChange} modal={!isLgUp}>
           {!isLgUp && (
             <SheetTrigger asChild>
-              <Button className="w-full bg-purple-600 text-white hover:bg-purple-700">멘토 정보 입력하기</Button>
+              <Button className="w-full" variant="auth-primary">
+                멘토 정보 입력하기
+              </Button>
             </SheetTrigger>
           )}
 
           <SheetContent
             side={isLgUp ? "right" : "bottom"}
             className={cn(
-              "border-border bg-zinc-950",
+              "border-border bg-background",
               isLgUp
                 ? "lg:w-md p-4 lg:inset-y-0 lg:right-0 lg:h-auto lg:max-w-md lg:border-l lg:shadow-2xl"
                 : "h-[90vh] border-t",
             )}>
             <SheetHeader className="pb-0">
-              <SheetTitle className="text-lg font-semibold text-white">멘토 프로필 설정</SheetTitle>
+              <SheetTitle className="text-foreground text-lg font-semibold">멘토 프로필 설정</SheetTitle>
             </SheetHeader>
             <div className="custom-scrollbar overflow-y-auto pr-1">
               <Form {...form}>{formContent}</Form>

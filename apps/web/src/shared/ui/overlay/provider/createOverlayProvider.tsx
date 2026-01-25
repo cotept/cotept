@@ -142,32 +142,35 @@ export function createOverlayProvider(): OverlayProviderResult {
     // useOverlayEvent({ open, close, unmount, closeAll, unmountAll })
 
     // overlay-kit의 재개방 로직 구현 (SSR 안전 버전)
-    if (prevOverlayState.current !== overlayState) {
-      overlayState.overlayOrderList.forEach((overlayId) => {
-        // 방어 코드: prevOverlayState.current가 null이거나 overlayData가 없을 수 있음
-        const prevOverlayData = prevOverlayState.current?.overlayData
-        const currOverlayData = overlayState.overlayData
+    // Ref Access Fix: 이동됨 - useEffect 내에서 실행하여 렌더링 중 Ref 접근 방지
+    useEffect(() => {
+      if (prevOverlayState.current !== overlayState) {
+        overlayState.overlayOrderList.forEach((overlayId) => {
+          // 방어 코드: prevOverlayState.current가 null이거나 overlayData가 없을 수 있음
+          const prevOverlayData = prevOverlayState.current?.overlayData
+          const currOverlayData = overlayState.overlayData
 
-        // 방어 코드: 모든 체이닝에서 undefined 가능성 체크
-        if (
-          prevOverlayData?.[overlayId] != null &&
-          prevOverlayData[overlayId]?.isMounted === true &&
-          currOverlayData?.[overlayId] != null
-        ) {
-          const isPrevOverlayClosed = prevOverlayData[overlayId]?.isOpen === false
-          const isCurrOverlayOpened = currOverlayData[overlayId]?.isOpen === true
+          // 방어 코드: 모든 체이닝에서 undefined 가능성 체크
+          if (
+            prevOverlayData?.[overlayId] != null &&
+            prevOverlayData[overlayId]?.isMounted === true &&
+            currOverlayData?.[overlayId] != null
+          ) {
+            const isPrevOverlayClosed = prevOverlayData[overlayId]?.isOpen === false
+            const isCurrOverlayOpened = currOverlayData[overlayId]?.isOpen === true
 
-          // 닫혀있던 오버레이가 다시 열렸을 때
-          if (isPrevOverlayClosed && isCurrOverlayOpened) {
-            requestAnimationFrame(() => {
-              overlayDispatch({ type: "OPEN", overlayId })
-            })
+            // 닫혀있던 오버레이가 다시 열렸을 때
+            if (isPrevOverlayClosed && isCurrOverlayOpened) {
+              requestAnimationFrame(() => {
+                overlayDispatch({ type: "OPEN", overlayId })
+              })
+            }
           }
-        }
-      })
+        })
 
-      prevOverlayState.current = overlayState
-    }
+        prevOverlayState.current = overlayState
+      }
+    }, [overlayState])
 
     // 컴포넌트 언마운트 시 모든 오버레이 정리
     useEffect(() => {

@@ -5,7 +5,7 @@
  * overlay-kit 상태와 Portal의 Z-index 관리를 결합한 하이브리드 구현
  */
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useSyncExternalStore } from "react"
 
 import { createPortal } from "react-dom"
 
@@ -22,37 +22,30 @@ import type { OverlayRendererProps } from "../types/overlay.types"
  * @description 하이브리드 접근법:
  * - overlay-kit: 상태 관리 (순서, 생명주기)
  * - Portal: DOM 분리, Z-index 자동 관리
- * - SSR 안전: useEffect로 클라이언트 전용 DOM 접근
+ * - SSR 안전: useSyncExternalStore로 클라이언트 전용 DOM 접근 (Hydration mismatch 방지)
  *
  * @param overlayState - Reducer 상태
  * @param dispatch - Reducer 디스패치 함수
  */
 export function OverlayRenderer({ overlayState, dispatch }: OverlayRendererProps) {
-  // SSR 안전한 Portal 루트 요소 관리
-  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null)
-  const [portalError, setPortalError] = useState<Error | null>(null)
+  // SSR 안전한 Portal 루트 요소 관리 (useSyncExternalStore 사용)
+  const portalRoot = useSyncExternalStore(
+    () => () => {}, // subscribe: static element이므로 구독 불필요
+    () => document.getElementById("overlay-root"), // getSnapshot: client
+    () => null, // getServerSnapshot: server
+  )
 
   useEffect(() => {
-    // 클라이언트 사이드에서만 DOM 요소 접근
-    if (typeof document === "undefined") {
-      return
-    }
-    const root = document.getElementById("overlay-root")
-    if (!root) {
-      setPortalError(
+    // 클라이언트 사이드에서만 체크
+    if (typeof document !== "undefined" && !document.getElementById("overlay-root")) {
+      console.error(
         new OverlayError(
           "#overlay-root element is required to render overlays.",
           OVERLAY_ERROR_CODES.PORTAL_ROOT_NOT_FOUND,
         ),
       )
-      return
     }
-    setPortalRoot(root)
   }, [])
-
-  if (portalError) {
-    throw portalError
-  }
 
   // SSR 중이거나 portal root가 없으면 렌더링하지 않음
   if (!portalRoot) {

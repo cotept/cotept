@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common"
 
-import { AnalyzeSkillsUseCase } from "./application/ports/in/analyze-skills.usecase"
 import { CheckMentorEligibilityUseCase } from "./application/ports/in/check-mentor-eligibility.usecase"
 import { CompleteBaekjoonVerificationUseCase } from "./application/ports/in/complete-baekjoon-verification.usecase"
 import { CompleteOnboardingUseCase } from "./application/ports/in/complete-onboarding.usecase"
@@ -12,7 +11,7 @@ import { SkipBaekjoonUseCase } from "./application/ports/in/skip-baekjoon.usecas
 import { StartBaekjoonVerificationUseCase } from "./application/ports/in/start-baekjoon-verification.usecase"
 import { OnboardingStateRepositoryPort } from "./application/ports/out/onboarding-state.repository.port"
 import { OnboardingFacadeService } from "./application/services/facade/onboarding-facade.service"
-import { AnalyzeSkillsUseCaseImpl } from "./application/services/usecases/analyze-skills.usecase.impl"
+// import { AnalyzeSkillsUseCaseImpl } from "./application/services/usecases/analyze-skills.usecase.impl"
 import { CheckMentorEligibilityUseCaseImpl } from "./application/services/usecases/check-mentor-eligibility.usecase.impl"
 import { CompleteBaekjoonVerificationUseCaseImpl } from "./application/services/usecases/complete-baekjoon-verification.usecase.impl"
 import { CompleteOnboardingUseCaseImpl } from "./application/services/usecases/complete-onboarding.usecase.impl"
@@ -59,10 +58,10 @@ import { DatabaseModule } from "@/shared/infrastructure/persistence/database.mod
       provide: CompleteBaekjoonVerificationUseCase,
       useClass: CompleteBaekjoonVerificationUseCaseImpl,
     },
-    {
-      provide: AnalyzeSkillsUseCase,
-      useClass: AnalyzeSkillsUseCaseImpl,
-    },
+    // {
+    //   provide: AnalyzeSkillsUseCase,
+    //   useClass: AnalyzeSkillsUseCaseImpl,
+    // },
     {
       provide: CheckMentorEligibilityUseCase,
       useClass: CheckMentorEligibilityUseCaseImpl,

@@ -5,12 +5,12 @@ import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/cre
 import { OnboardingStateRepositoryPort } from "@/modules/onboarding/application/ports/out/onboarding-state.repository.port"
 import { CreateBasicProfileUseCaseImpl } from "@/modules/onboarding/application/services/usecases/create-basic-profile.usecase.impl"
 import OnboardingState, { OnboardingStep } from "@/modules/onboarding/domain/model/onboarding-state.model"
+import { UserProfileFacadeService } from "@/modules/user-profile/application"
 import { UserProfileDto } from "@/modules/user-profile/application/dtos"
-import { CreateUserProfileUseCase } from "@/modules/user-profile/application/ports/in"
 
 describe("CreateBasicProfileUseCaseImpl", () => {
   let useCase: CreateBasicProfileUseCaseImpl
-  let mockCreateUserProfileUseCase: jest.Mocked<CreateUserProfileUseCase>
+  let mockUserProfileService: jest.Mocked<UserProfileFacadeService>
   let mockOnboardingStateRepository: jest.Mocked<OnboardingStateRepositoryPort>
 
   beforeEach(async () => {
@@ -18,8 +18,8 @@ describe("CreateBasicProfileUseCaseImpl", () => {
       providers: [
         CreateBasicProfileUseCaseImpl,
         {
-          provide: CreateUserProfileUseCase,
-          useValue: { execute: jest.fn() },
+          provide: UserProfileFacadeService,
+          useValue: { createProfile: jest.fn() },
         },
         {
           provide: OnboardingStateRepositoryPort,
@@ -29,7 +29,7 @@ describe("CreateBasicProfileUseCaseImpl", () => {
     }).compile()
 
     useCase = module.get<CreateBasicProfileUseCaseImpl>(CreateBasicProfileUseCaseImpl)
-    mockCreateUserProfileUseCase = module.get(CreateUserProfileUseCase)
+    mockUserProfileService = module.get(UserProfileFacadeService)
     mockOnboardingStateRepository = module.get(OnboardingStateRepositoryPort)
   })
 
@@ -44,7 +44,7 @@ describe("CreateBasicProfileUseCaseImpl", () => {
 
   it("새로운 사용자의 온보딩 시, 프로필을 생성하고 온보딩 상태를 '다음 단계'로 업데이트해야 한다", async () => {
     // Given
-    mockCreateUserProfileUseCase.execute.mockResolvedValue(userProfileDto)
+    mockUserProfileService.createProfile.mockResolvedValue(userProfileDto)
     mockOnboardingStateRepository.findByUserId.mockResolvedValue(null)
     mockOnboardingStateRepository.save.mockImplementation(async (state) => state)
 
@@ -53,7 +53,11 @@ describe("CreateBasicProfileUseCaseImpl", () => {
 
     // Then
     expect(result).toEqual(userProfileDto)
-    expect(mockCreateUserProfileUseCase.execute).toHaveBeenCalledWith(dto)
+    expect(mockUserProfileService.createProfile).toHaveBeenCalledWith({
+      userId: dto.userId,
+      nickname: dto.nickname,
+      profileImageUrl: dto.profileImageUrl,
+    })
     expect(mockOnboardingStateRepository.findByUserId).toHaveBeenCalledWith(dto.userId)
     expect(mockOnboardingStateRepository.save).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -67,7 +71,7 @@ describe("CreateBasicProfileUseCaseImpl", () => {
   it("기존에 온보딩을 시작했던 사용자의 경우, 상태를 찾아 업데이트해야 한다", async () => {
     // Given
     const existingState = OnboardingState.start(dto.userId)
-    mockCreateUserProfileUseCase.execute.mockResolvedValue(userProfileDto)
+    mockUserProfileService.createProfile.mockResolvedValue(userProfileDto)
     mockOnboardingStateRepository.findByUserId.mockResolvedValue(existingState)
     mockOnboardingStateRepository.save.mockImplementation(async (state) => state)
 
@@ -84,11 +88,15 @@ describe("CreateBasicProfileUseCaseImpl", () => {
   it("프로필 생성 실패 시(예: 닉네임 중복), 에러를 전파하고 온보딩 상태를 저장하지 않아야 한다", async () => {
     // Given
     const conflictError = new ConflictException("닉네임 중복")
-    mockCreateUserProfileUseCase.execute.mockRejectedValue(conflictError)
+    mockUserProfileService.createProfile.mockRejectedValue(conflictError)
 
     // When & Then
     await expect(useCase.execute(dto)).rejects.toThrow(ConflictException)
-    expect(mockCreateUserProfileUseCase.execute).toHaveBeenCalledWith(dto)
+    expect(mockUserProfileService.createProfile).toHaveBeenCalledWith({
+      userId: dto.userId,
+      nickname: dto.nickname,
+      profileImageUrl: dto.profileImageUrl,
+    })
     expect(mockOnboardingStateRepository.save).not.toHaveBeenCalled()
   })
 })

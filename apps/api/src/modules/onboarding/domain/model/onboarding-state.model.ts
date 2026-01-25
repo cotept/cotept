@@ -1,9 +1,9 @@
 export enum OnboardingStep {
   PROFILE_SETUP = 1,
   BAEKJOON_VERIFY = 2,
-  SKILL_ANALYSIS = 3,
-  MENTOR_QUALIFICATION = 4,
-  COMPLETED = 5,
+  // SKILL_ANALYSIS = 3,
+  MENTOR_SETUP = 3,
+  COMPLETED = 4,
 }
 
 /**
@@ -50,16 +50,17 @@ export default class OnboardingState {
    */
   completeBaekjoonVerification(): void {
     this.baekjoonVerified = true
-    this.moveToStep(OnboardingStep.SKILL_ANALYSIS)
+    this.moveToStep(OnboardingStep.MENTOR_SETUP)
+    // this.moveToStep(OnboardingStep.SKILL_ANALYSIS)
   }
 
   /**
    * 실력 분석 단계를 완료로 표시합니다.
    */
-  completeSkillAnalysis(): void {
-    this.skillAnalysisCompleted = true
-    this.moveToStep(OnboardingStep.MENTOR_QUALIFICATION)
-  }
+  // completeSkillAnalysis(): void {
+  //   this.skillAnalysisCompleted = true
+  //   this.moveToStep(OnboardingStep.MENTOR_SETUP)
+  // }
 
   /**
    * 멘토 프로필 생성을 완료로 표시합니다.

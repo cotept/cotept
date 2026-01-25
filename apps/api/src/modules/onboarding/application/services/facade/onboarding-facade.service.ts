@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@nestjs/common"
 
 import {
   BaekjoonVerificationResultResponseDto,
-  TagStatisticsResponseDto,
+  // TagStatisticsResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { CreateMentorProfileDto } from "@/modules/mentor/application/dtos/create-mentor-profile.dto"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
 import { MentorTagsResponseDto } from "@/modules/mentor/application/dtos/mentor-tags.dto"
-import { AnalyzeSkillsDto } from "@/modules/onboarding/application/dtos/analyze-skills.dto"
+// import { AnalyzeSkillsDto } from "@/modules/onboarding/application/dtos/analyze-skills.dto"
 import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos/check-mentor-eligibility.dto"
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
 import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/complete-onboarding.dto"
@@ -17,7 +17,7 @@ import { GetOnboardingStateDto } from "@/modules/onboarding/application/dtos/get
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
 import { SkipBaekjoonDto, SkipBaekjoonResponseDto } from "@/modules/onboarding/application/dtos/skip-baekjoon.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
-import { AnalyzeSkillsUseCase } from "@/modules/onboarding/application/ports/in/analyze-skills.usecase"
+// import { AnalyzeSkillsUseCase } from "@/modules/onboarding/application/ports/in/analyze-skills.usecase"
 import { CheckMentorEligibilityUseCase } from "@/modules/onboarding/application/ports/in/check-mentor-eligibility.usecase"
 import { CompleteBaekjoonVerificationUseCase } from "@/modules/onboarding/application/ports/in/complete-baekjoon-verification.usecase"
 import { CompleteOnboardingUseCase } from "@/modules/onboarding/application/ports/in/complete-onboarding.usecase"
@@ -38,8 +38,8 @@ export class OnboardingFacadeService {
     private readonly startBaekjoonVerificationUseCase: StartBaekjoonVerificationUseCase,
     @Inject(CompleteBaekjoonVerificationUseCase)
     private readonly completeBaekjoonVerificationUseCase: CompleteBaekjoonVerificationUseCase,
-    @Inject(AnalyzeSkillsUseCase)
-    private readonly analyzeSkillsUseCase: AnalyzeSkillsUseCase,
+    // @Inject(AnalyzeSkillsUseCase)
+    // private readonly analyzeSkillsUseCase: AnalyzeSkillsUseCase,
     @Inject(CheckMentorEligibilityUseCase)
     private readonly checkMentorEligibilityUseCase: CheckMentorEligibilityUseCase,
     @Inject(GetMentorTagsUseCase)
@@ -72,9 +72,9 @@ export class OnboardingFacadeService {
     return await this.completeBaekjoonVerificationUseCase.execute(dto)
   }
 
-  async analyzeSkills(dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
-    return this.analyzeSkillsUseCase.execute(dto)
-  }
+  // async analyzeSkills(dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
+  //   return this.analyzeSkillsUseCase.execute(dto)
+  // }
 
   async checkMentorEligibility(dto: CheckMentorEligibilityDto): Promise<MentorEligibilityDto> {
     return this.checkMentorEligibilityUseCase.execute(dto)

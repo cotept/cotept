@@ -2,20 +2,21 @@ import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common"
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 
 import { JwtAuthGuard } from "@/modules/auth/infrastructure/common/guards"
-import { TagStatisticsOutputDto } from "@/modules/baekjoon/application/dtos"
 import {
   BaekjoonVerificationResultResponseDto,
-  TagStatisticsResponseDto,
   VerificationStatusResponseDto,
 } from "@/modules/baekjoon/infrastructure/dtos/response"
 import { MentorProfileDto } from "@/modules/mentor/application/dtos/mentor-profile.dto"
 import { MentorTagsResponseDto } from "@/modules/mentor/application/dtos/mentor-tags.dto"
-import { AnalyzeSkillsDto } from "@/modules/onboarding/application/dtos/analyze-skills.dto"
 import { CheckMentorEligibilityDto } from "@/modules/onboarding/application/dtos/check-mentor-eligibility.dto"
 import { CompleteBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/complete-baekjoon-verification.dto"
 import { CompleteOnboardingDto } from "@/modules/onboarding/application/dtos/complete-onboarding.dto"
 import { CreateBasicProfileDto } from "@/modules/onboarding/application/dtos/create-basic-profile.dto"
 import { OnboardingCreateMentorProfileDto } from "@/modules/onboarding/application/dtos/create-mentor-profile.dto"
+import {
+  GetOnboardingStateDto,
+  OnboardingStateResponseDto,
+} from "@/modules/onboarding/application/dtos/get-onboarding-state.dto"
 import { MentorEligibilityDto } from "@/modules/onboarding/application/dtos/mentor-eligibility.dto"
 import { SkipBaekjoonDto, SkipBaekjoonResponseDto } from "@/modules/onboarding/application/dtos/skip-baekjoon.dto"
 import { StartBaekjoonVerificationDto } from "@/modules/onboarding/application/dtos/start-baekjoon-verification.dto"
@@ -75,17 +76,17 @@ export class OnboardingController {
     return this.facadeService.completeBaekjoonVerification(dto)
   }
 
-  @Post("analyze")
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: "온보딩 - 실력 분석 실행" })
-  @ApiOkResponseWrapper(TagStatisticsOutputDto, "실력 분석이 성공적으로 완료되었습니다.")
-  @ApiStandardErrors()
-  @ApiAuthRequiredErrors()
-  @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
-  @ApiExternalServiceErrors()
-  async analyzeSkills(@Body() dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
-    return this.facadeService.analyzeSkills(dto)
-  }
+  // @Post("analyze")
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: "온보딩 - 실력 분석 실행" })
+  // @ApiOkResponseWrapper(TagStatisticsOutputDto, "실력 분석이 성공적으로 완료되었습니다.")
+  // @ApiStandardErrors()
+  // @ApiAuthRequiredErrors()
+  // @ApiNotFoundResponse({ description: "백준 프로필을 찾을 수 없습니다." })
+  // @ApiExternalServiceErrors()
+  // async analyzeSkills(@Body() dto: AnalyzeSkillsDto): Promise<TagStatisticsResponseDto> {
+  //   return this.facadeService.analyzeSkills(dto)
+  // }
 
   @Get("mentor/eligibility")
   @UseGuards(JwtAuthGuard)
@@ -150,5 +151,15 @@ export class OnboardingController {
   @ApiConflictResponse({ description: "온보딩이 아직 완료되지 않았습니다." })
   async completeOnboarding(@Body() dto: CompleteOnboardingDto): Promise<boolean> {
     return this.facadeService.completeOnboarding(dto)
+  }
+  @Get("state")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "온보딩 - 현재 상태 조회" })
+  @ApiOkResponseWrapper(OnboardingStateResponseDto, "온보딩 상태를 성공적으로 조회했습니다.")
+  @ApiStandardErrors()
+  @ApiAuthRequiredErrors()
+  async getOnboardingState(@CurrentUserId() userId: string): Promise<OnboardingStateResponseDto> {
+    const dto: GetOnboardingStateDto = { userId }
+    return this.facadeService.getOnboardingState(dto)
   }
 }

@@ -12,7 +12,7 @@ describe("OnboardingState 도메인 모델 테스트", () => {
     expect(state.currentStep).toBe(OnboardingStep.PROFILE_SETUP)
     expect(state.profileCreated).toBe(false)
     expect(state.baekjoonVerified).toBe(false)
-    expect(state.skillAnalysisCompleted).toBe(false)
+    // expect(state.skillAnalysisCompleted).toBe(false)
     expect(state.mentorProfileCreated).toBe(false)
     expect(state.completedAt).toBeUndefined()
   })
@@ -39,7 +39,7 @@ describe("OnboardingState 도메인 모델 테스트", () => {
 
     // Then
     expect(state.baekjoonVerified).toBe(true)
-    expect(state.currentStep).toBe(OnboardingStep.SKILL_ANALYSIS)
+    expect(state.currentStep).toBe(OnboardingStep.MENTOR_SETUP)
   })
 
   it("모든 필수 단계 완료 시 isCompleted가 true를 반환해야 한다", () => {
@@ -47,7 +47,7 @@ describe("OnboardingState 도메인 모델 테스트", () => {
     const state = OnboardingState.start(userId)
     state.profileCreated = true
     state.baekjoonVerified = true
-    state.skillAnalysisCompleted = true
+    // state.skillAnalysisCompleted = true
 
     // When & Then
     expect(state.isCompleted()).toBe(true)
@@ -56,7 +56,7 @@ describe("OnboardingState 도메인 모델 테스트", () => {
   it("필수 단계 중 하나라도 미완료 시 isCompleted가 false를 반환해야 한다", () => {
     // Given
     const state = OnboardingState.start(userId)
-    state.profileCreated = true
+    state.profileCreated = false
     state.baekjoonVerified = true
     state.skillAnalysisCompleted = false // 한 단계 미완료
 

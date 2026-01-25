@@ -22,8 +22,6 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import type { AnalyzeSkillsDto } from '../types';
-// @ts-ignore
 import type { BaekjoonVerificationResultResponseWrapper } from '../types';
 // @ts-ignore
 import type { BooleanResponse } from '../types';
@@ -50,6 +48,8 @@ import type { MentorTagsResponseWrapper } from '../types';
 // @ts-ignore
 import type { OnboardingCreateMentorProfileDto } from '../types';
 // @ts-ignore
+import type { OnboardingStateResponseWrapper } from '../types';
+// @ts-ignore
 import type { SkipBaekjoonResponseWrapper } from '../types';
 // @ts-ignore
 import type { StartBaekjoonVerification408Response } from '../types';
@@ -60,8 +60,6 @@ import type { StartBaekjoonVerification503Response } from '../types';
 // @ts-ignore
 import type { StartBaekjoonVerificationDto } from '../types';
 // @ts-ignore
-import type { TagStatisticsOutputResponse } from '../types';
-// @ts-ignore
 import type { UserProfileResponse } from '../types';
 // @ts-ignore
 import type { VerificationStatusResponseWrapper } from '../types';
@@ -71,42 +69,6 @@ import type { VerificationStatusResponseWrapper } from '../types';
  */
 export const OnboardingApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @summary 온보딩 - 실력 분석 실행
-         * @param {AnalyzeSkillsDto} analyzeSkillsDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        analyzeSkills: async (analyzeSkillsDto: AnalyzeSkillsDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'analyzeSkillsDto' is not null or undefined
-            assertParamExists('analyzeSkills', 'analyzeSkillsDto', analyzeSkillsDto)
-            const localVarPath = `/api/v1/onboarding/analyze`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(analyzeSkillsDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @summary 온보딩 - 멘토 자격 요건 확인
@@ -320,6 +282,36 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
         },
         /**
          * 
+         * @summary 온보딩 - 현재 상태 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOnboardingState: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/onboarding/state`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 연동 건너뛰기
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -394,19 +386,6 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
 export const OnboardingApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = OnboardingApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @summary 온보딩 - 실력 분석 실행
-         * @param {AnalyzeSkillsDto} analyzeSkillsDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async analyzeSkills(analyzeSkillsDto: AnalyzeSkillsDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TagStatisticsOutputResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.analyzeSkills(analyzeSkillsDto, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['OnboardingApi.analyzeSkills']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
         /**
          * 
          * @summary 온보딩 - 멘토 자격 요건 확인
@@ -486,6 +465,18 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 온보딩 - 현재 상태 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getOnboardingState(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnboardingStateResponseWrapper>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getOnboardingState(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OnboardingApi.getOnboardingState']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 연동 건너뛰기
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -519,16 +510,6 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
 export const OnboardingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = OnboardingApiFp(configuration)
     return {
-        /**
-         * 
-         * @summary 온보딩 - 실력 분석 실행
-         * @param {OnboardingApiAnalyzeSkillsRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        analyzeSkills(requestParameters: OnboardingApiAnalyzeSkillsRequest, options?: RawAxiosRequestConfig): AxiosPromise<TagStatisticsOutputResponse> {
-            return localVarFp.analyzeSkills(requestParameters.analyzeSkillsDto, options).then((request) => request(axios, basePath));
-        },
         /**
          * 
          * @summary 온보딩 - 멘토 자격 요건 확인
@@ -590,6 +571,15 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
         },
         /**
          * 
+         * @summary 온보딩 - 현재 상태 조회
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOnboardingState(options?: RawAxiosRequestConfig): AxiosPromise<OnboardingStateResponseWrapper> {
+            return localVarFp.getOnboardingState(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 온보딩 - 백준 연동 건너뛰기
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -616,16 +606,6 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
  * @interface OnboardingApi
  */
 export interface OnboardingApiInterface {
-    /**
-     * 
-     * @summary 온보딩 - 실력 분석 실행
-     * @param {OnboardingApiAnalyzeSkillsRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OnboardingApiInterface
-     */
-    analyzeSkills(requestParameters: OnboardingApiAnalyzeSkillsRequest, options?: RawAxiosRequestConfig): AxiosPromise<TagStatisticsOutputResponse>;
-
     /**
      * 
      * @summary 온보딩 - 멘토 자격 요건 확인
@@ -687,6 +667,15 @@ export interface OnboardingApiInterface {
 
     /**
      * 
+     * @summary 온보딩 - 현재 상태 조회
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OnboardingApiInterface
+     */
+    getOnboardingState(options?: RawAxiosRequestConfig): AxiosPromise<OnboardingStateResponseWrapper>;
+
+    /**
+     * 
      * @summary 온보딩 - 백준 연동 건너뛰기
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -704,20 +693,6 @@ export interface OnboardingApiInterface {
      */
     startBaekjoonVerification(requestParameters: OnboardingApiStartBaekjoonVerificationRequest, options?: RawAxiosRequestConfig): AxiosPromise<VerificationStatusResponseWrapper>;
 
-}
-
-/**
- * Request parameters for analyzeSkills operation in OnboardingApi.
- * @export
- * @interface OnboardingApiAnalyzeSkillsRequest
- */
-export interface OnboardingApiAnalyzeSkillsRequest {
-    /**
-     * 
-     * @type {AnalyzeSkillsDto}
-     * @memberof OnboardingApiAnalyzeSkills
-     */
-    readonly analyzeSkillsDto: AnalyzeSkillsDto
 }
 
 /**
@@ -813,18 +788,6 @@ export interface OnboardingApiStartBaekjoonVerificationRequest {
 export class OnboardingApi extends BaseAPI implements OnboardingApiInterface {
     /**
      * 
-     * @summary 온보딩 - 실력 분석 실행
-     * @param {OnboardingApiAnalyzeSkillsRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OnboardingApi
-     */
-    public analyzeSkills(requestParameters: OnboardingApiAnalyzeSkillsRequest, options?: RawAxiosRequestConfig) {
-        return OnboardingApiFp(this.configuration).analyzeSkills(requestParameters.analyzeSkillsDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary 온보딩 - 멘토 자격 요건 확인
      * @param {OnboardingApiCheckMentorEligibilityRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -892,6 +855,17 @@ export class OnboardingApi extends BaseAPI implements OnboardingApiInterface {
      */
     public getMentorTags(options?: RawAxiosRequestConfig) {
         return OnboardingApiFp(this.configuration).getMentorTags(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 온보딩 - 현재 상태 조회
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OnboardingApi
+     */
+    public getOnboardingState(options?: RawAxiosRequestConfig) {
+        return OnboardingApiFp(this.configuration).getOnboardingState(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

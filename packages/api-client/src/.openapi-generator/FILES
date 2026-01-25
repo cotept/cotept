@@ -23,7 +23,6 @@ services/user-api.ts
 services/user-profile-api.ts
 tsconfig.esm.json
 tsconfig.json
-types/analyze-skills-dto.ts
 types/auth-type.ts
 types/availability-response-dto.ts
 types/availability-response-wrapper.ts
@@ -82,6 +81,8 @@ types/mentor-tags-response-wrapper.ts
 types/my-profile-response-dto.ts
 types/my-profile-response-wrapper.ts
 types/onboarding-create-mentor-profile-dto.ts
+types/onboarding-state-response-dto.ts
+types/onboarding-state-response-wrapper.ts
 types/password-change-response-dto.ts
 types/password-change-response-wrapper.ts
 types/refresh-token-request-dto.ts
@@ -98,17 +99,13 @@ types/start-baekjoon-verification408-response.ts
 types/start-baekjoon-verification429-response.ts
 types/start-baekjoon-verification503-response.ts
 types/start-verification-request-dto.ts
-types/tag-dto.ts
 types/tag-info-dto.ts
-types/tag-statistics-output-dto.ts
-types/tag-statistics-output-response.ts
 types/tag-statistics-response-dto.ts
 types/tag-statistics-response-wrapper.ts
 types/tier-color.ts
 types/tier-name.ts
 types/token-response-dto.ts
 types/token-response-wrapper.ts
-types/top-tag-dto.ts
 types/update-mentor-profile-dto.ts
 types/update-user-profile-request-dto.ts
 types/update-user-request-dto.ts

@@ -15,25 +15,25 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { TagDto } from './tag-dto';
+import type { OnboardingStateResponseDto } from './onboarding-state-response-dto';
 
 /**
  * 
  * @export
- * @interface TopTagDto
+ * @interface OnboardingStateResponseWrapper
  */
-export interface TopTagDto {
+export interface OnboardingStateResponseWrapper {
     /**
-     * 태그 정보
-     * @type {TagDto}
-     * @memberof TopTagDto
+     * 응답 메시지
+     * @type {string}
+     * @memberof OnboardingStateResponseWrapper
      */
-    'tag': TagDto;
+    'message'?: string;
     /**
-     * 해당 태그로 해결한 문제 수
-     * @type {number}
-     * @memberof TopTagDto
+     * 
+     * @type {OnboardingStateResponseDto}
+     * @memberof OnboardingStateResponseWrapper
      */
-    'solvedCount': number;
+    'data'?: OnboardingStateResponseDto;
 }
 

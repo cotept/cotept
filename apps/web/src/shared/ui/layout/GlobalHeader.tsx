@@ -2,8 +2,9 @@ import Link from "next/link"
 
 import { Button } from "@repo/shared/components/button"
 
-import { Bell, ChevronDown, Menu, Search } from "lucide-react"
+import { Bell, Search } from "lucide-react"
 
+import UserMenu from "@/shared/ui/layout/UserMenu"
 import Logo from "@/shared/ui/Logo"
 import ThemeToggle from "@/shared/ui/ThemeToggle"
 
@@ -56,14 +57,7 @@ export function GlobalHeader() {
             </Button>
           </div>
 
-          <button className="hover:bg-accent hidden items-center gap-2 rounded-full p-1 transition-colors sm:flex">
-            <div className="from-primary bg-linear-to-tr h-8 w-8 overflow-hidden rounded-full to-blue-400" />
-            <ChevronDown className="text-muted-foreground h-4 w-4" />
-          </button>
-
-          <Button variant="ghost" size="icon" className="text-muted-foreground md:hidden">
-            <Menu className="h-6 w-6" />
-          </Button>
+          <UserMenu />
         </div>
       </div>
     </header>

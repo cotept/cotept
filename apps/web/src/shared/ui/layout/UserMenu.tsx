@@ -47,7 +47,13 @@ const userMenuItems: MenuItem[] = [
   {
     type: "link",
     label: "마이페이지",
-    href: "/my",
+    href: "/mypage",
+    icon: User,
+  },
+  {
+    type: "link",
+    label: "대시보드",
+    href: "/dashboard",
     icon: User,
   },
   {

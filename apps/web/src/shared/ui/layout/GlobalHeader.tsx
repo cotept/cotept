@@ -25,11 +25,11 @@ export function GlobalHeader() {
               className="text-muted-foreground hover:text-primary text-base font-semibold transition-colors">
               다시보기
             </Link>
-            <Link
+            {/* <Link
               href="#"
               className="text-muted-foreground hover:text-primary text-base font-semibold transition-colors">
               대시보드
-            </Link>
+            </Link> */}
           </nav>
         </div>
 

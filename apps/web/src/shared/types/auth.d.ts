@@ -3,8 +3,10 @@ import { DefaultJWT } from "next-auth/jwt"
 
 import { TokenResponseDto } from "@repo/api-client/src"
 
+import type { SessionUpdatePayload } from "@/shared/auth/strategies/update-strategy.interface"
+
 /**
- * 
+ *
  * User (authorize 함수 반환 타입)
    credentials.ts의 authorize() 함수가 반환하는 객체
    NextAuth가 로그인 직후 받는 초기 사용자 데이터
@@ -21,6 +23,8 @@ import { TokenResponseDto } from "@repo/api-client/src"
    용도: 프론트엔드에서 사용
 
  * 흐름: authorize() → User → jwt() → JWT → session() → Session
+ *
+ * SessionUpdatePayload를 extends하여 update() 호출 시 타입 안전성 확보
  */
 
 /**
@@ -32,9 +36,7 @@ export type CotePtUser = Omit<LoginResponse, "accessToken" | "refreshToken"> & {
   currentOnboardingStep?: number
 }
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    accessToken?: string
-    refreshToken?: string
+  interface Session extends DefaultSession, SessionUpdatePayload {
     member: CotePtUser
   }
 

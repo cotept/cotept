@@ -69,10 +69,9 @@ export const handleUnauthorizedError: ErrorHandler = async (error, originalReque
 
     const { update } = await import("@/auth")
     await update({
-      user: {
-        accessToken: newTokens.accessToken,
-        refreshToken: newTokens.refreshToken,
-      },
+      trigger: "TOKEN_REFRESH",
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken,
     })
 
     if (originalRequest.headers) {

@@ -2,11 +2,13 @@ import type { CotePtUser } from "@/shared/types/auth"
 import type { NextAuthConfig } from "next-auth"
 
 import { OnboardingUpdateStrategy } from "@/shared/auth/strategies/onboarding-update.strategy"
+import { TokenRefreshStrategy } from "@/shared/auth/strategies/token-refresh.strategy"
 import { UpdateStrategy } from "@/shared/auth/strategies/update-strategy.interface"
 
 // 전략 등록
 const updateStrategies: Record<string, UpdateStrategy> = {
   ONBOARDING_UPDATE: new OnboardingUpdateStrategy(),
+  TOKEN_REFRESH: new TokenRefreshStrategy(),
 }
 
 export const authCallbacks: NextAuthConfig["callbacks"] = {

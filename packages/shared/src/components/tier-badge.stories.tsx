@@ -24,10 +24,6 @@ const meta: Meta<typeof TierBadge> = {
       options: ["sm", "md", "lg", "xl"],
       description: "배지 크기",
     },
-    showLabel: {
-      control: "boolean",
-      description: "티어 레이블 표시 여부",
-    },
   },
 }
 
@@ -42,7 +38,6 @@ export const Default: Story = {
     tier: "platinum",
     rank: 3,
     size: "md",
-    showLabel: false,
   },
 }
 
@@ -54,7 +49,6 @@ export const WithLabel: Story = {
     tier: "diamond",
     rank: 2,
     size: "md",
-    showLabel: true,
   },
 }
 
@@ -65,7 +59,6 @@ export const Unrated: Story = {
   args: {
     tier: "unrated",
     size: "md",
-    showLabel: true,
   },
 }
 
@@ -101,11 +94,11 @@ export const AllTiers: Story = {
 export const DifferentRanks: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <TierBadge tier="platinum" rank={5} showLabel />
-      <TierBadge tier="platinum" rank={4} showLabel />
-      <TierBadge tier="platinum" rank={3} showLabel />
-      <TierBadge tier="platinum" rank={2} showLabel />
-      <TierBadge tier="platinum" rank={1} showLabel />
+      <TierBadge tier="platinum" rank={5} />
+      <TierBadge tier="platinum" rank={4} />
+      <TierBadge tier="platinum" rank={3} />
+      <TierBadge tier="platinum" rank={2} />
+      <TierBadge tier="platinum" rank={1} />
     </div>
   ),
 }

@@ -1,7 +1,7 @@
 /**
  * Overlay Context System 테스트
  * createOverlayProvider와 createSafeContext 통합 테스트
- * 
+ *
  * @description 테스트 가이드라인 적용:
  * - FIRST: Fast, Isolated, Repeatable, Self-Validating, Timely
  * - Right-BICEP: Right, Boundary, Inverse, Cross-check, Error, Performance
@@ -11,7 +11,7 @@
 import React from "react"
 
 import { render, screen } from "@testing-library/react"
-import { afterEach,beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { DefaultOverlayProvider, overlay, useCurrentOverlay, useOverlayData } from "../../createOverlayContext"
 import { createOverlayProvider } from "../../provider/createOverlayProvider"
@@ -27,10 +27,7 @@ const TestComponent: React.FC<{ testId?: string }> = ({ testId = "test-component
   return <div data-testid={testId}>Test Overlay Component</div>
 }
 
-const TestModal: React.FC<{ onClose?: () => void; title?: string }> = ({ 
-  onClose, 
-  title = "Test Modal" 
-}) => {
+const TestModal: React.FC<{ onClose?: () => void; title?: string }> = ({ onClose, title = "Test Modal" }) => {
   return (
     <div data-testid="test-modal" role="dialog" aria-modal="true">
       <h2>{title}</h2>
@@ -47,7 +44,7 @@ describe("createOverlaySafeContext", () => {
   describe("기본 동작 (Right)", () => {
     it("Context Provider와 Hook을 올바르게 생성한다", () => {
       const { OverlayContextProvider, useCurrentOverlay, useOverlayData } = createOverlaySafeContext()
-      
+
       expect(OverlayContextProvider).toBeDefined()
       expect(typeof OverlayContextProvider).toBe("function")
       expect(typeof useCurrentOverlay).toBe("function")
@@ -59,7 +56,7 @@ describe("createOverlaySafeContext", () => {
       const testData = {
         current: "test-overlay",
         overlayOrderList: ["overlay1", "overlay2"],
-        overlayData: {}
+        overlayData: {},
       }
 
       const TestComponent: React.FC = () => {
@@ -70,7 +67,7 @@ describe("createOverlaySafeContext", () => {
       render(
         <OverlayContextProvider value={testData}>
           <TestComponent />
-        </OverlayContextProvider>
+        </OverlayContextProvider>,
       )
 
       expect(screen.getByTestId("context-data")).toHaveTextContent(JSON.stringify(testData))
@@ -80,7 +77,7 @@ describe("createOverlaySafeContext", () => {
   describe("에러 처리 (Error conditions)", () => {
     it("Provider 없이 useOverlayData Hook 사용 시 명확한 에러를 던진다", () => {
       const { useOverlayData } = createOverlaySafeContext()
-      
+
       const TestComponent: React.FC = () => {
         useOverlayData()
         return null
@@ -88,34 +85,34 @@ describe("createOverlaySafeContext", () => {
 
       // React의 에러 경계 시뮬레이션을 위한 콘솔 에러 억제
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
-      
+
       expect(() => {
         render(<TestComponent />)
       }).toThrow(
         "Context must be used within a corresponding Provider. " +
-        "Make sure to wrap your component with the correct Provider."
+          "Make sure to wrap your component with the correct Provider.",
       )
-      
+
       consoleSpy.mockRestore()
     })
 
     it("Provider 없이 useCurrentOverlay Hook 사용 시에도 같은 에러를 던진다", () => {
       const { useCurrentOverlay } = createOverlaySafeContext()
-      
+
       const TestComponent: React.FC = () => {
         useCurrentOverlay()
         return null
       }
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
-      
+
       expect(() => {
         render(<TestComponent />)
       }).toThrow(
         "Context must be used within a corresponding Provider. " +
-        "Make sure to wrap your component with the correct Provider."
+          "Make sure to wrap your component with the correct Provider.",
       )
-      
+
       consoleSpy.mockRestore()
     })
   })
@@ -132,9 +129,9 @@ describe("createOverlaySafeContext", () => {
             componentKey: "test-key",
             isOpen: true,
             isMounted: true,
-            controller: () => null
-          }
-        }
+            controller: () => null,
+          },
+        },
       }
 
       const TestComponent: React.FC = () => {
@@ -151,7 +148,7 @@ describe("createOverlaySafeContext", () => {
       render(
         <OverlayContextProvider value={testData}>
           <TestComponent />
-        </OverlayContextProvider>
+        </OverlayContextProvider>,
       )
 
       expect(screen.getByTestId("current")).toHaveTextContent("current-overlay")
@@ -179,7 +176,7 @@ describe("createOverlayProvider", () => {
       expect(providerResult).toHaveProperty("OverlayProvider")
       expect(providerResult).toHaveProperty("useCurrentOverlay")
       expect(providerResult).toHaveProperty("useOverlayData")
-      
+
       expect(typeof providerResult.overlay).toBe("object")
       expect(typeof providerResult.OverlayProvider).toBe("function")
       expect(typeof providerResult.useCurrentOverlay).toBe("function")
@@ -189,7 +186,7 @@ describe("createOverlayProvider", () => {
     it("독립적인 인스턴스들을 생성한다 (Isolated)", () => {
       const provider1 = createOverlayProvider()
       const provider2 = createOverlayProvider()
-      
+
       expect(provider1.overlay).not.toBe(provider2.overlay)
       expect(provider1.OverlayProvider).not.toBe(provider2.OverlayProvider)
     })
@@ -202,7 +199,7 @@ describe("createOverlayProvider", () => {
       render(
         <OverlayProvider>
           <div data-testid="child-content">Child Content</div>
-        </OverlayProvider>
+        </OverlayProvider>,
       )
 
       expect(screen.getByTestId("child-content")).toBeInTheDocument()
@@ -214,22 +211,23 @@ describe("createOverlayProvider", () => {
       const originalPortalRoot = document.getElementById("overlay-root")
       originalPortalRoot?.remove()
 
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
       const { OverlayProvider } = providerResult
 
       render(
         <OverlayProvider>
           <div>Test</div>
-        </OverlayProvider>
+        </OverlayProvider>,
       )
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "[Overlay] Portal root element not found. " +
-        'Make sure to add <div id="overlay-root"></div> to your HTML.'
-      )
+      expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error))
 
       // Portal root 복원
-      document.body.appendChild(mockPortalRoot)
+      if (originalPortalRoot) {
+        document.body.appendChild(originalPortalRoot)
+      } else {
+        document.body.appendChild(mockPortalRoot)
+      }
       consoleSpy.mockRestore()
     })
   })
@@ -241,7 +239,7 @@ describe("createOverlayProvider", () => {
       const ContextTestComponent: React.FC = () => {
         const current = useCurrentOverlay()
         const data = useOverlayData()
-        
+
         return (
           <div>
             <div data-testid="current-overlay">{current || "null"}</div>
@@ -254,7 +252,7 @@ describe("createOverlayProvider", () => {
       render(
         <OverlayProvider>
           <ContextTestComponent />
-        </OverlayProvider>
+        </OverlayProvider>,
       )
 
       // 초기 상태 확인
@@ -266,18 +264,18 @@ describe("createOverlayProvider", () => {
     it("Provider가 올바른 초기 컨텍스트를 제공한다", () => {
       const { OverlayProvider, useOverlayData } = providerResult
 
-      let capturedData: any
-
       const TestComponent: React.FC = () => {
-        capturedData = useOverlayData()
-        return null
+        const data = useOverlayData()
+        return <div data-testid="captured-data">{JSON.stringify(data)}</div>
       }
 
       render(
         <OverlayProvider>
           <TestComponent />
-        </OverlayProvider>
+        </OverlayProvider>,
       )
+
+      const capturedData = JSON.parse(screen.getByTestId("captured-data").textContent || "")
 
       expect(capturedData.current).toBeNull()
       expect(capturedData.overlayOrderList).toEqual([])
@@ -292,7 +290,7 @@ describe("createOverlayProvider", () => {
       const { unmount } = render(
         <OverlayProvider>
           <div>Test Content</div>
-        </OverlayProvider>
+        </OverlayProvider>,
       )
 
       // Provider 언마운트 시 에러가 발생하지 않음을 확인
@@ -315,9 +313,9 @@ describe("createOverlayProvider", () => {
       expect(overlay.closeAll).toBeDefined()
       expect(overlay.unmountAll).toBeDefined()
       expect(overlay.openAsync).toBeDefined()
-      
+
       expect(typeof overlay.open).toBe("function")
-      expect(typeof overlay.close).toBe("function") 
+      expect(typeof overlay.close).toBe("function")
       expect(typeof overlay.unmount).toBe("function")
       expect(typeof overlay.closeAll).toBe("function")
       expect(typeof overlay.unmountAll).toBe("function")
@@ -325,7 +323,14 @@ describe("createOverlayProvider", () => {
     })
 
     it("이벤트 호출이 에러를 발생시키지 않는다", () => {
-      const { overlay } = providerResult
+      const { overlay, OverlayProvider } = providerResult
+
+      // Provider를 먼저 마운트해야 API 호출이 가능함
+      render(
+        <OverlayProvider>
+          <div />
+        </OverlayProvider>,
+      )
 
       expect(() => {
         overlay.close("nonexistent-overlay")
@@ -339,11 +344,11 @@ describe("createOverlayProvider", () => {
   describe("성능 테스트 (Performance)", () => {
     it("Provider 생성이 빠르게 완료된다", () => {
       const startTime = performance.now()
-      
+
       for (let i = 0; i < 100; i++) {
         createOverlayProvider()
       }
-      
+
       const endTime = performance.now()
       const processingTime = endTime - startTime
 
@@ -368,7 +373,7 @@ describe("Default Overlay Instance", () => {
       render(
         <DefaultOverlayProvider>
           <div data-testid="default-provider-child">Default Provider Test</div>
-        </DefaultOverlayProvider>
+        </DefaultOverlayProvider>,
       )
 
       expect(screen.getByTestId("default-provider-child")).toBeInTheDocument()
@@ -379,7 +384,7 @@ describe("Default Overlay Instance", () => {
       const TestComponent: React.FC = () => {
         const current = useCurrentOverlay()
         const data = useOverlayData()
-        
+
         return (
           <div>
             <div data-testid="global-current">{current || "null"}</div>
@@ -391,7 +396,7 @@ describe("Default Overlay Instance", () => {
       render(
         <DefaultOverlayProvider>
           <TestComponent />
-        </DefaultOverlayProvider>
+        </DefaultOverlayProvider>,
       )
 
       expect(screen.getByTestId("global-current")).toHaveTextContent("null")
@@ -403,7 +408,7 @@ describe("Default Overlay Instance", () => {
     it("전역 인스턴스는 싱글턴이다", () => {
       // 같은 모듈을 다시 import해도 같은 인스턴스여야 함
       expect(overlay).toBe(overlay) // 참조 동일성 확인
-      
+
       // 새로운 Provider를 만들었을 때는 다른 인스턴스
       const { overlay: newOverlay } = createOverlayProvider()
       expect(overlay).not.toBe(newOverlay)

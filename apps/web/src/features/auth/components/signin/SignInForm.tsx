@@ -112,7 +112,6 @@ export function SignInForm() {
                           type={showPassword ? "text" : "password"}
                           required
                           placeholder="비밀번호를 입력해주세요"
-                          autoFocus
                           autoComplete="off"
                           className={cn(
                             "h-12 w-full rounded-lg px-4",

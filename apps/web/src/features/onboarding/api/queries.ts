@@ -1,9 +1,9 @@
 import {
   type MentorEligibilityResponse,
   type MentorTagsResponseWrapper,
-  type OnboardingApiAnalyzeSkillsRequest,
+  // type OnboardingApiAnalyzeSkillsRequest,
   type OnboardingApiCheckMentorEligibilityRequest,
-  type TagStatisticsOutputResponse,
+  // type TagStatisticsOutputResponse,
 } from "@repo/api-client"
 
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
@@ -14,18 +14,18 @@ import { ApiError } from "@/shared/api/core/types"
 import { onboardingApiService } from "@/shared/api/services/onboarding-api-service"
 
 // 실력 분석 조회
-export function useAnalyzeSkills(
-  request: OnboardingApiAnalyzeSkillsRequest,
-  options?: UseQueryOptions<TagStatisticsOutputResponse, ApiError>,
-) {
-  return useQuery({
-    queryKey: onboardingKeys.skillAnalysis().queryKey,
-    queryFn: () => onboardingApiService.analyzeSkills(request),
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
-    ...options,
-  })
-}
+// export function useAnalyzeSkills(
+//   request: OnboardingApiAnalyzeSkillsRequest,
+//   options?: UseQueryOptions<TagStatisticsOutputResponse, ApiError>,
+// ) {
+//   return useQuery({
+//     queryKey: onboardingKeys.skillAnalysis().queryKey,
+//     queryFn: () => onboardingApiService.analyzeSkills(request),
+//     staleTime: 5 * 60 * 1000, // 5분
+//     gcTime: 10 * 60 * 1000, // 10분
+//     ...options,
+//   })
+// }
 
 // 멘토 자격 요건 확인
 export function useCheckMentorEligibility(

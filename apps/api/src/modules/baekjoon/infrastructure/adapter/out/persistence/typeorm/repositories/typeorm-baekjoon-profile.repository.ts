@@ -68,13 +68,27 @@ export class BaekjoonProfileRepository
   }
 
   async save(baekjoonUser: BaekjoonUser): Promise<BaekjoonUser> {
-    // 도메인 모델 → 엔티티 변환
-    const entity = this.mapper.toEntity(baekjoonUser)
+    try {
+      // Upsert 로직: 기존 엔티티 조회
+      const existingEntity = await this.entityRepository.findOne({
+        where: { userId: baekjoonUser.getUserId() },
+      })
 
-    const savedEntity = await this.create(entity)
+      let entityToSave: BaekjoonProfileEntity
 
-    // 엔티티 → 도메인 모델 변환
-    return this.mapper.toDomainModel(savedEntity)
+      if (existingEntity) {
+        // 존재하면 업데이트 (기존 엔티티 정보 + 새 정보 병합)
+        entityToSave = this.mapper.updateEntityFromDomain(existingEntity, baekjoonUser)
+      } else {
+        // 없으면 새로 생성
+        entityToSave = this.mapper.toEntity(baekjoonUser)
+      }
+
+      const savedEntity = await this.entityRepository.save(entityToSave)
+      return this.mapper.toDomainModel(savedEntity)
+    } catch (error) {
+      this.handleDBError(error, "[BaekjoonProfile]")
+    }
   }
 
   async findByUserId(userId: string): Promise<BaekjoonUser | null> {

@@ -20,6 +20,13 @@ export abstract class UserProfileRepositoryPort {
   abstract findByUserId(userId: string): Promise<UserProfile | null>
 
   /**
+   * 사용자 인덱스로 프로필 조회
+   * @param userIdx 사용자 인덱스 (USERS 테이블의 PK)
+   * @returns 프로필 도메인 엔티티 또는 null
+   */
+  abstract findByUserIdx(userIdx: number): Promise<UserProfile | null>
+
+  /**
    * 닉네임으로 프로필 조회 (중복 확인용)
    * @param nickname 닉네임
    * @returns 프로필 도메인 엔티티 또는 null

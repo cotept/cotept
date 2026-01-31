@@ -9,6 +9,7 @@ import { UserProfileDto } from "@/modules/user-profile/application/dtos"
  */
 export class CreateBasicProfileDto extends PickType(UserProfileDto, [
   "userId",
+  "userIdx",
   "nickname",
   "profileImageUrl",
 ] as const) {}

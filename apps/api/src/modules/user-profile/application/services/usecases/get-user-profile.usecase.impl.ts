@@ -43,6 +43,21 @@ export class GetUserProfileUseCaseImpl implements GetUserProfileUseCase {
   }
 
   /**
+   * 사용자 인덱스로 프로필 조회
+   * @param userIdx 사용자 인덱스 (USERS 테이블의 PK)
+   * @returns 사용자 프로필 DTO 또는 null
+   */
+  async executeByUserIdx(userIdx: number): Promise<UserProfileDto | null> {
+    const profile = await this.userProfileRepository.findByUserIdx(userIdx)
+
+    if (!profile) {
+      return null
+    }
+
+    return this.userProfileMapper.toDto(profile)
+  }
+
+  /**
    * 사용자 ID로 프로필 조회 (NotFound 예외 발생 버전)
    * @param userId 사용자 ID
    * @returns 사용자 프로필 DTO
@@ -69,6 +84,22 @@ export class GetUserProfileUseCaseImpl implements GetUserProfileUseCase {
 
     if (!profileDto) {
       throw new NotFoundException(`프로필 ID ${idx}를 찾을 수 없습니다.`)
+    }
+
+    return profileDto
+  }
+
+  /**
+   * 사용자 인덱스로 프로필 조회 (NotFound 예외 발생 버전)
+   * @param userIdx 사용자 인덱스 (USERS 테이블의 PK)
+   * @returns 사용자 프로필 DTO
+   * @throws NotFoundException 프로필이 존재하지 않는 경우
+   */
+  async executeByUserIdxOrThrow(userIdx: number): Promise<UserProfileDto> {
+    const profileDto = await this.executeByUserIdx(userIdx)
+
+    if (!profileDto) {
+      throw new NotFoundException(`사용자 인덱스 ${userIdx}에 해당하는 프로필을 찾을 수 없습니다.`)
     }
 
     return profileDto

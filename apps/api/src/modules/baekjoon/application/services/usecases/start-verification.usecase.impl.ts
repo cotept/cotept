@@ -117,24 +117,16 @@ export class StartVerificationUseCaseImpl implements StartVerificationUseCase {
     this.logger.debug(
       `Found existing session for userId: ${userId}, sessionId: ${existingSessionId} sessionData:${JSON.stringify(sessionData)}`,
     )
-    if (!sessionData) {
-      // 매핑은 있지만 세션 데이터가 없는 경우 (정합성 오류)
-      // 이론상 발생하면 안 되지만, 매핑만 삭제하고 정상 진행
-      await this.cacheAdapter.delete(userSessionKey)
-      return
-    }
-    const existingSession = new VerificationSession(sessionData)
 
-    if (existingSession.isExpired()) {
-      // 만료된 세션 정리 (두 키 모두 삭제)
-      existingSession.expire()
+    // 기존 세션이 있다면 삭제하고 새로 시작할 수 있도록 허용 (ConflictException 제거)
+    // 사용자가 '재시도' 버튼을 눌렀을 때 기존 세션을 덮어쓰는 것이 UX상 자연스러움
+    if (sessionData) {
+      this.logger.debug(`Deleting existing session to restart verification for userId: ${userId}`)
       await this.cacheAdapter.delete(sessionKey)
-      await this.cacheAdapter.delete(userSessionKey)
-      throw new RequestTimeoutException("인증 세션이 만료되었습니다. 다시 시도해주세요.")
     }
 
-    // 진행 중인 세션 존재
-    throw new ConflictException("이미 진행 중인 인증이 있습니다. 기존 인증을 완료하거나 만료될 때까지 기다려주세요.")
+    // 사용자 세션 매핑도 삭제
+    await this.cacheAdapter.delete(userSessionKey)
   }
 
   /**

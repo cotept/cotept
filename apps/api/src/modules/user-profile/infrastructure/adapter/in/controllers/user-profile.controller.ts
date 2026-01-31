@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -36,6 +49,8 @@ import { CurrentUserId } from "@/shared/infrastructure/decorators/current-user.d
 @ApiTags("UserProfile")
 @Controller("user-profiles")
 export class UserProfileController {
+  private readonly logger = new Logger(UserProfileController.name)
+
   constructor(
     private readonly userProfileFacadeService: UserProfileFacadeService,
     private readonly requestMapper: UserProfileRequestMapper,
@@ -52,8 +67,9 @@ export class UserProfileController {
   @ApiStandardErrors()
   @ApiAuthRequiredErrors()
   @ApiNotFoundResponse({ description: "프로필을 찾을 수 없습니다" })
-  async getMyProfile(@CurrentUserId() userId: string): Promise<MyProfileResponseDto> {
-    return await this.userProfileFacadeService.getMyProfile(userId)
+  async getMyProfile(@CurrentUserId(ParseIntPipe) userIdx: number): Promise<MyProfileResponseDto> {
+    this.logger.debug(`UserProfileController.getMyProfile: ${userIdx}`)
+    return await this.userProfileFacadeService.getMyProfile(userIdx)
   }
 
   @Get(":userId")
@@ -195,6 +211,7 @@ export class UserProfileController {
     @Param("userId") userId: string,
     @Body()
     profileData: {
+      userIdx: number
       nickname: string
       fullName?: string
       introduce?: string
@@ -222,10 +239,11 @@ export class UserProfileController {
   @ApiConflictResponse({ description: "이미 프로필이 존재하거나 닉네임이 중복됩니다" })
   async createBasicProfileForSignup(
     @Param("userId") userId: string,
-    @Body() basicData: { nickname: string; introduce?: string },
+    @Body() basicData: { userIdx: number; nickname: string; introduce?: string },
   ): Promise<BasicProfileCreationResponseDto> {
     const result = await this.userProfileFacadeService.createBasicProfileForSignup(
       userId,
+      basicData.userIdx,
       basicData.nickname,
       basicData.introduce,
     )

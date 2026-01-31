@@ -14,6 +14,7 @@ export class UserProfilePersistenceMapper extends EntityMapper<UserProfile, User
     return new UserProfile({
       idx: entity.idx,
       userId: entity.userId,
+      userIdx: entity.user?.idx, // user 관계 필드에서 idx 추출
 
       // ✅ UserProfile 생성자가 string → Nickname 자동 변환
       nickname: entity.nickname,
@@ -43,6 +44,11 @@ export class UserProfilePersistenceMapper extends EntityMapper<UserProfile, User
     }
 
     entity.userId = domain.userId
+
+    // ✅ user_id FK 설정을 위해 user 관계 필드 할당
+    if (domain.userIdx !== undefined) {
+      entity.user = { idx: domain.userIdx } as any
+    }
 
     // ✅ 값 객체 → 원시값 변환 (도메인 모델의 getter 활용)
     entity.nickname = domain.nickname // getter를 통해 string으로 반환

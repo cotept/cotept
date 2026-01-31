@@ -42,6 +42,7 @@ export class UserProfileMapper {
     return new UserProfile({
       idx: dto.idx,
       userId: dto.userId,
+      userIdx: dto.userIdx,
       nickname: dto.nickname, // 생성자에서 자동으로 Nickname 값 객체로 변환
       fullName: dto.fullName, // 생성자에서 자동으로 Name 값 객체로 변환
       introduce: dto.introduce,
@@ -58,6 +59,7 @@ export class UserProfileMapper {
   createRequestToDomain(dto: CreateUserProfileRequestDto): UserProfile {
     return new UserProfile({
       userId: dto.userId,
+      userIdx: dto.userIdx,
       nickname: dto.nickname,
       fullName: dto.fullName,
       introduce: dto.introduce,

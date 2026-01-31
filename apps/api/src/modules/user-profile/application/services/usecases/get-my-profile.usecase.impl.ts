@@ -15,24 +15,20 @@ export class GetMyProfileUseCaseImpl implements GetMyProfileUseCase {
     private readonly userProfileMapper: UserProfileMapper,
   ) {}
 
-  async execute(userId: string): Promise<MyProfileResponseDto> {
-    // 1. 멘티 프로필 조회 (필수) - 없으면 예외 발생
-    const menteeProfile = await this.getUserProfileUseCase.executeByUserIdOrThrow(userId)
+  async execute(userIdx: number): Promise<MyProfileResponseDto> {
+    // 1. 멘티 프로필 조회 (필수) - 사용자 인덱스(userIdx)로 조회
+    const menteeProfile = await this.getUserProfileUseCase.executeByUserIdxOrThrow(userIdx)
 
     // 2. 멘토 프로필 조회 (선택)
     let mentorProfile: MentorProfileDto | null = null
     try {
-      mentorProfile = await this.mentorFacadeService.getMentorProfileByUserId(userId)
+      mentorProfile = await this.mentorFacadeService.getMentorProfileByIdx(userIdx)
     } catch {
       // 멘토 프로필이 없는 경우 (NotFoundException) 무시
       mentorProfile = null
     }
 
     // 3. Mapper를 통해 Response DTO 생성
-    return this.userProfileMapper.toMyProfileResponseDto(
-      menteeProfile,
-      !!mentorProfile,
-      mentorProfile?.idx,
-    )
+    return this.userProfileMapper.toMyProfileResponseDto(menteeProfile, !!mentorProfile, mentorProfile?.idx)
   }
 }

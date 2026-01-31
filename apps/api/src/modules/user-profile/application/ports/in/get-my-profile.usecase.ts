@@ -5,5 +5,5 @@ import { MyProfileResponseDto } from "@/modules/user-profile/infrastructure/adap
  * 현재 로그인한 사용자의 멘티 프로필 + 멘토 프로필 보유 여부
  */
 export abstract class GetMyProfileUseCase {
-  abstract execute(userId: string): Promise<MyProfileResponseDto>
+  abstract execute(userIdx: number): Promise<MyProfileResponseDto>
 }

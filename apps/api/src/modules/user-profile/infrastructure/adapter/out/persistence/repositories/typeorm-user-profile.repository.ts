@@ -55,6 +55,23 @@ export class TypeOrmUserProfileRepository
   }
 
   /**
+   * 사용자 인덱스로 프로필 조회
+   * @param userIdx 사용자 인덱스 (USERS 테이블의 PK)
+   * @returns 프로필 도메인 엔티티 또는 null
+   */
+  async findByUserIdx(userIdx: number): Promise<UserProfile | null> {
+    try {
+      // UserProfileEntity의 user 관계(user_id 컬럼)를 통해 조회
+      const profileEntity = await this.findOne({
+        user: { idx: userIdx } as any,
+      })
+      return this.userProfileMapper.toDomain(profileEntity)
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * 닉네임으로 프로필 조회 (중복 확인용)
    * @param nickname 닉네임
    * @returns 프로필 도메인 엔티티 또는 null

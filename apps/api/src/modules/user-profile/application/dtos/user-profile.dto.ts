@@ -17,6 +17,14 @@ export class UserProfileDto {
   idx: number
 
   @ApiProperty({
+    description: "사용자 고유 인덱스 (USERS 테이블의 PK)",
+    example: 1,
+  })
+  @Expose()
+  @IsNotEmpty({ message: "사용자 고유 인덱스는 필수 값입니다." })
+  userIdx: number
+
+  @ApiProperty({
     description: "사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)",
     example: "dudtod1596",
   })
@@ -88,9 +96,10 @@ export class UserProfileDto {
 
 /**
  * UserProfile 생성 요청 DTO
- * userId, nickname, fullName, introduce, profileImageUrl만 포함
+ * userIdx, userId, nickname, fullName, introduce, profileImageUrl만 포함
  */
 export class CreateUserProfileRequestDto extends PickType(UserProfileDto, [
+  "userIdx",
   "userId",
   "nickname",
   "fullName",

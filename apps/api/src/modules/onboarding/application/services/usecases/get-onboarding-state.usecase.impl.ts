@@ -1,9 +1,7 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 
-import {
-  GetOnboardingStateDto,
-  OnboardingStateResponseDto,
-} from "../../dtos/get-onboarding-state.dto"
+import OnboardingState from "../../../domain/model/onboarding-state.model"
+import { GetOnboardingStateDto, OnboardingStateResponseDto } from "../../dtos/get-onboarding-state.dto"
 import { OnboardingMapper } from "../../mappers/onboarding.mapper"
 import { GetOnboardingStateUseCase } from "../../ports/in/get-onboarding-state.usecase"
 import { OnboardingStateRepositoryPort } from "../../ports/out/onboarding-state.repository.port"
@@ -16,10 +14,12 @@ export class GetOnboardingStateUseCaseImpl implements GetOnboardingStateUseCase 
   ) {}
 
   async execute(dto: GetOnboardingStateDto): Promise<OnboardingStateResponseDto> {
-    const onboardingState = await this.onboardingStateRepository.findByUserId(dto.userId)
+    let onboardingState = await this.onboardingStateRepository.findByUserId(dto.userId)
 
     if (!onboardingState) {
-      throw new NotFoundException(`사용자 ID ${dto.userId}에 대한 온보딩 상태를 찾을 수 없습니다.`)
+      // 404를 반환하는 대신, 초기 상태를 생성하여 반환합니다.
+      // 이렇게 하면 클라이언트는 에러 대신 '온보딩 미완료' 상태를 정상적으로 처리할 수 있습니다.
+      onboardingState = OnboardingState.start(dto.userId)
     }
 
     return this.onboardingMapper.toOnboardingStateResponseDto(onboardingState)

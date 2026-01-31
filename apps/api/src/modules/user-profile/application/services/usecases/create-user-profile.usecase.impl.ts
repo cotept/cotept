@@ -44,7 +44,8 @@ export class CreateUserProfileUseCaseImpl implements CreateUserProfileUseCase {
       throw new ConflictException(`닉네임 '${createDto.nickname}'은(는) 이미 사용 중입니다.`)
     }
 
-    // 4. 도메인 엔티티 생성
+    // 4. 도메인 엔티티 생성 (조회한 사용자의 인덱스 주입)
+    createDto.userIdx = userExists.idx!
     const userProfile = this.userProfileMapper.createRequestToDomain(createDto)
 
     // 5. 저장

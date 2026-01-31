@@ -13,6 +13,7 @@ import {
   GetUserProfileUseCase,
   UpdateUserProfileUseCase,
 } from "@/modules/user-profile/application/ports/in"
+import { MyProfileResponseDto } from "@/modules/user-profile/infrastructure"
 
 /**
  * 사용자 프로필 관련 파사드 서비스
@@ -61,8 +62,8 @@ export class UserProfileFacadeService {
   /**
    * 내 프로필 정보 조회 (멘티 프로필 + 멘토 프로필 보유 여부)
    */
-  async getMyProfile(userId: string) {
-    return await this.getMyProfileUseCase.execute(userId)
+  async getMyProfile(userIdx: number): Promise<MyProfileResponseDto> {
+    return await this.getMyProfileUseCase.execute(userIdx)
   }
 
   /**
@@ -128,6 +129,7 @@ export class UserProfileFacadeService {
   async upsertProfile(
     userId: string,
     profileData: {
+      userIdx: number
       nickname: string
       fullName?: string
       introduce?: string
@@ -144,6 +146,7 @@ export class UserProfileFacadeService {
       // 새 프로필 생성
       const createDto: CreateUserProfileRequestDto = {
         userId,
+        userIdx: profileData.userIdx,
         nickname: profileData.nickname,
         fullName: profileData.fullName,
         introduce: profileData.introduce,
@@ -182,6 +185,7 @@ export class UserProfileFacadeService {
    */
   async createBasicProfileForSignup(
     userId: string,
+    userIdx: number,
     nickname: string,
     introduce?: string,
   ): Promise<{
@@ -195,6 +199,7 @@ export class UserProfileFacadeService {
   }> {
     const createDto: CreateUserProfileRequestDto = {
       userId,
+      userIdx,
       nickname,
       introduce,
     }

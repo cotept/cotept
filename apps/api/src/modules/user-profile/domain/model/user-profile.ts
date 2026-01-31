@@ -9,6 +9,7 @@ export default class UserProfile {
   // 식별자 및 연결 정보
   idx?: number // BaseEntity의 자동증가 ID
   userId: string // User 엔티티의 userId와 연결
+  userIdx?: number // User 엔티티의 idx (FK)
 
   // 필수 프로필 정보
   private _nickname: Nickname // 닉네임 (회원가입 ProfileStep에서 필수 수집)
@@ -25,6 +26,7 @@ export default class UserProfile {
   constructor(params: {
     idx?: number
     userId: string
+    userIdx?: number
     nickname: Nickname | string
     fullName?: Name | string
     introduce?: string
@@ -34,6 +36,7 @@ export default class UserProfile {
   }) {
     this.idx = params.idx
     this.userId = params.userId
+    this.userIdx = params.userIdx
 
     // 닉네임 설정 (값 객체 또는 문자열)
     this._nickname = params.nickname instanceof Nickname ? params.nickname : Nickname.of(params.nickname)
@@ -162,9 +165,10 @@ export default class UserProfile {
   /**
    * 정적 팩토리 메서드: 기본 프로필 생성
    */
-  static createBasicProfile(params: { userId: string; nickname: string; introduce?: string }): UserProfile {
+  static createBasicProfile(params: { userId: string; userIdx?: number; nickname: string; introduce?: string }): UserProfile {
     return new UserProfile({
       userId: params.userId,
+      userIdx: params.userIdx,
       nickname: params.nickname,
       introduce: params.introduce,
     })
@@ -175,6 +179,7 @@ export default class UserProfile {
    */
   static createCompleteProfile(params: {
     userId: string
+    userIdx?: number
     nickname: string
     fullName: string
     introduce?: string
@@ -182,6 +187,7 @@ export default class UserProfile {
   }): UserProfile {
     return new UserProfile({
       userId: params.userId,
+      userIdx: params.userIdx,
       nickname: params.nickname,
       fullName: params.fullName,
       introduce: params.introduce,

@@ -288,7 +288,12 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
       this.logger.log(`Successfully completed verification for user ${userId}, session ${session.getSessionId()}`)
 
       return baekjoonUser
-    } catch (dbError) {
+    } catch (dbError: any) {
+      // 이미 존재하는 핸들(Unique Constraint Violation) 체크
+      if (dbError.code === "23505" || dbError.message?.includes("unique")) {
+        throw new ConflictException("이미 다른 사용자가 해당 백준 ID로 인증되었습니다.")
+      }
+
       // DB 저장 실패 시 세션을 실패 상태로 변경
       session.fail("데이터 저장 중 오류가 발생했습니다.")
       await this.updateSessionInCache(session)
@@ -309,13 +314,20 @@ export class CompleteVerificationUseCaseImpl implements CompleteVerificationUseC
    * 백준 사용자 생성 또는 업데이트
    */
   private async createOrUpdateBaekjoonUser(userId: string, solvedAcProfile: any): Promise<BaekjoonUser> {
-    const existingUser = await this.findExistingUser(userId)
+    // 1. 현재 로그인한 사용자의 기존 백준 프로필 확인 (Upsert용)
+    const existingUser = await this.baekjoonRepository.findByUserId(userId)
 
     if (existingUser) {
       return this.updateExistingUser(existingUser, solvedAcProfile)
-    } else {
-      return this.createNewBaekjoonUser(userId, solvedAcProfile)
     }
+
+    // 2. 다른 사용자가 이미 해당 핸들을 쓰고 있는지 확인 (Conflict 방지)
+    const existingHandleUser = await this.baekjoonRepository.findByBaekjoonId(solvedAcProfile.handle)
+    if (existingHandleUser && existingHandleUser.getUserId() !== userId) {
+      throw new ConflictException("이미 다른 사용자가 해당 백준 ID로 인증되었습니다.")
+    }
+
+    return this.createNewBaekjoonUser(userId, solvedAcProfile)
   }
 
   /**

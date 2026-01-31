@@ -18,9 +18,12 @@ export class CreateBasicProfileUseCaseImpl implements CreateBasicProfileUseCase 
 
   async execute(dto: CreateBasicProfileDto): Promise<UserProfileDto> {
     this.logger.debug(`CreateBasicProfileUseCaseImpl.dto: ${JSON.stringify(dto)}`)
-    // 1. 기존 user-profile 모듈을 사용해 프로필 생성
-    const userProfile = await this.userProfileService.createProfile({
-      userId: dto.userId,
+
+    // 1. 프로필 생성 또는 업데이트 (Upsert)
+    // 기존 로직: createProfile -> 수정: upsertProfile
+    // 사용자가 뒤로가기 등으로 프로필을 수정할 수 있으므로, 이미 존재하면 업데이트합니다.
+    const { profile: userProfile } = await this.userProfileService.upsertProfile(dto.userId, {
+      userIdx: dto.userIdx,
       nickname: dto.nickname,
       profileImageUrl: dto.profileImageUrl,
     })
@@ -32,6 +35,7 @@ export class CreateBasicProfileUseCaseImpl implements CreateBasicProfileUseCase 
     }
 
     // 3. 프로필 생성 단계 완료 및 다음 단계로 상태 업데이트
+    // 이미 완료된 상태라도 다시 호출되면 안전하게 처리되어야 함 (OnboardingState 내부 로직 확인 필요)
     onboardingState.completeProfileSetup()
 
     // 4. 온보딩 상태 저장

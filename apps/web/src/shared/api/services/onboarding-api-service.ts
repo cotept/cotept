@@ -26,8 +26,17 @@ export const onboardingApiService = createApiService(onboardingApiFactory)
 
 /**
  * 온보딩 상태 조회
+ * @param accessToken (Optional) 서버 사이드에서 호출 시 사용할 토큰
  */
-export const fetchOnboardingState = async () => {
-  const { data } = await onboardingApiService.getOnboardingState()
-  return data
+export const fetchOnboardingState = async (accessToken?: string) => {
+  const response = await onboardingApiService.getOnboardingState(
+    accessToken
+      ? {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      : undefined,
+  )
+  return response?.data
 }

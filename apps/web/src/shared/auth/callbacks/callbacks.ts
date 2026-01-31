@@ -56,6 +56,14 @@ export const authCallbacks: NextAuthConfig["callbacks"] = {
       token.member = member as CotePtUser
       token.accessToken = accessToken
       token.refreshToken = refreshToken
+
+      // 로그인 시점에 온보딩 상태 조회 및 병합 (함수형 리팩토링 적용)
+      if (accessToken) {
+        const updatedMember = await OnboardingUpdateStrategy.syncOnboardingState(token.member, accessToken)
+        if (updatedMember) {
+          token.member = updatedMember
+        }
+      }
     }
 
     // 2. 세션 업데이트 처리

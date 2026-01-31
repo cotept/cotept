@@ -9,7 +9,7 @@ export async function signInAction(formData: FormData) {
     await signIn("credentials", {
       id: formData.get("id"),
       password: formData.get("password"),
-      redirect: false, // 서버에서 리다이렉트하지 않음 → 클라이언트에서 router.refresh() 후 리다이렉트
+      redirect: false,
     })
 
     // 로그인 성공

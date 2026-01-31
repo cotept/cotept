@@ -41,7 +41,7 @@ export function SignInForm() {
     <StepFlowLayout className="space-y-8">
       <div className="flex flex-col items-center justify-between gap-2 space-y-2 text-center">
         <Link href="/" className="group flex cursor-pointer items-center justify-start gap-2">
-          <Logo size={"md"} variant={"primary"} margin={false} className="w-full" />
+          <Logo size={"lg"} variant={"primary"} margin={false} className="w-full" />
         </Link>
         <span className="text-muted-foreground text-lg font-semibold">
           성장에 목마른 개발자들을 위한 실시간 1:1 멘토링

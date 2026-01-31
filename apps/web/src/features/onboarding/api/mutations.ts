@@ -9,6 +9,7 @@ import type {
   OnboardingApiCreateBasicProfileRequest,
   OnboardingApiCreateMentorProfileOnboardingRequest,
   OnboardingApiStartBaekjoonVerificationRequest,
+  SkipBaekjoonResponseWrapper,
   UserProfileResponse,
   VerificationStatusResponseWrapper,
 } from "@repo/api-client"
@@ -60,6 +61,20 @@ export function useCompleteBaekjoonVerification({
   >({
     ...mutationOptions,
     mutationFn: (data) => onboardingApiService.completeBaekjoonVerification({ ...data }),
+    invalidateKeys: [onboardingKeys.baekjoonVerification().queryKey, onboardingKeys.skillAnalysis().queryKey],
+    ...createChainedCallbacks({ callbacks: { onSuccess, onError } }),
+  })
+}
+
+// 백준 인증 건너뛰기
+export function useSkipBaekjoon({
+  onSuccess,
+  onError,
+  ...mutationOptions
+}: MutationOptions<SkipBaekjoonResponseWrapper, void>) {
+  return useBaseMutation<SkipBaekjoonResponseWrapper, ApiError, void>({
+    ...mutationOptions,
+    mutationFn: () => onboardingApiService.skipBaekjoon(),
     invalidateKeys: [onboardingKeys.baekjoonVerification().queryKey, onboardingKeys.skillAnalysis().queryKey],
     ...createChainedCallbacks({ callbacks: { onSuccess, onError } }),
   })

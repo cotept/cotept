@@ -97,7 +97,13 @@ const OnBoardingContainer = () => {
   }
 
   const handleBaekjoonVerifyComplete = (data: BaekjoonVerifyStepData) => {
-    // 백준 인증 데이터 저장
+    // 건너뛰기한 경우 (baekjoonHandle이 없음) -> 바로 완료 단계로 이동
+    if (!data.baekjoonHandle) {
+      updateAndGoNext("baekjoonVerification", data, ONBOARDING_STEPS.COMPLETE)
+      return
+    }
+
+    // 백준 인증 데이터 저장 및 멘토 자격 체크
     checkEligibility(data.baekjoonHandle)
     // 멘토 자격 체크 및 제안 모달 표시
     updateAndGoNext("baekjoonVerification", data, ONBOARDING_STEPS.BAEKJOON_VERIFY)

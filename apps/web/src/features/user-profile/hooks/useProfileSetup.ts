@@ -60,8 +60,9 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
       onComplete({ nickname, profileImageUrl: profileImageUrl ?? undefined })
     },
     onError: (error) => {
-      const handledError = handleApiError(error)
-      toast.error(handledError.message)
+      // useBaseMutation에서 이미 처리가 된 에러가 넘어옵니다 (ProcessedError)
+      const message = (error as any).message || "알 수 없는 오류가 발생했습니다."
+      toast.error(message)
     },
     onSettled: () => {
       setIsSubmitting(false)

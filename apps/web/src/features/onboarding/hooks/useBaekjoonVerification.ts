@@ -9,9 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 
-import { useCompleteBaekjoonVerification, useStartBaekjoonVerification } from "@/features/onboarding/api/mutations"
 import {
-  canSkipBaekjoonVerification,
+  useCompleteBaekjoonVerification,
+  useSkipBaekjoon,
+  useStartBaekjoonVerification,
+} from "@/features/onboarding/api/mutations"
+import {
   createBaekjoonValidationChecks,
   getBaekjoonVerificationMessage,
   getSolvedAcProfileUrl,
@@ -187,16 +190,21 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
     form.reset()
   }, [form])
 
-  // 인증 건너뛰기
-  const handleSkip = useCallback(() => {
-    if (!canSkipBaekjoonVerification()) {
-      toast.error("백준 인증은 필수입니다.")
-      return
-    }
+  // 백준 인증 건너뛰기 mutation
+  const { mutate: skipBaekjoon, isPending: isSkipping } = useSkipBaekjoon({
+    onSuccess: () => {
+      toast.success("백준 인증을 건너뛰었습니다.")
+      onComplete({ baekjoonHandle: "" })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
-    // 건너뛰기 시 빈 값으로 완료 처리
-    onComplete({ baekjoonHandle: "" })
-  }, [onComplete])
+  // 인증 건너뛰기 핸들러
+  const handleSkip = useCallback(() => {
+    skipBaekjoon() // 인자가 필요없음 (userId는 서버에서 토큰으로 추출하거나 useMutation에서 처리)
+  }, [skipBaekjoon])
 
   // 파생 상태 계산
   const status = verificationSession?.status ?? VerificationStatusType.PENDING
@@ -236,9 +244,9 @@ export const useBaekjoonVerification = ({ onComplete }: { onComplete: (data: Bae
     handleRetry,
     handleSkip,
     isStarting,
-    isCompleting,
+    isCompleting: isCompleting || isSkipping, // 스킵 중일 때도 로딩 처리
 
     // 유틸리티
-    canSkip: canSkipBaekjoonVerification(),
+    canSkip: true, // 항상 스킵 가능하도록 변경
   }
 }

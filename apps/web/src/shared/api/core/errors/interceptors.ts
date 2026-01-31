@@ -57,7 +57,7 @@ export const handleUnauthorizedError: ErrorHandler = async (error, originalReque
     }
 
     const refreshResponse = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL || "/api"}/auth/refresh-token`,
+      `${process.env.NEXT_PUBLIC_API_URL || "/api"}/v1/auth/silent-refresh`,
       { refreshToken: session.refreshToken },
       { headers: { "Content-Type": "application/json" } },
     )

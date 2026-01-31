@@ -54,13 +54,14 @@ export function useSignIn(props?: UseSignInProps) {
         return
       }
 
-      // 로그인 성공: 세션 갱신 후 리다이렉트
+      // 로그인 성공: 온보딩 상태 동기화 트리거와 함께 세션 갱신 후 리다이렉트
       if (result?.success) {
-        await update() // 서버에서 세션 다시 가져오기
+        toast.success("로그인되었습니다.")
+        await update({ trigger: "ONBOARDING_UPDATE" })
         router.push(result.redirectTo)
       }
     } catch (error) {
-      // 운영 환경에서는 sentry 추가 예정
+      toast.error("로그인 중 문제가 발생했습니다.")
       console.error("로그인 오류:", error)
     }
   })

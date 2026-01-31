@@ -120,7 +120,7 @@ export class ApiErrorHandler {
   }
 
   static logError(error: ProcessedError, context?: string) {
-    console.error(`[ApiError${context ? ` - ${context}` : ""}]: ${error.message}`, {
+    console.warn(`[ApiError${context ? ` - ${context}` : ""}]: ${error.message}`, {
       type: error.type,
       statusCode: error.statusCode,
       originalError: error.originalError,

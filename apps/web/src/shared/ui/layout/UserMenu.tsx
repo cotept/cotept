@@ -1,10 +1,11 @@
 "use client"
 
 import { signOut, useSession } from "next-auth/react"
+import Image from "next/image"
 import Link from "next/link"
 
-import { Avatar } from "@repo/shared/components/avatar"
-import { Button } from "@repo/shared/components/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/shared/components/avatar"
+import { Button, ButtonVariant } from "@repo/shared/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@repo/shared/components/dropdown-menu"
 
-import { LogOut, LucideIcon, User } from "lucide-react"
+import { LayoutDashboard, ListVideo, LogOut, LucideIcon, User } from "lucide-react"
+
+import { useMyProfile } from "@/shared/hooks/useMyProfile"
 
 // ============================================
 // Types
@@ -37,7 +40,7 @@ type MenuItem = LinkMenuItem | ActionMenuItem
 interface AuthButtonConfig {
   label: string
   href: string
-  variant?: "default" | "outline"
+  variant?: ButtonVariant
 }
 
 // ============================================
@@ -46,14 +49,20 @@ interface AuthButtonConfig {
 const userMenuItems: MenuItem[] = [
   {
     type: "link",
-    label: "마이페이지",
-    href: "/mypage",
-    icon: User,
+    label: "대시보드",
+    href: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
     type: "link",
-    label: "대시보드",
-    href: "/dashboard",
+    label: "다시보기",
+    href: "/vod-replay",
+    icon: ListVideo,
+  },
+  {
+    type: "link",
+    label: "마이페이지",
+    href: "/mypage",
     icon: User,
   },
   {
@@ -66,18 +75,37 @@ const userMenuItems: MenuItem[] = [
 
 const guestButtons: AuthButtonConfig[] = [
   { label: "로그인", href: "/auth/signin", variant: "outline" },
-  { label: "회원가입", href: "/auth/signup", variant: "default" },
+  // { label: "회원가입", href: "/auth/signup", variant: "outline" },
 ]
 
 // ============================================
 // Components
 // ============================================
 function UserDropdownMenu() {
+  const { data: myProfile } = useMyProfile()
+  const avatarUrl = myProfile?.data?.menteeProfile?.profileImageUrl
+  const nickname = myProfile?.data?.menteeProfile?.nickname
+  console.log({ avatarUrl, nickname })
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-9 w-9" />
+          <Avatar className="h-9 w-9">
+            <AvatarImage asChild src={avatarUrl || ""}>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={nickname || "User Avatar"}
+                  width={36}
+                  height={36}
+                  className="object-cover"
+                />
+              ) : undefined}
+            </AvatarImage>
+            <AvatarFallback>
+              {nickname ? nickname.substring(0, 2).toUpperCase() : <User className="size-4" />}
+            </AvatarFallback>
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

@@ -97,14 +97,7 @@ export function SignInForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-foreground text-sm font-semibold">
-                      비밀번호
-                      <Link
-                        href="/auth/find-password"
-                        className="text-primary hover:text-primary ml-auto text-xs font-medium hover:underline">
-                        비밀번호를 잊으셨나요?
-                      </Link>
-                    </FormLabel>
+                    <FormLabel className="text-foreground text-sm font-semibold">비밀번호</FormLabel>
                     <FormControl className="relative">
                       <div className="relative">
                         <Input
@@ -174,14 +167,33 @@ export function SignInForm() {
           </Button>
         </div> */}
 
-        <p className="text-muted-foreground mt-8 text-center text-xs">
-          아직 계정이 없으신가요?
+        <nav className="text-muted-foreground mt-8 flex w-full justify-end gap-2 text-center text-xs">
+          <Link
+            href="/auth/find-id"
+            className="text-primary-tint hover:text-primary ml-1 font-medium transition-colors hover:underline">
+            아이디 찾기
+          </Link>
+          <Link
+            href="/auth/find-password"
+            className="text-primary-tint hover:text-primary ml-1 font-medium transition-colors hover:underline">
+            비밀번호 찾기
+          </Link>
           <Link
             href="signup"
-            className="text-primary hover:text-primary ml-1 font-medium transition-colors hover:underline">
+            className="text-primary-tint hover:text-primary ml-1 font-medium transition-colors hover:underline">
             회원가입
           </Link>
-        </p>
+        </nav>
+        {/* <Link
+          href="/auth/find-password"
+          className="text-primary hover:text-primary ml-auto text-xs font-medium hover:underline">
+          비밀번호를 잊으셨나요?
+        </Link>
+        <Link
+          href="/auth/find-id"
+          className="text-primary hover:text-primary ml-auto text-xs font-medium hover:underline">
+          아이디를 잊으셨나요?
+        </Link> */}
       </FormStepContent>
     </StepFlowLayout>
   )

@@ -40,13 +40,13 @@ export class TypeOrmAuthVerificationRepository
 
   /**
    * IDX로 인증 검증 찾기
-   * @param userId 인증 검증 ID (JWT string)
+   * @param verificationId 인증 검증 ID (string format of number)
    * @returns 인증 검증 도메인 엔티티 또는 null
    */
-  async findById(userId: string): Promise<AuthVerification | null> {
+  async findByIdx(verificationId: string): Promise<AuthVerification | null> {
     try {
-      const numericUserId = convertJwtUserIdToNumber(userId, "AuthVerification findById")
-      const entity = await this.findOne({ userId: numericUserId })
+      const numericId = convertJwtUserIdToNumber(verificationId, "AuthVerification findByIdx")
+      const entity = await this.findOne({ idx: numericId })
       return this.authVerificationMapper.toDomain(entity)
     } catch {
       return null

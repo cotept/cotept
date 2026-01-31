@@ -65,9 +65,7 @@ export class AuthResponseMapper {
 
   toFindIdResponse(maskedId: string): FindIdResponseDto {
     return {
-      success: true,
       maskedId,
-      message: "가입된 아이디를 찾았습니다.",
     }
   }
 

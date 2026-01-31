@@ -42,7 +42,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
     try {
       const userEntity = await this.entityRepository.findOne({
         where: { email },
-        select: ["idx", "email", "passwordHash", "salt", "role", "status"],
+        select: ["idx", "userId", "email", "passwordHash", "salt", "role", "status"],
       })
 
       if (!userEntity) return null
@@ -352,7 +352,7 @@ export class TypeOrmAuthUserRepository extends BaseRepository<UserEntity> implem
     try {
       const userEntity = await this.entityRepository.findOne({
         where: { phoneNumber },
-        select: ["idx", "email", "passwordHash", "salt", "role", "status"],
+        select: ["idx", "userId", "email", "passwordHash", "salt", "role", "status"],
       })
 
       if (!userEntity) return null

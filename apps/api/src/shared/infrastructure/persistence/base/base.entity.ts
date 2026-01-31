@@ -10,14 +10,14 @@ export abstract class BaseEntity<T> {
     type: "timestamp with time zone",
     name: "created_at",
   })
-  @Transform(({ value }) => value?.toISOString()) // ← 추가
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : value))
   createdAt!: Date
 
   @UpdateDateColumn({
     type: "timestamp with time zone",
     name: "updated_at",
   })
-  @Transform(({ value }) => value?.toISOString()) // ← 추가
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : value))
   updatedAt!: Date
 
   // @Index({ unique: true })

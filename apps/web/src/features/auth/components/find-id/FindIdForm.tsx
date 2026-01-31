@@ -113,11 +113,11 @@ export function FindIdForm() {
                 name="target"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-fg-2">{authType === "PHONE" ? "휴대폰 번호" : "이메일 주소"}</FormLabel>
+                    <FormLabel className="text-fg-2">{authType !== "EMAIL" ? "휴대폰 번호" : "이메일 주소"}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={authType === "PHONE" ? "01012345678" : "example@email.com"}
+                        placeholder={authType !== "EMAIL" ? "01012345678" : "example@email.com"}
                         className="h-12"
                         autoFocus
                       />

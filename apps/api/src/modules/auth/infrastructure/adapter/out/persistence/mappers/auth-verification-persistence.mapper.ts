@@ -48,12 +48,12 @@ export class AuthVerificationPersistenceMapper {
       plainData.authType as AuthType,
       plainData.target,
       plainData.verificationCode,
-      plainData.expiresAt,
+      plainData.expiresAt ? new Date(plainData.expiresAt) : new Date(), // 기본값 처리 or Date 변환
       plainData.verified === 1,
-      plainData.verifiedAt,
+      plainData.verifiedAt ? new Date(plainData.verifiedAt) : null,
       plainData.attemptCount,
       plainData.ipAddress,
-      plainData.createdAt,
+      plainData.createdAt ? new Date(plainData.createdAt) : new Date(),
     )
   }
 

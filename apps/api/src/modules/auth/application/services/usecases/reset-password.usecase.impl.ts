@@ -49,7 +49,7 @@ export class ResetPasswordUseCaseImpl implements ResetPasswordUseCase {
     }>(redisKey)
 
     // DB에서 실제 데이터 조회
-    const verification = await this.authVerificationRepository.findById(resetPasswordDto.verificationId)
+    const verification = await this.authVerificationRepository.findByIdx(resetPasswordDto.verificationId)
 
     if (!verification) {
       throw new BadRequestException(AUTH_ERROR_MESSAGES.INVALID_VERIFICATION_DATA)

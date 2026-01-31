@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { AuthType } from "@repo/api-client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
@@ -16,7 +16,8 @@ import { useFindId as useFindIdMutation, useSendVerificationCode } from "../../a
 // ============================================================================
 
 const findIdSchema = z.object({
-  authType: z.enum(["EMAIL", "PHONE"]),
+  // authType: z.enum(["EMAIL", "PHONE"]),
+  authType: z.enum(["EMAIL"]),
   target: z.string().min(1, "인증 정보를 입력해주세요."),
   verificationCode: z.string().length(6, "인증 코드는 6자리입니다."),
 })
@@ -58,14 +59,14 @@ export function useFindId({ onSuccess }: UseFindIdProps = {}) {
   const form = useForm<FindIdFormData>({
     resolver: zodResolver(findIdSchema),
     defaultValues: {
-      authType: "PHONE",
+      authType: "EMAIL",
       target: "",
       verificationCode: "",
     },
   })
 
-  const authType = form.watch("authType")
-  const target = form.watch("target")
+  const authType = useWatch({ control: form.control, name: "authType", defaultValue: "EMAIL" })
+  const target = useWatch({ control: form.control, name: "target", defaultValue: "" })
 
   // ===== 타이머 =====
   useEffect(() => {
@@ -97,16 +98,16 @@ export function useFindId({ onSuccess }: UseFindIdProps = {}) {
 
   const findIdMutation = useFindIdMutation({
     onSuccess: (response) => {
-      if (response.data?.success && response.data.maskedId) {
+      if (response.data?.maskedId) {
         setState((prev) => ({
           ...prev,
           maskedId: response.data!.maskedId!,
           step: "result",
         }))
         toast.success("아이디를 찾았습니다.")
-        onSuccess?.(response.data.maskedId)
+        onSuccess?.(response.data!.maskedId!)
       } else {
-        toast.error(response.data?.message || "등록된 아이디를 찾을 수 없습니다.")
+        toast.error(response.message || "등록된 아이디를 찾을 수 없습니다.")
         form.setValue("verificationCode", "")
       }
     },

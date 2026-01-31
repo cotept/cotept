@@ -7,7 +7,6 @@ import { AuthVerificationRepositoryPort } from "@/modules/auth/application/ports
 import { AUTH_ERROR_MESSAGES } from "@/modules/auth/domain/constants/auth-error-messages"
 import { AuthUser } from "@/modules/auth/domain/model/auth-user"
 import { CacheService } from "@/shared/infrastructure/cache/redis/cache.service"
-import { convertDomainUserIdToString } from "@/shared/utils/auth-type-converter.util"
 
 @Injectable()
 export class FindIdUseCaseImpl implements FindIdUseCase {
@@ -25,6 +24,8 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
    * @returns 마스킹된 아이디
    */
   async execute(findIdDto: FindIdDto): Promise<{ id: string; maskingId: string }> {
+    this.logger.debug(`FindIdUseCase executing: ${JSON.stringify(findIdDto)}`)
+
     // 1. 인증 코드 검증
     const redisKey = `verification:${findIdDto.verificationId}`
 
@@ -40,9 +41,10 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
     }>(redisKey)
 
     // 2. DB에서 실제 데이터 조회
-    const verification = await this.authVerificationRepository.findById(findIdDto.verificationId)
+    const verification = await this.authVerificationRepository.findByIdx(findIdDto.verificationId)
 
     if (!verification) {
+      this.logger.warn(`Verification not found for ID: ${findIdDto.verificationId}`)
       throw new BadRequestException(AUTH_ERROR_MESSAGES.INVALID_VERIFICATION_DATA)
     }
 
@@ -55,20 +57,33 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
       if (verification.isExpired) {
         // Redis 데이터도 삭제
         if (cachedData) await this.cacheService.delete(redisKey)
+        this.logger.warn(`Verification expired for ID: ${findIdDto.verificationId}`)
         throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_CODE_EXPIRED)
       }
 
       // 최대 시도 횟수 확인
       if (verification.attemptCount >= 5) {
+        this.logger.warn(`Verification attempts exceeded for ID: ${findIdDto.verificationId}`)
         throw new BadRequestException(AUTH_ERROR_MESSAGES.VERIFICATION_ATTEMPTS_EXCEEDED)
       }
 
-      // 코드 및 다른 필드 확인
+      // 코드 및 다른 필드 확인 (공백 및 대소문자 유연성 추가)
+      const isEmail = findIdDto.authType === "EMAIL"
+      const inputTarget = isEmail ? findIdDto.target.trim().toLowerCase() : findIdDto.target.trim()
+      const storedTarget = isEmail ? verification.target.trim().toLowerCase() : verification.target.trim()
+
       if (
         verification.verificationCode !== findIdDto.verificationCode ||
         verification.authType !== findIdDto.authType ||
-        verification.target !== findIdDto.target
+        storedTarget !== inputTarget
       ) {
+        this.logger.warn(
+          `Verification mismatch for ID: ${findIdDto.verificationId}. 
+           Expected Code: ${verification.verificationCode}, Received: ${findIdDto.verificationCode}
+           Expected Target: ${storedTarget}, Received: ${inputTarget}
+           Expected Type: ${verification.authType}, Received: ${findIdDto.authType}`,
+        )
+
         // 실패 시도 횟수 증가
         verification.incrementAttemptCount()
         await this.authVerificationRepository.save(verification)
@@ -112,12 +127,23 @@ export class FindIdUseCaseImpl implements FindIdUseCase {
     }
 
     if (!user) {
+      this.logger.warn(`User not found for target: ${findIdDto.target} with authType: ${findIdDto.authType}`)
       throw new NotFoundException(AUTH_ERROR_MESSAGES.USER_NOT_FOUND)
     }
 
+    this.logger.debug(`User found: ${user.getUserId()}`)
+
     // 3. 아이디 마스킹 처리
-    const id = convertDomainUserIdToString(user.getId())
+    const id = user.getUserId()
+
+    if (!id) {
+      this.logger.error(`Invalid user ID found for target: ${findIdDto.target}`)
+      throw new NotFoundException(AUTH_ERROR_MESSAGES.USER_NOT_FOUND)
+    }
+
     const maskingId = this.maskId(id)
+
+    this.logger.debug(`Returning ID: ${id}, Masked: ${maskingId}`)
 
     return {
       id,

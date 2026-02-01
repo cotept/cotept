@@ -102,6 +102,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
 
         createProfile({
           createBasicProfileDto: {
+            userIdx: session!.member.idx,
             userId,
             nickname: formData.nickname,
             profileImageUrl: uploadData.fileUrl,
@@ -114,7 +115,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         setIsSubmitting(false)
       }
     },
-    [getUploadUrlAsync, createProfile],
+    [getUploadUrlAsync, createProfile, session],
   )
 
   const retryUploadAndCreateProfile = useCallback(() => {
@@ -170,6 +171,7 @@ export const useProfileSetup = ({ onComplete }: { onComplete: (data: ProfileSetu
         setIsSubmitting(true)
         createProfile({
           createBasicProfileDto: {
+            userIdx: session!.member.idx,
             userId,
             nickname: data.nickname,
           },

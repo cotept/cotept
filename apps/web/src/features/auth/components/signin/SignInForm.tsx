@@ -174,7 +174,7 @@ export function SignInForm() {
             아이디 찾기
           </Link>
           <Link
-            href="/auth/find-password"
+            href="/auth/find-pw"
             className="text-primary-tint hover:text-primary ml-1 font-medium transition-colors hover:underline">
             비밀번호 찾기
           </Link>
@@ -184,16 +184,6 @@ export function SignInForm() {
             회원가입
           </Link>
         </nav>
-        {/* <Link
-          href="/auth/find-password"
-          className="text-primary hover:text-primary ml-auto text-xs font-medium hover:underline">
-          비밀번호를 잊으셨나요?
-        </Link>
-        <Link
-          href="/auth/find-id"
-          className="text-primary hover:text-primary ml-auto text-xs font-medium hover:underline">
-          아이디를 잊으셨나요?
-        </Link> */}
       </FormStepContent>
     </StepFlowLayout>
   )

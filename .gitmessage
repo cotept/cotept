@@ -22,6 +22,7 @@
 # web          : 프론트엔드 전체
 # api          : 백엔드
 # shared       : 공통 컴포넌트/유틸
+# common-lib   : 공통 유틸 라이브러리
 # api-client   : API 클라이언트
 # eslint-config: ESLint 설정
 # typescript-config: TypeScript 설정

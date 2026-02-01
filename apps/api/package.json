@@ -43,6 +43,7 @@
     "@nestjs/platform-express": "^11.0.11",
     "@nestjs/swagger": "^11.0.6",
     "@nestjs/typeorm": "^11.0.0",
+    "@repo/common-lib": "workspace:*",
     "@repo/shared": "workspace:*",
     "@types/oracledb": "^6.5.3",
     "axios": "^1.6.2",

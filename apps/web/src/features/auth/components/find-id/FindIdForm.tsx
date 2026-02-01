@@ -89,15 +89,22 @@ export function FindIdForm() {
                   )}
                 />
               </div>
-
-              <Button
-                type="button"
-                onClick={handleMethodSubmit}
-                variant="auth-primary"
-                size="xl"
-                className="w-full font-bold">
-                다음
-              </Button>
+              <div className="flex flex-col gap-3 pt-2">
+                <Button
+                  type="button"
+                  onClick={handleMethodSubmit}
+                  variant="auth-primary"
+                  size="xl"
+                  className="w-full font-bold">
+                  다음
+                </Button>
+                <Button asChild variant="ghost" className="text-fg-3 hover:text-fg-1">
+                  <Link href="/auth/signin">
+                    <ChevronLeft size={16} className="mr-1" />
+                    로그인으로 돌아가기
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
           )}
 

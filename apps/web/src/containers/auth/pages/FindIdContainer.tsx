@@ -26,11 +26,11 @@ export default function FindIdContainer() {
         </FormStep>
       </FormStepContent>
 
-      <div className="mt-8 text-center">
+      {/* <div className="mt-8 text-center">
         <Link href="/auth/signin" className="text-fg-3 hover:text-primary text-sm transition-colors">
           로그인 페이지로 돌아가기
         </Link>
-      </div>
+      </div> */}
     </StepFlowLayout>
   )
 }

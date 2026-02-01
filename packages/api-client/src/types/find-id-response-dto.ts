@@ -21,18 +21,6 @@
  */
 export interface FindIdResponseDto {
     /**
-     * 찾기 성공 여부
-     * @type {boolean}
-     * @memberof FindIdResponseDto
-     */
-    'success': boolean;
-    /**
-     * 응답 메시지
-     * @type {string}
-     * @memberof FindIdResponseDto
-     */
-    'message': string;
-    /**
      * 마스킹된 아이디
      * @type {string}
      * @memberof FindIdResponseDto

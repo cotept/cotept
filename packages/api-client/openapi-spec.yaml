@@ -5448,8 +5448,8 @@ components:
           example: CurrentP@ss123
         newPassword:
           type: string
-          description: 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
-          example: NewStrongP@ss123
+          description: 새 비밀번호 (8~32자, 소문자, 숫자, 특수문자 포함)
+          example: newstrong@pass123
         confirmPassword:
           type: string
           description: 새 비밀번호
@@ -5467,6 +5467,10 @@ components:
         idx:
           type: number
           description: 프로필 ID (자동증가 기본키)
+          example: 1
+        userIdx:
+          type: number
+          description: 사용자 고유 인덱스 (USERS 테이블의 PK)
           example: 1
         userId:
           type: string
@@ -5496,6 +5500,7 @@ components:
           example: '2024-01-15T10:30:00Z'
       required:
         - idx
+        - userIdx
         - userId
         - nickname
         - createdAt
@@ -5531,6 +5536,10 @@ components:
           type: number
           description: 프로필 ID (자동증가 기본키)
           example: 1
+        userIdx:
+          type: number
+          description: 사용자 고유 인덱스 (USERS 테이블의 PK)
+          example: 1
         userId:
           type: string
           description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
@@ -5559,6 +5568,7 @@ components:
           example: '2024-01-15T10:30:00Z'
       required:
         - idx
+        - userIdx
         - userId
         - nickname
         - createdAt
@@ -6212,21 +6222,10 @@ components:
     FindIdResponseDto:
       type: object
       properties:
-        success:
-          type: boolean
-          description: 찾기 성공 여부
-          example: true
         maskedId:
           type: string
           description: 마스킹된 아이디
           example: u***123
-        message:
-          type: string
-          description: 응답 메시지
-          example: 가입된 아이디를 찾았습니다.
-      required:
-        - success
-        - message
     FindIdRequestDto:
       type: object
       properties:
@@ -6266,14 +6265,9 @@ components:
           type: string
           description: 재설정 완료 시간
           example: '2023-01-01T00:00:00Z'
-        message:
-          type: string
-          description: 응답 메시지
-          example: 비밀번호가 성공적으로 재설정되었습니다.
       required:
         - success
         - resetAt
-        - message
     ResetPasswordRequestDto:
       type: object
       properties:
@@ -6461,6 +6455,10 @@ components:
     CreateBasicProfileDto:
       type: object
       properties:
+        userIdx:
+          type: number
+          description: 사용자 고유 인덱스 (USERS 테이블의 PK)
+          example: 1
         userId:
           type: string
           description: 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
@@ -6474,6 +6472,7 @@ components:
           description: 프로필 이미지 URL
           example: https://example.com/profile/image.jpg
       required:
+        - userIdx
         - userId
         - nickname
     ApiResponseVerificationStatusResponseDto:

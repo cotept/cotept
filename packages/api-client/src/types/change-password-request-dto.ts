@@ -27,7 +27,7 @@ export interface ChangePasswordRequestDto {
      */
     'currentPassword': string;
     /**
-     * 새 비밀번호 (8~32자, 대소문자, 숫자, 특수문자 포함)
+     * 새 비밀번호 (8~32자, 소문자, 숫자, 특수문자 포함)
      * @type {string}
      * @memberof ChangePasswordRequestDto
      */

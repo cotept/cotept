@@ -32,11 +32,5 @@ export interface ResetPasswordResponseDto {
      * @memberof ResetPasswordResponseDto
      */
     'resetAt': string;
-    /**
-     * 응답 메시지
-     * @type {string}
-     * @memberof ResetPasswordResponseDto
-     */
-    'message': string;
 }
 

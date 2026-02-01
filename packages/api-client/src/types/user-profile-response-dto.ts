@@ -27,6 +27,12 @@ export interface UserProfileResponseDto {
      */
     'idx': number;
     /**
+     * 사용자 고유 인덱스 (USERS 테이블의 PK)
+     * @type {number}
+     * @memberof UserProfileResponseDto
+     */
+    'userIdx': number;
+    /**
      * 사용자 로그인 아이디 (6~20자, 영문/숫자/특수문자)
      * @type {string}
      * @memberof UserProfileResponseDto

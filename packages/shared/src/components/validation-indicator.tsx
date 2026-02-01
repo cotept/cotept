@@ -33,10 +33,16 @@ const validationIndicatorVariants = cva("space-y-2", {
       md: "",
       lg: "",
     },
+    layout: {
+      vertical: "",
+      inline: "",
+      grid: "",
+    },
   },
   defaultVariants: {
     variant: "default",
     size: "md",
+    layout: "vertical",
   },
 })
 
@@ -116,6 +122,8 @@ export interface ValidationIndicatorProps
   inputValue?: string
   /** 필드가 터치되었는지 여부 (isDirty 상태) */
   isDirty?: boolean
+  /** 레이아웃 방식 (기본: vertical) */
+  layout?: "vertical" | "inline" | "grid"
 }
 
 /**
@@ -141,6 +149,7 @@ export function ValidationIndicator({
   title,
   variant,
   size,
+  layout = "vertical",
   className,
   showWhen = "always",
   inputValue = "",
@@ -165,10 +174,17 @@ export function ValidationIndicator({
     return isValid ? "valid" : "invalid" // 터치했으면 실제 상태
   }
 
+  // 레이아웃별 컨테이너 클래스
+  const layoutClasses = {
+    vertical: variant === "compact" ? "space-y-1" : "space-y-1.5",
+    inline: "flex flex-wrap gap-x-4 gap-y-1.5",
+    grid: "grid grid-cols-2 gap-x-4 gap-y-1.5",
+  }
+
   return (
     <div className={cn(validationIndicatorVariants({ variant, size }), className)} {...props}>
       {title && <p className={cn("font-medium text-zinc-300", size === "sm" ? "text-xs" : "text-sm")}>{title}</p>}
-      <div className={variant === "compact" ? "space-y-1" : "space-y-1.5"}>
+      <div className={layoutClasses[layout]}>
         {checks.map((check) => (
           <div key={check.id} className={validationCheckVariants({ size })}>
             <div

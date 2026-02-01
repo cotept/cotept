@@ -49,12 +49,12 @@ export class PasswordService implements PasswordServicePort {
       return { isValid: false, message: "비밀번호는 최대 32자까지 허용됩니다." }
     }
 
-    // 대소문자, 숫자, 특수문자를 포함하는지 검증
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
+    // 소문자, 숫자, 특수문자를 포함하는지 검증
+    const passwordRegex = /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
     if (!passwordRegex.test(password)) {
       return {
         isValid: false,
-        message: "비밀번호는 최소 하나의 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",
+        message: "비밀번호는 최소 하나의 소문자, 숫자, 특수문자를 포함해야 합니다.",
       }
     }
 

@@ -1,20 +1,18 @@
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_REGEX,
+  SEQUENTIAL_CHARS_REGEX,
+  PASSWORD_ERROR_MESSAGES,
+} from "@repo/common-lib"
+
 /**
  * 비밀번호 값 객체
- * 비밀번호 정책 검증을 담당
+ * 비밀번호 정책 검증을 담당 (정책은 @repo/common-lib에서 공유)
  */
 export class Password {
   private readonly value: string
   private readonly isHashed: boolean
-
-  // 비밀번호 정책 정규식
-  // 최소 8자, 최대 32자
-  // 최소 하나의 대문자, 소문자, 숫자, 특수 문자 포함
-  private static readonly PASSWORD_REGEX =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,32}$/
-
-  // 연속된 문자/숫자 감지 정규식
-  private static readonly SEQUENTIAL_CHARS_REGEX =
-    /(012|123|234|345|456|567|678|789|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i
 
   private constructor(password: string, isHashed: boolean) {
     if (!isHashed) {
@@ -39,27 +37,27 @@ export class Password {
   }
 
   /**
-   * 비밀번호 유효성 검증
+   * 비밀번호 유효성 검증 (공유 정책 사용)
    */
   private validate(password: string): void {
     if (!password) {
-      throw new Error("비밀번호는 필수 값입니다.")
+      throw new Error(PASSWORD_ERROR_MESSAGES.required)
     }
 
-    if (password.length < 8) {
-      throw new Error("비밀번호는 최소 8자 이상이어야 합니다.")
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      throw new Error(PASSWORD_ERROR_MESSAGES.minLength)
     }
 
-    if (password.length > 32) {
-      throw new Error("비밀번호는 최대 32자까지 허용됩니다.")
+    if (password.length > PASSWORD_MAX_LENGTH) {
+      throw new Error(PASSWORD_ERROR_MESSAGES.maxLength)
     }
 
-    if (!Password.PASSWORD_REGEX.test(password)) {
-      throw new Error("비밀번호는 최소 하나의 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.")
+    if (!PASSWORD_REGEX.test(password)) {
+      throw new Error(PASSWORD_ERROR_MESSAGES.pattern)
     }
 
-    if (Password.SEQUENTIAL_CHARS_REGEX.test(password)) {
-      throw new Error("비밀번호에 연속된 문자나 숫자(123, abc 등)를 사용할 수 없습니다.")
+    if (SEQUENTIAL_CHARS_REGEX.test(password)) {
+      throw new Error(PASSWORD_ERROR_MESSAGES.sequential)
     }
   }
 

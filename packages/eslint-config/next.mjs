@@ -16,6 +16,29 @@ export default [
   },
   ...importRules,
   {
+    rules: {
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            ["^\\u0000"],
+            ["^node:"],
+            ["^react$", "^react/.*"],
+            ["^next", "^next/.*"],
+            ["^@repo/"],
+            ["^@?\\w"],
+            ["^@app/", "^@containers/", "^@features/", "^@customs/", "^@shared/", "^@libs/"],
+            ["^src/"],
+            ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+            ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+            ["^.+\\.s?css$"],
+            ["^.*\\u0000$"],
+          ],
+        },
+      ],
+    },
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.browser,

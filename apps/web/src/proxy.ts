@@ -3,12 +3,13 @@ import { NextResponse } from "next/server"
 
 import { GuardContext, ProxyGuard } from "./proxy/guards/guard.interface"
 import { OnboardingGuard } from "./proxy/guards/onboarding.guard"
+import { RoleGuard } from "./proxy/guards/role.guard"
 
 import { auth } from "@/auth"
 import { createRedirect, isAuthRoute, isProtectedRoute, isPublicRoute } from "@/proxy/lib/helpers"
 
 // 가드 등록
-const guards: ProxyGuard[] = [new OnboardingGuard()]
+const guards: ProxyGuard[] = [new RoleGuard(), new OnboardingGuard()]
 
 /**
  * Main Proxy (Middleware) Implementation

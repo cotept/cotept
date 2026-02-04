@@ -1,6 +1,9 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+import { Resource } from "@repo/common-lib/auth"
+
+import { ROUTE_RESOURCE_MAP } from "@/proxy/config/role-resource.map"
 import { ROUTE_CONFIG } from "@/proxy/config/routes"
 
 /**
@@ -55,6 +58,18 @@ export const isProtectedRoute = (pathName: string): boolean => {
  */
 export const isAuthRoute = (pathName: string): boolean => {
   return isMatchingRoute(pathName, ROUTE_CONFIG.auth)
+}
+
+/**
+ * 현재 경로에 매핑된 리소스(Resource) 찾기 (Longest Prefix Match)
+ * - RoleGuard에서 사용
+ */
+export const getResourceForPath = (pathName: string): Resource | null => {
+  // 가장 긴 경로가 우선순위를 가지도록 정렬 (예: /admin/users vs /admin)
+  const sortedPaths = Object.keys(ROUTE_RESOURCE_MAP).sort((a, b) => b.length - a.length)
+  const matchedPath = sortedPaths.find((route) => startsWith(pathName, route))
+
+  return matchedPath ? ROUTE_RESOURCE_MAP[matchedPath] : null
 }
 
 /**

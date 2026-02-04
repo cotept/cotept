@@ -16,7 +16,7 @@ export const PUBLIC_ROUTES = [
 
 export const AUTH_ROUTES = ["/auth/signin", "/auth/signup"] as const
 
-export const PROTECTED_ROUTES = ["/onboarding", "/mentoring", "/my"] as const
+export const PROTECTED_ROUTES = ["/onboarding", "/mentoring", "/my", "/admin", "/mentor"] as const
 // export const PROTECTED_ROUTES = ["/mentoring", "/my"] as const
 
 /**

@@ -40,10 +40,10 @@ export function GlobalFooter() {
     <footer className="border-border mt-auto border-t py-10 text-center">
       <p className="text-muted-foreground text-xs">© 2024 Cotept. All rights reserved.</p>
       <div className="mt-2 flex justify-center gap-4">
-        <Link className="text-muted-foreground hover:text-primary text-xs transition-colors" href="#">
+        <Link className="text-muted-foreground hover:text-primary text-xs transition-colors" href="/terms/service">
           이용약관
         </Link>
-        <Link className="text-muted-foreground hover:text-primary text-xs font-bold transition-colors" href="#">
+        <Link className="text-muted-foreground hover:text-primary text-xs font-bold transition-colors" href="/terms/privacy">
           개인정보처리방침
         </Link>
       </div>

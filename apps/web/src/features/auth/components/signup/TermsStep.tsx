@@ -2,6 +2,8 @@
 
 import React, { useMemo } from "react"
 
+import Link from "next/link"
+
 import { Button } from "@repo/shared/src/components/button"
 import { Checkbox } from "@repo/shared/src/components/checkbox"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@repo/shared/src/components/form"
@@ -23,22 +25,24 @@ const TermsStep: React.FC<TermsStepProps> = ({ onComplete }) => {
         name: "serviceTerms" as const,
         label: "서비스 이용약관 동의",
         required: true,
+        link: "/terms/service",
       },
       {
         name: "privacyPolicy" as const,
         label: "개인정보처리방침 동의",
         required: true,
+        link: "/terms/privacy",
       },
       {
         name: "ageConfirmation" as const,
         label: "만 14세 이상입니다",
         required: true,
       },
-      {
-        name: "marketingConsent" as const,
-        label: "마케팅 수신 동의",
-        required: false,
-      },
+      // {
+      //   name: "marketingConsent" as const,
+      //   label: "마케팅 수신 동의",
+      //   required: false,
+      // },
     ],
     [],
   )
@@ -76,7 +80,19 @@ const TermsStep: React.FC<TermsStepProps> = ({ onComplete }) => {
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                       <FormLabel className="text-muted-foreground flex flex-1 cursor-pointer items-center justify-between">
-                        <span>{term.label}</span>
+                        <span className="flex items-center gap-2">
+                          {term.label}
+                          {"link" in term && term.link && (
+                            <Link
+                              href={term.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:text-primary/80 text-xs underline"
+                              onClick={(e) => e.stopPropagation()}>
+                              보기
+                            </Link>
+                          )}
+                        </span>
                         <span className={`text-xs ${term.required ? "text-destructive" : "text-muted-foreground"}`}>
                           {term.required ? "(필수)" : "(선택)"}
                         </span>
